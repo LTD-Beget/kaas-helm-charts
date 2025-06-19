@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: {{ .Values.clusterInfo.namespace }}
+data:
+  kubeconfig: |
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: {{ .Values.clusterInfo.kubeCaCrtBase64 }}
+        server: {{ .Values.clusterInfo.clusterApiUrl }}
+      name: ""
+    contexts: null
+    current-context: ""
+    kind: Config
+    preferences: {}
+    users: null

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubelet-config
+  namespace: {{ .Values.kubeletConfig.namespace }}
+data:
+  kubelet: |
+    {{- toYaml .Values.kubeletConfig.config | nindent 4 }}
