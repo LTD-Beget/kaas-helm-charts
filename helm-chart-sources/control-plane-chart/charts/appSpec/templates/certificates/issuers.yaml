@@ -1,0 +1,45 @@
+{{- $needsSelfsigned := false }}
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+    {{- if and $appValue.issuers.kubernetesCA.enabled (eq $appValue.issuers.kubernetesCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
+    {{- if and $appValue.issuers.frontProxyCA.enabled (eq $appValue.issuers.frontProxyCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
+
+    {{- if $needsSelfsigned }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: beget-system
+spec:
+  selfSigned: {}
+    {{- end }}
+    {{- if $appValue.issuers.kubernetesCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: kubernetes-ca
+  namespace: beget-system
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.kubernetesCA.secretName }}
+    {{- end }}
+    {{- if $appValue.issuers.frontProxyCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: front-proxy-ca
+  namespace: beget-system
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
+    {{- end }}
+
+  {{- end }}
+{{- end }}

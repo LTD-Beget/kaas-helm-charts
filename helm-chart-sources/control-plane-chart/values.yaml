@@ -1,0 +1,1020 @@
+appSpec:
+  configMap:
+    status: false
+  globalVars:
+    caCerts:                      &caCerts                      /etc/ssl/certs
+    etcCaCertificates:            &etcCaCertificates            /etc/ca-certificates
+    etcPki:                       &etcPki                       /etc/pki
+    k8sCerts:                     &k8sCerts                     /etc/kubernetes/pki
+    usrLocalSharecacertificates:  &usrLocalSharecacertificates  /usr/local/share/ca-certificates
+    usrSharecacertificates:       &usrSharecacertificates       /usr/share/ca-certificates
+    flexvolumeDir:                &flexvolumeDir                /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+    kubeconfigControllerManager:  &kubeconfigControllerManager  /etc/kubernetes/controller-manager.conf
+    kubeconfigScheduler:          &kubeconfigScheduler          /etc/kubernetes/scheduler.conf
+
+  applications:
+    controlPlane:
+      enabled: true
+      name: control-plane
+      type: DaemonSet
+      issuers:
+        kubernetesCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: kubernetes-ca
+        frontProxyCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: front-proxy-ca
+      imagePullSecrets: []
+      containers:
+
+        kubeApiserver:
+          name: kube-apiserver
+          image:
+            repository: registry.k8s.io/kube-apiserver
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+          certSANs:
+            - "my-first-client-control-plane"
+            - "my-first-client-control-plane.beget-system"
+            - "my-first-client-control-plane.beget-system.svc"
+            - "my-first-client-control-plane.beget-system.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
+          extraArgs:
+            advertise-address: $(NODE_IP)
+            aggregator-reject-forwarding-redirect: true
+            allow-privileged: true
+            anonymous-auth: true
+            api-audiences: konnectivity-server
+            apiserver-count: 1
+            audit-log-batch-buffer-size: 10000
+            audit-log-batch-max-size: 1
+            audit-log-batch-max-wait: 0s
+            audit-log-batch-throttle-burst: 0
+            audit-log-batch-throttle-enable: false
+            audit-log-batch-throttle-qps: 0
+            audit-log-compress: false
+            audit-log-format: json
+            audit-log-maxage: 30
+            audit-log-maxbackup: 10
+            audit-log-maxsize: 1000
+            audit-log-mode: batch
+            audit-log-truncate-enabled: false
+            audit-log-truncate-max-batch-size: "10485760"
+            audit-log-truncate-max-event-size: 102400
+            audit-log-version: audit.k8s.io/v1
+            audit-webhook-batch-buffer-size: 10000
+            audit-webhook-batch-initial-backoff: 10s
+            audit-webhook-batch-max-size: 400
+            audit-webhook-batch-max-wait: 30s
+            audit-webhook-batch-throttle-burst: 15
+            audit-webhook-batch-throttle-enable: true
+            audit-webhook-batch-throttle-qps: 10
+            audit-webhook-initial-backoff: 10s
+            audit-webhook-mode: batch
+            audit-webhook-truncate-enabled: false
+            audit-webhook-truncate-max-batch-size: "10485760"
+            audit-webhook-truncate-max-event-size: 102400
+            audit-webhook-version: audit.k8s.io/v1
+            authentication-token-webhook-cache-ttl: 2m0s
+            authentication-token-webhook-version: v1beta1
+            authorization-mode: Node,RBAC
+            authorization-webhook-cache-authorized-ttl: 5m0s
+            authorization-webhook-cache-unauthorized-ttl: 30s
+            authorization-webhook-version: v1beta1
+            bind-address: 0.0.0.0
+            cert-dir: /var/run/kubernetes
+            client-ca-file: /etc/kubernetes/pki/ca.crt
+            cloud-provider: external
+            cloud-provider-gce-l7lb-src-cidrs: 130.211.0.0/22,35.191.0.0/16
+            cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16
+            contention-profiling: false
+            default-not-ready-toleration-seconds: 300
+            default-unreachable-toleration-seconds: 300
+            default-watch-cache-size: 100
+            delete-collection-workers: 1
+            enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction,PodSecurity
+            enable-aggregator-routing: true
+            enable-bootstrap-token-auth: true
+            enable-garbage-collector: true
+            enable-logs-handler: true
+            enable-priority-and-fairness: true
+            encryption-provider-config-automatic-reload: false
+            endpoint-reconciler-type: lease
+            etcd-cafile: /etc/kubernetes/pki/etcd/ca.crt
+            etcd-certfile: /etc/kubernetes/pki/apiserver-etcd-client.crt
+            etcd-compaction-interval: 5m0s
+            etcd-count-metric-poll-period: 1m0s
+            etcd-db-metric-poll-interval: 30s
+            etcd-healthcheck-timeout: 2s
+            etcd-keyfile: /etc/kubernetes/pki/apiserver-etcd-client.key
+            etcd-prefix: /client
+            etcd-readycheck-timeout: 2s
+            etcd-servers: https://$(NODE_IP):2379
+            event-ttl: 1h0m0s
+            feature-gates: RotateKubeletServerCertificate=true
+            goaway-chance: 0
+            help: false
+            http2-max-streams-per-connection: 0
+            kubelet-client-certificate: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+            kubelet-client-key: /etc/kubernetes/pki/apiserver-kubelet-client.key
+            kubelet-port: 10250
+            kubelet-preferred-address-types: InternalIP,ExternalIP,Hostname
+            kubelet-read-only-port: 10255
+            kubelet-timeout: 5s
+            kubernetes-service-node-port: 0
+            lease-reuse-duration-seconds: 60
+            livez-grace-period: 0s
+            log-flush-frequency: 5s
+            log-json-info-buffer-size: 0
+            log-json-split-stream: false
+            log-text-info-buffer-size: 0
+            log-text-split-stream: false
+            logging-format: text
+            max-connection-bytes-per-sec: 0
+            max-mutating-requests-inflight: 200
+            max-requests-inflight: 400
+            min-request-timeout: 1800
+            permit-address-sharing: false
+            permit-port-sharing: false
+            profiling: false
+            proxy-client-cert-file: /etc/kubernetes/pki/front-proxy-client.crt
+            proxy-client-key-file: /etc/kubernetes/pki/front-proxy-client.key
+            request-timeout: 1m0s
+            requestheader-allowed-names: front-proxy-client
+            requestheader-client-ca-file: /etc/kubernetes/pki/front-proxy-ca.crt
+            requestheader-extra-headers-prefix: X-Remote-Extra-
+            requestheader-group-headers: X-Remote-Group
+            requestheader-username-headers: X-Remote-User
+            runtime-config: api/all=true
+            secure-port: 26443
+            service-account-extend-token-expiration: true
+            service-account-issuer: https://kubernetes.default.svc.cluster.local
+            service-account-key-file: /etc/kubernetes/pki/sa.pub
+            service-account-lookup: true
+            service-account-max-token-expiration: 0s
+            service-account-signing-key-file: /etc/kubernetes/pki/sa.key
+            service-cluster-ip-range: 29.64.0.0/16
+            service-node-port-range: 40000-42767
+            shutdown-delay-duration: 0s
+            shutdown-send-retry-after: false
+            shutdown-watch-termination-grace-period: 0s
+            storage-backend: etcd3
+            storage-media-type: application/vnd.kubernetes.protobuf
+            tls-cert-file: /etc/kubernetes/pki/apiserver.crt
+            tls-private-key-file: /etc/kubernetes/pki/apiserver.key
+            v: 2
+            version: false
+            watch-cache: true
+
+          extraMetadataEnv:
+            NODE_IP:
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+
+          extraCommand:
+          - kube-apiserver
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /livez
+              port: 26443
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          readinessProbeEnabled: true
+          extraReadinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 26443
+              scheme: HTTPS
+            periodSeconds: 1
+            timeoutSeconds: 15
+
+          extraPorts:
+            https:
+              containerPort: 26443
+              protocol: TCP
+
+          extraResources:
+            limits: 
+              cpu: 1
+              memory: 8192Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - NET_BIND_SERVICE
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /livez
+              port: 26443
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            ca-certs:
+              volumeMount:
+                path: *caCerts
+                readOnly: true
+            etc-ca-certificates:
+              volumeMount:
+                path: *etcCaCertificates
+                readOnly: true
+            etc-pki:
+              volumeMount:
+                path: *etcPki
+                readOnly: true
+            usr-local-share-ca-certificates:
+              volumeMount:
+                path: *usrLocalSharecacertificates
+                readOnly: true
+            usr-share-ca-certificates:
+              volumeMount:
+                path: *usrSharecacertificates
+                readOnly: true
+            sa-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.key
+                spec:
+                  subPath: sa.key
+                  readOnly: true
+            sa-pub:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.pub
+                spec:
+                  subPath: sa.pub
+                  readOnly: true
+            apiserver-etcd-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+                readOnly: true
+            apiserver-etcd-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-etcd-client.key
+                readOnly: true
+            etcd-pki:
+              volumeMount:
+                path: /etc/kubernetes/pki/etcd/
+                readOnly: true 
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            proxy-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.crt
+                spec:
+                  subPath: front-proxy-ca.crt
+                  readOnly: true
+            proxy-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.key
+                spec:
+                  subPath: front-proxy-ca.key
+                  readOnly: true
+            apiserver-kubelet-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+                spec:
+                  subPath: apiserver-kubelet-client.crt
+                  readOnly: true
+            apiserver-kubelet-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+                spec:
+                  subPath: apiserver-kubelet-client.key
+                  readOnly: true
+            front-proxy-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-client.crt
+                spec:
+                  subPath: front-proxy-client.crt
+                  readOnly: true
+            front-proxy-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-client.key
+                spec:
+                  subPath: front-proxy-client.key
+                  readOnly: true
+            apiserver-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver.crt
+                spec:
+                  subPath: apiserver.crt
+                  readOnly: true
+            apiserver-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver.key
+                spec:
+                  subPath: apiserver.key
+                  readOnly: true
+
+        kubeControllerManager:
+          name: kube-controller-manager
+          image:
+            repository: registry.k8s.io/kube-controller-manager
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+
+          extraArgs:
+            allocate-node-cidrs: false
+            allow-untagged-cloud: false
+            attach-detach-reconcile-sync-period: 1m0s
+            authentication-kubeconfig: /etc/kubernetes/controller-manager.conf
+            authentication-skip-lookup: false
+            authentication-token-webhook-cache-ttl: 10s
+            authentication-tolerate-lookup-failure: false
+            authorization-always-allow-paths: /healthz,/readyz,/livez,/metrics
+            authorization-kubeconfig: /etc/kubernetes/controller-manager.conf
+            authorization-webhook-cache-authorized-ttl: 10s
+            authorization-webhook-cache-unauthorized-ttl: 10s
+            bind-address: 0.0.0.0
+            cidr-allocator-type: RangeAllocator
+            client-ca-file: /etc/kubernetes/pki/ca.crt
+            cloud-provider: external
+            cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16
+            cluster-name: cluster.local
+            cluster-signing-cert-file: /etc/kubernetes/pki/ca.crt
+            cluster-signing-duration: 720h0m0s
+            cluster-signing-key-file: /etc/kubernetes/pki/ca.key
+            concurrent-cron-job-syncs: 5
+            concurrent-deployment-syncs: 5
+            concurrent-endpoint-syncs: 5
+            concurrent-ephemeralvolume-syncs: 5
+            concurrent-gc-syncs: 20
+            concurrent-horizontal-pod-autoscaler-syncs: 5
+            concurrent-job-syncs: 5
+            concurrent-namespace-syncs: 10
+            concurrent-rc-syncs: 5
+            concurrent-replicaset-syncs: 20
+            concurrent-resource-quota-syncs: 5
+            concurrent-service-endpoint-syncs: 5
+            concurrent-service-syncs: 1
+            concurrent-serviceaccount-token-syncs: 5
+            concurrent-statefulset-syncs: 5
+            concurrent-ttl-after-finished-syncs: 5
+            concurrent-validating-admission-policy-status-syncs: 5
+            configure-cloud-routes: true
+            contention-profiling: false
+            controller-start-interval: 0s
+            controllers: "*,bootstrapsigner,tokencleaner"
+            disable-attach-detach-reconcile-sync: false
+            disable-force-detach-on-timeout: false
+            enable-dynamic-provisioning: true
+            enable-garbage-collector: true
+            enable-hostpath-provisioner: false
+            enable-leader-migration: false
+            endpoint-updates-batch-period: 0s
+            endpointslice-updates-batch-period: 0s
+            feature-gates: RotateKubeletServerCertificate=true
+            flex-volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+            help: false
+            horizontal-pod-autoscaler-cpu-initialization-period: 5m0s
+            horizontal-pod-autoscaler-downscale-delay: 5m0s
+            horizontal-pod-autoscaler-downscale-stabilization: 5m0s
+            horizontal-pod-autoscaler-initial-readiness-delay: 30s
+            horizontal-pod-autoscaler-sync-period: 30s
+            horizontal-pod-autoscaler-tolerance: 0.1
+            horizontal-pod-autoscaler-upscale-delay: 3m0s
+            http2-max-streams-per-connection: 0
+            kube-api-burst: 120
+            kube-api-content-type: application/vnd.kubernetes.protobuf
+            kube-api-qps: 100
+            kubeconfig: /etc/kubernetes/controller-manager.conf
+            large-cluster-size-threshold: 50
+            leader-elect: true
+            leader-elect-lease-duration: 15s
+            leader-elect-renew-deadline: 10s
+            leader-elect-resource-lock: leases
+            leader-elect-resource-name: kube-controller-manager
+            leader-elect-resource-namespace: kube-system
+            leader-elect-retry-period: 2s
+            legacy-service-account-token-clean-up-period: 8760h0m0s
+            log-flush-frequency: 5s
+            log-json-info-buffer-size: 0
+            log-json-split-stream: false
+            log-text-info-buffer-size: 0
+            log-text-split-stream: false
+            logging-format: text
+            max-endpoints-per-slice: 100
+            min-resync-period: 12h0m0s
+            mirroring-concurrent-service-endpoint-syncs: 5
+            mirroring-endpointslice-updates-batch-period: 0s
+            mirroring-max-endpoints-per-subset: 1000
+            namespace-sync-period: 2m0s
+            node-cidr-mask-size: 0
+            node-cidr-mask-size-ipv4: 0
+            node-cidr-mask-size-ipv6: 0
+            node-eviction-rate: 0.1
+            node-monitor-grace-period: 40s
+            node-monitor-period: 5s
+            node-startup-grace-period: 10s
+            node-sync-period: 0s
+            permit-address-sharing: false
+            permit-port-sharing: false
+            profiling: false
+            pv-recycler-increment-timeout-nfs: 30
+            pv-recycler-minimum-timeout-hostpath: 60
+            pv-recycler-minimum-timeout-nfs: 300
+            pv-recycler-timeout-increment-hostpath: 30
+            pvclaimbinder-sync-period: 15s
+            requestheader-client-ca-file: /etc/kubernetes/pki/front-proxy-ca.crt
+            requestheader-extra-headers-prefix: x-remote-extra-
+            requestheader-group-headers: x-remote-group
+            requestheader-username-headers: x-remote-user
+            resource-quota-sync-period: 5m0s
+            root-ca-file: /etc/kubernetes/pki/ca.crt
+            route-reconciliation-period: 10s
+            secondary-node-eviction-rate: 0.01
+            secure-port: 20257
+            service-account-private-key-file: /etc/kubernetes/pki/sa.key
+            terminated-pod-gc-threshold: 0
+            unhealthy-zone-threshold: 0.55
+            use-service-account-credentials: true
+            v: 2
+            version: false
+            volume-host-allow-local-loopback: true
+
+          extraCommand:
+          - kube-controller-manager
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /healthz
+              port: 20257
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraResources:
+            limits: 
+              cpu: 1
+              memory: 8192Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /healthz
+              port: 20257
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            ca-certs:
+              volumeMount:
+                path: *caCerts
+                readOnly: true
+            etc-ca-certificates:
+              volumeMount:
+                path: *etcCaCertificates
+                readOnly: true
+            etc-pki:
+              volumeMount:
+                path: *etcPki
+                readOnly: true
+            usr-local-share-ca-certificates:
+              volumeMount:
+                path: *usrLocalSharecacertificates
+                readOnly: true
+            usr-share-ca-certificates:
+              volumeMount:
+                path: *usrSharecacertificates
+                readOnly: true
+            flexvolume-dir:
+              volumeMount:
+                path: *flexvolumeDir
+            sa-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.key
+                spec:
+                  subPath: sa.key
+                  readOnly: true
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            proxy-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.crt
+                spec:
+                  subPath: front-proxy-ca.crt
+                  readOnly: true
+            proxy-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.key
+                spec:
+                  subPath: front-proxy-ca.key
+                  readOnly: true
+            apiserver-kubelet-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+                spec:
+                  subPath: apiserver-kubelet-client.crt
+                  readOnly: true
+            apiserver-kubelet-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+                spec:
+                  subPath: apiserver-kubelet-client.key
+                  readOnly: true
+            front-proxy-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-client.crt
+                spec:
+                  subPath: front-proxy-client.crt
+                  readOnly: true
+            front-proxy-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-client.key
+                spec:
+                  subPath: front-proxy-client.key
+                  readOnly: true
+            apiserver-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver.crt
+                spec:
+                  subPath: apiserver.crt
+                  readOnly: true
+            apiserver-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver.key
+                spec:
+                  subPath: apiserver.key
+                  readOnly: true
+            controller-manager-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/controller-manager.crt
+                spec:
+                  subPath: controller-manager-client.crt
+                  readOnly: true
+            controller-manager-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/controller-manager.key
+                spec:
+                  subPath: controller-manager-client.key
+                  readOnly: true
+            controller-manager-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/controller-manager.conf
+                spec:
+                  subPath: controller-manager-kubeconfig
+                  readOnly: true
+
+        kubeScheduler:
+          name: kube-scheduler
+          image:
+            repository: registry.k8s.io/kube-scheduler
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+
+          extraArgs:
+            authentication-kubeconfig: /etc/kubernetes/scheduler.conf
+            authorization-kubeconfig: /etc/kubernetes/scheduler.conf
+            bind-address: 0.0.0.0
+            kubeconfig: /etc/kubernetes/scheduler.conf
+            leader-elect: true
+            secure-port: 20259
+
+          extraCommand:
+          - kube-scheduler
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /healthz
+              port: 20259
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraResources:
+            limits: 
+              cpu: 1
+              memory: 8192Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /healthz
+              port: 20259
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            scheduler-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/scheduler.crt
+                spec:
+                  subPath: scheduler-client.crt
+                  readOnly: true
+            scheduler-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/scheduler.key
+                spec:
+                  subPath: scheduler-client.key
+                  readOnly: true
+            scheduler-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/scheduler.conf
+                spec:
+                  subPath: scheduler-kubeconfig
+                  readOnly: true
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+
+      extraHostNetwork: false
+
+      extraPriority: 2000001000
+
+      extraPriorityClassName: system-node-critical
+
+      service:
+        enabled: true
+        type: NodePort
+        nodePort: 30000
+        additional:
+          enabled: false
+          type: LoadBalancer
+          annotations:
+            metallb.io/ip-allocated-from-pool: "my-first-client-pool"
+
+
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+
+      volumes:
+        ca-certs:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/ssl/certs
+              type: DirectoryOrCreate
+            name: ca-certs
+
+        etc-ca-certificates:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/ca-certificates
+              type: DirectoryOrCreate
+            name: etc-ca-certificates
+
+        etc-pki:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/pki
+              type: DirectoryOrCreate
+            name: etc-pki
+
+        usr-local-share-ca-certificates:
+          volume:
+            mode: hostPath
+            spec:
+              path: /usr/local/share/ca-certificates
+              type: DirectoryOrCreate
+            name: usr-local-share-ca-certificates
+
+        usr-share-ca-certificates:
+          volume:
+            mode: hostPath
+            spec:
+              path: /usr/share/ca-certificates
+              type: DirectoryOrCreate
+            name: usr-share-ca-certificates
+
+        flexvolume-dir:
+          volume:
+            mode: hostPath
+            spec:
+              path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
+              type: DirectoryOrCreate
+            name: flexvolume-dir
+
+        apiserver-etcd-client-crt:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+              type: FileOrCreate
+            name: apiserver-etcd-client-crt
+            
+
+        apiserver-etcd-client-key:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/kubernetes/pki/apiserver-etcd-client.key
+              type: FileOrCreate
+            name: apiserver-etcd-client-key
+
+        etcd-pki:
+          volume:
+            mode: hostPath
+            spec:
+              path: /etc/kubernetes/pki/etcd/
+              type: DirectoryOrCreate
+            name: etcd-pki
+
+        ca-crt:
+          volume:
+            mode: secret
+            secretName: kubernetes-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+            name: ca-crt
+
+        ca-key:
+          volume:
+            mode: secret
+            secretName: kubernetes-ca
+            items:
+              - key: tls.key
+                path: ca.key
+            name: ca-key
+
+        proxy-crt:
+          volume:
+            mode: secret
+            secretName: front-proxy-ca
+            items:
+              - key: tls.crt
+                path: front-proxy-ca.crt
+            name: proxy-crt
+
+        proxy-key:
+          volume:
+            mode: secret
+            secretName: front-proxy-ca
+            items:
+              - key: tls.key
+                path: front-proxy-ca.key
+            name: proxy-key
+
+        apiserver-kubelet-client-crt:
+          volume:
+            mode: secret
+            secretName: apiserver-kubelet-client-tls
+            items:
+              - key: tls.crt
+                path: apiserver-kubelet-client.crt
+            name: apiserver-client-crt
+
+        apiserver-kubelet-client-key:
+          volume:
+            mode: secret
+            secretName: apiserver-kubelet-client-tls
+            items:
+              - key: tls.key
+                path: apiserver-kubelet-client.key
+            name: apiserver-client-key
+
+        front-proxy-client-crt:
+          volume:
+            mode: secret
+            secretName: front-proxy-client-tls
+            items:
+              - key: tls.crt
+                path: front-proxy-client.crt
+            name: front-proxy-crt
+
+        front-proxy-client-key:
+          volume:
+            mode: secret
+            secretName: front-proxy-client-tls
+            items:
+              - key: tls.key
+                path: front-proxy-client.key
+            name: front-proxy-key
+
+        apiserver-crt:
+          volume:
+            mode: secret
+            secretName: apiserver-tls
+            items:
+              - key: tls.crt
+                path: apiserver.crt
+            name: kube-apiserver-crt
+
+        apiserver-key:
+          volume:
+            mode: secret
+            secretName: apiserver-tls
+            items:
+              - key: tls.key
+                path: apiserver.key
+            name: kube-apiserver-key
+
+        controller-manager-client-crt:
+          volume:
+            mode: secret
+            secretName: controller-manager-kubeconfig-client-tls
+            items:
+              - key: tls.crt
+                path: controller-manager-client.crt
+            name: controller-manager-client-crt
+
+        controller-manager-client-key:
+          volume:
+            mode: secret
+            secretName: controller-manager-kubeconfig-client-tls
+            items:
+              - key: tls.key
+                path: controller-manager-client.key
+            name: controller-manager-client-key
+
+        scheduler-client-crt:
+          volume:
+            mode: secret
+            secretName: scheduler-kubeconfig-client-tls
+            items:
+              - key: tls.crt
+                path: scheduler-client.crt
+            name: scheduler-client-crt
+
+        scheduler-client-key:
+          volume:
+            mode: secret
+            secretName: scheduler-kubeconfig-client-tls
+            items:
+              - key: tls.key
+                path: scheduler-client.key
+            name: scheduler-client-key
+
+        sa-key:
+          volume:
+            mode: secret
+            secretName: service-account-ca-secret
+            items:
+              - key: tls.key
+                path: sa.key
+            name: sa
+
+        sa-pub:
+          volume:
+            mode: secret
+            secretName: service-account-ca-secret
+            items:
+              - key: tls.crt
+                path: sa.pub
+            name: sa
+
+        controller-manager-kubeconfig:
+          volume:
+            mode: configMap
+            name: controller-manager-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:26443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/controller-manager.crt
+                    client-key: /etc/kubernetes/pki/controller-manager.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context
+
+        scheduler-kubeconfig:
+          volume:
+            mode: configMap
+            name: scheduler-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:26443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/scheduler.crt
+                    client-key: /etc/kubernetes/pki/scheduler.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context

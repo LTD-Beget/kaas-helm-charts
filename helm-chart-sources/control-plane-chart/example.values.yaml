@@ -1,0 +1,6 @@
+appSpec:
+  applications:
+    controlPlane:
+      enabled: true
+      imagePullSecrets:
+        - name: regcred
