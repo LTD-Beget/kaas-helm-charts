@@ -2,13 +2,7 @@ appSpec:
   configMap:
     status: false
   globalVars:
-    caCerts:                      &caCerts                      /etc/ssl/certs
-    etcCaCertificates:            &etcCaCertificates            /etc/ca-certificates
-    etcPki:                       &etcPki                       /etc/pki
     k8sCerts:                     &k8sCerts                     /etc/kubernetes/pki
-    usrLocalSharecacertificates:  &usrLocalSharecacertificates  /usr/local/share/ca-certificates
-    usrSharecacertificates:       &usrSharecacertificates       /usr/share/ca-certificates
-    flexvolumeDir:                &flexvolumeDir                /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
     kubeconfigControllerManager:  &kubeconfigControllerManager  /etc/kubernetes/controller-manager.conf
     kubeconfigScheduler:          &kubeconfigScheduler          /etc/kubernetes/scheduler.conf
 
@@ -239,26 +233,6 @@ appSpec:
             timeoutSeconds: 15
 
           extraVolumeMounts:
-            ca-certs:
-              volumeMount:
-                path: *caCerts
-                readOnly: true
-            etc-ca-certificates:
-              volumeMount:
-                path: *etcCaCertificates
-                readOnly: true
-            etc-pki:
-              volumeMount:
-                path: *etcPki
-                readOnly: true
-            usr-local-share-ca-certificates:
-              volumeMount:
-                path: *usrLocalSharecacertificates
-                readOnly: true
-            usr-share-ca-certificates:
-              volumeMount:
-                path: *usrSharecacertificates
-                readOnly: true
             sa-key:
               volumeMount:
                 path: /etc/kubernetes/pki/sa.key
@@ -518,29 +492,6 @@ appSpec:
             timeoutSeconds: 15
 
           extraVolumeMounts:
-            ca-certs:
-              volumeMount:
-                path: *caCerts
-                readOnly: true
-            etc-ca-certificates:
-              volumeMount:
-                path: *etcCaCertificates
-                readOnly: true
-            etc-pki:
-              volumeMount:
-                path: *etcPki
-                readOnly: true
-            usr-local-share-ca-certificates:
-              volumeMount:
-                path: *usrLocalSharecacertificates
-                readOnly: true
-            usr-share-ca-certificates:
-              volumeMount:
-                path: *usrSharecacertificates
-                readOnly: true
-            flexvolume-dir:
-              volumeMount:
-                path: *flexvolumeDir
             sa-key:
               volumeMount:
                 path: /etc/kubernetes/pki/sa.key
@@ -748,54 +699,6 @@ appSpec:
         node-role.kubernetes.io/control-plane: ""
 
       volumes:
-        ca-certs:
-          volume:
-            mode: hostPath
-            spec:
-              path: /etc/ssl/certs
-              type: DirectoryOrCreate
-            name: ca-certs
-
-        etc-ca-certificates:
-          volume:
-            mode: hostPath
-            spec:
-              path: /etc/ca-certificates
-              type: DirectoryOrCreate
-            name: etc-ca-certificates
-
-        etc-pki:
-          volume:
-            mode: hostPath
-            spec:
-              path: /etc/pki
-              type: DirectoryOrCreate
-            name: etc-pki
-
-        usr-local-share-ca-certificates:
-          volume:
-            mode: hostPath
-            spec:
-              path: /usr/local/share/ca-certificates
-              type: DirectoryOrCreate
-            name: usr-local-share-ca-certificates
-
-        usr-share-ca-certificates:
-          volume:
-            mode: hostPath
-            spec:
-              path: /usr/share/ca-certificates
-              type: DirectoryOrCreate
-            name: usr-share-ca-certificates
-
-        flexvolume-dir:
-          volume:
-            mode: hostPath
-            spec:
-              path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
-              type: DirectoryOrCreate
-            name: flexvolume-dir
-
         apiserver-etcd-client-crt:
           volume:
             mode: hostPath
