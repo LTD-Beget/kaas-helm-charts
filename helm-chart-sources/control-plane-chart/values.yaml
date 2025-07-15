@@ -729,7 +729,7 @@ appSpec:
             mode: secret
             secretName: apiserver-etcd-client-tls
             items:
-              - key: tls.crt
+              - key: tls.key
                 path: apiserver-etcd-client.key
             name: apiserver-etcd-client-key
 
