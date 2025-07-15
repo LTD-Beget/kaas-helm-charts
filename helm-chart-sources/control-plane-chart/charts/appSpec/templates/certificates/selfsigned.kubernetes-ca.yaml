@@ -28,7 +28,7 @@ spec:
     - digital signature
   secretTemplate:
     labels:
-      cluster.x-k8s.io/cluster-name: my-first-client
+      cluster.x-k8s.io/cluster-name: {{ $appValue.clusterName }}
     {{- end }}
   {{- end }}
 {{- end }}

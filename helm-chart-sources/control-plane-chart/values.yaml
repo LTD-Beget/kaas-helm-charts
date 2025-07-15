@@ -24,6 +24,7 @@ appSpec:
           enabled: true
           type: selfsigned      #selfsigned or other
           secretName: etcd-ca
+      clusterName: default      #using in selfsigned certs secretTemplate labels
       imagePullSecrets: []
       containers:
 
@@ -34,10 +35,10 @@ appSpec:
             tag: v1.30.4
             pullPolicy: IfNotPresent
           certSANs:
-            - "my-first-client-control-plane"
-            - "my-first-client-control-plane.beget-system"
-            - "my-first-client-control-plane.beget-system.svc"
-            - "my-first-client-control-plane.beget-system.svc.cluster.local"
+            - "default-control-plane"
+            - "default-control-plane.default"
+            - "default-control-plane.default.svc"
+            - "default-control-plane.default.svc.cluster.local"
           certIPs:
             - "127.0.0.1"
           extraArgs:
@@ -147,7 +148,7 @@ appSpec:
             requestheader-group-headers: X-Remote-Group
             requestheader-username-headers: X-Remote-User
             runtime-config: api/all=true
-            secure-port: 26443
+            secure-port: 443
             service-account-extend-token-expiration: true
             service-account-issuer: https://kubernetes.default.svc.cluster.local
             service-account-key-file: /etc/kubernetes/pki/sa.pub
@@ -181,7 +182,7 @@ appSpec:
             failureThreshold: 8
             httpGet:
               path: /livez
-              port: 26443
+              port: 443
               scheme: HTTPS
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -192,14 +193,14 @@ appSpec:
             failureThreshold: 3
             httpGet:
               path: /readyz
-              port: 26443
+              port: 443
               scheme: HTTPS
             periodSeconds: 1
             timeoutSeconds: 15
 
           extraPorts:
             https:
-              containerPort: 26443
+              containerPort: 443
               protocol: TCP
 
           extraResources:
@@ -700,7 +701,7 @@ appSpec:
           enabled: false
           type: LoadBalancer
           annotations:
-            metallb.io/ip-allocated-from-pool: "my-first-client-pool"
+            metallb.io/ip-allocated-from-pool: "default"
 
 
       tolerations:
@@ -908,7 +909,7 @@ appSpec:
                 clusters:
                 - name: my-cluster
                   cluster:
-                    server: https://127.0.0.1:26443
+                    server: https://127.0.0.1:443
                     certificate-authority: /etc/kubernetes/pki/ca.crt
                 users:
                 - name: my-user
@@ -935,7 +936,7 @@ appSpec:
                 clusters:
                 - name: my-cluster
                   cluster:
-                    server: https://127.0.0.1:26443
+                    server: https://127.0.0.1:443
                     certificate-authority: /etc/kubernetes/pki/ca.crt
                 users:
                 - name: my-user
