@@ -20,6 +20,10 @@ appSpec:
           enabled: true
           type: selfsigned      #selfsigned or other
           secretName: front-proxy-ca
+        etcdCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: etcd-ca
       imagePullSecrets: []
       containers:
 
@@ -245,18 +249,6 @@ appSpec:
                 spec:
                   subPath: sa.pub
                   readOnly: true
-            apiserver-etcd-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-etcd-client.crt
-                readOnly: true
-            apiserver-etcd-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-etcd-client.key
-                readOnly: true
-            etcd-pki:
-              volumeMount:
-                path: /etc/kubernetes/pki/etcd/
-                readOnly: true 
             ca-crt:
               volumeMount:
                 path: /etc/kubernetes/pki/ca.crt
@@ -266,6 +258,18 @@ appSpec:
             ca-key:
               volumeMount:
                 path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            etcd-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/etcd/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            etcd-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/etcd/ca.key
                 spec:
                   subPath: ca.key
                   readOnly: true
@@ -292,6 +296,18 @@ appSpec:
                 path: /etc/kubernetes/pki/apiserver-kubelet-client.key
                 spec:
                   subPath: apiserver-kubelet-client.key
+                  readOnly: true
+            apiserver-etcd-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+                spec:
+                  subPath: apiserver-etcd-client.crt
+                  readOnly: true
+            apiserver-etcd-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/apiserver-etcd-client.key
+                spec:
+                  subPath: apiserver-etcd-client.key
                   readOnly: true
             front-proxy-client-crt:
               volumeMount:
@@ -376,7 +392,6 @@ appSpec:
             endpoint-updates-batch-period: 0s
             endpointslice-updates-batch-period: 0s
             feature-gates: RotateKubeletServerCertificate=true
-            flex-volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
             help: false
             horizontal-pod-autoscaler-cpu-initialization-period: 5m0s
             horizontal-pod-autoscaler-downscale-delay: 5m0s
@@ -701,28 +716,22 @@ appSpec:
       volumes:
         apiserver-etcd-client-crt:
           volume:
-            mode: hostPath
-            spec:
-              path: /etc/kubernetes/pki/apiserver-etcd-client.crt
-              type: FileOrCreate
+            mode: secret
+            secretName: apiserver-etcd-client-tls
+            items:
+              - key: tls.crt
+                path: apiserver-etcd-client.crt
             name: apiserver-etcd-client-crt
             
 
         apiserver-etcd-client-key:
           volume:
-            mode: hostPath
-            spec:
-              path: /etc/kubernetes/pki/apiserver-etcd-client.key
-              type: FileOrCreate
+            mode: secret
+            secretName: apiserver-etcd-client-tls
+            items:
+              - key: tls.crt
+                path: apiserver-etcd-client.key
             name: apiserver-etcd-client-key
-
-        etcd-pki:
-          volume:
-            mode: hostPath
-            spec:
-              path: /etc/kubernetes/pki/etcd/
-              type: DirectoryOrCreate
-            name: etcd-pki
 
         ca-crt:
           volume:
@@ -741,6 +750,24 @@ appSpec:
               - key: tls.key
                 path: ca.key
             name: ca-key
+
+        etcd-crt:
+          volume:
+            mode: secret
+            secretName: etcd-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+            name: etcd-crt
+
+        etcd-key:
+          volume:
+            mode: secret
+            secretName: etcd-ca
+            items:
+              - key: tls.key
+                path: ca.key
+            name: etcd-key
 
         proxy-crt:
           volume:

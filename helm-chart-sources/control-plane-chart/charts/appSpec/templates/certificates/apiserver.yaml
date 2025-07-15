@@ -1,0 +1,29 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: apiserver
+  namespace: beget-system
+spec:
+  secretName: apiserver-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: kube-apiserver
+  dnsNames:
+    {{- range $dns := $appValue.containers.kubeApiserver.certSANs }}
+    - {{ tpl $dns $ }}
+    {{- end }}
+  ipAddresses:
+    {{- range $ip := $appValue.containers.kubeApiserver.certIPs }}
+    - {{ $ip | quote }}
+    {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: kubernetes-ca
+    kind: Issuer
+  {{- end }}
+{{- end }}

@@ -7,6 +7,9 @@
     {{- if and $appValue.issuers.frontProxyCA.enabled (eq $appValue.issuers.frontProxyCA.type "selfsigned") }}
       {{- $needsSelfsigned = true }}
     {{- end }}
+    {{- if and $appValue.issuers.etcdCA.enabled (eq $appValue.issuers.etcdCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
 
     {{- if $needsSelfsigned }}
 ---
@@ -39,6 +42,17 @@ metadata:
 spec:
   ca:
     secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
+    {{- end }}
+    {{- if $appValue.issuers.etcdCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: etcd-ca
+  namespace: beget-system
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.etcdCA.secretName }}
     {{- end }}
 
   {{- end }}

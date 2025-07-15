@@ -1,0 +1,28 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: apiserver-kubelet-client
+  namespace: beget-system
+spec:
+  secretName: apiserver-kubelet-client-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: kube-apiserver-kubelet-client
+  subject:
+    organizations:
+      - kubeadm:cluster-admins
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - key encipherment
+    - data encipherment
+    - client auth
+  issuerRef:
+    name: kubernetes-ca
+    kind: Issuer
+  {{- end }}
+{{- end }}

@@ -1,0 +1,23 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: apiserver-etcd-client
+  namespace: beget-system
+spec:
+  secretName: apiserver-etcd-client-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: kube-apiserver-etcd-client
+  usages:
+    - client auth
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: etcd-ca
+    kind: Issuer
+  {{- end }}
+{{- end }}

@@ -1,0 +1,34 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+    {{- if and $appValue.issuers.frontProxyCA.enabled (eq $appValue.issuers.frontProxyCA.type "selfsigned") }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: front-proxy-ca
+  namespace: beget-system
+  labels:
+    cluster.x-k8s.io/cluster-name: my-first-client
+spec:
+  isCA: true
+  commonName: front-proxy-ca
+  secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
+  duration: 87600h
+  renewBefore: 80000h
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Never
+  issuerRef:
+    name: selfsigned
+    kind: Issuer
+  usages:
+    - cert sign
+    - key encipherment
+    - digital signature
+  secretTemplate:
+    labels:
+      cluster.x-k8s.io/cluster-name: my-first-client
+    {{- end }}
+  {{- end }}
+{{- end }}

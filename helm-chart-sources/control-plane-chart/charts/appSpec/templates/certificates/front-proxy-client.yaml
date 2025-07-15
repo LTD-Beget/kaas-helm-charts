@@ -1,0 +1,25 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: front-proxy-client
+  namespace: beget-system
+spec:
+  secretName: front-proxy-client-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: front-proxy-client
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - key encipherment
+    - data encipherment
+    - client auth
+  issuerRef:
+    name: front-proxy-ca
+    kind: Issuer
+  {{- end }}
+{{- end }}
