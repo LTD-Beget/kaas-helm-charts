@@ -342,6 +342,11 @@ appSpec:
                 spec:
                   subPath: audit-policy
                   readOnly: true
+            audit:
+              volumeMount:
+                path: /var/log/kubernetes/audit/
+                spec:
+                  readOnly: false
 
         kubeControllerManager:
           name: kube-controller-manager
@@ -903,6 +908,13 @@ appSpec:
               - key: tls.crt
                 path: sa.pub
             name: sa
+
+        audit-log:
+          volume:
+            mode: emptyDir
+            spec:
+              sizeLimit: "500Mi"
+            name: audit-log
 
         controller-manager-kubeconfig:
           volume:
