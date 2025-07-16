@@ -342,7 +342,7 @@ appSpec:
                 spec:
                   subPath: audit-policy
                   readOnly: true
-            audit:
+            audit-log:
               volumeMount:
                 path: /var/log/kubernetes/audit/
                 spec:
