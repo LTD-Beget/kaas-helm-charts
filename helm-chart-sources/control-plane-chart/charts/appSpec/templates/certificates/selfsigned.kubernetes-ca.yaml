@@ -13,8 +13,8 @@ spec:
   isCA: true
   commonName: kubernetes-ca
   secretName: {{ $appValue.issuers.kubernetesCA.secretName }}
-  duration: 20y
-  renewBefore: 19y
+  duration: 175200h
+  renewBefore: 166440h
   privateKey:
     algorithm: RSA
     size: 2048
