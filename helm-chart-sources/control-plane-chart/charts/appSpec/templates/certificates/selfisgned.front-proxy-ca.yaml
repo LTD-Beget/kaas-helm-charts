@@ -13,7 +13,7 @@ spec:
   isCA: true
   commonName: front-proxy-ca
   secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
-  duration: 20m
+  duration: 1h
   renewBefore: 15m
   privateKey:
     algorithm: RSA
