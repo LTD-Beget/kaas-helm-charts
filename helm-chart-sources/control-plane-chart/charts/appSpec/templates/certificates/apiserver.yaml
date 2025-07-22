@@ -8,8 +8,8 @@ metadata:
   namespace: beget-system
 spec:
   secretName: apiserver-tls
-  duration: 8760h
-  renewBefore: 720h
+  duration: 20m
+  renewBefore: 15m
   commonName: kube-apiserver
   dnsNames:
     {{- range $dns := $appValue.containers.kubeApiserver.certSANs }}
