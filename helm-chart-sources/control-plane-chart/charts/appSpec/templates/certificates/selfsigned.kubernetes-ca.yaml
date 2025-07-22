@@ -14,7 +14,7 @@ spec:
   commonName: kubernetes-ca
   secretName: {{ $appValue.issuers.kubernetesCA.secretName }}
   duration: 1h
-  renewBefore: 15m
+  renewBefore: 45m
   privateKey:
     algorithm: RSA
     size: 2048

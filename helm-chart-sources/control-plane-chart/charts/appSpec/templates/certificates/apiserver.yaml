@@ -9,7 +9,7 @@ metadata:
 spec:
   secretName: apiserver-tls
   duration: 1h
-  renewBefore: 15m
+  renewBefore: 45m
   commonName: kube-apiserver
   dnsNames:
     {{- range $dns := $appValue.containers.kubeApiserver.certSANs }}

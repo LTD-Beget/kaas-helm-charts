@@ -9,7 +9,7 @@ metadata:
 spec:
   secretName: front-proxy-client-tls
   duration: 1h
-  renewBefore: 15m
+  renewBefore: 45m
   commonName: front-proxy-client
   privateKey:
     algorithm: RSA
