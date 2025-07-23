@@ -9,6 +9,7 @@
   {{- include "appSpec.application.containersVolumes.emptyDir"    (list $volumeName $volumeValue) -}}
   {{- include "appSpec.application.containersVolumes.pvc"         (list $volumeName $volumeValue) -}}
   {{- include "appSpec.application.containersVolumes.secret"      (list $volumeName $volumeValue $releaseName) -}}
+  {{- include "appSpec.application.containersVolumes.csi"         (list $volumeName $volumeValue) -}}
 
   {{- if eq (include "appSpec.configMap.status" $appValue) "true" -}}
     {{- include "appSpec.application.containersVolumes.configMap" (list $volumeName $volumeValue $releaseName) -}}

@@ -9,6 +9,7 @@ appSpec:
   applications:
     controlPlane:
       enabled: true
+      csiDriver: false
       name: control-plane
       type: DaemonSet
       issuers:
@@ -288,54 +289,6 @@ appSpec:
                 spec:
                   subPath: front-proxy-ca.key
                   readOnly: true
-            apiserver-kubelet-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
-                spec:
-                  subPath: apiserver-kubelet-client.crt
-                  readOnly: true
-            apiserver-kubelet-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-kubelet-client.key
-                spec:
-                  subPath: apiserver-kubelet-client.key
-                  readOnly: true
-            apiserver-etcd-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-etcd-client.crt
-                spec:
-                  subPath: apiserver-etcd-client.crt
-                  readOnly: true
-            apiserver-etcd-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-etcd-client.key
-                spec:
-                  subPath: apiserver-etcd-client.key
-                  readOnly: true
-            front-proxy-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/front-proxy-client.crt
-                spec:
-                  subPath: front-proxy-client.crt
-                  readOnly: true
-            front-proxy-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/front-proxy-client.key
-                spec:
-                  subPath: front-proxy-client.key
-                  readOnly: true
-            apiserver-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver.crt
-                spec:
-                  subPath: apiserver.crt
-                  readOnly: true
-            apiserver-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver.key
-                spec:
-                  subPath: apiserver.key
-                  readOnly: true
             audit-policy:
               volumeMount:
                 path: /etc/kubernetes/audit-policy.yaml
@@ -551,54 +504,6 @@ appSpec:
                 spec:
                   subPath: front-proxy-ca.key
                   readOnly: true
-            apiserver-kubelet-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
-                spec:
-                  subPath: apiserver-kubelet-client.crt
-                  readOnly: true
-            apiserver-kubelet-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver-kubelet-client.key
-                spec:
-                  subPath: apiserver-kubelet-client.key
-                  readOnly: true
-            front-proxy-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/front-proxy-client.crt
-                spec:
-                  subPath: front-proxy-client.crt
-                  readOnly: true
-            front-proxy-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/front-proxy-client.key
-                spec:
-                  subPath: front-proxy-client.key
-                  readOnly: true
-            apiserver-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver.crt
-                spec:
-                  subPath: apiserver.crt
-                  readOnly: true
-            apiserver-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/apiserver.key
-                spec:
-                  subPath: apiserver.key
-                  readOnly: true
-            controller-manager-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/controller-manager.crt
-                spec:
-                  subPath: controller-manager-client.crt
-                  readOnly: true
-            controller-manager-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/controller-manager.key
-                spec:
-                  subPath: controller-manager-client.key
-                  readOnly: true
             controller-manager-kubeconfig:
               volumeMount:
                 path: /etc/kubernetes/controller-manager.conf
@@ -669,18 +574,6 @@ appSpec:
             timeoutSeconds: 15
 
           extraVolumeMounts:
-            scheduler-client-crt:
-              volumeMount:
-                path: /etc/kubernetes/pki/scheduler.crt
-                spec:
-                  subPath: scheduler-client.crt
-                  readOnly: true
-            scheduler-client-key:
-              volumeMount:
-                path: /etc/kubernetes/pki/scheduler.key
-                spec:
-                  subPath: scheduler-client.key
-                  readOnly: true
             scheduler-kubeconfig:
               volumeMount:
                 path: /etc/kubernetes/scheduler.conf
@@ -728,25 +621,6 @@ appSpec:
         node-role.kubernetes.io/control-plane: ""
 
       volumes:
-        apiserver-etcd-client-crt:
-          volume:
-            mode: secret
-            secretName: apiserver-etcd-client-tls
-            items:
-              - key: tls.crt
-                path: apiserver-etcd-client.crt
-            name: apiserver-etcd-client-crt
-            
-
-        apiserver-etcd-client-key:
-          volume:
-            mode: secret
-            secretName: apiserver-etcd-client-tls
-            items:
-              - key: tls.key
-                path: apiserver-etcd-client.key
-            name: apiserver-etcd-client-key
-
         ca-crt:
           volume:
             mode: secret
@@ -800,96 +674,6 @@ appSpec:
               - key: tls.key
                 path: front-proxy-ca.key
             name: proxy-key
-
-        apiserver-kubelet-client-crt:
-          volume:
-            mode: secret
-            secretName: apiserver-kubelet-client-tls
-            items:
-              - key: tls.crt
-                path: apiserver-kubelet-client.crt
-            name: apiserver-client-crt
-
-        apiserver-kubelet-client-key:
-          volume:
-            mode: secret
-            secretName: apiserver-kubelet-client-tls
-            items:
-              - key: tls.key
-                path: apiserver-kubelet-client.key
-            name: apiserver-client-key
-
-        front-proxy-client-crt:
-          volume:
-            mode: secret
-            secretName: front-proxy-client-tls
-            items:
-              - key: tls.crt
-                path: front-proxy-client.crt
-            name: front-proxy-crt
-
-        front-proxy-client-key:
-          volume:
-            mode: secret
-            secretName: front-proxy-client-tls
-            items:
-              - key: tls.key
-                path: front-proxy-client.key
-            name: front-proxy-key
-
-        apiserver-crt:
-          volume:
-            mode: secret
-            secretName: apiserver-tls
-            items:
-              - key: tls.crt
-                path: apiserver.crt
-            name: kube-apiserver-crt
-
-        apiserver-key:
-          volume:
-            mode: secret
-            secretName: apiserver-tls
-            items:
-              - key: tls.key
-                path: apiserver.key
-            name: kube-apiserver-key
-
-        controller-manager-client-crt:
-          volume:
-            mode: secret
-            secretName: controller-manager-kubeconfig-client-tls
-            items:
-              - key: tls.crt
-                path: controller-manager-client.crt
-            name: controller-manager-client-crt
-
-        controller-manager-client-key:
-          volume:
-            mode: secret
-            secretName: controller-manager-kubeconfig-client-tls
-            items:
-              - key: tls.key
-                path: controller-manager-client.key
-            name: controller-manager-client-key
-
-        scheduler-client-crt:
-          volume:
-            mode: secret
-            secretName: scheduler-kubeconfig-client-tls
-            items:
-              - key: tls.crt
-                path: scheduler-client.crt
-            name: scheduler-client-crt
-
-        scheduler-client-key:
-          volume:
-            mode: secret
-            secretName: scheduler-kubeconfig-client-tls
-            items:
-              - key: tls.key
-                path: scheduler-client.key
-            name: scheduler-client-key
 
         sa-key:
           volume:

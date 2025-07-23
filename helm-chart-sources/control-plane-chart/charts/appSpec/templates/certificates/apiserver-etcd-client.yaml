@@ -1,5 +1,5 @@
 {{- range $appName, $appValue := .Values.applications }}
-  {{- if $appValue.enabled }}
+  {{- if and $appValue.enabled (not (dig "csiDriver" false $appValue)) }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
