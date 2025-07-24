@@ -8,8 +8,8 @@ metadata:
   namespace: beget-system
 spec:
   secretName: front-proxy-client-tls
-  duration: 1h
-  renewBefore: 45m
+  duration: 8760h
+  renewBefore: 1460h
   commonName: front-proxy-client
   privateKey:
     algorithm: RSA

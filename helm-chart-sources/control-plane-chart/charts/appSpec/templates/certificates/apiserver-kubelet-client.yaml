@@ -8,8 +8,8 @@ metadata:
   namespace: beget-system
 spec:
   secretName: apiserver-kubelet-client-tls
-  duration: 1h
-  renewBefore: 45m
+  duration: 8760h
+  renewBefore: 1460h
   commonName: kube-apiserver-kubelet-client
   subject:
     organizations:
