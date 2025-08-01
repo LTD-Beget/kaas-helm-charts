@@ -207,9 +207,6 @@ appSpec:
               protocol: TCP
 
           extraResources:
-            limits: 
-              cpu: 1
-              memory: 8192Mi
             requests:
               cpu: 250m
               memory: 256Mi
@@ -441,9 +438,6 @@ appSpec:
             timeoutSeconds: 15
 
           extraResources:
-            limits: 
-              cpu: 1
-              memory: 8192Mi
             requests:
               cpu: 200m
               memory: 256Mi
@@ -541,9 +535,6 @@ appSpec:
             timeoutSeconds: 15
 
           extraResources:
-            limits: 
-              cpu: 1
-              memory: 8192Mi
             requests:
               cpu: 100m
               memory: 100Mi
