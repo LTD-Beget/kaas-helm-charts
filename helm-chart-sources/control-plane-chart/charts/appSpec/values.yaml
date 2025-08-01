@@ -10,9 +10,6 @@ defaults:
     defaultImagePullPolicy: IfNotPresent
 
     defaultResources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
       requests:
         ephemeral-storage: 50Mi
         cpu: 100m
