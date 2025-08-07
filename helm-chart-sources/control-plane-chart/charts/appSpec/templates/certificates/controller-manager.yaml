@@ -1,0 +1,29 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if and $appValue.enabled (not (dig "csiDriver" false $appValue)) }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: controller-manager
+  namespace: beget-system
+spec:
+  secretName: controller-manager-server-tls
+  duration: 8760h
+  renewBefore: 1460h
+  commonName: system:kube-controller-manager-server
+  dnsNames:
+    {{- range $dns := $appValue.containers.kubeControllerManager.certSANs }}
+    - {{ tpl $dns $ }}
+    {{- end }}
+  ipAddresses:
+    {{- range $ip := $appValue.containers.kubeControllerManager.certIPs }}
+    - {{ $ip | quote }}
+    {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: kubernetes-ca
+    kind: Issuer
+  {{- end }}
+{{- end }}

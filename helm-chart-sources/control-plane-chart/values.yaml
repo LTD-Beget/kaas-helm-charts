@@ -304,6 +304,13 @@ appSpec:
             repository: registry.k8s.io/kube-controller-manager
             tag: v1.30.4
             pullPolicy: IfNotPresent
+          certSANs:
+            - "default-controller-manager"
+            - "default-controller-manager.default"
+            - "default-controller-manager.default.svc"
+            - "default-controller-manager.default.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
 
           extraArgs:
             allocate-node-cidrs: false
@@ -511,6 +518,13 @@ appSpec:
             repository: registry.k8s.io/kube-scheduler
             tag: v1.30.4
             pullPolicy: IfNotPresent
+          certSANs:
+            - "default-scheduler"
+            - "default-scheduler.default"
+            - "default-scheduler.default.svc"
+            - "default-scheduler.default.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
 
           extraArgs:
             authentication-kubeconfig: /etc/kubernetes/scheduler.conf
