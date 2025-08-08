@@ -22,6 +22,10 @@ spec:
   privateKey:
     algorithm: RSA
     size: 2048
+  usages:
+    - key encipherment
+    - data encipherment
+    - server auth
   issuerRef:
     name: kubernetes-ca
     kind: Issuer
