@@ -1,0 +1,16 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: cert-manager-webhook
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: webhook
+  endpoints:
+    - port: metrics
+      path: /metrics
+  jobLabel: certmanager-webhook
+{{- end }}
