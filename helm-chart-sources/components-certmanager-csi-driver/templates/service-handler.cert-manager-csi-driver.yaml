@@ -1,0 +1,27 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: cert-manager-csi-driver
+    jobLabel: cert-manager-csi-driver
+  name: certmanager-csi-driver
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http-metrics
+    port: 9402
+    protocol: TCP
+    targetPort: 9402
+  selector:
+    app.kubernetes.io/name: cert-manager-csi-driver
+  type: ClusterIP
+{{- end }}
