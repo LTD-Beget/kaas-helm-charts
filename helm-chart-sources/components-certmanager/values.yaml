@@ -3,7 +3,7 @@ cert-manager:
     priorityClassName: system-cluster-critical
 
 monitoring:
-  enabled: true
+  enabled: false
   type: VictoriaMetrics
   clusterName: default
   namespace: default
