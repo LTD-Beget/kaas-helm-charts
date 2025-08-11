@@ -6,13 +6,13 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: v1.17.1
-    created: "2025-08-11T19:50:37.530409+03:00"
+    created: "2025-08-11T20:00:01.07659+03:00"
     dependencies:
     - name: cert-manager
       repository: https://charts.jetstack.io
       version: v1.17.1
     description: A Helm chart for cert-manager
-    digest: 0107907466f06f63def266133208c54d7a4ecedb3b24f477b98703173b8ddbf7
+    digest: bf9b72f7fe37f01befb2bd261b0dcfbc5abc7b635c8978b59435aec085599d0a
     home: https://cert-manager.io
     icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
     keywords:
@@ -28,12 +28,12 @@ entries:
     sources:
     - https://github.com/cert-manager/cert-manager
     urls:
-    - https://github.com/LTD-Beget/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1.tgz
+    - https://ltd-beget.github.io/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1.tgz
     version: v1.17.1
   control-plane:
   - apiVersion: v2
     appVersion: v0.1.0
-    created: "2025-08-11T19:50:37.536384+03:00"
+    created: "2025-08-11T20:00:01.081914+03:00"
     dependencies:
     - name: appSpec
       repository: file://charts/appspec
@@ -43,16 +43,16 @@ entries:
     name: control-plane
     type: application
     urls:
-    - https://github.com/LTD-Beget/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.0.tgz
+    - https://ltd-beget.github.io/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.0.tgz
     version: 0.1.0
   kubeadm-resources-client-cp:
   - apiVersion: v2
-    created: "2025-08-11T19:50:37.537992+03:00"
+    created: "2025-08-11T20:00:01.083632+03:00"
     description: Deploys kubeadm-resources-client-cp
     digest: 47a8ce98b27dcc259d761d58f1f6f606fa1a9fed6d2e5ac3bd49bef642cb6f28
     name: kubeadm-resources-client-cp
     type: application
     urls:
-    - https://github.com/LTD-Beget/kaas-helm-charts/helm-chart-revisions/kubeadm-resources-client-cp-0.1.0.tgz
+    - https://ltd-beget.github.io/kaas-helm-charts/helm-chart-revisions/kubeadm-resources-client-cp-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-11T19:50:37.521024+03:00"
+generated: "2025-08-11T20:00:01.069687+03:00"
