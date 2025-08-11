@@ -1,0 +1,26 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+    {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: scheduler-client
+  namespace: beget-system
+spec:
+  endpoints:
+    - port: https-metrics
+      scheme: "https"
+      tlsConfig:
+        serverName: {{ $appValue.clusterName }}-scheduler
+        ca:
+          secret:
+            name: {{ $appValue.clusterName }}-ca-crt
+            key: ca.crt
+  selector:
+    matchLabels:
+      component: kube-scheduler-client
+  jobLabel: jobLabel
+    {{- end }}
+  {{- end }}
+{{- end }}

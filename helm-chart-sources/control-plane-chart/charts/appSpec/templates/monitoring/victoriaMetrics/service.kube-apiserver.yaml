@@ -1,0 +1,31 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+    {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: kube-apiserver-client
+    jobLabel: kube-apiserver-client
+  name: vmagent-kube-apiserver-client
+  namespace: beget-system
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: https-metrics
+    port: {{ index $appValue.containers.kubeApiserver.extraArgs "secure-port" | default "443" }}
+    protocol: TCP
+    targetPort: {{ index $appValue.containers.kubeApiserver.extraArgs "secure-port" | default "443" }}
+  selector:
+    app.kubernetes.io/name: control-plane
+  type: ClusterIP
+    {{- end }}
+  {{- end }}
+{{- end }}

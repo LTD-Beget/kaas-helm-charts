@@ -26,6 +26,9 @@ appSpec:
           type: selfsigned      #selfsigned or other
           secretName: etcd-ca
       clusterName: default      #using in selfsigned certs secretTemplate labels
+      monitoring:
+        enabled: false
+        # type: VictoriaMetrics
       imagePullSecrets: []
       containers:
 
