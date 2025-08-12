@@ -8,8 +8,8 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: prometheus
+      component: prometheus
   endpoints:
     - port: metrics
-  jobLabel: process-exporter
+  jobLabel: jobLabel
 {{- end }}

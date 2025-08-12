@@ -6,7 +6,7 @@ metadata:
   labels:
     component: metallb
     jobLabel: metallb
-  name: certmanager-csi-driver
+  name: metallb-metrics
   namespace: {{ .Values.monitoring.namespace }}
 spec:
   clusterIP: None
