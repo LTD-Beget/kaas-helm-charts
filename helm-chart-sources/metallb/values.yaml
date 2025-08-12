@@ -1,0 +1,7 @@
+metallb: {}
+# some values for coredns
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default

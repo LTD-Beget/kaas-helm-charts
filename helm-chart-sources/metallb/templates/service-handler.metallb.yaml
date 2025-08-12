@@ -1,0 +1,27 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: metallb
+    jobLabel: metallb
+  name: certmanager-csi-driver
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: monitoring
+    port: 7472
+    protocol: TCP
+    targetPort: 7472
+  selector:
+    app.kubernetes.io/name: metallb
+  type: ClusterIP
+{{- end }}
