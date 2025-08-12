@@ -1,0 +1,21 @@
+apiVersion: v2
+name: prometheus
+kubeVersion: ">=1.19.0-0"
+description: Prometheus is a monitoring system and time series database.
+home: https://prometheus.io/
+icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+sources:
+  - https://github.com/prometheus/alertmanager
+  - https://github.com/prometheus/prometheus
+  - https://github.com/prometheus/pushgateway
+  - https://github.com/prometheus/node_exporter
+  - https://github.com/kubernetes/kube-state-metrics
+
+version: 27.10.0
+
+appVersion: "27.10.0"
+
+dependencies:
+  - name: prometheus
+    version: "27.10.0"
+    repository: "https://prometheus-community.github.io/helm-charts"

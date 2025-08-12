@@ -1,7 +1,8 @@
-metrics-server: {}
-# some values for metrics-server
+prometheus-node-exporter: {}
+# some values for coredns
 
 monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
+  joblabel: jobLabel
