@@ -1,0 +1,12 @@
+apiVersion: v2
+name: prometheus-process-exporter
+description: Install prometheus-process-exporter to generate and expose process metrics
+
+version: 0.5.0
+
+appVersion: "0.5.0"
+
+dependencies:
+  - name: prometheus-process-exporter
+    version: "0.5.0"
+    repository: "https://mumoshu.github.io/prometheus-process-exporter"
