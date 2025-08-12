@@ -1,0 +1,25 @@
+apiVersion: v2
+name: cilium
+home: https://cilium.io/
+kubeVersion: ">= 1.21.0-0"
+icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
+description: eBPF-based Networking, Security, and Observability
+keywords:
+  - BPF
+  - eBPF
+  - Kubernetes
+  - Networking
+  - Security
+  - Observability
+  - Troubleshooting
+sources:
+  - https://github.com/cilium/cilium
+
+version: 1.17.4
+
+appVersion: "1.17.4"
+
+dependencies:
+  - name: cilium
+    version: "1.17.4"
+    repository: "https://helm.cilium.io"
