@@ -15,9 +15,9 @@ spec:
     access: proxy
     isDefault: true
     url: {{ .Values.monitoring.grafana.datasource.url }}
-      {{- if .Values.monitoring.grafana.datasource.jsonData }}
+    {{- if .Values.monitoring.grafana.datasource.jsonData }}
     jsonData:
-        {{ toYaml .Values.monitoring.grafana.datasource.jsonData | indent 6 }}
-      {{- end }}
+      {{ toYaml .Values.monitoring.grafana.datasource.jsonData | nindent 6 }}
+    {{- end }}
 
 {{- end }}
