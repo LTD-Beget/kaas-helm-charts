@@ -1,4 +1,4 @@
-{{- if .Values.grafanaDashboards.apiserver.enabled }}
+{{- if .Values.grafanaDashboards.k8s.apiserver.enabled }}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
