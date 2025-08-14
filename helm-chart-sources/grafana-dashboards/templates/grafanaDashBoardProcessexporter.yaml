@@ -186,7 +186,7 @@ spec:
               "expr": "(sum(irate(namedprocess_namegroup_cpu_seconds_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])) by (groupname) > 0) / scalar(count(count(node_cpu_seconds_total{cluster_full_name=~\"$cluster_full_name\",instance=\"$server:$port_node_exporter\", job=\"prometheus-node-exporter\"}) by (cpu)))",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -286,7 +286,7 @@ spec:
               "expr": "(namedprocess_namegroup_memory_bytes{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", memtype=\"resident\", job=\"$job\"} / ignoring(memtype) namedprocess_namegroup_num_procs > 0) / (namedprocess_namegroup_memory_bytes{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", memtype=\"virtual\", job=\"$job\"} / ignoring(memtype) namedprocess_namegroup_num_procs > 0)",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -385,7 +385,7 @@ spec:
               "expr": "(sum(irate(namedprocess_namegroup_cpu_seconds_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])) by (groupname) > 0) * 1000",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -484,7 +484,7 @@ spec:
               "expr": "namedprocess_namegroup_memory_bytes{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", memtype=\"resident\", job=\"$job\"} / ignoring(memtype) namedprocess_namegroup_num_procs > 0",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -583,7 +583,7 @@ spec:
               "expr": "namedprocess_namegroup_num_threads{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -682,7 +682,7 @@ spec:
               "expr": "namedprocess_namegroup_memory_bytes{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", memtype=\"virtual\", job=\"$job\"} / ignoring(memtype) namedprocess_namegroup_num_procs > 0",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -780,7 +780,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_context_switches_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", ctxswitchtype=\"voluntary\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -878,7 +878,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_context_switches_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", ctxswitchtype=\"nonvoluntary\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -976,7 +976,7 @@ spec:
               "expr": "namedprocess_namegroup_open_filedesc{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1185,7 +1185,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_read_bytes_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1283,7 +1283,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_write_bytes_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1381,7 +1381,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_minor_page_faults_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1479,7 +1479,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_major_page_faults_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1580,7 +1580,7 @@ spec:
               "expr": "namedprocess_namegroup_num_procs{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{groupname}}",
+              "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
             }

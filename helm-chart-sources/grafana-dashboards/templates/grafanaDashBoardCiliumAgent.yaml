@@ -159,7 +159,7 @@ spec:
               "expr": "sum(rate(cilium_errors_warnings_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, level) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{level}}",
+              "legendFormat": "{{`{{level}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1223,7 +1223,7 @@ spec:
               "expr": "avg(rate(cilium_agent_api_process_time_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}}",
               "refId": "A"
             }
           ],
@@ -1363,7 +1363,7 @@ spec:
               "expr": "max(rate(cilium_agent_api_process_time_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}}",
               "refId": "A"
             }
           ],
@@ -1503,7 +1503,7 @@ spec:
               "expr": "avg(rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}} ",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}} ",
               "refId": "A"
             }
           ],
@@ -1643,7 +1643,7 @@ spec:
               "expr": "max(rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}} ",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}} ",
               "refId": "A"
             }
           ],
@@ -1783,7 +1783,7 @@ spec:
               "expr": "avg(rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path, return_code)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{return_code}} ({{method}} {{path}} )",
+              "legendFormat": "{{`{{return_code}}`}} ({{`{{method}}`}} {{`{{path}}`}} )",
               "refId": "A"
             }
           ],
@@ -1923,7 +1923,7 @@ spec:
               "expr": "sum(rate(cilium_agent_api_process_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path, return_code)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{return_code}} ({{method}} {{path}} )",
+              "legendFormat": "{{`{{return_code}}`}} ({{`{{method}}`}} {{`{{path}}`}} )",
               "refId": "A"
             }
           ],
@@ -2107,7 +2107,7 @@ spec:
               "expr": "avg(rate(cilium_bpf_syscall_duration_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, operation)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{operation}}",
+              "legendFormat": "{{`{{operation}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2250,7 +2250,7 @@ spec:
               "expr": "max(rate(cilium_bpf_syscall_duration_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, operation)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{operation}}",
+              "legendFormat": "{{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -2391,7 +2391,7 @@ spec:
               "expr": "avg(rate(cilium_bpf_syscall_duration_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/ rate(cilium_bpf_syscall_duration_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, operation)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{operation}}",
+              "legendFormat": "{{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -2491,7 +2491,7 @@ spec:
               "expr": "max(rate(cilium_bpf_syscall_duration_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/ rate(cilium_bpf_syscall_duration_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, operation)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{operation}}",
+              "legendFormat": "{{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -2609,7 +2609,7 @@ spec:
               "expr": "topk(5, avg(rate(cilium_bpf_map_ops_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, map_name, operation))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{map_name}} {{operation}}",
+              "legendFormat": "{{`{{map_name}}`}} {{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -2727,7 +2727,7 @@ spec:
               "expr": "topk(5, max(rate(cilium_bpf_map_ops_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, map_name, operation))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{map_name}} {{operation}}",
+              "legendFormat": "{{`{{map_name}}`}} {{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -2865,7 +2865,7 @@ spec:
               "expr": "sum(rate(cilium_bpf_map_ops_total{outcome=\"fail\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, map_name, operation)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{map_name}} {{operation}}",
+              "legendFormat": "{{`{{map_name}}`}} {{`{{operation}}`}}",
               "refId": "A"
             }
           ],
@@ -3035,7 +3035,7 @@ spec:
               "expr": "sum(rate(kvstore_operations_total{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -3177,7 +3177,7 @@ spec:
               "expr": "max(rate(kvstore_operations_total{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -3318,7 +3318,7 @@ spec:
               "expr": "topk(5, avg(rate(cilium_kvstore_operations_duration_seconds_sum{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope) / avg(rate(cilium_kvstore_operations_duration_seconds_count{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -3459,7 +3459,7 @@ spec:
               "expr": "topk(5, max(rate(cilium_kvstore_operations_duration_seconds_sum{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope) / avg(rate(cilium_kvstore_operations_duration_seconds_count{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -3597,7 +3597,7 @@ spec:
               "expr": "avg(rate(cilium_kvstore_events_queue_seconds_count{pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "B"
             }
           ],
@@ -3722,7 +3722,7 @@ spec:
               "expr": "sum(rate(cilium_forward_count_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, direction)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{direction}}",
+              "legendFormat": "{{`{{direction}}`}}",
               "refId": "A"
             }
           ],
@@ -3819,7 +3819,7 @@ spec:
               "expr": "sum(rate(cilium_forward_bytes_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, direction) * 8",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{direction}}",
+              "legendFormat": "{{`{{direction}}`}}",
               "refId": "A"
             }
           ],
@@ -5656,7 +5656,7 @@ spec:
               "expr": "sum(cilium_ip_addresses{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}) by (pod, family)\n",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{family}}",
+              "legendFormat": "{{`{{family}}`}}",
               "refId": "A"
             }
           ],
@@ -5784,7 +5784,7 @@ spec:
               "expr": "sum(cilium_datapath_conntrack_dump_resets_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}) by (pod, area, family, name)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{name}} {{area}} {{family}}",
+              "legendFormat": "{{`{{name}}`}} {{`{{area}}`}} {{`{{family}}`}}",
               "refId": "A"
             }
           ],
@@ -5881,7 +5881,7 @@ spec:
               "expr": "avg(rate(cilium_services_events_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}}",
+              "legendFormat": "{{`{{action}}`}}",
               "refId": "A"
             }
           ],
@@ -6086,7 +6086,7 @@ spec:
               "expr": "sum(rate(cilium_drop_count_total{direction=\"EGRESS\",  pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (reason)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{reason}}",
+              "legendFormat": "{{`{{reason}}`}}",
               "refId": "A"
             }
           ],
@@ -6290,7 +6290,7 @@ spec:
               "expr": "avg(rate(cilium_nodes_all_events_received_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, event_type, source) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{eventType}} {{source}}",
+              "legendFormat": "{{`{{eventType}}`}} {{`{{source}}`}}",
               "refId": "B"
             }
           ],
@@ -6387,7 +6387,7 @@ spec:
               "expr": "sum(rate(cilium_drop_bytes_total{direction=\"EGRESS\",  pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (reason) * 8",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{reason}}",
+              "legendFormat": "{{`{{reason}}`}}",
               "refId": "A"
             }
           ],
@@ -6855,7 +6855,7 @@ spec:
               "expr": "sum(rate(cilium_drop_count_total{direction=\"INGRESS\",  pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (reason)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{reason}}",
+              "legendFormat": "{{`{{reason}}`}}",
               "refId": "A"
             }
           ],
@@ -7064,7 +7064,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             },
             {
@@ -7172,7 +7172,7 @@ spec:
               "expr": "sum(rate(cilium_drop_bytes_total{direction=\"INGRESS\",  pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (reason) * 8",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{reason}}",
+              "legendFormat": "{{`{{reason}}`}}",
               "refId": "A"
             }
           ],
@@ -7561,7 +7561,7 @@ spec:
               "expr": "max(rate(cilium_proxy_upstream_reply_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope) / sum(rate(cilium_proxy_upstream_reply_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Max {{scope}}",
+              "legendFormat": "Max {{`{{scope}}`}}",
               "refId": "B"
             },
             {
@@ -7735,7 +7735,7 @@ spec:
               "instant": true,
               "interval": "1s",
               "intervalFactor": 1,
-              "legendFormat": "{{enforcement}}",
+              "legendFormat": "{{`{{enforcement}}`}}",
               "refId": "B"
             }
           ],
@@ -8556,7 +8556,7 @@ spec:
               "expr": "avg(rate(cilium_proxy_upstream_reply_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "B"
             }
           ],
@@ -8876,7 +8876,7 @@ spec:
               "expr": "avg(histogram_quantile(0.90, rate(cilium_endpoint_regeneration_time_stats_seconds_bucket{ scope!=\"total\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m]))) by (scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -8975,7 +8975,7 @@ spec:
               "expr": "avg(histogram_quantile(0.99, rate(cilium_endpoint_regeneration_time_stats_seconds_bucket{ scope!=\"total\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m]))) by (scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{scope}}",
+              "legendFormat": "{{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -9137,7 +9137,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{outcome}}",
+              "legendFormat": "{{`{{outcome}}`}}",
               "refId": "A"
             }
           ],
@@ -9282,7 +9282,7 @@ spec:
               "expr": "sum(cilium_endpoint_state{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}) by (endpoint_state)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{endpoint_state}}",
+              "legendFormat": "{{`{{endpoint_state}}`}}",
               "refId": "A"
             }
           ],
@@ -9660,7 +9660,7 @@ spec:
               "expr": "sum(rate(cilium_controllers_runs_duration_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, status) / sum(rate(cilium_controllers_runs_duration_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, status)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{status}}",
+              "legendFormat": "{{`{{status}}`}}",
               "refId": "A"
             }
           ],
@@ -9826,7 +9826,7 @@ spec:
               "expr": "avg(rate(cilium_k8s_client_api_latency_time_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/rate(cilium_k8s_client_api_latency_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}}",
               "refId": "A"
             }
           ],
@@ -9964,7 +9964,7 @@ spec:
               "expr": "max(rate(cilium_k8s_client_api_latency_time_seconds_sum{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])/rate(cilium_k8s_client_api_latency_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}}",
               "refId": "A"
             }
           ],
@@ -10105,7 +10105,7 @@ spec:
               "expr": "sum(rate(cilium_k8s_client_api_latency_time_seconds_count{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, path)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{path}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{path}}`}}",
               "refId": "A"
             }
           ],
@@ -10245,7 +10245,7 @@ spec:
               "expr": "sum(rate(cilium_k8s_client_api_calls_total{ pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, method, return_code)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{method}} {{return_code}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{return_code}}`}}",
               "refId": "A"
             }
           ],
@@ -10385,7 +10385,7 @@ spec:
               "expr": "sum(rate(cilium_kubernetes_events_received_total{ equal=\"true\", valid=\"true\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} {{scope}}",
+              "legendFormat": "{{`{{action}}`}} {{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -10525,7 +10525,7 @@ spec:
               "expr": "sum(rate(cilium_kubernetes_events_received_total{ equal=\"true\", valid=\"false\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} {{scope}}",
+              "legendFormat": "{{`{{action}}`}} {{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -10665,7 +10665,7 @@ spec:
               "expr": "sum(rate(cilium_kubernetes_events_received_total{ equal=\"false\", valid=\"true\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, scope, action, valid)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} {{scope}}",
+              "legendFormat": "{{`{{action}}`}} {{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -10805,7 +10805,7 @@ spec:
               "expr": "sum(rate(cilium_kubernetes_events_received_total{ equal=\"false\", valid=\"false\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[5m])) by (pod, scope)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} {{scope}}",
+              "legendFormat": "{{`{{action}}`}} {{`{{scope}}`}}",
               "refId": "A"
             }
           ],
@@ -10902,7 +10902,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"CiliumNetworkPolicy\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} avg",
+              "legendFormat": "{{`{{action}}`}} avg",
               "refId": "B"
             }
           ],
@@ -11045,7 +11045,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"NetworkPolicy\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} avg",
+              "legendFormat": "{{`{{action}}`}} avg",
               "refId": "B"
             }
           ],
@@ -11188,7 +11188,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"Pod\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} avg",
+              "legendFormat": "{{`{{action}}`}} avg",
               "refId": "B"
             }
           ],
@@ -11331,7 +11331,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"Node\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}} avg",
+              "legendFormat": "{{`{{action}}`}} avg",
               "refId": "B"
             }
           ],
@@ -11428,7 +11428,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"Service\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}}",
+              "legendFormat": "{{`{{action}}`}}",
               "refId": "B"
             }
           ],
@@ -11525,7 +11525,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"Endpoint\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}}",
+              "legendFormat": "{{`{{action}}`}}",
               "refId": "B"
             }
           ],
@@ -11622,7 +11622,7 @@ spec:
               "expr": "avg(rate(cilium_kubernetes_events_total{ scope=\"Namespace\", pod=~\"$pod\", cluster_full_name=~\"$cluster_full_name\"}[1m])) by (pod, action) * 60",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{action}}",
+              "legendFormat": "{{`{{action}}`}}",
               "refId": "B"
             }
           ],

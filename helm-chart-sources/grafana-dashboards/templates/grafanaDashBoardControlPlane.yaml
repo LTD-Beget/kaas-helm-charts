@@ -126,7 +126,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{verb}}",
+              "legendFormat": "{{`{{verb}}`}}",
               "refId": "A"
             }
           ],
@@ -217,7 +217,7 @@ spec:
                 "uid": "${datasource}"
               },
               "expr": "sum(apiserver_current_inflight_requests{cluster_full_name=~\"$cluster_full_name\"}) by (requestKind)",
-              "legendFormat": "{{requestKind}}",
+              "legendFormat": "{{`{{requestKind}}`}}",
               "refId": "A"
             }
           ],
@@ -314,7 +314,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{code}}",
+              "legendFormat": "{{`{{code}}`}}",
               "refId": "A"
             }
           ],
@@ -612,7 +612,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "sum(leader_election_master_status{cluster_full_name=~\"$cluster_full_name\",name=\"kube-controller-manager\"})",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{instance}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1038,7 +1038,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "sum(leader_election_master_status{cluster_full_name=~\"$cluster_full_name\",name=\"kube-scheduler\"})",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{instance}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1136,7 +1136,7 @@ spec:
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
-              "legendFormat": "{{result}}",
+              "legendFormat": "{{`{{result}}`}}",
               "range": true,
               "refId": "D"
             }
@@ -1362,7 +1362,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{code}}",
+              "legendFormat": "{{`{{code}}`}}",
               "refId": "A"
             }
           ],
@@ -1461,7 +1461,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{verb}}",
+              "legendFormat": "{{`{{verb}}`}}",
               "refId": "A"
             }
           ],
@@ -1560,7 +1560,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{resource}}",
+              "legendFormat": "{{`{{resource}}`}}",
               "refId": "A"
             }
           ],
@@ -1658,7 +1658,7 @@ spec:
               "expr": "sum(rate(apiserver_request_total{cluster_full_name=~\"$cluster_full_name\",component!~\"apiserver.*\"}[5m])) by (component)>0",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{component}}",
+              "legendFormat": "{{`{{component}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1728,7 +1728,7 @@ spec:
               "expr": "sum(rate(apiserver_request_total{cluster_full_name=~\"$cluster_full_name\",component=~\"apiserver.*\"}[5m])) by (component)>0",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{component}}",
+              "legendFormat": "{{`{{component}}`}}",
               "refId": "A"
             }
           ],
@@ -1830,7 +1830,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{instance}} ",
+              "legendFormat": "{{`{{instance}}`}} ",
               "refId": "A",
               "units": "none",
               "valueHandler": "Number Threshold"
@@ -1927,7 +1927,7 @@ spec:
               "expr": "histogram_quantile(0.90, sum(rate(apiserver_request_duration_seconds{cluster_full_name=~\"$cluster_full_name\",verb!~\"WATCH|CONNECT\"}[5m])) by (le, resource) ) / 1e+06",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{resource}}",
+              "legendFormat": "{{`{{resource}}`}}",
               "refId": "A"
             }
           ],
@@ -2024,7 +2024,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 1,
-              "legendFormat": "{{resource}}",
+              "legendFormat": "{{`{{resource}}`}}",
               "refId": "A"
             }
           ],

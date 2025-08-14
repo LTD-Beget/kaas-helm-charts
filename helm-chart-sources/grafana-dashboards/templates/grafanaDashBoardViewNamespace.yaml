@@ -764,7 +764,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", image!=\"\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "{{ pod }}",
+              "legendFormat": "{{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -863,7 +863,7 @@ spec:
               "exemplar": true,
               "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", image!=\"\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "{{ pod }}",
+              "legendFormat": "{{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -973,7 +973,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_cpu_cfs_throttled_seconds_total{namespace=~\"$namespace\", image!=\"\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod) > 0",
               "interval": "$resolution",
-              "legendFormat": "{{ pod }}",
+              "legendFormat": "{{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1091,7 +1091,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kube_pod_status_qos_class{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (qos_class)",
               "interval": "",
-              "legendFormat": "{{ qos_class }} pods",
+              "legendFormat": "{{`{{ qos_class }}`}} pods",
               "range": true,
               "refId": "A"
             },
@@ -1208,7 +1208,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kube_pod_status_reason{cluster_full_name=~\"$cluster_full_name\"}) by (reason)",
               "interval": "",
-              "legendFormat": "{{ reason }}",
+              "legendFormat": "{{`{{ reason }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1314,7 +1314,7 @@ spec:
               "exemplar": true,
               "expr": "sum(increase(container_oom_events_total{namespace=~\"${namespace}\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace, pod) > 0",
               "interval": "",
-              "legendFormat": "namespace: {{ namespace }} - pod: {{ pod }}",
+              "legendFormat": "namespace: {{`{{ namespace }}`}} - pod: {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1420,7 +1420,7 @@ spec:
               "exemplar": true,
               "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=~\"${namespace}\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace, pod) > 0",
               "interval": "",
-              "legendFormat": "namespace: {{ namespace }} - pod: {{ pod }}",
+              "legendFormat": "namespace: {{`{{ namespace }}`}} - pod: {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1660,7 +1660,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(kube_pod_container_info{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}) by (pod)",
               "interval": "",
-              "legendFormat": "{{ pod }}",
+              "legendFormat": "{{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1759,7 +1759,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kube_deployment_status_replicas_available{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (deployment)",
               "interval": "",
-              "legendFormat": "{{ deployment }}",
+              "legendFormat": "{{`{{ deployment }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1857,7 +1857,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(kube_deployment_status_replicas_unavailable{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}) by (deployment)",
               "interval": "",
-              "legendFormat": "{{ deployment }}",
+              "legendFormat": "{{`{{ deployment }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1973,7 +1973,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim)",
               "interval": "",
-              "legendFormat": "{{ persistentvolumeclaim }}",
+              "legendFormat": "{{`{{ persistentvolumeclaim }}`}}",
               "refId": "A"
             }
           ],
@@ -2071,7 +2071,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim)",
               "interval": "",
-              "legendFormat": "{{ persistentvolumeclaim }} - Used",
+              "legendFormat": "{{`{{ persistentvolumeclaim }}`}} - Used",
               "refId": "A"
             },
             {
@@ -2083,7 +2083,7 @@ spec:
               "expr": "sum(kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim)",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{ persistentvolumeclaim }} - Capacity",
+              "legendFormat": "{{`{{ persistentvolumeclaim }}`}} - Capacity",
               "refId": "B"
             }
           ],
@@ -2181,7 +2181,7 @@ spec:
               "exemplar": true,
               "expr": "1 - sum(kubelet_volume_stats_inodes_used{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim) / sum(kubelet_volume_stats_inodes{namespace=~\"$namespace\", cluster_full_name=~\"$cluster_full_name\"}) by (persistentvolumeclaim)",
               "interval": "",
-              "legendFormat": "{{ persistentvolumeclaim }}",
+              "legendFormat": "{{`{{ persistentvolumeclaim }}`}}",
               "refId": "A"
             }
           ],
@@ -2293,7 +2293,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_bytes_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Received - {{ pod }}",
+              "legendFormat": "Received - {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -2306,7 +2306,7 @@ spec:
               "exemplar": true,
               "expr": "- sum(rate(container_network_transmit_bytes_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted - {{ pod }}",
+              "legendFormat": "Transmitted - {{`{{ pod }}`}}",
               "range": true,
               "refId": "B"
             }
@@ -2406,7 +2406,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_packets_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Received - {{ pod }}",
+              "legendFormat": "Received - {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -2419,7 +2419,7 @@ spec:
               "exemplar": true,
               "expr": "- sum(rate(container_network_transmit_packets_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted - {{ pod }}",
+              "legendFormat": "Transmitted - {{`{{ pod }}`}}",
               "range": true,
               "refId": "B"
             }
@@ -2519,7 +2519,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_packets_dropped_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Received - {{ pod }}",
+              "legendFormat": "Received - {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -2532,7 +2532,7 @@ spec:
               "exemplar": true,
               "expr": "- sum(rate(container_network_transmit_packets_dropped_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted - {{ pod }}",
+              "legendFormat": "Transmitted - {{`{{ pod }}`}}",
               "range": true,
               "refId": "B"
             }
@@ -2632,7 +2632,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_errors_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Received - {{ pod }}",
+              "legendFormat": "Received - {{`{{ pod }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -2645,7 +2645,7 @@ spec:
               "exemplar": true,
               "expr": "- sum(rate(container_network_transmit_errors_total{namespace=~\"$namespace\", pod=~\".*\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (pod)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted - {{ pod }}",
+              "legendFormat": "Transmitted - {{`{{ pod }}`}}",
               "range": true,
               "refId": "B"
             }

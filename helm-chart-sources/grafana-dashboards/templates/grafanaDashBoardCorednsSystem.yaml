@@ -149,7 +149,7 @@ spec:
               "exemplar": true,
               "expr": "up{job=~\"$job\", instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
               "interval": "",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -246,7 +246,7 @@ spec:
               "exemplar": true,
               "expr": "rate(process_cpu_seconds_total{job=~\"$job\", instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -342,7 +342,7 @@ spec:
               "exemplar": true,
               "expr": "process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
               "interval": "",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -630,7 +630,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(coredns_dns_requests_total{instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (type)",
               "interval": "$resolution",
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "refId": "A"
             }
           ],
@@ -726,7 +726,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(coredns_dns_responses_total{instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (rcode)",
               "interval": "$resolution",
-              "legendFormat": "{{ rcode }}",
+              "legendFormat": "{{`{{ rcode }}`}}",
               "refId": "A"
             }
           ],
@@ -918,7 +918,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(coredns_forward_responses_total{rcode=~\"SERVFAIL|REFUSED\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (rcode)",
               "interval": "$resolution",
-              "legendFormat": "{{ rcode }}",
+              "legendFormat": "{{`{{ rcode }}`}}",
               "refId": "A"
             }
           ],
@@ -1014,7 +1014,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(coredns_cache_hits_total{instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (type)",
               "interval": "$resolution",
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "refId": "A"
             },
             {
@@ -1121,7 +1121,7 @@ spec:
               "exemplar": true,
               "expr": "sum(coredns_cache_entries{cluster_full_name=~\"$cluster_full_name\"}) by (type)",
               "interval": "",
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "refId": "A"
             }
           ],
@@ -1200,7 +1200,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(increase(coredns_dns_request_duration_seconds_bucket{instance=~\"$instance\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (le)",
               "format": "heatmap",
-              "legendFormat": "{{le}}",
+              "legendFormat": "{{`{{le}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1280,7 +1280,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(increase(coredns_dns_request_size_bytes_bucket{instance=~\"$instance\", le!=\"0\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (le)",
               "format": "heatmap",
-              "legendFormat": "{{le}}",
+              "legendFormat": "{{`{{le}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1360,7 +1360,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(increase(coredns_dns_response_size_bytes_bucket{instance=~\"$instance\", le!=\"0\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (le)",
               "format": "heatmap",
-              "legendFormat": "{{le}}",
+              "legendFormat": "{{`{{le}}`}}",
               "range": true,
               "refId": "A"
             }

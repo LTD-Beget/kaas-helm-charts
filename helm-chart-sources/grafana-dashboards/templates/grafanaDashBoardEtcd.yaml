@@ -1086,7 +1086,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "etcd_network_client_grpc_received_bytes_total",
               "refId": "A",
               "step": 120
@@ -1177,7 +1177,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "etcd_network_client_grpc_sent_bytes_total",
               "refId": "A",
               "step": 120
@@ -1268,7 +1268,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "etcd_network_peer_received_bytes_total",
               "refId": "A",
               "step": 120
@@ -1360,7 +1360,7 @@ spec:
               "hide": false,
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "etcd_network_peer_sent_bytes_total",
               "refId": "A",
               "step": 120
@@ -1467,7 +1467,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -1554,14 +1554,14 @@ spec:
               "expr": "rate(etcd_mvcc_put_total{instance=~\"$instance\",cluster_full_name=~\"$cluster_full_name\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} puts/s",
+              "legendFormat": "{{`{{ instance }}`}} puts/s",
               "refId": "A"
             },
             {
               "expr": "rate(etcd_mvcc_delete_total{instance=~\"$instance\",cluster_full_name=~\"$cluster_full_name\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} deletes/s",
+              "legendFormat": "{{`{{ instance }}`}} deletes/s",
               "refId": "B"
             }
           ],
@@ -1650,7 +1650,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance  }}",
+              "legendFormat": "{{`{{ instance  }}`}}",
               "refId": "A"
             }
           ],
@@ -1753,7 +1753,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "process_resident_memory_bytes",
               "refId": "A",
               "step": 120
@@ -1847,7 +1847,7 @@ spec:
               "hide": false,
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }} Total Size",
+              "legendFormat": "{{`{{ instance }}`}} Total Size",
               "metric": "",
               "refId": "A",
               "step": 120
@@ -1858,7 +1858,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} In Use",
+              "legendFormat": "{{`{{ instance }}`}} In Use",
               "refId": "B"
             }
           ],
@@ -1948,7 +1948,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }} WAL fsync",
+              "legendFormat": "{{`{{ instance }}`}} WAL fsync",
               "refId": "A",
               "step": 30
             },
@@ -1958,7 +1958,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }} backend commit",
+              "legendFormat": "{{`{{ instance }}`}} backend commit",
               "refId": "B",
               "step": 30
             }
@@ -2049,7 +2049,7 @@ spec:
               "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }} WAL fsync",
+              "legendFormat": "{{`{{ instance }}`}} WAL fsync",
               "metric": "etcd_disk_wal_fsync_duration_seconds_bucket",
               "refId": "A",
               "step": 120
@@ -2058,7 +2058,7 @@ spec:
               "expr": "histogram_quantile(0.99, sum(rate(etcd_disk_backend_commit_duration_seconds_bucket{instance=~\"$instance\",cluster_full_name=~\"$cluster_full_name\"}[5m])) by (instance, le))",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }} DB fsync",
+              "legendFormat": "{{`{{ instance }}`}} DB fsync",
               "metric": "etcd_disk_backend_commit_duration_seconds_bucket",
               "refId": "B",
               "step": 120
@@ -2149,14 +2149,14 @@ spec:
               "expr": "etcd_server_heartbeat_send_failures_total{instance=~\"$instance\",cluster_full_name=~\"$cluster_full_name\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} heartbeat  failures",
+              "legendFormat": "{{`{{ instance }}`}} heartbeat  failures",
               "refId": "A"
             },
             {
               "expr": "etcd_server_health_failures{instance=~\"$instance\",cluster_full_name=~\"$cluster_full_name\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} health failures",
+              "legendFormat": "{{`{{ instance }}`}} health failures",
               "refId": "B"
             }
           ],
@@ -2247,7 +2247,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} Slow Applies",
+              "legendFormat": "{{`{{ instance }}`}} Slow Applies",
               "refId": "A"
             },
             {
@@ -2256,7 +2256,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} Slow Read Indexes",
+              "legendFormat": "{{`{{ instance }}`}} Slow Read Indexes",
               "refId": "B"
             }
           ],
@@ -2345,7 +2345,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -2738,7 +2738,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ instance }} compact/s",
+              "legendFormat": "{{`{{ instance }}`}} compact/s",
               "refId": "A"
             }
           ],
@@ -2827,7 +2827,7 @@ spec:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "metric": "etcd_server_leader_changes_seen_total",
               "refId": "A",
               "step": 60

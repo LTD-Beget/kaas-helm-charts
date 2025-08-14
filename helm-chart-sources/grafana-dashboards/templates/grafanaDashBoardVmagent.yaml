@@ -84,7 +84,7 @@ spec:
             "hide": true,
             "iconColor": "dark-blue",
             "name": "version",
-            "textFormat": "{{short_version}}",
+            "textFormat": "{{`{{short_version}}`}}",
             "titleFormat": "Version change"
           },
           {
@@ -96,7 +96,7 @@ spec:
             "expr": "sum(changes(vm_app_start_timestamp{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__interval])) by(cluster_full_name, instance)",
             "iconColor": "dark-yellow",
             "name": "restarts",
-            "textFormat": "{{cluster_full_name}}:{{instance}} restarted"
+            "textFormat": "{{`{{cluster_full_name}}`}}:{{`{{instance}}`}} restarted"
           }
         ]
       },
@@ -940,7 +940,7 @@ spec:
               "expr": "sum(rate({__name__=~\"vmagent_rows_inserted_total|vm_promscrape_scraped_samples_sum\", cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name)",
               "hide": false,
               "interval": "",
-              "legendFormat": "in {{cluster_full_name}}",
+              "legendFormat": "in {{`{{cluster_full_name}}`}}",
               "range": true,
               "refId": "A"
             },
@@ -952,7 +952,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vmagent_remotewrite_block_size_rows_sum{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name)",
               "interval": "",
-              "legendFormat": "out {{cluster_full_name}}",
+              "legendFormat": "out {{`{{cluster_full_name}}`}}",
               "range": true,
               "refId": "B"
             }
@@ -1071,7 +1071,7 @@ spec:
               "exemplar": true,
               "expr": "sum(vmagent_remotewrite_pending_data_bytes{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", url=~\"$url\"}) by (cluster_full_name, url) > 2e6",
               "interval": "",
-              "legendFormat": "{{cluster_full_name}} => {{url}}",
+              "legendFormat": "{{`{{cluster_full_name}}`}} => {{`{{url}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1181,7 +1181,7 @@ spec:
               "hide": false,
               "interval": "5m",
               "intervalFactor": 1,
-              "legendFormat": "{{cluster_full_name}} - {{level}}",
+              "legendFormat": "{{`{{cluster_full_name}}`}} - {{`{{level}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1292,7 +1292,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vm_persistentqueue_bytes_dropped_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by (path) > 0",
               "interval": "",
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1507,7 +1507,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vmagent_http_request_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, protocol) > 0",
               "interval": "",
-              "legendFormat": "requests:{{protocol}} ({{cluster_full_name}})",
+              "legendFormat": "requests:{{`{{protocol}}`}} ({{`{{cluster_full_name}}`}})",
               "range": true,
               "refId": "A"
             },
@@ -1519,7 +1519,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vm_protoparser_read_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
               "interval": "",
-              "legendFormat": "parse: {{type}} ({{cluster_full_name}})",
+              "legendFormat": "parse: {{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
               "range": true,
               "refId": "B"
             },
@@ -1531,7 +1531,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vm_ingestserver_request_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
               "interval": "",
-              "legendFormat": "ingest: {{type}} ({{cluster_full_name}})",
+              "legendFormat": "ingest: {{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
               "range": true,
               "refId": "C"
             },
@@ -1543,7 +1543,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vm_protoparser_unmarshal_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
               "interval": "",
-              "legendFormat": "unmarshal: {{type}} ({{cluster_full_name}})",
+              "legendFormat": "unmarshal: {{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
               "range": true,
               "refId": "D"
             },
@@ -1555,7 +1555,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(vm_promscrape_dial_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
               "interval": "",
-              "legendFormat": "scrape dial ({{cluster_full_name}})",
+              "legendFormat": "scrape dial ({{`{{cluster_full_name}}`}})",
               "range": true,
               "refId": "E"
             }
@@ -1921,7 +1921,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "read {{cluster_full_name}}",
+                  "legendFormat": "read {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -1936,7 +1936,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "write {{cluster_full_name}}",
+                  "legendFormat": "write {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -2053,7 +2053,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_tcplistener_read_bytes_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) * 8 \n+ sum(rate(vm_promscrape_conn_bytes_read_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) * 8",
                   "interval": "",
-                  "legendFormat": "in {{cluster_full_name}}",
+                  "legendFormat": "in {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -2065,7 +2065,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vmagent_remotewrite_conn_bytes_written_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) * 8",
                   "interval": "",
-                  "legendFormat": "out {{cluster_full_name}}",
+                  "legendFormat": "out {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -2617,7 +2617,7 @@ spec:
                   "exemplar": false,
                   "expr": "topk_max(10, sum(sum_over_time(scrape_series_added[5m])) by (cluster_full_name)) > 0",
                   "interval": "",
-                  "legendFormat": "{{ cluster }}",
+                  "legendFormat": "{{`{{ cluster }}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -3251,7 +3251,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vm_protoparser_rows_read_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
                   "interval": "",
-                  "legendFormat": "{{ type }} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{ type }}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3353,7 +3353,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vm_rows_invalid_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
                   "interval": "",
-                  "legendFormat": "{{type}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3612,7 +3612,7 @@ spec:
                   "expr": "sum(vm_promscrape_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", status=\"up\"}) by(cluster_full_name, type) > 0",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{type}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3717,7 +3717,7 @@ spec:
                   "expr": "sum(vm_promscrape_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", status=\"down\"}) by(cluster_full_name, type) > 0",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{type}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{type}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3824,7 +3824,7 @@ spec:
                   "expr": "sum(vm_promscrape_scrape_pool_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", status=\"up\"}) by(cluster_full_name, scrape_cluster) > 0",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{cluster_full_name}}: {{scrape_cluster}}",
+                  "legendFormat": "{{`{{cluster_full_name}}`}}: {{`{{scrape_cluster}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -3929,7 +3929,7 @@ spec:
                   "expr": "sum(vm_promscrape_scrape_pool_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", status=\"down\"}) by(cluster_full_name, scrape_cluster) > 0",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{cluster_full_name}}: {{scrape_cluster}}",
+                  "legendFormat": "{{`{{cluster_full_name}}`}}: {{`{{scrape_cluster}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -4450,7 +4450,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_promscrape_scrapes_failed_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
                   "interval": "",
-                  "legendFormat": "scrapes failed ({{cluster_full_name}})",
+                  "legendFormat": "scrapes failed ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 },
@@ -4462,7 +4462,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_promscrape_scrapes_timed_out_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
                   "interval": "",
-                  "legendFormat": "timeouts ({{cluster_full_name}})",
+                  "legendFormat": "timeouts ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "B"
                 },
@@ -4474,7 +4474,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_promscrape_scrapes_gunzip_failed_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
                   "interval": "",
-                  "legendFormat": "gunzip fails ({{cluster_full_name}})",
+                  "legendFormat": "gunzip fails ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "C"
                 },
@@ -4486,7 +4486,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_promscrape_dial_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
                   "interval": "",
-                  "legendFormat": "dial fails ({{cluster_full_name}})",
+                  "legendFormat": "dial fails ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "D"
                 },
@@ -4499,7 +4499,7 @@ spec:
                   "expr": "sum(rate(vm_promscrape_max_scrape_size_exceeded_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name) > 0",
                   "hide": false,
                   "interval": "",
-                  "legendFormat": "max scrape size exceeded ({{cluster_full_name}})",
+                  "legendFormat": "max scrape size exceeded ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "E"
                 }
@@ -4630,7 +4630,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vm_ingestserver_requests_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type, net) > 0",
                   "interval": "",
-                  "legendFormat": "{{net}}: {{ type }} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{net}}`}}: {{`{{ type }}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 },
@@ -4643,7 +4643,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vmagent_http_requests_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", protocol!=\"\"}[$__rate_interval])) by(cluster_full_name, protocol) > 0",
                   "interval": "",
-                  "legendFormat": "{{ protocol }}: http ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{ protocol }}`}}: http ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "B"
                 }
@@ -4747,7 +4747,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vmagent_rows_inserted_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, type) > 0",
                   "interval": "",
-                  "legendFormat": "{{ type }} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{ type }}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -4851,7 +4851,7 @@ spec:
                   "exemplar": true,
                   "expr": "max_over_time(vm_concurrent_insert_current{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])",
                   "interval": "",
-                  "legendFormat": "{{instance}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 },
@@ -4864,7 +4864,7 @@ spec:
                   "exemplar": true,
                   "expr": "min(vm_concurrent_insert_capacity{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}) by(cluster_full_name)",
                   "interval": "",
-                  "legendFormat": "limit ({{cluster_full_name}})",
+                  "legendFormat": "limit ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "B"
                 }
@@ -4967,7 +4967,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vm_ingestserver_request_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(type, net) > 0",
                   "interval": "",
-                  "legendFormat": "{{ type }} ({{net}})",
+                  "legendFormat": "{{`{{ type }}`}} ({{`{{net}}`}})",
                   "refId": "A"
                 },
                 {
@@ -4978,7 +4978,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(rate(vmagent_http_request_errors_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", protocol!=\"\"}[$__rate_interval])) by(protocol) > 0",
                   "interval": "",
-                  "legendFormat": "{{ protocol }} (http)",
+                  "legendFormat": "{{`{{ protocol }}`}} (http)",
                   "refId": "B"
                 }
               ],
@@ -5102,7 +5102,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_streamaggr_matched_samples_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval])) without (instance, pod) > 0",
                   "instant": false,
-                  "legendFormat": "{{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "{{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -5198,7 +5198,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_streamaggr_ignored_samples_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval]) > 0) without (instance, pod)",
                   "instant": false,
-                  "legendFormat": "{{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "{{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -5300,7 +5300,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vm_streamaggr_output_samples_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval])) without (instance, pod) > 0",
                   "instant": false,
-                  "legendFormat": "{{url}} ({{cluster_full_name}}): match={{match}}; output={{output}}",
+                  "legendFormat": "{{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; output={{`{{output}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -5397,7 +5397,7 @@ spec:
                   "editorMode": "code",
                   "expr": "increase(vm_streamaggr_flush_timeouts_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval]) > 0",
                   "instant": false,
-                  "legendFormat": "aggregation: {{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "aggregation: {{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -5410,7 +5410,7 @@ spec:
                   "expr": "increase(vm_streamaggr_dedup_flush_timeouts_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval]) > 0",
                   "hide": false,
                   "instant": false,
-                  "legendFormat": "deduplication: {{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "deduplication: {{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -5508,7 +5508,7 @@ spec:
                   "editorMode": "code",
                   "expr": "histogram_quantile(0.99, sum(rate(vm_streamaggr_samples_lag_seconds_bucket{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval])) without (instance, pod))",
                   "instant": false,
-                  "legendFormat": "{{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "{{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -5605,7 +5605,7 @@ spec:
                   "editorMode": "code",
                   "expr": "histogram_quantile(0.99, rate(vm_streamaggr_dedup_flush_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\", url=~\"$url\"}[$__rate_interval]))",
                   "instant": false,
-                  "legendFormat": "{{url}} ({{cluster_full_name}}): match={{match}}; outputs={{outputs}}",
+                  "legendFormat": "{{`{{url}}`}} ({{`{{cluster_full_name}}`}}): match={{`{{match}}`}}; outputs={{`{{outputs}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -5719,7 +5719,7 @@ spec:
                   "expr": "max(vm_streamaggr_labels_compressor_items_count{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\"}) by(cluster_full_name, instance)",
                   "hide": false,
                   "instant": false,
-                  "legendFormat": "items: {{instance}} ({{cluster_full_name}})",
+                  "legendFormat": "items: {{`{{instance}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 },
@@ -5732,7 +5732,7 @@ spec:
                   "expr": "max(vm_streamaggr_labels_compressor_size_bytes{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}) by(cluster_full_name, instance)",
                   "hide": false,
                   "instant": false,
-                  "legendFormat": "bytes: {{instance}} ({{cluster_full_name}})",
+                  "legendFormat": "bytes: {{`{{instance}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "B"
                 }
@@ -6266,7 +6266,7 @@ spec:
                   "exemplar": true,
                   "expr": "max(\n  vmagent_hourly_series_limit_current_series{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"} \n  / \n  vmagent_hourly_series_limit_max_series{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}\n  ) by(cluster_full_name) * 100",
                   "interval": "",
-                  "legendFormat": "{{cluster_full_name}}",
+                  "legendFormat": "{{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -6468,7 +6468,7 @@ spec:
                   "exemplar": true,
                   "expr": "max(\n  vmagent_daily_series_limit_current_series{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\"} \n  / \n  vmagent_daily_series_limit_max_series{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\"}\n) by(cluster_full_name)",
                   "interval": "",
-                  "legendFormat": "{{cluster_full_name}}",
+                  "legendFormat": "{{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -6620,7 +6620,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{instance}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -6722,7 +6722,7 @@ spec:
                   "exemplar": true,
                   "expr": "max_over_time(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])",
                   "interval": "",
-                  "legendFormat": "{{instance}} ({{cluster_full_name}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{cluster_full_name}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -6832,7 +6832,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(vmagent_remotewrite_pending_data_bytes{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", url=~\"$url\"}) by (instance, url)",
                   "interval": "",
-                  "legendFormat": "{{instance}} => {{url}}",
+                  "legendFormat": "{{`{{instance}}`}} => {{`{{url}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -6950,7 +6950,7 @@ spec:
                   "expr": "sum(rate(vm_promscrape_scraped_samples_sum{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, instance)\n+ sum(rate(vmagent_rows_inserted_total{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, instance)",
                   "hide": false,
                   "interval": "",
-                  "legendFormat": "in {{instance}} {{cluster_full_name}}",
+                  "legendFormat": "in {{`{{instance}}`}} {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -6962,7 +6962,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum(rate(vmagent_remotewrite_block_size_rows_sum{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\"}[$__rate_interval])) by(cluster_full_name, instance)",
                   "interval": "",
-                  "legendFormat": "out {{instance}} {{cluster_full_name}}",
+                  "legendFormat": "out {{`{{instance}}`}} {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -7082,7 +7082,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "read {{instance}} {{cluster_full_name}}",
+                  "legendFormat": "read {{`{{instance}}`}} {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -7097,7 +7097,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "write {{instance}} {{cluster_full_name}}",
+                  "legendFormat": "write {{`{{instance}}`}} {{`{{cluster_full_name}}`}}",
                   "range": true,
                   "refId": "B"
                 }

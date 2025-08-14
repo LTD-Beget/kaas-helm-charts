@@ -1533,7 +1533,7 @@ spec:
               "format": "time_series",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1638,7 +1638,7 @@ spec:
               "exemplar": true,
               "expr": "sum(container_memory_working_set_bytes{image!=\"\", cluster_full_name=~\"$cluster_full_name\"}) by (namespace)\n+ on (namespace)\n(sum(windows_container_memory_usage_commit_bytes{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"} * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"}) OR kube_namespace_created{cluster_full_name=~\"$cluster_full_name\"} * 0) by (namespace))",
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1744,7 +1744,7 @@ spec:
               "exemplar": true,
               "expr": "avg(sum by (instance, cpu) (rate(node_cpu_seconds_total{mode!~\"idle|steal\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval]))) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ node }}",
+              "legendFormat": "{{`{{ node }}`}}",
               "range": true,
               "refId": "Linux"
             },
@@ -1758,7 +1758,7 @@ spec:
               "expr": "avg(sum by (instance,core) (rate(windows_cpu_time_total{mode!=\"idle\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ node }}",
+              "legendFormat": "{{`{{ node }}`}}",
               "range": true,
               "refId": "Windows"
             }
@@ -1864,7 +1864,7 @@ spec:
               "expr": "sum(node_memory_MemTotal_bytes{cluster_full_name=~\"$cluster_full_name\", job=\"$job\"} - node_memory_MemAvailable_bytes{cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "range": true,
               "refId": "Linux"
             },
@@ -1878,7 +1878,7 @@ spec:
               "expr": "sum(windows_os_visible_memory_bytes{cluster_full_name=~\"$cluster_full_name\"} - windows_memory_available_bytes{cluster_full_name=~\"$cluster_full_name\"}) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "range": true,
               "refId": "Windows"
             }
@@ -1988,7 +1988,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_cpu_cfs_throttled_seconds_total{image!=\"\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "$resolution",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2098,7 +2098,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(node_cpu_core_throttles_total{cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2216,7 +2216,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kube_pod_status_qos_class{cluster_full_name=~\"$cluster_full_name\"}) by (qos_class)",
               "interval": "",
-              "legendFormat": "{{ qos_class }} pods",
+              "legendFormat": "{{`{{ qos_class }}`}} pods",
               "range": true,
               "refId": "A"
             },
@@ -2333,7 +2333,7 @@ spec:
               "exemplar": true,
               "expr": "sum(kube_pod_status_reason{cluster_full_name=~\"$cluster_full_name\"}) by (reason)",
               "interval": "",
-              "legendFormat": "{{ reason }}",
+              "legendFormat": "{{`{{ reason }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2439,7 +2439,7 @@ spec:
               "exemplar": true,
               "expr": "sum(increase(container_oom_events_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2545,7 +2545,7 @@ spec:
               "exemplar": true,
               "expr": "sum(increase(kube_pod_container_status_restarts_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace) > 0",
               "interval": "",
-              "legendFormat": "{{ namespace }}",
+              "legendFormat": "{{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2662,7 +2662,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device!~\"(veth|azv|lxc).*\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (device)",
               "interval": "$resolution",
-              "legendFormat": "Received : {{ device }}",
+              "legendFormat": "Received : {{`{{ device }}`}}",
               "range": true,
               "refId": "Linux Received"
             },
@@ -2675,7 +2675,7 @@ spec:
               "exemplar": true,
               "expr": "- sum(rate(node_network_transmit_bytes_total{device!~\"(veth|azv|lxc).*\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (device)",
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ device }}",
+              "legendFormat": "Transmitted : {{`{{ device }}`}}",
               "range": true,
               "refId": "Linux Transmitted"
             },
@@ -2689,7 +2689,7 @@ spec:
               "expr": "sum(rate(windows_net_bytes_received_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (nic)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received : {{ nic }}",
+              "legendFormat": "Received : {{`{{ nic }}`}}",
               "range": true,
               "refId": "Windows Received"
             },
@@ -2703,7 +2703,7 @@ spec:
               "expr": "- sum(rate(windows_net_bytes_sent_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (nic)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ device }}",
+              "legendFormat": "Transmitted : {{`{{ device }}`}}",
               "range": true,
               "refId": "Windows Transmitted"
             }
@@ -2987,7 +2987,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(container_network_receive_bytes_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace)\n+ on (namespace)\n(sum(rate(windows_container_network_receive_bytes_total{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]) * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"}) OR kube_namespace_created{cluster_full_name=~\"$cluster_full_name\"} * 0) by (namespace))",
               "interval": "$resolution",
-              "legendFormat": "Received : {{ namespace }}",
+              "legendFormat": "Received : {{`{{ namespace }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -3000,7 +3000,7 @@ spec:
               "expr": "- (sum(rate(container_network_transmit_bytes_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (namespace)\n+ on (namespace)\n(sum(rate(windows_container_network_transmit_bytes_total{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]) * on (container_id) group_left (container, pod, namespace) max by ( container, container_id, pod, namespace) (kube_pod_container_info{container_id!=\"\", cluster_full_name=~\"$cluster_full_name\"}) OR kube_namespace_created{cluster_full_name=~\"$cluster_full_name\"} * 0) by (namespace)))",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted : {{ namespace }}",
+              "legendFormat": "Transmitted : {{`{{ namespace }}`}}",
               "range": true,
               "refId": "B"
             }
@@ -3099,7 +3099,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "Linux Received bytes"
             },
@@ -3112,7 +3112,7 @@ spec:
               "expr": "- sum(rate(node_network_transmit_bytes_total{cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "Linux Transmitted bytes"
             },
@@ -3126,7 +3126,7 @@ spec:
               "expr": "sum(rate(windows_net_bytes_received_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "Windows Received bytes"
             },
@@ -3139,7 +3139,7 @@ spec:
               "expr": "- sum(rate(windows_net_bytes_sent_total{cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "Windows Transmitted bytes"
             }
@@ -3239,7 +3239,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device!~\"(veth|azv|lxc|lo).*\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -3252,7 +3252,7 @@ spec:
               "expr": "- sum(rate(node_network_transmit_bytes_total{device!~\"(veth|azv|lxc|lo).*\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "B"
             },
@@ -3266,7 +3266,7 @@ spec:
               "expr": "sum(rate(windows_net_bytes_received_total{nic!~\".*Virtual.*\",cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "C"
             },
@@ -3280,7 +3280,7 @@ spec:
               "expr": "- sum(rate(windows_net_bytes_sent_total{nic!~\".*Virtual.*\",cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "D"
             }
@@ -3380,7 +3380,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(node_network_receive_bytes_total{device=\"lo\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "Received bytes in {{ instance }}",
+              "legendFormat": "Received bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "A"
             },
@@ -3393,7 +3393,7 @@ spec:
               "expr": "- sum(rate(node_network_transmit_bytes_total{device=\"lo\", cluster_full_name=~\"$cluster_full_name\", job=\"$job\"}[$__rate_interval])) by (instance)",
               "hide": false,
               "interval": "$resolution",
-              "legendFormat": "Transmitted bytes in {{ instance }}",
+              "legendFormat": "Transmitted bytes in {{`{{ instance }}`}}",
               "range": true,
               "refId": "B"
             }

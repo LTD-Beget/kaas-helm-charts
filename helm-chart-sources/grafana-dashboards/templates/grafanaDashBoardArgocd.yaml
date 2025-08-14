@@ -87,7 +87,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{    cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",  }) by (job, dest_server, project, health_status)",
-              "legendFormat": "{{ dest_server }}/{{ project }} - {{ health_status }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}} - {{`{{ health_status }}`}}"
             }
           ],
           "title": "Application Health Status",
@@ -138,7 +138,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",  }) by (job, dest_server, project, sync_status)",
-              "legendFormat": "{{ dest_server }}/{{ project }} - {{ sync_status }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}} - {{`{{ sync_status }}`}}"
             }
           ],
           "title": "Application Sync Status",
@@ -189,7 +189,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(round(increase(argocd_app_sync_total{cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",project=~\"$project\"}[$__rate_interval]))) by (job, dest_server, project, phase)",
-              "legendFormat": "{{ dest_server }}/{{ project }} - {{ phase }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}} - {{`{{ phase }}`}}"
             }
           ],
           "title": "Application Syncs",
@@ -240,7 +240,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{    cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",  }) by (job, dest_server, project, autosync_enabled)",
-              "legendFormat": "{{ dest_server }}/{{ project }} - {{ autosync_enabled }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}} - {{`{{ autosync_enabled }}`}}"
             }
           ],
           "title": "Application Auto Sync Enabled",
@@ -758,7 +758,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{    cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",    name=~\"$application\",  }) by (namespace, job, dest_server, project, name, health_status)",
-              "legendFormat": "{{ dest_server }}/{{ project }}/{{ name }} - {{ health_status }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}}/{{`{{ name }}`}} - {{`{{ health_status }}`}}"
             }
           ],
           "title": "Application Health Status",
@@ -808,7 +808,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{    cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",    name=~\"$application\",  }) by (namespace, job, dest_server, project, name, sync_status)",
-              "legendFormat": "{{ dest_server }}/{{ project }}/{{ name }} - {{ sync_status }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}}/{{`{{ name }}`}} - {{`{{ sync_status }}`}}"
             }
           ],
           "title": "Application Sync Status",
@@ -858,7 +858,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  round(    increase(      argocd_app_sync_total{        cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",        name=~\"$application\",      }[$__rate_interval]    )  )) by (namespace, job, dest_server, project, name, phase)",
-              "legendFormat": "{{ dest_server }}/{{ project }}/{{ name }} - {{ phase }}"
+              "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}}/{{`{{ name }}`}} - {{`{{ phase }}`}}"
             }
           ],
           "title": "Application Sync Result",

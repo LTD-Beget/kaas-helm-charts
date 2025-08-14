@@ -131,7 +131,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "node_timex_sync_status{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\"}",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -225,7 +225,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "node_timex_offset_seconds{cluster_full_name=~\"$cluster_full_name\",instance=~\"$instance\"}",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "range": true,
               "refId": "A"
             }

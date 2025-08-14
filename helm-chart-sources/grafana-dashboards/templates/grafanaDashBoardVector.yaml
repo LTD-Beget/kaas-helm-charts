@@ -633,7 +633,7 @@ spec:
               "exemplar": false,
               "expr": "sum by (job, component_kind,component_type) (rate(vector_component_sent_events_total{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\", component_kind=\"$component_kind\", component_type!=\"internal_metrics\",namespace=~\"$namespace\"}[1m]))",
               "instant": false,
-              "legendFormat": "{{component_type}}",
+              "legendFormat": "{{`{{component_type}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -748,7 +748,7 @@ spec:
                   "format": "time_series",
                   "hide": false,
                   "instant": false,
-                  "legendFormat": "{{component_kind}}/{{component_name}}/{{component_type}}/{{error_type}}",
+                  "legendFormat": "{{`{{component_kind}}`}}/{{`{{component_name}}`}}/{{`{{component_type}}`}}/{{`{{error_type}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -882,7 +882,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum by (job, component_kind,component_type,component_name) (irate(vector_component_sent_events_total{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\", component_kind=\"$component_kind\", component_type!=\"internal_metrics\",namespace=~\"$namespace\"}[1m]))",
                   "instant": false,
-                  "legendFormat": "{{component_type}} / {{component_name}}",
+                  "legendFormat": "{{`{{component_type}}`}} / {{`{{component_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -1004,7 +1004,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum by (job,component_kind,component_type,component_name)(rate(vector_component_sent_event_bytes_total{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_kind=\"$component_kind\", component_type!=\"internal_metrics\",component_type!=\"prometheus_exporter\",namespace=~\"$namespace\"}[1m]))",
                   "instant": false,
-                  "legendFormat": "{{component_type}} / {{component_name}}",
+                  "legendFormat": "{{`{{component_type}}`}} / {{`{{component_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -1126,7 +1126,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum by (job, component_kind,component_type,component_name) (vector_buffer_events{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\", component_kind!=\"transform\", component_type!=\"internal_metrics\",namespace=~\"$namespace\"})",
                   "hide": false,
-                  "legendFormat": "{{component_type}} / {{component_name}}",
+                  "legendFormat": "{{`{{component_type}}`}} / {{`{{component_name}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -1254,7 +1254,7 @@ spec:
                   "expr": "max by (job,component_kind,component_type,component_name)(vector_buffer_byte_size{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\",component_type!=\"internal_metrics\",namespace=~\"$namespace\"})",
                   "hide": false,
                   "instant": false,
-                  "legendFormat": "{{component_kind}} / {{component_type}} / {{component_name}}",
+                  "legendFormat": "{{`{{component_kind}}`}} / {{`{{component_type}}`}} / {{`{{component_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -1367,7 +1367,7 @@ spec:
                   "editorMode": "code",
                   "expr": "sum by (job,component_kind,component_type,component_name)(rate(vector_buffer_received_bytes_total{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\",component_type!=\"internal_metrics\",namespace=~\"$namespace\"}[1m])) - sum by (job,component_kind,component_type,component_name)(rate(vector_buffer_sent_bytes_total{job=~\".*$job.*\",cluster_full_name=~\"$cluster_full_name\",component_type!=\"prometheus_exporter\",component_type!=\"internal_metrics\",namespace=~\"$namespace\"}[1m]))",
                   "hide": false,
-                  "legendFormat": "{{component_type}} / {{component_name}}",
+                  "legendFormat": "{{`{{component_type}}`}} / {{`{{component_name}}`}}",
                   "range": true,
                   "refId": "A"
                 }

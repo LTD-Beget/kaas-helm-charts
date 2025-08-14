@@ -147,7 +147,7 @@ spec:
               "exemplar": true,
               "expr": "up{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}",
               "interval": "",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -405,7 +405,7 @@ spec:
               "exemplar": true,
               "expr": "sum by (code) (rate(apiserver_request_total{  cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))",
               "interval": "$resolution",
-              "legendFormat": "{{ code }}",
+              "legendFormat": "{{`{{ code }}`}}",
               "refId": "A"
             }
           ],
@@ -499,7 +499,7 @@ spec:
               "exemplar": true,
               "expr": "sum by (verb) (rate(apiserver_request_total{  cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))",
               "interval": "$resolution",
-              "legendFormat": "{{ verb}}",
+              "legendFormat": "{{`{{ verb}}`}}",
               "refId": "A"
             }
           ],
@@ -593,7 +593,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(apiserver_request_duration_seconds_sum{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)\n/\nsum(rate(apiserver_request_duration_seconds_count{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -687,7 +687,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(apiserver_request_duration_seconds_sum{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (verb)\n/\nsum(rate(apiserver_request_duration_seconds_count{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (verb)",
               "interval": "$resolution",
-              "legendFormat": "{{ verb }}",
+              "legendFormat": "{{`{{ verb }}`}}",
               "refId": "A"
             }
           ],
@@ -781,7 +781,7 @@ spec:
               "exemplar": true,
               "expr": "sum by(instance) (rate(apiserver_request_total{code=~\"5..\", job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))\n / sum by(instance) (rate(apiserver_request_total{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -875,7 +875,7 @@ spec:
               "exemplar": true,
               "expr": "sum by(verb) (rate(apiserver_request_total{code=~\"5..\",job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))\n / sum by(verb) (rate(apiserver_request_total{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval]))",
               "interval": "$resolution",
-              "legendFormat": "{{ verb }}",
+              "legendFormat": "{{`{{ verb }}`}}",
               "refId": "A"
             }
           ],
@@ -969,7 +969,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(apiserver_request_total{  cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -1063,7 +1063,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(workqueue_depth{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])) by (instance)",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -1158,7 +1158,7 @@ spec:
               "exemplar": true,
               "expr": "rate(process_cpu_seconds_total{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}[$__rate_interval])",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],
@@ -1252,7 +1252,7 @@ spec:
               "exemplar": true,
               "expr": "process_resident_memory_bytes{job=~\"kubernetes-apiservers|apiserver|vmagent-kube-apiserver\",   cluster_full_name=~\"$cluster_full_name\"}",
               "interval": "$resolution",
-              "legendFormat": "{{ instance }}",
+              "legendFormat": "{{`{{ instance }}`}}",
               "refId": "A"
             }
           ],

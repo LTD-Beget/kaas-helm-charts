@@ -144,7 +144,7 @@ spec:
               "expr": "(sum(irate(namedprocess_namegroup_cpu_seconds_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\"}[$__rate_interval])) by (groupname) > 0) * 1000",
               "hide": false,
               "instant": false,
-              "legendFormat": "{{ groupname }}",
+              "legendFormat": "{{`{{ groupname }}`}}",
               "range": true,
               "refId": "A"
             }

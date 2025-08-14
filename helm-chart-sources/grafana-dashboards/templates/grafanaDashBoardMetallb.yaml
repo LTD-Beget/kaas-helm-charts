@@ -589,7 +589,7 @@ spec:
               "editorMode": "code",
               "expr": "rate(metallb_layer2_gratuitous_sent{instance=~\"$l2\"}[$__rate_interval])",
               "instant": false,
-              "legendFormat": "{{ ip }}",
+              "legendFormat": "{{`{{ ip }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -689,7 +689,7 @@ spec:
               "editorMode": "code",
               "expr": "rate(metallb_layer2_requests_received{instance=~\"$l2\"}[$__rate_interval])",
               "instant": false,
-              "legendFormat": "{{ip}}",
+              "legendFormat": "{{`{{ip}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -789,7 +789,7 @@ spec:
               "editorMode": "code",
               "expr": "rate(metallb_layer2_responses_sent{instance=~\"$l2\"}[$__rate_interval])",
               "instant": false,
-              "legendFormat": "{{ ip }}",
+              "legendFormat": "{{`{{ ip }}`}}",
               "range": true,
               "refId": "A"
             }
