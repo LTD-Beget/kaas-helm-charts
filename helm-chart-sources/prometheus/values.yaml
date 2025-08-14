@@ -5,3 +5,16 @@ monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
+  grafana:
+    datasource:
+      enabled: false
+      name: prometheus-data
+      namespace: default #should be the same as grafana-dashboards
+      selector: grafana
+      type: prometheus
+      url: "http://prometheus-server.default.svc:80"
+      jsonData:
+        tlsSkipVerify: true
+        timeInterval: 5s
+    
+
