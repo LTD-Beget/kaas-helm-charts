@@ -8,6 +8,5 @@ metadata:
   labels:
     {{ toYaml . | indent 4 }}
   {{- end }}
-    {{- end }}
 spec:
 {{ toYaml .Values.grafana.spec | indent 2 }}
