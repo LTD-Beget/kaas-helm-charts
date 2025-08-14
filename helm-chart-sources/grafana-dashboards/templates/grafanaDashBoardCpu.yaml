@@ -1,0 +1,527 @@
+{{- if .Values.grafanaDashboards.cpu.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-cpu
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  resyncPeriod: 30s
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: |-
+    
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 30,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisGridShow": true,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "node_load5{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "5m",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "node_load1{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "interval": "$resolution",
+              "legendFormat": "1m",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "node_load15{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "15m",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(machine_cpu_cores{node=\"$node\", cluster_full_name=~\"$cluster_full_name\"})",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "cores",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(node_cpu_seconds_total{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\",mode!=\"idle\"}[$__rate_interval]))",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "used",
+              "range": true,
+              "refId": "E"
+            }
+          ],
+          "title": "CPU",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 12
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_MemTotal_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"} - node_memory_MemFree_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"} - (node_memory_Cached_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"} + node_memory_Buffers_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"})",
+              "instant": false,
+              "interval": "$resolution",
+              "legendFormat": "RAM Used",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_MemTotal_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "RAM Total",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_Cached_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "RAM Cache",
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_Buffers_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "RAM Buffer",
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_MemFree_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "RAM Free",
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_SwapTotal_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"} - node_memory_SwapFree_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "SWAP Used",
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "exemplar": true,
+              "expr": "node_memory_SwapTotal_bytes{instance=\"$instance\", cluster_full_name=~\"$cluster_full_name\"}",
+              "hide": false,
+              "interval": "$resolution",
+              "legendFormat": "SWAP Total",
+              "refId": "G"
+            }
+          ],
+          "title": "Memory Usage",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "",
+      "revision": 1,
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {},
+            "hide": 0,
+            "includeAll": false,
+            "multi": false,
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
+            "queryValue": "",
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "type": "datasource"
+          },
+          {
+            "current": {
+              "selected": false,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(kube_node_info,cluster_full_name)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Cluster",
+            "multi": true,
+            "name": "cluster_full_name",
+            "options": [],
+            "query": {
+              "query": "label_values(kube_node_info,cluster_full_name)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 5,
+            "tagValuesQuery": "",
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "current": {
+              "selected": false,
+              "text": "30s",
+              "value": "30s"
+            },
+            "hide": 0,
+            "includeAll": false,
+            "multi": false,
+            "name": "resolution",
+            "options": [
+              {
+                "selected": false,
+                "text": "1s",
+                "value": "1s"
+              },
+              {
+                "selected": false,
+                "text": "15s",
+                "value": "15s"
+              },
+              {
+                "selected": true,
+                "text": "30s",
+                "value": "30s"
+              },
+              {
+                "selected": false,
+                "text": "1m",
+                "value": "1m"
+              },
+              {
+                "selected": false,
+                "text": "3m",
+                "value": "3m"
+              },
+              {
+                "selected": false,
+                "text": "5m",
+                "value": "5m"
+              }
+            ],
+            "query": "1s, 15s, 30s, 1m, 3m, 5m",
+            "queryValue": "",
+            "skipUrlSync": false,
+            "type": "custom"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(kube_node_info{cluster_full_name=~\"$cluster_full_name\"}, node)",
+            "hide": 1,
+            "includeAll": false,
+            "multi": false,
+            "name": "node",
+            "options": [],
+            "query": {
+              "query": "label_values(kube_node_info{cluster_full_name=~\"$cluster_full_name\"}, node)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {
+              "selected": false,
+              "text": "10.84.1.0:9100",
+              "value": "10.84.1.0:9100"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(node_uname_info{nodename=~\"(?i:($node))\"}, instance)",
+            "hide": 0,
+            "includeAll": false,
+            "multi": false,
+            "name": "instance",
+            "options": [],
+            "query": {
+              "query": "label_values(node_uname_info{nodename=~\"(?i:($node))\"}, instance)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-3h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Kubernetes / Views / CPU",
+      "uid": "k8s_views_cpu",
+      "version": 4,
+      "weekStart": ""
+    }
+{{- end }}

@@ -1,0 +1,37 @@
+grafanaDashboards:
+  argocd:
+    enabled: false
+  ciliumAgent:
+    enabled: false
+  cpu:
+    enabled: false
+  process-la:
+    enabled: false
+  process-exporter:
+    enabled: false
+  metallb:
+    enabled: false
+  vector:
+    enabled: false
+  vmagent:
+    enabled: false
+  k8s:
+    apiserver:
+      enabled: true
+    controlplane:
+      enabled: true
+    coredns:
+      enabled: false
+    etcd:
+      enabled: false
+    timex:
+      enabled: false
+    views-global:
+      enabled: false
+    views-namespaces:
+      enabled: false
+    views-nodes:
+      enabled: false
+    views-pods:
+      enabled: false
+    
