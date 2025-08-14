@@ -1,0 +1,12 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: {{ .Values.grafana.name | default "grafana" }}
+  namespace: {{ .Release.Namespace }}
+    {{- if .Values.grafana.labels }}
+  labels:
+    {{ toYaml .Values.grafana.labels | indent 4 }}
+    {{- end }}
+spec:
+{{ toYaml .Values.grafana.spec | indent 2 }}
