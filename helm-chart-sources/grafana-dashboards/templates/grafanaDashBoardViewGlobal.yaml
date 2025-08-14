@@ -1,4 +1,4 @@
-{{- if .Values.grafanaDashboards.k8s.views-global.enabled }}
+{{- if .Values.grafanaDashboards.k8s.viewsGlobal.enabled }}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard

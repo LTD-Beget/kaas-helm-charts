@@ -1,4 +1,4 @@
-{{- if .Values.grafanaDashboards.k8s.views-pods.enabled }}
+{{- if .Values.grafanaDashboards.k8s.viewsPods.enabled }}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard

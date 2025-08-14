@@ -1,4 +1,4 @@
-{{- if .Values.grafanaDashboards.process-la.enabled }}
+{{- if .Values.grafanaDashboards.processLA.enabled }}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
