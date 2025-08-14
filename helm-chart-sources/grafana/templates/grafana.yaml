@@ -4,9 +4,10 @@ kind: Grafana
 metadata:
   name: {{ .Values.grafana.name | default "grafana" }}
   namespace: {{ .Release.Namespace }}
-    {{- if .Values.grafana.labels }}
+  {{- with .Values.grafana.labels }}
   labels:
-    {{ toYaml .Values.grafana.labels | indent 4 }}
+    {{ toYaml . | indent 4 }}
+  {{- end }}
     {{- end }}
 spec:
 {{ toYaml .Values.grafana.spec | indent 2 }}

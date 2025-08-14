@@ -15,7 +15,7 @@ grafana:
       spec:
         template:
           spec:
-            tolerations: {}
+            tolerations: []
             priorityClassName: ""
             containers:
               - name: grafana
