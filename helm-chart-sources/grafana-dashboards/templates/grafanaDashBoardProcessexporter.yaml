@@ -782,6 +782,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_context_switches_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", ctxswitchtype=\"voluntary\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
@@ -880,6 +881,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_context_switches_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", ctxswitchtype=\"nonvoluntary\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
@@ -1187,6 +1189,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_read_bytes_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
@@ -1285,6 +1288,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_write_bytes_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
@@ -1383,6 +1387,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_minor_page_faults_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
@@ -1481,6 +1486,7 @@ spec:
               "expr": "rate(namedprocess_namegroup_major_page_faults_total{cluster_full_name=~\"$cluster_full_name\",instance=~\"$server:$port\", job=\"$job\"}[$__rate_interval])",
               "hide": false,
               "instant": false,
+              "interval": "1m",
               "legendFormat": "{{`{{groupname}}`}}",
               "range": true,
               "refId": "A"
