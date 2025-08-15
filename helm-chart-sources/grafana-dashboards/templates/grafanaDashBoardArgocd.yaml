@@ -240,6 +240,7 @@ spec:
                 "uid": "$datasource"
               },
               "expr": "sum(  argocd_app_info{    cluster_full_name=~\"$cluster_full_name\",namespace=~\"$namespace\",job=~\"$job\",dest_server=~\"$cluster\",project=~\"$project\",  }) by (job, dest_server, project, autosync_enabled)",
+              "interval": "3m",
               "legendFormat": "{{`{{ dest_server }}`}}/{{`{{ project }}`}} - {{`{{ autosync_enabled }}`}}"
             }
           ],

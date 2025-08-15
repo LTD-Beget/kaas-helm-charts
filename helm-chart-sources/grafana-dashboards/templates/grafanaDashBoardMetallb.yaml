@@ -988,6 +988,7 @@ spec:
               "exemplar": false,
               "expr": "metallb_k8s_client_config_loaded_bool{instance=~\"$metallb_client\"}",
               "instant": true,
+              "interval": "3m",
               "legendFormat": "",
               "range": false,
               "refId": "A"
@@ -1073,6 +1074,7 @@ spec:
               "exemplar": false,
               "expr": "metallb_k8s_client_config_stale_bool{instance=~\"$metallb_client\"}",
               "instant": true,
+              "interval": "3m",
               "legendFormat": "",
               "range": false,
               "refId": "A"
