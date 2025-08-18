@@ -100,7 +100,7 @@ appSpec:
             default-unreachable-toleration-seconds: 300
             default-watch-cache-size: 100
             delete-collection-workers: 1
-            enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,NodeRestriction,PodSecurity
+            enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,NodeRestriction,PodSecurity
             enable-aggregator-routing: true
             enable-bootstrap-token-auth: true
             enable-garbage-collector: true
