@@ -1,0 +1,22 @@
+dex: {}
+
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+
+tls:
+  enabled: false
+  issuer:
+    name: default-issuer-name
+    secretName: default-secret-name
+  certificate:
+    name: dex-tls
+    secretName: dex-tls
+    duration: 8760h
+    renewBefore: 720h
+    commonName: dex
+    dnsNames:
+      - dex.default.svc
+      - dex.default.svc.cluster.local

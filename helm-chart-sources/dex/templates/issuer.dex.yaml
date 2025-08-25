@@ -1,0 +1,11 @@
+{{- if .Values.tls.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Values.tls.issuer.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ca:
+    secretName: {{ .Values.tls.issuer.secretName }}
+{{- end }}
