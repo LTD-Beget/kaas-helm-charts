@@ -14,20 +14,18 @@
     {{- if $needsSelfsigned }}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: selfsigned
-  namespace: beget-system
 spec:
   selfSigned: {}
     {{- end }}
     {{- if $appValue.issuers.kubernetesCA.enabled }}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: kubernetes-ca
-  namespace: beget-system
 spec:
   ca:
     secretName: {{ $appValue.issuers.kubernetesCA.secretName }}
@@ -35,10 +33,9 @@ spec:
     {{- if $appValue.issuers.frontProxyCA.enabled }}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: front-proxy-ca
-  namespace: beget-system
 spec:
   ca:
     secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
@@ -46,10 +43,9 @@ spec:
     {{- if $appValue.issuers.etcdCA.enabled }}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: etcd-ca
-  namespace: beget-system
 spec:
   ca:
     secretName: {{ $appValue.issuers.etcdCA.secretName }}

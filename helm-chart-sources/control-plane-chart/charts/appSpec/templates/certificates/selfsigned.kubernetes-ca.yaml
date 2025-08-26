@@ -21,7 +21,7 @@ spec:
     rotationPolicy: Never
   issuerRef:
     name: selfsigned
-    kind: Issuer
+    kind: ClusterIssuer
   usages:
     - cert sign
     - key encipherment

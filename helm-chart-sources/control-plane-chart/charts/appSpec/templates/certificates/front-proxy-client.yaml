@@ -20,6 +20,6 @@ spec:
     - client auth
   issuerRef:
     name: front-proxy-ca
-    kind: Issuer
+    kind: ClusterIssuer
   {{- end }}
 {{- end }}

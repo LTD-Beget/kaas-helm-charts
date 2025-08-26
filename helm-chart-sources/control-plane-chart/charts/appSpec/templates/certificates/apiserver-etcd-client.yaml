@@ -18,6 +18,6 @@ spec:
     size: 2048
   issuerRef:
     name: etcd-ca
-    kind: Issuer
+    kind: ClusterIssuer
   {{- end }}
 {{- end }}

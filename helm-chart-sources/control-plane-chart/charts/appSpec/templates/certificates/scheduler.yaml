@@ -28,6 +28,6 @@ spec:
     - server auth
   issuerRef:
     name: kubernetes-ca
-    kind: Issuer
+    kind: ClusterIssuer
   {{- end }}
 {{- end }}
