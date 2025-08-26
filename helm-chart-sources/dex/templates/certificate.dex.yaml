@@ -23,5 +23,5 @@ spec:
     - server auth
   issuerRef:
     name: {{ .Values.tls.issuer.name }}
-    kind: Issuer
+    kind: ClusterIssuer
 {{- end }}
