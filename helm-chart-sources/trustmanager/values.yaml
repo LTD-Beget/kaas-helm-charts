@@ -22,5 +22,4 @@ bundle:
   target:
     configMapKey: "ca.crt"
     namespaceSelector:
-      matchLabels:
-        default.com/default: "default"
+      matchLabels: {}
