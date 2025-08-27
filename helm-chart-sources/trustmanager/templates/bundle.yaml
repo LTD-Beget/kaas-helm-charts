@@ -15,9 +15,6 @@ spec:
   sources:
     - secret:
         name: {{ required "bundle.sourceSecret.name is required" .Values.bundle.sourceSecret.name | quote }}
-        {{- if .Values.bundle.sourceSecret.namespace }}
-        namespace: {{ .Values.bundle.sourceSecret.namespace | quote }}
-        {{- end }}
         key: {{ default "tls.crt" .Values.bundle.sourceSecret.key | quote }}
   target:
     configMap:

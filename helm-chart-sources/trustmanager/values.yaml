@@ -6,14 +6,13 @@ monitoring:
   namespace: default
 
 bundle:
-  enabled: true
+  enabled: false
   name: "ca.crt"
   # опционально
   labels: {}
   annotations: {}
   sourceSecret:
     name: "default-crt"
-    # namespace: "trust"   # укажи, если секрет НЕ в дефолтном для trust-manager
     key: "tls.crt"
   extraSecretSources: []
   # - name: "another-ca-secret"
