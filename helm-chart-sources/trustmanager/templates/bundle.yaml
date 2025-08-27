@@ -1,0 +1,33 @@
+{{- if .Values.bundle.enabled }}
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: {{ default "ca.crt" .Values.bundle.name | quote }}
+  {{- with .Values.bundle.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.bundle.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  sources:
+    - secret:
+        name: {{ required "bundle.sourceSecret.name is required" .Values.bundle.sourceSecret.name | quote }}
+        {{- if .Values.bundle.sourceSecret.namespace }}
+        namespace: {{ .Values.bundle.sourceSecret.namespace | quote }}
+        {{- end }}
+        key: {{ default "tls.crt" .Values.bundle.sourceSecret.key | quote }}
+  target:
+    configMap:
+      key: {{ default "ca.crt" .Values.bundle.target.configMapKey | quote }}
+    namespaceSelector:
+      {{- if .Values.bundle.target.namespaceSelector.matchLabels }}
+      matchLabels:
+        {{- toYaml .Values.bundle.target.namespaceSelector.matchLabels | nindent 8 }}
+      {{- else }}
+      matchLabels:
+        linkerd.io/inject: "enabled"
+      {{- end }}
+{{- end }}
