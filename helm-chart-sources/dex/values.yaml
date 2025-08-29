@@ -20,3 +20,10 @@ tls:
     dnsNames:
       - dex.default.svc
       - dex.default.svc.cluster.local
+
+rbac:
+  enabled: false
+  clusterRoleBinding:
+    subjects:
+      kind: User
+      name: default-user
