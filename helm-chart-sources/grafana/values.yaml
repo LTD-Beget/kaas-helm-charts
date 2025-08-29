@@ -37,3 +37,16 @@ monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: grafana
+      route:
+        host: grafana-service
+        port: 3000

@@ -1,0 +1,29 @@
+{{- if .Values.istio.virtualService.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: grafana
+  namespace: {{ .Release.Namespace }}
+spec:
+  gateways:
+    {{- range $d := .Values.istio.virtualService.gateways }}
+    - {{ $d | quote }}
+    {{- end }}
+  hosts:
+    {{- range $d := .Values.istio.virtualService.hosts }}
+    - {{ $d | quote }}
+    {{- end }}
+  http:
+    - name: {{ .Values.istio.virtualService.http.name }}
+      match:
+        - uri:
+            exact: /grafana
+        - uri:
+            prefix: /grafana/
+      route:
+        - destination:
+            host: {{ .Values.istio.virtualService.http.route.host }}
+            port:
+              number: {{ .Values.istio.virtualService.http.route.port }}
+{{- end }}
