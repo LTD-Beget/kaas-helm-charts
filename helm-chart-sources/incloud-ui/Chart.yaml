@@ -1,0 +1,31 @@
+apiVersion: v2
+name: incloud-web-chart
+description: Chart for configuring Kubernetes Web UI InCloud
+
+type: application
+
+# Chart (packaging) version — semver. Bump on ANY template/values change.
+
+# Application version — free-form string. Tie it to app images/tags you ship.
+# Tip: keep it in sync with image tags from values.yaml.
+
+# Minimal supported Kubernetes version (features used: apps/v1, probes, fsGroupChangePolicy, etc.)
+kubeVersion: ">=1.22.0-0"
+
+# Helpful discoverability
+keywords:
+  - incloud
+  - openapi-ui
+  - bff
+  - web
+  - kubernetes
+  - helm
+
+version: 0.1.0
+
+appVersion: "0.1.6"
+
+dependencies:
+  - name: incloud-web-chart
+    version: "0.1.6"
+    repository: "file://charts/incloud-web-chart"

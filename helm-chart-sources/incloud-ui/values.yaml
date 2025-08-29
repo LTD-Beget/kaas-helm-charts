@@ -1,0 +1,16 @@
+incloud-web-chart: {}
+# some values for incloud-ui
+
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: argocd
+      route:
+        host: argocd-server
+        port: 443

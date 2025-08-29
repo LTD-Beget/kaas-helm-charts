@@ -1,0 +1,54 @@
+{{- if .Values.istio.virtualService.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: incloud-ui
+  namespace: {{ .Release.Namespace }}
+spec:
+  gateways:
+    {{- range $d := .Values.istio.virtualService.gateways }}
+    - {{ $d | quote }}
+    {{- end }}
+  hosts:
+    {{- range $d := .Values.istio.virtualService.hosts }}
+    - {{ $d | quote }}
+    {{- end }}
+  http:
+    - name: incloud-ui-redirect
+      match:
+        - uri:
+            exact: /
+      rewrite:
+        uri: /openapi-ui/ #если как изначально на "/", то nginx внутри отдает свой 8081 порт и все ломается (надо править конфигмапу nginx ui)
+      headers:
+        request:
+          set:
+            x-forwarded-proto: "https"
+            x-forwarded-port: "8443"
+            x-forwarded-host: "localhost:8443"
+      route:
+        - destination:
+            host: {{ .Values.istio.virtualService.http.route.host }}
+            port:
+              number: {{ .Values.istio.virtualService.http.route.port }}
+    - name: incloud-ui-all
+      match:
+        - uri: { prefix: /openapi-ui }
+        - uri: { prefix: /oauth2/ }           # oauth2-proxy endpoints
+        - uri: { prefix: /clusterlist }       # статический JSON
+        - uri: { prefix: /api/ }              # API маршруты UI
+        - uri: { prefix: /k8s }               # прокси на k8s apiserver
+        - uri: { prefix: /openapi-bff }       # BFF
+      headers:
+        request:
+          set:
+            x-forwarded-proto: "https"
+            x-forwarded-port: "8443"
+            x-forwarded-host: "localhost:8443"
+      route:
+        - destination:
+            host: {{ .Values.istio.virtualService.http.route.host }}
+            port:
+              number: {{ .Values.istio.virtualService.http.route.port }}
+{{- end }}
