@@ -1,7 +1,7 @@
 {{- if .Values.istio.destinationRule.enabled }}
 ---
 apiVersion: networking.istio.io/v1
-kind: VirtualService
+kind: DestinationRule
 metadata:
   name: dex-tls
   namespace: {{ .Release.Namespace }}
