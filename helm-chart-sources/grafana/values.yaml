@@ -37,17 +37,3 @@ monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
-
-tls:
-  enabled: false
-  issuer:
-    name: default-issuer-name
-  certificate:
-    name: grafana-tls
-    secretName: grafana-tls
-    duration: 8760h
-    renewBefore: 720h
-    commonName: grafana
-    dnsNames:
-      - grafana.default.svc
-      - grafana.default.svc.cluster.local

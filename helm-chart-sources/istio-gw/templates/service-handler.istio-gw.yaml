@@ -1,0 +1,27 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: istio-gw
+    jobLabel: istio-gw
+  name: istio-gw-metrics
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: metrics
+    port: 15020
+    protocol: TCP
+    targetPort: 15020
+  selector:
+    app.kubernetes.io/name: istio-gw
+  type: ClusterIP
+{{- end }}

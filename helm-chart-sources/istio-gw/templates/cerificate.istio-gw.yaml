@@ -3,15 +3,19 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ default "grafana-tls" .Values.tls.certificate.name }}
+  name: {{ default "gateway-tls" .Values.tls.certificate.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: {{ default "grafana-tls" .Values.tls.certificate.secretName }}
+  secretName: {{ default "gateway-tls" .Values.tls.certificate.secretName }}
   duration: {{ default "8760h" .Values.tls.certificate.duration }}
   renewBefore: {{ default "720h" .Values.tls.certificate.renewBefore }}
-  commonName: {{ default "grafana" .Values.tls.certificate.commonName }}
+  commonName: {{ default "gateway" .Values.tls.certificate.commonName }}
   dnsNames:
     {{- range $d := .Values.tls.certificate.dnsNames }}
+    - {{ $d | quote }}
+    {{- end }}
+  ipAddresses:
+    {{- range $d := .Values.tls.certificate.ipAddresses }}
     - {{ $d | quote }}
     {{- end }}
   privateKey:
@@ -22,6 +26,6 @@ spec:
     - key encipherment
     - server auth
   issuerRef:
+    kind: {{ .Values.tls.issuer.kind }}
     name: {{ .Values.tls.issuer.name }}
-    kind: ClusterIssuer
 {{- end }}
