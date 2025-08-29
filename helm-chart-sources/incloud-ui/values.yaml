@@ -10,7 +10,7 @@ istio:
     hosts:
       - "*"
     http:
-      name: argocd
+      name: incloud-ui-redirect
       route:
-        host: argocd-server
-        port: 443
+        host: incloud-ui-oauth2-proxy
+        port: 80
