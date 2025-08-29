@@ -1,0 +1,14 @@
+{{- if .Values.istio.destinationRule.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: dex-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: {{ .Values.istio.destinationRule.host }}
+  trafficPolicy:
+    tls:
+      mode: {{ .Values.istio.destinationRule.trafficPolicy.tls.mode }}
+      insecureSkipVerify: {{ .Values.istio.destinationRule.trafficPolicy.tls.insecureSkipVerify }}
+{{- end }}

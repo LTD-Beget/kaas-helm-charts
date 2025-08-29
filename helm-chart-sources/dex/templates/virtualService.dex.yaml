@@ -1,0 +1,51 @@
+{{- if .Values.istio.virtualService.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: dex
+  namespace: {{ .Release.Namespace }}
+spec:
+  gateways:
+    {{- range $d := .Values.istio.virtualService.gateways }}
+    - {{ $d | quote }}
+    {{- end }}
+  hosts:
+    {{- range $d := .Values.istio.virtualService.hosts }}
+    - {{ $d | quote }}
+    {{- end }}
+  http:
+    - name: {{ .Values.istio.virtualService.http.name }}
+      match:
+        - uri:
+            prefix: /.well-known/
+        - uri:
+            prefix: /auth
+        - uri:
+            prefix: /approval
+        - uri:
+            prefix: /device
+        - uri:
+            prefix: /static/
+        - uri:
+            prefix: /theme/
+      route:
+        - destination:
+            host: {{ .Values.istio.virtualService.http.route.host }}
+            port:
+              number: {{ .Values.istio.virtualService.http.route.port }}
+    # 2) Префикс /dex (то, что мы открываем в браузере), тут срезаем /dex
+    - name: dex-prefixed
+      match:
+        - uri:
+            exact: /dex
+        - uri:
+            prefix: /dex/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: {{ .Values.istio.virtualService.http.route.host }}
+            port:
+              number: {{ .Values.istio.virtualService.http.route.port }}
+{{- end }}

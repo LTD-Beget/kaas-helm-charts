@@ -27,3 +27,23 @@ rbac:
     subjects:
       kind: User
       name: default-user
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: dex
+      route:
+        host: dex
+        port: 5554
+  destinationRule:
+    enabled: false
+    host: dex
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true
