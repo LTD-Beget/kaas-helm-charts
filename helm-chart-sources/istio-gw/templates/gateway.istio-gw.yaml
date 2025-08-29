@@ -1,0 +1,27 @@
+{{- if .Values.extraGateway.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: {{ default "default" .Values.extraGateway.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    istio: gw
+  servers:
+    - hosts:
+        - "*"
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        credentialName: {{ .Values.extraGateway.servers.tls.credentialName }}
+        mode: {{ .Values.extraGateway.servers.tls.mode }}
+    - hosts:
+        - "*"
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+{{- end }}

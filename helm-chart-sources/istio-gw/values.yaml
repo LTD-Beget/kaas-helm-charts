@@ -23,5 +23,13 @@ tls:
     ipAddresses:
       - "127.0.0.1"
 
+extraGateway:
+  enabled: false
+  name: default
+  servers:
+    tls:
+      credentialName: default-secret
+      mode: SIMPLE
+
 telemetry:
   enabled: false
