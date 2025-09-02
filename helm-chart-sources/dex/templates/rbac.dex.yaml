@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: clusterview-all
+  name: oidc-admin
 rules:
   - apiGroups: ["*"]
     resources: ["*"]
@@ -13,11 +13,11 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: clusterview-all-oidc-admin
+  name: oidc-admin
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: clusterview-all
+  name: oidc-admin
 subjects:
   - kind: {{ .Values.rbac.clusterRoleBinding.subjects.kind }}
     name: {{ .Values.rbac.clusterRoleBinding.subjects.name }}
