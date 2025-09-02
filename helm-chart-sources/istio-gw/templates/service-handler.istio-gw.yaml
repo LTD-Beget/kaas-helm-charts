@@ -6,6 +6,7 @@ metadata:
   labels:
     component: istio-gw
     jobLabel: istio-gw
+    app.kubernetes.io/instance: {{ .Release.Name }}
   name: istio-gw-metrics
   namespace: {{ .Release.Namespace }}
 spec:
@@ -22,6 +23,6 @@ spec:
     protocol: TCP
     targetPort: 15020
   selector:
-    app.kubernetes.io/name: istio-gw
+    app.kubernetes.io/instance: {{ .Release.Name }}
   type: ClusterIP
 {{- end }}

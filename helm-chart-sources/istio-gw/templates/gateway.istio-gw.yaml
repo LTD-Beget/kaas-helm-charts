@@ -1,27 +1,46 @@
-{{- if .Values.extraGateway.enabled }}
+{{- $gw := .Values.extraGateway | default (dict) -}}
+{{- if $gw.enabled }}
 ---
 apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: {{ default "default" .Values.extraGateway.name }}
   namespace: {{ .Release.Namespace }}
+  {{- with $gw.labels }}
+  labels:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $gw.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
-    istio: gw
+  {{- if $gw.selector }}
+    {{ toYaml $gw.selector | nindent 4 }}
+  {{- else }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- end }}
+  {{- $servers := ($gw.servers | default (list (dict "hosts" (list "*") "port" (dict "protocol" "HTTP")))) }}
   servers:
+  {{- range $srv := $servers }}
+    {{- $proto := (upper ($srv.port.protocol | default "HTTP")) }}
     - hosts:
+      {{- if $srv.hosts }}
+        {{- toYaml $srv.hosts | nindent 8 }}
+      {{- else }}
         - "*"
+      {{- end }}
       port:
-        name: https
-        number: 443
-        protocol: HTTPS
+        protocol: {{ $proto }}
+        name: {{ $srv.port.name | default (ternary "https" "http" (eq $proto "HTTPS")) }}
+        number: {{ $srv.port.number | default (ternary 443 80 (eq $proto "HTTPS")) }}
+      {{- with $srv.tls }}
       tls:
-        credentialName: {{ .Values.extraGateway.servers.tls.credentialName }}
-        mode: {{ .Values.extraGateway.servers.tls.mode }}
-    - hosts:
-        - "*"
-      port:
-        name: http
-        number: 80
-        protocol: HTTP
+        {{- if and (eq $proto "HTTPS") (not .credentialName) }}
+        {{- fail (printf "Gateway %q: servers[].tls.credentialName is required for HTTPS" ($gw.name | default (printf "%s-extra" $.Release.Name))) }}
+        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- end }}
 {{- end }}

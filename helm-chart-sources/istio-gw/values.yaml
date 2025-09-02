@@ -2,7 +2,7 @@ gateway: {}
 
 
 monitoring:
-  enabled: false
+  enabled: true
   type: VictoriaMetrics
   namespace: default
 
@@ -27,9 +27,15 @@ extraGateway:
   enabled: false
   name: default
   servers:
-    tls:
-      credentialName: default-secret
-      mode: SIMPLE
+    - hosts: ["*"]
+      port:
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: default-secret
+    - hosts: ["*"]
+      port:
+        protocol: HTTP 
 
 telemetry:
   enabled: false

@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      component: istio-gw
+      app.kubernetes.io/instance: {{ .Release.Name }}
   endpoints:
     - port: metrics
       path: /stats/prometheus
