@@ -1,0 +1,7 @@
+trivy-operator: {}
+# some values for metallb
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default

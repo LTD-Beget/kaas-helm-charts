@@ -3,7 +3,7 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: trust-manager
+  name: trivy-operator
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
@@ -11,6 +11,5 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   endpoints:
     - port: metrics
-  jobLabel: "app.kubernetes.io/name"
-
+  jobLabel: jobLabel
 {{- end }}
