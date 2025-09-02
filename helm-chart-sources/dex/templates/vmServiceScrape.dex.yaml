@@ -10,7 +10,7 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: {{ .Release.Name }}
   endpoints:
-    - port: http
+    - port: telemetry
       path: /metrics
   jobLabel: "app.kubernetes.io/name"
 {{- end }}
