@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name | default "etcd-config" }}
+  namespace: {{ .Release.Namespace }}
+data:
+  etcd.conf.yaml: |
+{{ .Values.configmap.etcdConfig | indent 4 }}

@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.app.name | default "etcd-backup-snapshot" }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.app.labels.app | default "etcd-backup-snapshot" }}
+    {{- with .Values.app.labels.extra }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- with .Values.app.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.app.revisionHistoryLimit | default 10 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.labels.app | default "etcd-backup-snapshot" }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.labels.app | default "etcd-backup-snapshot" }}
+    spec:
+      {{- with .Values.app.serviceAccountName }}
+      serviceAccountName: {{ . }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.app.automountServiceAccountToken | default false }}
+      hostNetwork: {{ .Values.app.hostNetwork | default false }}
+      dnsPolicy: {{ .Values.app.dnsPolicy | default "ClusterFirstWithHostNet" }}
+      containers:
+        - name: {{ .Values.app.container.name | default "etcdbrctl" }}
+          image: "{{ .Values.app.image.repository | default "europe-docker.pkg.dev/gardener-project/releases/gardener/etcdbrctl" }}:{{ .Values.app.image.tag | default "v0.36.3" }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            {{- if .Values.app.command }}
+            {{- toYaml .Values.app.command | nindent 12 }}
+            {{- else }}
+            - /etcdbrctl
+            - server
+            {{- end }}
+          {{- if .Values.app.args }}
+          args:
+          {{- toYaml .Values.app.args | nindent 12 }}
+          {{- end }}
+          env:
+          - name: NODE_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.hostIP
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: AWS_APPLICATION_CREDENTIALS
+            value: {{ .Values.app.volumeMountsPaths.secretMountPath | default "/var/etcd-backup" }}
+          - name: "AWS_ENDPOINT_URL_S3"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secret.name | default "etcd-backup" }}
+                key: "endpoint"
+                optional: true
+          {{- if .Values.app.resources }}
+          resources:
+          {{- toYaml .Values.app.resources | nindent 12 }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: {{ .Values.app.container.readOnlyRootFilesystem | default false }}
+            runAsGroup: {{ .Values.app.container.runAsGroup | default 0 }}
+            runAsNonRoot: {{ .Values.app.container.runAsNonRoot | default false }}
+            runAsUser: {{ .Values.app.container.runAsUser | default 0 }}
+          volumeMounts:
+          - name: etcd-pki
+            mountPath: {{ .Values.app.volumeMountsPaths.etcdPKIMountPath | default "/etc/etcd-pki" }}
+            readOnly: true
+          - name: etcd-config
+            mountPath: /var/etcd/config
+            readOnly: true
+          - name: etcd-backup
+            mountPath: {{ .Values.app.volumeMountsPaths.secretMountPath | default "/var/etcd-backup" }}
+      nodeSelector:
+        {{- if .Values.app.nodeSelector }}
+        {{- toYaml .Values.app.nodeSelector | nindent 8 }}
+        {{- else }}
+        node-role.kubernetes.io/control-plane: ""
+        {{- end }}
+      tolerations:
+        {{- if .Values.app.tolerations }}
+        {{- toYaml .Values.app.tolerations | nindent 8 }}
+        {{- else }}
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        {{- end }}
+      volumes:
+      - name: etcd-pki
+        hostPath:
+          path: /etc/kubernetes/pki/etcd
+          type: Directory
+      - name: etcd-config
+        configMap:
+          name: {{ .Values.configmap.name | default "etcd-config" }}
+          items:
+            - key: etcd.conf.yaml
+              path: etcd.conf.yaml
+      - name: etcd-backup
+        projected:
+          defaultMode: 0440
+          sources:
+          - secret:
+              name: {{ .Values.secret.name | default "etcd-backup" }}
+              optional: false

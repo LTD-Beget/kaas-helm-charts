@@ -1,0 +1,103 @@
+configmap:
+  name: etcd-config
+  etcdConfig: |
+    name: default
+    data-dir: default.etcd
+    listen-client-urls: http://127.0.0.1:2379
+    listen-peer-urls:   http://127.0.0.1:2380
+    # минимальные bootstrap-поля
+    initial-advertise-peer-urls:
+      default:
+      - http://127.0.0.1:2380
+    initial-cluster: default=http://127.0.0.1:2380
+    initial-cluster-token: etcd-cluster
+    initial-cluster-state: new
+
+secret:
+  name: etcd-backup
+  namespace: kube-system
+  s3:
+    region: us-east-1
+    accessKeyID: mykey
+    secretAccessKey: mysecret
+    endpoint: my-endpoint
+    s3ForcePathStyle: "true"
+
+app:
+  name: etcd-backup-snapshot
+  labels:
+    app: etcd-backup-snapshot
+    extra: {}
+  annotations: {}
+  revisionHistoryLimit: 10
+
+  image:
+    repository: europe-docker.pkg.dev/gardener-project/releases/gardener/etcdbrctl
+    tag: v0.36.3
+    pullPolicy: IfNotPresent
+
+  command:
+    - /etcdbrctl
+    - server
+
+  args:
+    - --use-etcd-wrapper=false
+    - --schedule=*/20 * * * *
+    - --delta-snapshot-period=10m
+    - --storage-provider=S3
+    - --store-container=default-bucket
+    - --store-prefix=etcd
+    - --garbage-collection-period=1h
+    - --max-backups=6
+    - --garbage-collection-policy=Exponential
+    - --compression-policy=gzip
+    - --compress-snapshots=true
+    - --etcd-snapshot-timeout=8m
+    - --etcd-defrag-timeout=8m
+    - --etcd-connection-timeout=30s
+    - --delta-snapshot-memory-limit=204857600
+    - --endpoints='https://${NODE_IP}:2379'
+    - --server-port=18080
+    - --cacert=/etc/etcd-pki/ca.crt
+    - --cert=/etc/etcd-pki/healthcheck-client.crt
+    - --key=/etc/etcd-pki/healthcheck-client.key
+    - --max-parallel-chunk-uploads=1
+    - --min-chunk-size=16777212
+    - --defragmentation-schedule=*/30 * * * *
+
+  container:
+    name: etcdbrctl
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+
+  automountServiceAccountToken: false
+  hostNetwork: false
+  dnsPolicy: ClusterFirst
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  volumeMountsPaths:
+    etcdPKIMountPath: /etc/etcd-pki
+    secretMountPath: /var/etcd-backup
+
+  envFromSecret: false
+
+
+# monitoring:
+#   enabled: false
+#   type: VictoriaMetrics
+#   namespace: default
