@@ -14,3 +14,8 @@ istio:
       route:
         host: incloud-ui-oauth2-proxy
         port: 80
+      
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
