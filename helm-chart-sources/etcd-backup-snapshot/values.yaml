@@ -15,7 +15,6 @@ configmap:
 
 secret:
   name: etcd-backup
-  namespace: kube-system
   s3:
     region: us-east-1
     accessKeyID: mykey
@@ -77,10 +76,7 @@ app:
   dnsPolicy: ClusterFirst
   nodeSelector:
     node-role.kubernetes.io/control-plane: ""
-  tolerations:
-    - key: node-role.kubernetes.io/control-plane
-      operator: Exists
-      effect: NoSchedule
+  tolerations: {}
 
   resources:
     limits:

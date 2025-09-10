@@ -88,19 +88,13 @@ spec:
             readOnly: true
           - name: etcd-backup
             mountPath: {{ .Values.app.volumeMountsPaths.secretMountPath | default "/var/etcd-backup" }}
-      nodeSelector:
         {{- if .Values.app.nodeSelector }}
+      nodeSelector:
         {{- toYaml .Values.app.nodeSelector | nindent 8 }}
-        {{- else }}
-        node-role.kubernetes.io/control-plane: ""
         {{- end }}
-      tolerations:
         {{- if .Values.app.tolerations }}
+      tolerations:
         {{- toYaml .Values.app.tolerations | nindent 8 }}
-        {{- else }}
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
         {{- end }}
       volumes:
       - name: etcd-pki
