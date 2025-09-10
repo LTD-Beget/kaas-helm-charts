@@ -55,7 +55,7 @@ app:
     - --etcd-defrag-timeout=8m
     - --etcd-connection-timeout=30s
     - --delta-snapshot-memory-limit=204857600
-    - --endpoints='https://${NODE_IP}:2379'
+    - --endpoints='https://$(NODE_IP):2379'
     - --server-port=18080
     - --cacert=/etc/etcd-pki/ca.crt
     - --cert=/etc/etcd-pki/healthcheck-client.crt
