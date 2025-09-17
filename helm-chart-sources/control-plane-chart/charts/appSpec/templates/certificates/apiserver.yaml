@@ -5,7 +5,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: apiserver
-  namespace: beget-system
+  namespace: {{ $.Release.Namespace }}
 spec:
   secretName: apiserver-tls
   duration: 8760h

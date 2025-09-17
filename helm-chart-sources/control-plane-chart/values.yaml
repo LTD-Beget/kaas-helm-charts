@@ -601,6 +601,120 @@ appSpec:
                   subPath: ca.key
                   readOnly: true
 
+        konnectivityServer:
+          enabled: true
+          tls:
+            server: true
+            kubeconfig: true
+          name: konnectivity
+          image:
+            repository: gcr.io/k8s-staging-kas-network-proxy/proxy-server
+            tag: master
+            pullPolicy: IfNotPresent
+          certIPs:
+            - "127.0.0.1"
+          extraArgs:
+            logtostderr: true
+            delete-existing-uds-file: null
+            mode: grpc
+            server-port: 8130
+            agent-port: 8132
+            admin-port: 8133
+            health-port: 8134
+            agent-namespace: kube-system
+            agent-service-account: konnectivity-agent
+            authentication-audience: system:konnectivity-server
+            cluster-cert: /tls/tls.crt
+            cluster-key: /tls/tls.key
+            server-key: /tls/tls.key
+            server-cert: /tls/tls.crt
+            server-ca-cert: /tls/ca.crt
+            v: 8
+            enable-lease-controller: null
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              host: 127.0.0.1
+              path: /healthz
+              port: 8134
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 60
+            successThreshold: 1
+
+          readinessProbeEnabled: false
+
+          extraPorts:
+            agent:
+              containerPort: 8132
+              hostPort: 8132
+              protocol: TCP
+            admin:
+              containerPort: 8133
+              hostPort: 8133
+              protocol: TCP
+            health:
+              containerPort: 8134
+              hostPort: 8134
+              protocol: TCP
+
+          extraResources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            privileged: true
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          extraVolumeMounts:
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            konnectivity-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/konnectivity-server.conf
+                spec:
+                  subPath: konnectivity-server.conf
+                  readOnly: true
+            konnectivity-server-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/tls.crt
+                spec:
+                  subPath: tls.crt
+                  readOnly: true
+            konnectivity-server-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/tls.key
+                spec:
+                  subPath: tls.key
+                  readOnly: true
+            konnectivity-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/konnectivity-client.crt
+                spec:
+                  subPath: tls.crt
+                  readOnly: true
+            konnectivity-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/konnectivity-client.key
+                spec:
+                  subPath: tls.key
+                  readOnly: true
+
+
       extraHostNetwork: false
 
       extraPriority: 2000001000
@@ -701,6 +815,39 @@ appSpec:
                 path: sa.pub
             name: sa
 
+        konnectivity-server-crt:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+            name: konnectivity-server-crt
+        konnectivity-server-key:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.key
+                path: tls.key
+            name: konnectivity-server-key
+        konnectivity-client-crt:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+            name: konnectivity-client-crt
+        konnectivity-client-key:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.key
+                path: tls.key
+            name: konnectivity-client-key
+
         audit-log:
           volume:
             mode: emptyDir
@@ -755,6 +902,33 @@ appSpec:
                   user:
                     client-certificate: /etc/kubernetes/pki/scheduler.crt
                     client-key: /etc/kubernetes/pki/scheduler.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context
+
+        konnectivity-kubeconfig:
+          volume:
+            mode: configMap
+            name: konnectivity-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:26443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/konnectivity-client.crt
+                    client-key: /etc/kubernetes/pki/konnectivity-client.key
                 contexts:
                 - name: my-context
                   context:

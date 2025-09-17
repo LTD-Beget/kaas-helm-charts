@@ -1,26 +1,23 @@
 {{- range $appName, $appValue := .Values.applications }}
-  {{- if and $appValue.enabled (not (dig "csiDriver" false $appValue)) }}
+  {{- if $appValue.containers.konnectivityServer.tls.server }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: apiserver-kubelet-client
+  name: konnectivity-cluster-server
   namespace: {{ $.Release.Namespace }}
 spec:
-  secretName: apiserver-kubelet-client-tls
+  secretName: konnectivity-cluster-server-tls
   duration: 8760h
   renewBefore: 1460h
-  commonName: kube-apiserver-kubelet-client
-  subject:
-    organizations:
-      - kubeadm:cluster-admins
+  usages: ["digital signature","key encipherment","server auth"]
+  ipAddresses:
+    {{- range $ip := $appValue.containers.konnectivityServer.certIPs }}
+    - {{ $ip | quote }}
+    {{- end }}
   privateKey:
     algorithm: RSA
     size: 2048
-  usages:
-    - key encipherment
-    - data encipherment
-    - client auth
   issuerRef:
     name: kubernetes-ca
     kind: ClusterIssuer

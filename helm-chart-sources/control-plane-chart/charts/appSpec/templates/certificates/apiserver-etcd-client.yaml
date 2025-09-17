@@ -5,7 +5,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: apiserver-etcd-client
-  namespace: beget-system
+  namespace: {{ $.Release.Namespace }}
 spec:
   secretName: apiserver-etcd-client-tls
   duration: 8760h
