@@ -3,14 +3,14 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: grafana
+  name: konnectivity-server
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: grafana
+      app.kubernetes.io/name: konnectivity-server
   endpoints:
-    - port: grafana
+    - port: konnectivity-server
       path: /metrics
   jobLabel: "app.kubernetes.io/name"
 {{- end }}
