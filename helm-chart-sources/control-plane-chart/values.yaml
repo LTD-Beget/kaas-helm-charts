@@ -688,7 +688,7 @@ appSpec:
               volumeMount:
                 path: /etc/kubernetes/konnectivity-server.conf
                 spec:
-                  subPath: konnectivity-server.conf
+                  subPath: konnectivity-kubeconfig
                   readOnly: true
             konnectivity-server-crt:
               volumeMount:
