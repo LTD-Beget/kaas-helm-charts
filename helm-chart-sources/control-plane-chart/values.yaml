@@ -624,11 +624,11 @@ appSpec:
             agent-namespace: kube-system
             agent-service-account: konnectivity-agent
             authentication-audience: system:konnectivity-server
-            cluster-cert: /tls/tls.crt
-            cluster-key: /tls/tls.key
-            server-key: /tls/tls.key
-            server-cert: /tls/tls.crt
-            server-ca-cert: /tls/ca.crt
+            cluster-cert: /etc/kubernetes/pki/tls.crt
+            cluster-key: /etc/kubernetes/pki/tls.key
+            server-key: /etc/kubernetes/pki/tls.key
+            server-cert: /etc/kubernetes/pki/tls.crt
+            server-ca-cert: /etc/kubernetes/pki/ca.crt
             v: 8
             enable-lease-controller: null
 
