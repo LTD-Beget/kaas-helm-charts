@@ -1,0 +1,179 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: gcr.io/k8s-staging-kas-network-proxy/proxy-server
+  tag: master
+  pullPolicy: IfNotPresent
+
+labels: {}
+annotations: {}
+
+podLabels: {}
+podAnnotations: {}
+
+hostNetwork: true
+dnsPolicy: ClusterFirst
+priorityClassName: system-cluster-critical
+
+# Tolerations/affinity/nodeSelector опционально
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+nodeSelector: {}
+affinity: {}
+
+# Контейнер
+container:
+  name: server
+  securityContext:
+    privileged: true
+    runAsUser: 0
+    runAsGroup: 0
+  resources: {}  # requests/limits при необходимости
+
+# Аргументы сервера — как в исходном манифесте, но без хардкода в шаблоне
+server:
+  extraArgs:
+    logtostderr: true
+    delete-existing-uds-file: null
+    mode: grpc
+    server-port: 8130
+    agent-port: 8132
+    admin-port: 8133
+    health-port: 8134
+    agent-namespace: kube-system
+    agent-service-account: konnectivity-agent
+    authentication-audience: system:konnectivity-server
+    cluster-cert: /tls/tls.crt
+    cluster-key: /tls/tls.key
+    server-key: /tls/tls.key
+    server-cert: /tls/tls.crt
+    server-ca-cert: /tls/ca.crt
+    v: 8
+    enable-lease-controller: null
+  ports:
+    - name: agent
+      containerPort: 8132
+      hostPort: 8132
+      protocol: TCP
+    - name: admin
+      containerPort: 8133
+      hostPort: 8133
+      protocol: TCP
+    - name: health
+      containerPort: 8134
+      hostPort: 8134
+      protocol: TCP
+
+  livenessProbe:
+    httpGet:
+      host: 127.0.0.1
+      path: /healthz
+      port: 8134
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 60
+    successThreshold: 1
+    failureThreshold: 3
+
+# volumeMounts (минимум: tls, kubeconfig, uds). Можно добавлять extraMounts/extraVolumes
+volumeMounts:
+  - name: tls
+    mountPath: /tls
+    readOnly: true
+  - name: kubeconfig
+    mountPath: /etc/kubernetes/konnectivity-server.conf
+    readOnly: true
+    subPath: konnectivity-server.conf
+  - name: konnectivity-client
+    mountPath: /etc/kubernetes/pki/konnectivity-client.crt
+    subPath: tls.crt
+    readOnly: true
+  - name: konnectivity-client
+    mountPath: /etc/kubernetes/pki/konnectivity-client.key
+    subPath: tls.key
+    readOnly: true
+  # - name: konn-uds
+  #   mountPath: /etc/kubernetes/konnectivity-server
+
+volumes:
+  tls:
+    secret:
+      secretName: konnectivity-cluster-server
+      defaultMode: 420
+  kubeconfig:
+    secret:
+      secretName: konnectivity-server-kubeconfig
+      defaultMode: 420
+  konnectivity-client:
+    secret:
+      secretName: konnectivity-client
+      defaultMode: 420
+  # konnUds:
+  #   hostPath:
+  #     path: /etc/kubernetes/konnectivity-server
+  #     type: DirectoryOrCreate
+
+extraVolumes: []
+extraVolumeMounts: []
+
+
+certificate:
+  enabled: true
+  name: konnectivity-cluster-server
+  secretName: konnectivity-cluster-server
+  usages: ["digital signature","key encipherment","server auth"]
+  duration: 8760h
+  renewBefore: 1460h
+  # опционально
+  commonName: ""
+  dnsNames: {}
+  ipAddresses:  {}
+  issuerRef:
+    name: kubernetes-ca
+    kind: ClusterIssuer
+    group: cert-manager.io  # опционально
+
+clientCertificate:
+  enabled: true
+  name: konnectivity-client
+  secretName: konnectivity-client
+  # subject (опционально)
+  commonName: konnectivity-client
+  organizations: []          # напр. ["system:masters"] если хотим кластер-админа (осторожно!)
+  organizationalUnits: []    # OU по желанию
+  issuerRef:
+    name: kubernetes-ca
+    kind: ClusterIssuer
+    group: cert-manager.io
+  usages: ["client auth","key encipherment","digital signature"]
+  duration: 8760h
+  renewBefore: 1460h
+  privateKey:
+    algorithm: RSA
+    size: 2048
+
+kubeconfig:
+  enabled: true
+  name: konnectivity-server-kubeconfig
+  fileName: konnectivity-server.conf
+
+  clusterName: my-cluster
+  userName: my-user
+  contextName: my-context
+
+  # адрес, по которому konnectivity-server коннектится к целевому API
+  server: https://127.0.0.1:443
+
+  certificateAuthorityPath: /etc/kubernetes/pki/ca.crt
+  clientCertificatePath: /etc/kubernetes/pki/konnectivity-client.crt
+  clientKeyPath: /etc/kubernetes/pki/konnectivity-client.key
+
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default

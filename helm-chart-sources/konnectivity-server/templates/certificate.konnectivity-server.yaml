@@ -1,0 +1,39 @@
+{{- if .Values.certificate.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.certificate.name | default "konnectivity-cluster-server" }}
+  {{- if .Values.certificate.namespace }}
+  namespace: {{ .Release.Namespace }}
+  {{- end }}
+spec:
+  secretName: {{ .Values.certificate.secretName | default "konnectivity-cluster-server" }}
+  {{- with .Values.certificate.usages }}
+  usages:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.certificate.commonName }}
+  commonName: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.certificate.dnsNames }}
+  dnsNames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.certificate.ipAddresses }}
+  {{- with .Values.сertificate.duration }}
+  duration: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.сertificate.renewBefore }}
+  renewBefore: {{ . | quote }}
+  {{- end }}
+  ipAddresses:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  issuerRef:
+    name: {{ .Values.certificate.issuerRef.name | default "kubernetes-ca" }}
+    kind: {{ .Values.certificate.issuerRef.kind | default "ClusterIssuer" }}
+    {{- with .Values.certificate.issuerRef.group }}
+    group: {{ . }}
+    {{- end }}
+{{- end }}
