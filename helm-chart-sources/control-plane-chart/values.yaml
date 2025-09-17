@@ -624,6 +624,7 @@ appSpec:
             agent-namespace: kube-system
             agent-service-account: konnectivity-agent
             authentication-audience: system:konnectivity-server
+            kubeconfig: /etc/kubernetes/konnectivity-server.conf
             cluster-cert: /etc/kubernetes/pki/tls.crt
             cluster-key: /etc/kubernetes/pki/tls.key
             server-key: /etc/kubernetes/pki/tls.key
