@@ -671,7 +671,7 @@ appSpec:
             seccompProfile:
               type: RuntimeDefault
             allowPrivilegeEscalation: false
-            privileged: true
+            privileged: false
             runAsNonRoot: false
             runAsGroup: 0
             runAsUser: 0
