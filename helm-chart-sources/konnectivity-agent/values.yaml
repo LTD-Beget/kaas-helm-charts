@@ -1,0 +1,117 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: us.gcr.io/k8s-artifacts-prod/kas-network-proxy/proxy-agent
+  tag: v0.0.36
+  pullPolicy: IfNotPresent
+
+labels: {}
+annotations: {}
+
+podLabels: {}
+podAnnotations: {}
+
+hostNetwork: false
+dnsPolicy: ClusterFirst
+priorityClassName: system-cluster-critical
+
+tolerations: {}
+nodeSelector: {}
+affinity: {}
+
+container:
+  name: agent
+  securityContext:
+    privileged: true
+    runAsUser: 0
+    runAsGroup: 0
+  resources: {}  # requests/limits при необходимости
+
+agent:
+  extraArgs:
+    logtostderr: true
+    v: 8
+    ca-cert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    proxy-server-host: 44.44.44.44  # IP или DNS LB
+    proxy-server-port: 8132
+    admin-server-port: 8133
+    health-server-port: 8134
+    service-account-token-path: /var/run/secrets/tokens/konnectivity-agent-token
+  ports:
+    - name: agent
+      containerPort: 8132
+      hostPort: 8132
+      protocol: TCP
+    - name: admin
+      containerPort: 8133
+      hostPort: 8133
+      protocol: TCP
+    - name: health
+      containerPort: 8134
+      hostPort: 8134
+      protocol: TCP
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8134
+      scheme: HTTP
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 15
+    successThreshold: 1
+    failureThreshold: 3
+
+volumeMounts:
+  - name: tls
+    mountPath: /tls
+    readOnly: true
+
+volumes:
+  tls:
+    secret:
+      secretName: konnectivity-cluster-server
+      defaultMode: 420
+  kubeconfig:
+    secret:
+      secretName: konnectivity-server-kubeconfig
+      defaultMode: 420
+  konnectivity-client:
+    secret:
+      secretName: konnectivity-client
+      defaultMode: 420
+
+extraVolumes: []
+extraVolumeMounts: []
+
+serviceAccount:
+  create: true
+  name: konnectivity-agent
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+  annotations: {}
+
+# Проецируемый токен с нужной audience
+projectedToken:
+  enabled: true
+  volumeName: konnectivity-agent-token
+  mountPath: /var/run/secrets/tokens
+  audience: system:konnectivity-server
+  expirationSeconds: 3600
+  path: konnectivity-agent-token
+
+rbac:
+  create: true
+  clusterRoleBindingName: system:konnectivity-server
+  subjectUser: system:konnectivity-server
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default

@@ -16,7 +16,6 @@ hostNetwork: true
 dnsPolicy: ClusterFirst
 priorityClassName: system-cluster-critical
 
-# Tolerations/affinity/nodeSelector опционально
 tolerations:
   - key: node-role.kubernetes.io/control-plane
     operator: Exists
@@ -24,7 +23,6 @@ tolerations:
 nodeSelector: {}
 affinity: {}
 
-# Контейнер
 container:
   name: server
   securityContext:
@@ -33,7 +31,6 @@ container:
     runAsGroup: 0
   resources: {}  # requests/limits при необходимости
 
-# Аргументы сервера — как в исходном манифесте, но без хардкода в шаблоне
 server:
   extraArgs:
     logtostderr: true
@@ -79,7 +76,7 @@ server:
     successThreshold: 1
     failureThreshold: 3
 
-# volumeMounts (минимум: tls, kubeconfig, uds). Можно добавлять extraMounts/extraVolumes
+# volumeMounts (минимум: tls, kubeconfig). Можно добавлять extraMounts/extraVolumes
 volumeMounts:
   - name: tls
     mountPath: /tls
@@ -128,7 +125,6 @@ certificate:
   usages: ["digital signature","key encipherment","server auth"]
   duration: 8760h
   renewBefore: 1460h
-  # опционально
   commonName: ""
   dnsNames: {}
   ipAddresses:  {}
@@ -141,7 +137,6 @@ clientCertificate:
   enabled: true
   name: konnectivity-client
   secretName: konnectivity-client
-  # subject (опционально)
   commonName: konnectivity-client
   organizations: []          # напр. ["system:masters"] если хотим кластер-админа (осторожно!)
   organizationalUnits: []    # OU по желанию
