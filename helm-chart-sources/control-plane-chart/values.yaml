@@ -714,9 +714,7 @@ appSpec:
         nodePort: 30000
         additional:
           enabled: false
-          type: LoadBalancer
-          annotations:
-            metallb.io/ip-allocated-from-pool: "default"
+          type: NodePort
 
 
       tolerations:
