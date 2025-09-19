@@ -819,7 +819,7 @@ appSpec:
         konnectivity-client-crt:
           volume:
             mode: secret
-            secretName: konnectivity-cluster-server-tls
+            secretName: konnectivity-client
             items:
               - key: tls.crt
                 path: tls.crt
@@ -827,7 +827,7 @@ appSpec:
         konnectivity-client-key:
           volume:
             mode: secret
-            secretName: konnectivity-cluster-server-tls
+            secretName: konnectivity-client
             items:
               - key: tls.key
                 path: tls.key
