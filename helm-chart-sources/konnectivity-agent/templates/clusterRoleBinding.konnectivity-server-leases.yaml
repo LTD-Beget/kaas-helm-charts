@@ -4,7 +4,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: konnectivity-server-lease
-  namespace: {{ .Release.Namespace | default "kube-system" }}
   {{- with .Values.rbac.labels }}
   labels:
     {{- toYaml . | nindent 4 }}
@@ -15,7 +14,7 @@ subjects:
     name: {{ .Values.rbac.subjectUser | default "system:konnectivity-server" }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: ClusterRole
   name: konnectivity-server-lease
 {{- end }}
 
