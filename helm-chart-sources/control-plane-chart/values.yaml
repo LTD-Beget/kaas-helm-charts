@@ -639,7 +639,7 @@ appSpec:
             httpGet:
               path: /healthz
               port: 8134
-              scheme: HTTPS
+              scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 60
