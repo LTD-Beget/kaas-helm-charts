@@ -10,9 +10,9 @@ metadata:
   labels:
       {{- include "appSpec.labels" $ | nindent 4 }}
       {{- include "appSpec.applicationSelectorLabels" (list $appValue.name $) | nindent 4 }}
-  annotations:
       {{- $annotations := $appValue.service.additional.annotations | default dict }}
       {{- if $annotations }}
+  annotations:
         {{- range $key, $value := $annotations }}
     {{ $key }}: {{ $value | quote -}}
         {{- end }}
@@ -22,18 +22,27 @@ spec:
       {{- include "appSpec.applicationSelectorLabels" (list $appValue.name $) | nindent 4 }}
  
   ports:
+    {{- if $appValue.service.additional.ports }}
+      {{- range $i, $p := $appValue.service.additional.ports }}
+    - name: {{ $p.name }}
+      port: {{ $p.port }}
+      targetPort: {{ $p.targetPort | default $p.port }}
+      protocol: {{ $p.protocol | default "TCP" }}
+        {{- if hasKey $p "nodePort" }}
+      nodePort: {{ $p.nodePort }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
       {{- range $containerName, $containerValue := $appValue.containers }}
         {{- range $portName, $portValue := $containerValue.extraPorts }}
           {{- $portNameLower := lower $portName }}
-    - name: {{ if eq $portNameLower "ingress" }}ingress{{- else }}{{ $containerValue.name }}-{{ $portName }}{{- end }}
+    - name: {{ if eq $portNameLower "ingress" }}ingress{{ else }}{{ $containerValue.name }}-{{ $portName }}{{ end }}
       port: {{ $portValue.containerPort }}
       targetPort: {{ $portValue.containerPort }}
-      protocol: {{ $portValue.protocol }}
-          {{- if hasKey $appValue.service.additional "nodePort" }}
-      nodePort: {{ $appValue.service.additional.nodePort }}
-          {{- end }}
+      protocol: {{ $portValue.protocol | default "TCP" }}
         {{- end }}
       {{- end }}
+    {{- end }}      
 
   type: {{ $appValue.service.additional.type | default "LoadBalancer" }}
 

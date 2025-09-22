@@ -63,24 +63,9 @@ agent:
     successThreshold: 1
     failureThreshold: 3
 
-volumeMounts:
-  - name: tls
-    mountPath: /tls
-    readOnly: true
+volumeMounts: {}
 
-volumes:
-  tls:
-    secret:
-      secretName: konnectivity-cluster-server
-      defaultMode: 420
-  kubeconfig:
-    secret:
-      secretName: konnectivity-server-kubeconfig
-      defaultMode: 420
-  konnectivity-client:
-    secret:
-      secretName: konnectivity-client
-      defaultMode: 420
+volumes: {}
 
 extraVolumes: []
 extraVolumeMounts: []

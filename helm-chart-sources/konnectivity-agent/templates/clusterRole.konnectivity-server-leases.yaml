@@ -1,0 +1,24 @@
+{{- if .Values.rbac.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: konnectivity-server-lease
+  {{- with .Values.rbac.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+  # Leader election через Leases
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # Логирование событий (рекомендуется, но можно выкинуть если не нужно)
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch", "update"]
+  - apiGroups: ["events.k8s.io"]
+    resources: ["events"]
+    verbs: ["create", "patch", "update"]
+{{- end }}
+
