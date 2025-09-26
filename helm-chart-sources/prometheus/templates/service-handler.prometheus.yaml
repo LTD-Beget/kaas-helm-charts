@@ -7,7 +7,7 @@ metadata:
     component: prometheus
     jobLabel: prometheus
   name: prometheus-server-metrics
-  namespace: {{ .Values.monitoring.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   clusterIP: None
   clusterIPs:
