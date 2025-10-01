@@ -7,7 +7,7 @@ metadata:
     component: metallb
     jobLabel: metallb
   name: metallb-metrics
-  namespace: {{ .Values.monitoring.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   clusterIP: None
   clusterIPs:

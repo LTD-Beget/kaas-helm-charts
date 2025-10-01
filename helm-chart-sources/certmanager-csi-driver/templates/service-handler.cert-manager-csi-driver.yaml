@@ -7,7 +7,7 @@ metadata:
     component: cert-manager-csi-driver
     jobLabel: cert-manager-csi-driver
   name: certmanager-csi-driver
-  namespace: {{ .Values.monitoring.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   clusterIP: None
   clusterIPs:
