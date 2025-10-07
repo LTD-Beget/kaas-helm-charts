@@ -1,0 +1,12 @@
+---
+apiVersion: clusterctl.cluster.x-k8s.io/v1alpha3
+kind: Provider
+metadata:
+  labels:
+    {{- include "bcloud-capi-kubeadm-control-plane.labels" . | nindent 4 }}
+    clusterctl.cluster.x-k8s.io/core: inventory
+  name: control-plane-kubeadm
+  namespace: {{ .Release.Namespace }}
+providerName: kubeadm
+type: ControlPlaneProvider
+version: {{ .Chart.AppVersion }}

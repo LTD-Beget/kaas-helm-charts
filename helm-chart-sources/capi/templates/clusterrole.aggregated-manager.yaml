@@ -1,0 +1,12 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "bcloud-capi.labels" . | nindent 4 }}
+  name: {{ include "bcloud-capi.fullname" . }}-aggregated-manager-role
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      cluster.x-k8s.io/aggregate-to-manager: "true"
+rules: []
