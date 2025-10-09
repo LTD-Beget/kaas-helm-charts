@@ -1,0 +1,21 @@
+vault: {}
+
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+
+tls:
+  enabled: false
+  issuer:
+    name: default-issuer-name
+    secretName: default-secret-name
+  certificate:
+    name: vault-tls
+    secretName: vault-tls
+    duration: 8760h
+    renewBefore: 720h
+    commonName: vault
+    dnsNames:
+      - vault.default.svc
+      - vault.default.svc.cluster.local

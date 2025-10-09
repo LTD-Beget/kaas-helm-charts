@@ -1,0 +1,27 @@
+{{- if .Values.tls.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ default "vault-tls" .Values.tls.certificate.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ default "vault-tls" .Values.tls.certificate.secretName }}
+  duration: {{ default "8760h" .Values.tls.certificate.duration }}
+  renewBefore: {{ default "720h" .Values.tls.certificate.renewBefore }}
+  commonName: {{ default "vault" .Values.tls.certificate.commonName }}
+  dnsNames:
+    {{- range $d := .Values.tls.certificate.dnsNames }}
+    - {{ $d | quote }}
+    {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    name: {{ .Values.tls.issuer.name }}
+    kind: ClusterIssuer
+{{- end }}
