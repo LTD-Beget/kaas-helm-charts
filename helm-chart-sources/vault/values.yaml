@@ -6,16 +6,42 @@ monitoring:
   type: VictoriaMetrics
 
 tls:
-  enabled: false
-  issuer:
-    name: default-issuer-name
-    secretName: default-secret-name
-  certificate:
-    name: vault-tls
-    secretName: vault-tls
+  enabled: false   # общий рубильник
+  # Общие дефолты (можно переопределять в server/client)
+  defaults:
     duration: 8760h
     renewBefore: 720h
-    commonName: vault
-    dnsNames:
-      - vault.default.svc
-      - vault.default.svc.cluster.local
+    privateKey:
+      algorithm: RSA
+      size: 2048
+
+  server:
+    enabled: false
+    certificate:
+      name: vault-tls-server
+      secretName: vault-tls
+      commonName: vault
+      dnsNames:
+        - vault.default.svc
+        - vault.default.svc.cluster.local
+      usages:
+        - digital signature
+        - key encipherment
+        - server auth
+    issuer:
+      name: default-server-issuer
+      kind: ClusterIssuer     # или Issuer
+
+  client:
+    enabled: false
+    certificate:
+      name: vault-tls-client
+      secretName: vault-tls-client
+      commonName: vault-client
+      usages:
+        - digital signature
+        - key encipherment
+        - client auth
+    issuer:
+      name: default-client-issuer
+      kind: ClusterIssuer

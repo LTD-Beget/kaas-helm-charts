@@ -1,27 +1,41 @@
-{{- if .Values.tls.enabled }}
+{{- if and .Values.tls.enabled (.Values.tls.client.enabled) }}
+{{- $defaults := .Values.tls.defaults | default dict }}
+{{- $defDuration := $defaults.duration | default "8760h" }}
+{{- $defRenew   := $defaults.renewBefore | default "720h" }}
+{{- $defPK      := $defaults.privateKey | default (dict "algorithm" "RSA" "size" 2048) }}
+
+{{- $cl       := .Values.tls.client | default dict }}
+{{- $clCert   := $cl.certificate | default dict }}
+{{- $clPK     := $clCert.privateKey | default $defPK }}
+{{- $clUsages := $clCert.usages | default (list "digital signature" "key encipherment" "client auth") }}
+{{- $issuer   := $cl.issuer | default dict }}
+
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ default "vault-tls" .Values.tls.certificate.name }}
+  name: {{ default "vault-tls-client" $clCert.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: {{ default "vault-tls" .Values.tls.certificate.secretName }}
-  duration: {{ default "8760h" .Values.tls.certificate.duration }}
-  renewBefore: {{ default "720h" .Values.tls.certificate.renewBefore }}
-  commonName: {{ default "vault" .Values.tls.certificate.commonName }}
+  secretName: {{ default "vault-tls-client" $clCert.secretName }}
+  duration: {{ default $defDuration $clCert.duration }}
+  renewBefore: {{ default $defRenew $clCert.renewBefore }}
+  commonName: {{ default "vault-client" $clCert.commonName }}
+  {{- with $clCert.dnsNames }}
   dnsNames:
-    {{- range $d := .Values.tls.certificate.dnsNames }}
-    - {{ $d | quote }}
+    {{- range . }}
+    - {{ . | quote }}
     {{- end }}
+  {{- end }}
   privateKey:
-    algorithm: RSA
-    size: 2048
+    algorithm: {{ $clPK.algorithm }}
+    size: {{ $clPK.size }}
   usages:
-    - digital signature
-    - key encipherment
-    - client auth
+    {{- range $clUsages }}
+    - {{ . }}
+    {{- end }}
   issuerRef:
-    name: {{ .Values.tls.issuer.name }}
-    kind: ClusterIssuer
+    name: {{ required "tls.client.issuer.name is required" $issuer.name }}
+    kind: {{ default "ClusterIssuer" $issuer.kind }}
+    group: {{ default "cert-manager.io" $issuer.group }}
 {{- end }}
