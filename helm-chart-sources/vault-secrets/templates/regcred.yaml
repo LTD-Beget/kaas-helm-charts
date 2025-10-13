@@ -1,0 +1,19 @@
+{{- if and .Values.regcred.enabled .Values.regcred.items }}
+{{- range $r := .Values.regcred.items }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ required "regcred.items[].name is required" $r.name }}
+  namespace: {{ required "regcred.items[].namespace is required" $r.namespace }}
+type: kubernetes.io/dockerconfigjson
+{{- if $r.isBase64 }}
+data:
+  .dockerconfigjson: "<path:{{ $r.vaultPath }}#{{ default "dockerconfigjson" $r.key }}>"
+{{- else }}
+data:
+  .dockerconfigjson: "<base64:<path:{{ $r.vaultPath }}#{{ default "dockerconfigjson" $r.key }}>>"
+{{- end }}
+---
+{{- end }}
+{{- end }}
