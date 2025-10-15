@@ -1,0 +1,58 @@
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: EnvironmentConfig
+metadata:
+  name: xcertificateset-environment
+data:
+  base:
+    name: ""
+    namespace: ""
+    customer: ""
+  common:
+    annotations: []
+    labels: []
+    namespace: ""
+    providerConfigRef:
+      name: default
+  xcertificates:
+    template:
+      name: ""
+      common:
+        annotations: []
+        labels: []
+        namespace: ""
+        suffix: ""
+
+      certificate:
+        annotations: []
+        dnsNames: []
+        ipAddresses: []
+        isCA: false
+        labels: []
+        name: ""
+        namespace: ""
+        renewBefore: ""
+        rotationPolicy: ""
+        secretLabels: []
+        secretName: ""
+        subjectOrganizations: []
+        usages: []
+
+      issuer:
+        annotations: []
+        kind: ""
+        name: ""
+        labels: []
+        object:
+          name: ""
+        type: ""
+
+      issuerSigner:
+        annotations: []
+        kind: ""
+        name: ""
+        labels: []
+        object:
+          name: ""
+        type: ""
+      providerConfigRef:
+        name: default
