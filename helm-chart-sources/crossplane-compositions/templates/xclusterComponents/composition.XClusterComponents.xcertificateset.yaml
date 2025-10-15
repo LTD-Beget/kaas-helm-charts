@@ -20,7 +20,7 @@ spec:
             ref:
               name: xclustercomponent-environment
 
-    - step: set-environment-addons-{{ $singular }}
+    - step: set-environment-addons-xclustercomponents
       functionRef:
         name: function-patch-and-transform
       input:
