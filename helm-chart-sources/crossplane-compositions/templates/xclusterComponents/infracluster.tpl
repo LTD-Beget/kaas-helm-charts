@@ -1,10 +1,6 @@
 {{- define "xcertificateset.infracluster" -}}
+  {{- include "xcertificateset.variables" . | nindent 0 }}
   {{ printf `
-{{- $environment                                   := index .context "apiextensions.crossplane.io/environment" }}
-{{- $infraName                                     := $environment.infra.name }}
-{{- $trackingID                                    := $environment.trackingID }}
-{{- $namespace                                     := $environment.system.namespace }}
-{{- $customer                                      := $environment.customer }}
 
 {{- $xCertificateSetReady    := "False" -}}
 {{- range (dig "resource" "status" "conditions" (list) (get $.observed.resources "xCertificateSet" | default (dict))) }}
