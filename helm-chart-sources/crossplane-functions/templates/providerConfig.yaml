@@ -1,0 +1,14 @@
+{{- range $componentName, $componentValue := .Values.components }}
+  {{- if $componentValue.enabled }}
+  {{- if eq $componentValue.kind "Provider" }}
+---
+apiVersion: {{ $componentName }}.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+      {{- toYaml $componentValue.providerConfig | nindent 2 }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+

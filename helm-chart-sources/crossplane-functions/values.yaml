@@ -1,0 +1,203 @@
+components:
+  fpat:
+    enabled: true
+    kind: Function
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - pt.fn.crossplane.io
+        resources:
+        - '*'
+        verbs:
+        - '*'
+      - apiGroups:
+        - cluster.x-k8s.io
+        resources:
+        - 'xclusters'
+        - 'clusterclaims'
+        verbs:
+        - '*'
+      - apiGroups:
+        - in-cloud.io
+        resources:
+        - '*'
+        verbs:
+        - '*'
+    name: function-patch-and-transform
+    package: xpkg.crossplane.io/crossplane-contrib/function-patch-and-transform
+    tag: v0.8.2
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}
+
+  far:
+    enabled: true
+    kind: Function
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - '*'
+        resources:
+        - '*'
+        verbs:
+        - get
+        - list
+        - watch
+      - apiGroups:
+        - pt.fn.crossplane.io
+        resources:
+        - '*'
+        verbs:
+        - '*'
+      - apiGroups: 
+        - "cluster.x-k8s.io"
+        resources: 
+        - "xclusters"
+        - "clusterclaims"
+        verbs: 
+        - "*"
+      - apiGroups: 
+        - "kubernetes.crossplane.io"
+        resources: 
+        - "*"
+        verbs: 
+        - "*"
+    name: function-auto-ready
+    package: xpkg.upbound.io/upbound/function-auto-ready
+    tag: v0.4.2
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}
+
+  kubernetes:
+    enabled: true
+    kind: Provider
+    name: provider-kubernetes
+    package: xpkg.upbound.io/upbound/provider-kubernetes
+    tag: v1
+    packagePullPolicy: IfNotPresent
+    providerConfig:
+      credentials:
+        source: InjectedIdentity
+    runtimeConfig: 
+      deploymentTemplate:
+        spec:
+          selector:
+            matchLabels:
+              pkg.crossplane.io/provider: provider-kubernetes
+          template:
+            metadata:
+              annotations:
+                prometheus.io/path: /metrics
+                prometheus.io/port: "8080"
+                prometheus.io/scrape: "true"
+              labels:
+                pkg.crossplane.io/provider: provider-kubernetes
+            spec:
+              containers:
+                - name: package-runtime
+                  args:
+                    - --poll=5s
+                    - --enable-watches
+                    - --poll-jitter-percentage=1
+              securityContext:
+                runAsGroup: 2000
+                runAsNonRoot: true
+                runAsUser: 2000
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - '*'
+        resources:
+        - '*'
+        verbs:
+        - '*'
+
+  argocd:
+    enabled: false
+    kind: Provider
+    name: provider-argocd
+    package: xpkg.upbound.io/crossplane-contrib/provider-argocd
+    providerConfig:
+      credentials:
+        secretRef:
+          key: password
+          name: argocd-initial-admin-secret
+          namespace: argocd
+        source: Secret
+      insecure: true
+      plainText: false
+      serverAddr: argo-cd-argocd-server.argocd.svc:443
+    tag: v0.10.1
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - '*'
+        resources:
+        - '*'
+        verbs:
+        - '*'
+
+  fer:
+    enabled: true
+    kind: Function
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - '*'
+        resources:
+        - '*'
+        verbs:
+        - '*'
+    name: function-extra-resources
+    package: xpkg.upbound.io/crossplane-contrib/function-extra-resources
+    tag: v0.1.0
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}
+
+  fgt:
+    enabled: true
+    kind: Function
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - '*'
+        resources:
+        - '*'
+        verbs:
+        - '*'
+    name: function-go-templating
+    package: xpkg.upbound.io/crossplane-contrib/function-go-templating
+    tag: v0.10.0
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}
+
+  fec:
+    enabled: true
+    kind: Function
+    clusterRoles:
+      enabled: true
+      rules:
+      - apiGroups:
+        - environmentconfigs.fn.crossplane.io
+        resources:
+        - '*'
+        verbs:
+        - '*'
+      - apiGroups:
+        - apiextensions.crossplane.io
+        resources:
+        - 'environmentconfigs'
+        verbs:
+        - '*'
+    name: function-environment-configs
+    package: xpkg.crossplane.io/crossplane-contrib/function-environment-configs
+    tag: v0.4.0
+    packagePullPolicy: IfNotPresent
+    runtimeConfig: {}

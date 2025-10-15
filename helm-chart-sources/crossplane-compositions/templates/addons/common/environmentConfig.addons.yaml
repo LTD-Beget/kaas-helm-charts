@@ -1,0 +1,39 @@
+{{- define "addons.common.environmentConfig" }}
+
+  {{- $name := printf "%s" .name }}
+  {{- $singular := $name | lower}}
+  {{- $singularCamel := include "camelLower" $name }}
+  {{- $singularKebab := kebabcase $name }}
+  {{- $singularSnake := snakecase $name }}
+  {{- $pluralName := printf "%ss" $name }}
+  {{- $plural := printf "%ss" $singular }}
+  {{- $pluralCamel := printf "%ss" $singularCamel }}
+  {{- $pluralKebab := printf "%ss" $singularKebab }}
+  {{- $pluralSnake := printf "%ss" $singularSnake }}
+
+---
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: EnvironmentConfig
+metadata:
+  name: xaddons{{ $singular }}-environment
+data:
+  argocd:
+    destination:
+      name: ""
+      namespace: {{ $singular }}-system
+    namespace: argocd-system
+    project: default
+  cluster:
+    name: ""
+    host: ""
+    port: 0
+    xcluster:
+      name: ""
+  providerConfigRef:
+    name: default
+  trackingID: ""
+  values:
+    version: v1alpha1
+  version: v1alpha1
+
+{{- end }}
