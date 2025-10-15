@@ -1,0 +1,96 @@
+{{- define "goTemplate.xaddonset.currentContext" -}}
+  {{ printf `
+
+{{ $environment     := index .context "apiextensions.crossplane.io/environment" }}
+{{ $baseName        := $environment.base.name }}
+{{ $baseNamespace   := $environment.base.namespace }}
+
+
+{{- $commonArgocdDestinationName      := $environment.common.argocd.destination.name  }}
+{{- $commonArgocdNamespace            := $environment.common.argocd.namespace }}
+{{- $commonClusterName                := $environment.common.cluster.name }}
+{{- $commonClusterHost                := $environment.common.cluster.host }}
+{{- $commonClusterPort                := $environment.common.cluster.port | int}}
+{{- $commonProviderConfigRefName      := $environment.common.providerConfigRef.name }}
+{{- $commonTrackingID                 := $environment.common.trackingID }}
+{{- $commonXcluster                   := $environment.common.xcluster }}
+
+{{- $addons := .observed.composite.resource.spec.addons }}
+
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: {{ $baseName }}-current-context
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: controlPlaneCurrentContext
+    gotemplating.fn.crossplane.io/ready: "True"
+    kubectl.kubernetes.io/last-applied-configuration: ""
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        annotations:
+          argocd.argoproj.io/tracking-id: {{ $commonTrackingID }}
+        name: {{ $baseName }}-current-context
+        namespace: {{ $baseNamespace }}
+      data:
+        addons: |
+{{- range $addons }}
+
+  {{- $apiVersion := .apiVersion }}
+  {{- $kind := .kind }}
+  {{- $name := printf "%%s-%%s" $commonClusterName (.name) }}
+  {{- $namespace := .namespace }}
+  {{- $values := .values }}
+  {{- $version := .version }}
+          ---
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            forProvider:
+              manifest:
+                apiVersion: {{ $apiVersion }}
+                kind: {{ $kind }}
+                metadata:
+                  name: {{ $name }}
+                  namespace: {{ $baseNamespace }}
+                spec:
+                  argocd:
+                    destination:
+                      name: {{ $commonArgocdDestinationName }}
+                      namespace: {{ $namespace }}
+                    namespace: {{ $commonArgocdNamespace }}
+                    trackingID: {{ $commonTrackingID }}
+                  cluster: 
+                    name: {{ $commonClusterName }}
+                    host: {{ $commonClusterHost }}
+                    port: {{ $commonClusterPort }}
+                  compositeDeletePolicy: Foreground
+                  values:
+                    monitoring:
+                      enabled: false
+                      namespace: {{ $namespace }}
+                      type: VictoriaMetrics
+                  version: v1alpha1
+                  xcluster: {{ $commonXcluster }}
+            managementPolicies:
+              - '*'
+            providerConfigRef:
+              name: {{ $commonProviderConfigRefName }}
+            readiness:
+              policy: SuccessfulCreate
+            watch: false
+          metadata:
+            name: {{ $name }}
+{{- end }}
+
+{{- with (index .context "apiextensions.crossplane.io/environment") }}
+        context.apiextensions.crossplane.io-environment: |
+          {{ . | toYaml | nindent 10 }}
+{{- end }}
+  ` }}
+{{- end }}

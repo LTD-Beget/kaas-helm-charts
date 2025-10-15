@@ -1,0 +1,52 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xaddonsets.in-cloud.io
+spec:
+  group: in-cloud.io
+  names:
+    kind: XAddonSet
+    plural: xaddonsets
+    singular: xaddonset
+    shortNames:
+      - xas
+  claimNames:
+    kind: AddonSetClaim
+    plural: addonsetclaims
+    singular: addonsetclaim
+    shortNames:
+      - asc
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      served: true
+      schema:
+        openAPIV3Schema:
+          description: XAddonSet is the Schema for the xaddonsets API.
+          type: object
+          required:
+            - spec
+          properties:
+            metadata:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+              properties:
+                addonStatus:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                  additionalProperties:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    properties:
+                      conditions:
+                        type: array
+                        items:
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
