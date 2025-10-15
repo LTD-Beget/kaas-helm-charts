@@ -1,0 +1,13 @@
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: EnvironmentConfig
+metadata:
+  name: xclusterinfra-environment
+data:
+  base:
+    name: ""
+    namespace: ""
+    customer: ""
+  clusterName: ""
+  trackingID: ""
+  namespace: ""
+  customer: ""
