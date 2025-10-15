@@ -42,7 +42,7 @@ spec:
           template: |
             {{- include "xcertificateset.xcertificate" . | nindent 12 }}
 
-{{- if .Values.compositionNew.xcertificateset.debug }}
+{{- if .Values.composition.xcertificateset.debug }}
     - step: debug-xcertificates
       functionRef:
         name: function-go-templating
