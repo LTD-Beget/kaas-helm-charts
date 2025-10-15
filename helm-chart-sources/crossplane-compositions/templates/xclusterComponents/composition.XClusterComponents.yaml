@@ -28,7 +28,7 @@ spec:
         kind: Resources
         environment:
           patches:
-            {{- include "xclusterInfra.environment.patches" . | nindent 12 }}
+            {{- include "xclusterComponents.environment.patches" . | nindent 12 }}
 
     - step: xcertificateset
       functionRef:

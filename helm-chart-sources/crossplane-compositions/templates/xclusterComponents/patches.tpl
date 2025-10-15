@@ -1,4 +1,4 @@
-{{- define "xclusterInfra.environment.patches" -}}
+{{- define "xclusterComponents.environment.patches" -}}
   {{- $doc  := include "xclusterInfra.variables.template" . | fromYaml -}}
   {{- $vars := $doc.vars -}}
 

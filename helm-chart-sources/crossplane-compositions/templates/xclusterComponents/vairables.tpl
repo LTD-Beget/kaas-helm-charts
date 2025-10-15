@@ -1,6 +1,5 @@
 #VariableName  DefaultValue  FromFieldPath  ToFieldPath  Type  Format
 {{- define "xclusterInfra.variables.template" -}}
-  {{- $singularKebab := kebabcase .name }}
   {{- $vars := dict
     "clusterName" (list "\"\""  "name"        "cluster.name"      "string"  "%s"  )
     "trackingID"  (list "\"\""  "trackingID"  "trackingID"        "string"  "%s"  )
