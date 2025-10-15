@@ -7,6 +7,7 @@ kind: ProviderConfig
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
   name: default
 spec:
       {{- toYaml $componentValue.providerConfig | nindent 2 }}
