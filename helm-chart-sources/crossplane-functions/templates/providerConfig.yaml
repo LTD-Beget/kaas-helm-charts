@@ -5,6 +5,8 @@
 apiVersion: {{ $componentName }}.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: default
 spec:
       {{- toYaml $componentValue.providerConfig | nindent 2 }}

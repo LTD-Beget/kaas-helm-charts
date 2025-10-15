@@ -4,6 +4,8 @@
 apiVersion: pkg.crossplane.io/v1
 kind: {{ $componentValue.kind }}
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   name: {{ $componentValue.name }}
 spec:
   package: {{ $componentValue.package }}:{{ $componentValue.tag }}
