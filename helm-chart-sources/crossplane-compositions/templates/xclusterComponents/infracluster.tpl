@@ -20,14 +20,14 @@ metadata:
     status.in-cloud.io/ready: {{ $xCertificateSetReady | quote }}
   {{- end }}
   labels:
-    cluster.x-k8s.io/cluster-name: {{ $infraName }}
-  name: {{ $infraName }}
+    cluster.x-k8s.io/cluster-name: {{ $clusterName }}
+  name: {{ $clusterName }}
 spec:
   compositeDeletePolicy: Foreground
   common:
     labels:
       - name: "cluster.x-k8s.io/cluster-name"
-        value:  {{ $infraName }}
+        value:  {{ $clusterName }}
     annotations:
       - name: "argocd.argoproj.io/tracking-id"
         value: {{ $trackingID }}
