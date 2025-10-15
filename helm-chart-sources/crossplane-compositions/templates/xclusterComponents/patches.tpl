@@ -7,7 +7,7 @@
   type: FromCompositeFieldPath
 
 - toFieldPath: base.namespace
-  fromFieldPath: spec.common.namespace
+  fromFieldPath: spec.namespace
   type: FromCompositeFieldPath
 
 - toFieldPath: base.customer
