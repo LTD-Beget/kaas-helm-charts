@@ -1,0 +1,15 @@
+composition:
+  xaddonset:
+    debug: false
+  xcertificate:
+    debug: false
+  xcertificateset:
+    debug: false
+
+composite:
+  addons:
+    cilium:
+      application:
+        metadata:
+          labels:
+            some-label: "true"

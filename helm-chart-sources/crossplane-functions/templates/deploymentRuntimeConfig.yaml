@@ -1,0 +1,19 @@
+{{- range $componentName, $componentValue := .Values.components }}
+{{- if $componentValue.enabled }}
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: {{ $.Release.Name }}-{{ $componentValue.name }}
+spec:
+  {{- if not ( and $componentValue.runtimeConfig $componentValue.runtimeConfig.serviceAccountTemplate) }}
+  serviceAccountTemplate:
+    metadata:
+      name: {{ $.Release.Name }}-{{ $componentValue.name }}
+  {{- end }}
+  {{- if $componentValue.runtimeConfig }}
+  {{- toYaml $componentValue.runtimeConfig | nindent 2 }}
+  {{- end }}
+
+{{- end }}
+{{- end }}

@@ -1,0 +1,88 @@
+{{- define "addons.common.composition" }}
+
+  {{- $name := printf "%s" .name }}
+  {{- $singular := $name | lower}}
+  {{- $singularCamel := include "camelLower" $name }}
+  {{- $singularKebab := kebabcase $name }}
+  {{- $singularSnake := snakecase $name }}
+  {{- $pluralName := printf "%ss" $name }}
+  {{- $plural := printf "%ss" $singular }}
+  {{- $pluralCamel := printf "%ss" $singularCamel }}
+  {{- $pluralKebab := printf "%ss" $singularKebab }}
+  {{- $pluralSnake := printf "%ss" $singularSnake }}
+
+  {{- $debug := .debug | default false }}
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: addons{{ $singular }}claims.in-cloud.io
+spec:
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XAddons{{ $name }}
+  mode: Pipeline
+  pipeline:
+    - step: environmentConfigs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+          - type: Reference
+            ref:
+              name: xaddons{{ $singular }}-environment
+
+    - step: set-environment-addons-{{ $singular }}
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        environment:
+          patches:
+            {{- include "addons.common.environment.patches" . | nindent 12 }}
+
+    - step: addons-{{ $singular }}-application
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |-
+            {{- include "addons.common.application.gotemplates.manifest" . | nindent 12 }}
+
+  {{- if eq $debug true }}
+    - step: current-context
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |-
+            {{- include "addons.common.debug.current-context" . | nindent 12 }}
+  {{- end }}
+
+    - step: set-status
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+        - name: {{ $singularCamel }}App
+          patches:
+            - toFieldPath: status.health
+              fromFieldPath: status.atProvider.manifest.status.health.status
+              type: ToCompositeFieldPath
+            - toFieldPath: status.deployed
+              fromFieldPath: metadata.annotations["deployed.in-cloud.io/status"]
+              type: ToCompositeFieldPath
+{{- end }}

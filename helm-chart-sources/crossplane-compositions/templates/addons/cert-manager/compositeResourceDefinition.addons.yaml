@@ -1,0 +1,1 @@
+{{- include "addons.common.compositeResourceDefinition" (include "addons.certmanager" . | fromYaml) }}

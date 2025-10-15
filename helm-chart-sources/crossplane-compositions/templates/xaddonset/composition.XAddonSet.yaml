@@ -1,0 +1,61 @@
+{{- $debugXaddonset := default false .Values.composition.xaddonset.debug }}
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: addonsetclaims.in-cloud.io
+spec:
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XAddonSet
+  mode: Pipeline
+  pipeline:
+    - step: environment-configs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+          - type: Reference
+            ref:
+              name: xaddonset-environment
+
+    - step: set-environment-xaddonset
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        environment:
+          patches:
+            {{- include "environment.xaddonset.patches" . | nindent 12 }}
+
+    - step: addon-set
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "goTemplate.addonSet" . | nindent 12 }}
+
+{{- if $debugXaddonset }}
+    - step: debug-addon-set
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "goTemplate.xaddonset.currentContext" . | nindent 12 }}
+{{- end }}
+
+    - step: automatically-detect-readiness
+      functionRef:
+        name: function-auto-ready

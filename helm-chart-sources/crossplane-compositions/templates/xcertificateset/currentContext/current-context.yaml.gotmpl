@@ -1,0 +1,31 @@
+{{- define "xcertificateset.currentContext" -}}
+  {{ include "xcertificateset.variables" . | nindent 0 }}
+
+  {{ printf `
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: {{ $baseName }}-current-context
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: certificatesetDebug
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        annotations:
+          argocd.argoproj.io/tracking-id: {{ index .observed.composite.resource.metadata.annotations "argocd.argoproj.io/tracking-id" }}
+        name: {{ $baseName }}-current-context
+        namespace: {{ $baseNamespace }}
+      data:
+        addons: |
+{{- with (index .context "apiextensions.crossplane.io/environment") }}
+        context.apiextensions.crossplane.io-environment: |
+          {{ . | toYaml | nindent 10 }}
+{{- end }}
+  ` }}
+{{- end }}

@@ -1,0 +1,20 @@
+{{- range $componentName, $componentValue := .Values.components }}
+{{- if and $componentValue.enabled $componentValue.clusterRoles.enabled }}
+{{- with $componentValue.clusterRoles.rules }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $.Release.Name }}-{{ $componentValue.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $.Release.Name }}-{{ $componentValue.name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $.Release.Name }}-{{ $componentValue.name }}
+    namespace: {{ $.Release.Namespace }}
+
+{{- end }}
+{{- end }}
+{{- end }}
