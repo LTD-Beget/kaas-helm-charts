@@ -40,5 +40,3 @@ spec:
         inline:
           template: |-
             {{- include "xcertificateset.infracluster" . | nindent 12 }}
-
-{{- end }}
