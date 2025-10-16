@@ -1,0 +1,1 @@
+{{- include "addons.common.environmentConfig" (include "addons.capiclusterclass" . | fromYaml) }}

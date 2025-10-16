@@ -53,19 +53,25 @@ spec:
           syncOptions:
           - CreateNamespace=true
         source:
-          {{ if .path }}
-          path: {{ .path }}
-          {{ end }}
-          {{ if .chart }}
-          chart: {{ .chart }}
-          {{ end }}
-          repoURL: {{ .repoURL }}
-          targetRevision: {{ .targetRevision }}
+          path: {{ "\"{{ $path }}\"" }}
+          chart: {{ "\"{{ $chart }}\"" }}
+          repoURL: {{ "\"{{ $repoURL }}\"" }}
+          targetRevision: {{ "\"{{ $targetRevision }}\"" }}
+          {{- if .plugin }}
+          plugin:
+            name: {{ .plugin.name }}
+            env:
+              - name: "HELM_VALUES"
+                value: |-
+                  {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
+                  {{ "{{ $mergedValues | toYaml | nindent 18 }}" }}
+          {{- else }}
           helm:
             releaseName: {{ "\"{{ $argocdReleaseName }}\"" }}
             values: |-
               {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
               {{ "{{ $mergedValues | toYaml | nindent 14 }}" }}
+          {{- end }}
   readiness:
     policy: DeriveFromCelQuery
     celQuery: >

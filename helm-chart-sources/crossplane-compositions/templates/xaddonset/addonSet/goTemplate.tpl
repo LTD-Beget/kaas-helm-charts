@@ -20,15 +20,19 @@
 {{- $addons := .observed.composite.resource.spec.addons }}
 {{- range $key, $value := $addons }}
   {{- with $value }}
-    {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
+    {{- $AddonCreated := "False" }}
     {{- $apiVersion := .apiVersion }}
+    {{- $chart := dig "chart" "" . }}
     {{- $kind := .kind }}
+    {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
     {{- $namespace := .namespace }}
-    {{- $values := get . "values" | default (dict) }}
-    {{- $version := .version }}
+    {{- $path := dig "path" "" . }}
     {{- $permitionToCreateAddon := "True" }}
     {{- $releaseName := dig "releaseName" "" . }}
-    {{- $AddonCreated := "False" }}
+    {{- $repoURL := dig "repoURL" "" . }}
+    {{- $targetRevision := dig "targetRevision" "" . }}
+    {{- $values := get . "values" | default (dict) }}
+    {{- $version := .version }}
     {{- if hasKey $.observed.resources $key }}
       {{- $AddonCreated = "True" }}
     {{- else }}
@@ -62,15 +66,27 @@ metadata:
   namespace: {{ $baseNamespace }}
 spec:
   argocd:
+      {{- if $chart }}
+    chart: {{ $chart }}
+      {{- end }}
     destination:
       name: {{ $commonArgocdDestinationName }}
       namespace: {{ $namespace }}
     namespace: {{ $commonArgocdNamespace }}
+      {{- if $path }}
+    path: {{ $path }}
+      {{- end }}
     project: {{ $commonArgocdProject }}
-    trackingID: {{ $commonTrackingID }}
       {{- if $releaseName }}
     releaseName: {{ $releaseName }}
       {{- end }}
+      {{- if $repoUrl }}
+    repoUrl: {{ $repoUrl }}
+      {{- end }}
+      {{- if $targetRevision }}
+    targetRevision: {{ $targetRevision }}
+      {{- end }}
+    trackingID: {{ $commonTrackingID }}
   cluster: 
     name: {{ $commonClusterName }}
     host: {{ $commonClusterHost }}

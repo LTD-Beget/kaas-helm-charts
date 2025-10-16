@@ -92,7 +92,7 @@ immutable: |
           - name: loadbalance
             parameter: round_robin
           - name: forward
-            parameters: . 198.18.18.18
+            parameters: . 8.8.8.8
             configBlock: |-
               force_tcp
           - name: cache
