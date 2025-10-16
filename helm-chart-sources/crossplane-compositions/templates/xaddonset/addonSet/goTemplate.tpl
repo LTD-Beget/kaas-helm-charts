@@ -80,8 +80,8 @@ spec:
       {{- if $releaseName }}
     releaseName: {{ $releaseName }}
       {{- end }}
-      {{- if $repoUrl }}
-    repoUrl: {{ $repoUrl }}
+      {{- if $repoURL }}
+    repoUrl: {{ $repoURL }}
       {{- end }}
       {{- if $targetRevision }}
     targetRevision: {{ $targetRevision }}
