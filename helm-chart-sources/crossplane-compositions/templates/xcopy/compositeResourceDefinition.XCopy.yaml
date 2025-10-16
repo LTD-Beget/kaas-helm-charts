@@ -1,0 +1,37 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xcopys.in-cloud.io
+spec:
+  group: in-cloud.io
+  names:
+    kind: XCopy
+    plural: xcopys
+    singular: xcopy
+  claimNames:
+    kind: CopyClaim
+    plural: copyclaims
+    singular: copyclaim
+    shortNames:
+      - asc
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      served: true
+      schema:
+        openAPIV3Schema:
+          description: XCopy is the Schema for the xcopys API.
+          type: object
+          required:
+            - spec
+          properties:
+            metadata:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
