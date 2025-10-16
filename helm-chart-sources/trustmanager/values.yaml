@@ -10,13 +10,8 @@ bundle:
   # опционально
   labels: {}
   annotations: {}
-  sourceSecret:
-    name: "default-crt"
-    key: "tls.crt"
-  extraSecretSources: []
-  # - name: "another-ca-secret"
-  #   namespace: "trust"
-  #   key: "tls.crt"
+
+  sources: []
 
   target:
     configMapKey: "ca.crt"

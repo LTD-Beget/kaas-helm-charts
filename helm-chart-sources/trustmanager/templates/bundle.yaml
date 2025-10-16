@@ -13,9 +13,7 @@ metadata:
   {{- end }}
 spec:
   sources:
-    - secret:
-        name: {{ required "bundle.sourceSecret.name is required" .Values.bundle.sourceSecret.name | quote }}
-        key: {{ default "tls.crt" .Values.bundle.sourceSecret.key | quote }}
+    {{- .Values.bundle.sources | toYaml | nindent 4 }}
   target:
     configMap:
       key: {{ default "ca.crt" .Values.bundle.target.configMapKey | quote }}
