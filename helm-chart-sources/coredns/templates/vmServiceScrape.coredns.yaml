@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: coredns
+  name: {{ .Release.Name }}-coredns-metrics
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: coredns
+      monitoring.in-cloud.io/service: cert-manager
   endpoints:
-    - port: metrics
+    - port: https-metrics
       path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}-coredns-metrics
   jobLabel: coredns
 {{- end }}
