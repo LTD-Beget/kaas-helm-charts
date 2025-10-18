@@ -6,3 +6,9 @@ monitoring:
   type: VictoriaMetrics
   namespace: default
   joblabel: jobLabel
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
