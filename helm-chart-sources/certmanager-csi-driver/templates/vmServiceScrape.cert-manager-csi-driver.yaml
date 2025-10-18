@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: certmanager-csi-driver
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      component: cert-manager-csi-driver
+      monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
-    - port: http-metrics
+    - port: https-metrics
       path: /metrics
-  jobLabel: jobLabel
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: cert-manager-csi-driver
+  jobLabel: cert-manager-csi-driver
 {{- end }}
