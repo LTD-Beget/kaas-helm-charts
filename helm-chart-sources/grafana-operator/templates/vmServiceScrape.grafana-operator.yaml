@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: grafana-operator
+  name: {{ .Release.Name }}-metrics-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      monitoring.in-cloud.io/service: grafana-operator
   endpoints:
-    - port: metrics
+    - port: https-metrics
       path: /metrics
-  jobLabel: "app.kubernetes.io/name"
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}-metrics-service
+  jobLabel: grafana-operator
 {{- end }}
