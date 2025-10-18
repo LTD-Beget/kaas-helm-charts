@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: cert-manager-cainjector
+  name: {{ .Release.Name }}-cainjector
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: cainjector
+      monitoring.in-cloud.io/service: cert-manager-cainjector
   endpoints:
-    - port: http-metrics
+    - port: https-metrics
       path: /metrics
-  jobLabel: certmanager-cainjector
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: cert-manager-cainjector
+  jobLabel: cert-manager-cainjector
 {{- end }}
