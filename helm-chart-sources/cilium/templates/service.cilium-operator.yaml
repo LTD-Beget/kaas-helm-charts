@@ -1,0 +1,18 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    monitoring.in-cloud.io/service: {{ .Release.Name }}-operator
+  name: {{ .Release.Name }}-operator
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: https-metrics
+      port: 11043
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}-operator
+{{- end }}
