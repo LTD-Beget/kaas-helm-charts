@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: cert-manager-webhook
+  name: {{ .Release.Name }}-webhook
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: webhook
+      monitoring.in-cloud.io/service: cert-manager-webhook
   endpoints:
-    - port: metrics
+    - port: https-metrics
       path: /metrics
-  jobLabel: certmanager-webhook
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: cert-manager-webhook
+  jobLabel: cert-manager-webhook
 {{- end }}
