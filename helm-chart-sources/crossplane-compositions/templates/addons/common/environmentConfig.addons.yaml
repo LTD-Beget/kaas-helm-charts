@@ -1,5 +1,5 @@
 {{- define "addons.common.environmentConfig" }}
-
+{{- if not .root.Values.composition.developmentMode }}
   {{- $name := printf "%s" .name }}
   {{- $singular := $name | lower}}
   {{- $singularCamel := include "camelLower" $name }}
@@ -36,4 +36,5 @@ data:
     version: v1alpha1
   version: v1alpha1
 
+{{- end }}
 {{- end }}

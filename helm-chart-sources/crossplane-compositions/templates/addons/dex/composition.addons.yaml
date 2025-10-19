@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.dex" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.dex" . | fromYaml)) }}

@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.konnectivityserver" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.konnectivityserver" . | fromYaml)) }}

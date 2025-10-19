@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.capikubeadmcontrolplane" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.capikubeadmcontrolplane" . | fromYaml)) }}

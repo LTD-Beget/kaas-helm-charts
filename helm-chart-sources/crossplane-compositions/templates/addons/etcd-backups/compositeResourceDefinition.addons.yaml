@@ -1,1 +1,1 @@
-{{- include "addons.common.compositeResourceDefinition" (include "addons.etcdbackups" . | fromYaml) }}
+{{- include "addons.common.compositeResourceDefinition" (merge (dict "root" .) (include "addons.etcdbackups" . | fromYaml)) }}

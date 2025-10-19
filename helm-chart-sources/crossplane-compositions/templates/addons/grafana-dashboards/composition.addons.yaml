@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.grafanadashboards" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.grafanadashboards" . | fromYaml)) }}

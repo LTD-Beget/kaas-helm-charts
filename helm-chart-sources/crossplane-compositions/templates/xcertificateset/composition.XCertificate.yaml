@@ -1,5 +1,6 @@
 ---
 apiVersion: apiextensions.crossplane.io/v1
+{{- if not .Values.composition.developmentMode }}
 kind: Composition
 metadata:
   name: certificatesetclaims.in-cloud.io
@@ -7,6 +8,16 @@ spec:
   compositeTypeRef:
     apiVersion: in-cloud.io/v1alpha1
     kind: XCertificateSet
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-certificatesetclaims.in-cloud.io" .Release.Name }}
+spec:
+  revision: {{ .Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCertificateSet
+{{- end }}
   mode: Pipeline
   pipeline:
     - step: environment-configs

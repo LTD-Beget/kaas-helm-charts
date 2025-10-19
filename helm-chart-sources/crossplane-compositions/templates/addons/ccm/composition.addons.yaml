@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.ccm" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.ccm" . | fromYaml)) }}

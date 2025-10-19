@@ -1,1 +1,1 @@
-{{- include "addons.common.compositeResourceDefinition" (include "addons.victoriametricsagent" . | fromYaml) }}
+{{- include "addons.common.compositeResourceDefinition" (merge (dict "root" .) (include "addons.victoriametricsagent" . | fromYaml)) }}

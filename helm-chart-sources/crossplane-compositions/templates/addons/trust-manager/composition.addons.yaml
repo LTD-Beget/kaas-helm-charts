@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.trustmanager" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.trustmanager" . | fromYaml)) }}

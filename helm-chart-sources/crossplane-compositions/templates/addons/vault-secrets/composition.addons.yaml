@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.vaultSecrets" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.vaultSecrets" . | fromYaml)) }}

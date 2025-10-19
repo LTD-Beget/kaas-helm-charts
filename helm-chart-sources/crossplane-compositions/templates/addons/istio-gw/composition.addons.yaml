@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.istiogw" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.istiogw" . | fromYaml)) }}

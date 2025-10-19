@@ -1,6 +1,7 @@
 {{- $debugXaddonset := default false .Values.composition.xaddonset.debug }}
 ---
 apiVersion: apiextensions.crossplane.io/v1
+{{- if not .Values.composition.developmentMode }}
 kind: Composition
 metadata:
   name: addonsetclaims.in-cloud.io
@@ -8,6 +9,16 @@ spec:
   compositeTypeRef:
     apiVersion: in-cloud.io/v1alpha1
     kind: XAddonSet
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-addonsetclaims.in-cloud.io" .Release.Name }}
+spec:
+  revision: {{ .Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XAddonSet
+{{- end }}
   mode: Pipeline
   pipeline:
     - step: environment-configs

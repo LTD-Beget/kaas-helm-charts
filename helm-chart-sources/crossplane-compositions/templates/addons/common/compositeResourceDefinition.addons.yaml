@@ -1,5 +1,5 @@
 {{- define "addons.common.compositeResourceDefinition" }}
-
+{{- if not .root.Values.composition.developmentMode }}
   {{- $name := printf "%s" .name }}
   {{- $singular := $name | lower}}
   {{- $singularCamel := include "camelLower" $name }}
@@ -106,4 +106,5 @@ spec:
                 deployed:
                   type: string
                   description: The deployed status of the addon.
+{{- end }}
 {{- end }}

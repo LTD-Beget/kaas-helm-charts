@@ -1,1 +1,1 @@
-{{- include "addons.common.environmentConfig" (include "addons.ccm" . | fromYaml) }}
+{{- include "addons.common.environmentConfig" (merge (dict "root" .) (include "addons.ccm" . | fromYaml)) }}

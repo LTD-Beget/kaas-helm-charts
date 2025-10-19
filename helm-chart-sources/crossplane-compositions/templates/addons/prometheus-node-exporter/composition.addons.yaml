@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.prometheusnodeexporter" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.prometheusnodeexporter" . | fromYaml)) }}

@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.incloudui" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.incloudui" . | fromYaml)) }}

@@ -1,3 +1,4 @@
+{{- if not .Values.composition.developmentMode }}
 ---
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
@@ -35,3 +36,4 @@ spec:
             status:
               type: object
               x-kubernetes-preserve-unknown-fields: true
+{{- end }}

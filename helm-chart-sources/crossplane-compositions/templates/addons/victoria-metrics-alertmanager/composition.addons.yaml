@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.victoriametricsalertmanager" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.victoriametricsalertmanager" . | fromYaml)) }}

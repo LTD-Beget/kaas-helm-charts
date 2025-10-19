@@ -15,6 +15,7 @@
 
 ---
 apiVersion: apiextensions.crossplane.io/v1
+{{- if not .root.Values.composition.developmentMode }}
 kind: Composition
 metadata:
   name: addons{{ $singular }}claims.in-cloud.io
@@ -22,6 +23,16 @@ spec:
   compositeTypeRef:
     apiVersion: in-cloud.io/v1alpha1
     kind: XAddons{{ $name }}
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-addons%sclaims.in-cloud.io" .root.Release.Name $singular }}
+spec:
+  revision: {{ .root.Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XAddons{{ $name }}
+{{- end }}
   mode: Pipeline
   pipeline:
     - step: environmentConfigs

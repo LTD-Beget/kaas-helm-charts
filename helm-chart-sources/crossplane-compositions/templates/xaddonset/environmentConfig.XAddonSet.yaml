@@ -1,3 +1,5 @@
+{{- if not .Values.composition.developmentMode }}
+---
 apiVersion: apiextensions.crossplane.io/v1beta1
 kind: EnvironmentConfig
 metadata:
@@ -23,3 +25,4 @@ data:
       name: default
     tracking-id: apmistcs_apmistcs-my-third:argoproj.io/Application:apmistcs/apmistcs-my-third
     xcluster: apmistcs-my-third
+{{- end }}

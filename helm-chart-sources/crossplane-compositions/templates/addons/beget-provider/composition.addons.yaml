@@ -1,1 +1,1 @@
-{{- include "addons.common.composition" (include "addons.begetcmprovider" . | fromYaml) }}
+{{- include "addons.common.composition" (merge (dict "root" .) (include "addons.begetcmprovider" . | fromYaml)) }}

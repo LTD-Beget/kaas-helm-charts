@@ -1,6 +1,8 @@
+{{- if not .Values.composition.developmentMode }}
 apiVersion: apiextensions.crossplane.io/v1beta1
 kind: EnvironmentConfig
 metadata:
   name: xcopy-environment
 data:
   ready: true
+{{- end }}
