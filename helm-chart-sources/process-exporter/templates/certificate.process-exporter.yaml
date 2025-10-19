@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.secureService.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: process-exporter-prometheus-process-exporter-svc-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: process-exporter-prometheus-process-exporter-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: process-exporter-prometheus-process-exporter
+  dnsNames:
+    - process-exporter-prometheus-process-exporter
+    - process-exporter-prometheus-process-exporter.{{ .Release.Namespace }}
+    - process-exporter-prometheus-process-exporter.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}
