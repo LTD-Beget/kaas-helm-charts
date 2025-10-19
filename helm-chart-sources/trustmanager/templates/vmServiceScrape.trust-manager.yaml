@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: trust-manager
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      monitoring.in-cloud.io/service: trust-manager
   endpoints:
-    - port: metrics
-  jobLabel: "app.kubernetes.io/name"
-
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}
+  jobLabel: trust-manager
 {{- end }}

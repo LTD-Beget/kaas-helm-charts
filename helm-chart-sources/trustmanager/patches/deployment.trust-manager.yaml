@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: istiod
+  name: trust-manager
 spec:
   template:
     spec:
@@ -11,7 +11,7 @@ spec:
           image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
           args:
             - --secure-listen-address=0.0.0.0:11043
-            - --upstream=http://127.0.0.1:15014
+            - --upstream=http://127.0.0.1:9402
             - --tls-cert-file=/app/config/metrics/tls/tls.crt
             - --tls-private-key-file=/app/config/metrics/tls/tls.key
             - --v=2
@@ -34,4 +34,4 @@ spec:
       - name: rbac-proxy-tls
         secret:
           defaultMode: 420
-          secretName: istiod-svc-tls
+          secretName: trust-manager-svc-tls
