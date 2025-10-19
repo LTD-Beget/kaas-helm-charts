@@ -3,14 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: istio-gw
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      monitoring.in-cloud.io/service: istio-gw
   endpoints:
-    - port: metrics
-      path: /stats/prometheus
-  jobLabel: "jobLabel"
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}
+  jobLabel: istio-gw
 {{- end }}
