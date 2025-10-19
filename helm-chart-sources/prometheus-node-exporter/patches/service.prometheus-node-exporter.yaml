@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-node-exporter
+  labels:
+    monitoring.in-cloud.io/service: prometheus-node-exporter
+spec:
+  ports:
+    - name: https-metrics
+      port: 11043
+      protocol: TCP
+      targetPort: https-metrics
