@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./base.yaml
+
+patches:
+  - path: ./deployment.victoria-metrics-operator.yaml
+    target:
+      kind: Deployment
+      name: victoria-metrics-operator
+
+  - path: ./service.victoria-metrics-operator.yaml
+    target:
+      kind: Service
+      name: victoria-metrics-operator
