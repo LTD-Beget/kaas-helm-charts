@@ -5,13 +5,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}-alertmanager-kube-rbac-proxy
+  name: vmalertmanager-alertmanager-kube-rbac-proxy
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-alertmanager
+    name: vmalertmanager-alertmanager
     namespace: {{ .Release.Namespace }}
 {{- end }}
