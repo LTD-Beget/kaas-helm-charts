@@ -1,0 +1,22 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if and .Values.monitoring.enabled $vmstack.vmagent.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    monitoring.in-cloud.io/service: {{ .Release.Name }}-vmagent
+  name: {{ .Release.Name }}-vmagent-monitoring
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: https-metrics
+      port: 11043
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/instance: vmagent
+    app.kubernetes.io/name: vmagent
+    managed-by: vm-operator
+{{- end }}
