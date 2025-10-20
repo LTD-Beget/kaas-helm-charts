@@ -5,7 +5,7 @@ resources:
   - ./base.yaml
 
 patches:
-  - path: ./deployment.cert-manage-csi-driver.yaml
+  - path: ./daemonset.cert-manager-csi-driver.yaml
     target:
       kind: DaemonSet
       name: cert-manager-csi-driver
