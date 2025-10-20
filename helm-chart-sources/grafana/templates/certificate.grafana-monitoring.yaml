@@ -6,7 +6,7 @@ metadata:
   name: grafana-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: cert-manager-svc-tls
+  secretName: grafana-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
   commonName: grafana-monitoring
