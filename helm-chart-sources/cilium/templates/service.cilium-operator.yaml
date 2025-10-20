@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
     - name: https-metrics
-      port: 11043
+      port: 11042
       protocol: TCP
       targetPort: https-metrics
   selector:
