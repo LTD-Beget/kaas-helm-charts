@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: cert-manager
+      monitoring.in-cloud.io/service: coredns-metrics
   endpoints:
     - port: https-metrics
       path: /metrics

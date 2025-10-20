@@ -10,6 +10,6 @@ roleRef:
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-coredns
+    name: {{ .Release.Name }}
     namespace: {{ .Release.Namespace }}
 {{- end }}
