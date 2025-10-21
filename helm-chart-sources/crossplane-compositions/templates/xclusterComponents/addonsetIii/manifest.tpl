@@ -30,7 +30,7 @@ spec:
   common:
     argocd:
       destination:
-        name: {{ $clusterName }}
+        name: <->{{ $clusterName }}
       project: default
       namespace: {{ $argocdDestinationNamespace }}
       providerConfigRef:
