@@ -6,8 +6,8 @@
     "argocdDestinationProject"   (list "\"mock\""       "argocd.destination.project"     "argocd.destination.project"    "string"           "%s"  )
     "clusterName"                (list "\"mock\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
     "clusterHost"                (list "\"mock\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
-    "clusterPort"                (list "6443"       "cluster.port"                   "cluster.port"                  "string"           "%s"  )
-    "systemEnabled"              (list "false"      "system.enabled"                 "system.enabled"                "boolean"          "%v"  )
+    "clusterPort"                (list "6443"           "cluster.port"                   "cluster.port"                  "integer"          "%s"  )
+    "systemEnabled"              (list "false"          "system.enabled"                 "system.enabled"                "boolean"          "%v"  )
     "trackingID"                 (list "\"mock\""       "trackingID"                     "trackingID"                    "string"           "%s"  )
     "xcluster"                   (list "\"mock\""       "xcluster"                       "xcluster"                      "string"           "%s"  )
   -}}
