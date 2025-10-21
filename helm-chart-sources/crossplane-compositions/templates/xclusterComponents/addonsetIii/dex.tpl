@@ -57,7 +57,7 @@ dex:
       volumes:
         - name: tls
           secret:
-            secretName: {{ $infraName }}-dex-tls
+            secretName: {{ $clusterName }}-dex-tls
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -69,10 +69,10 @@ dex:
       enabled: true
       issuer:
         name: oidc-ca
-        secretName: {{ $infraName }}-ca-oidc
+        secretName: {{ $clusterName }}-ca-oidc
       certificate:
-        name: {{ $infraName }}-dex-tls
-        secretName: {{ $infraName }}-dex-tls
+        name: {{ $clusterName }}-dex-tls
+        secretName: {{ $clusterName }}-dex-tls
         commonName: dex
         dnsNames:
           - dex.beget-dex.svc

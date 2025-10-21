@@ -12,6 +12,12 @@
   {{- end }}
 {{- end }}
 
+### extra variables
+{{ $infraVMOperatorReady := false }}
+{{ $istioBaseReady := false }}
+###
+
+
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
 metadata:
