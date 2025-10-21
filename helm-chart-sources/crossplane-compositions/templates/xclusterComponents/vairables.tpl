@@ -1,8 +1,15 @@
 #VariableName  DefaultValue  FromFieldPath  ToFieldPath  Type  Format
 {{- define "xclusterComponents.variables.template" -}}
   {{- $vars := dict
-    "clusterName" (list "\"\""  "clusterName" "clusterName" "string"  "%s"  )
-    "trackingID"  (list "\"\""  "trackingID"  "trackingID"  "string"  "%s"  )
+    "argocdDestinationName"      (list "\"\""       "argocd.destination.name"        "argocd.destination.name"       "string"           "%s"  )
+    "argocdDestinationNamespace" (list "\"\""       "argocd.destination.namespace"   "argocd.destination.namespace"  "string"           "%s"  )
+    "argocdDestinationProject"   (list "\"\""       "argocd.destination.project"     "argocd.destination.project"    "string"           "%s"  )
+    "ClusterName"                (list "\"\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
+    "ClusterHost"                (list "\"\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
+    "ClusterPort"                (list "6443"       "cluster.port"                   "cluster.port"                  "string"           "%s"  )
+    "systemEnabled"              (list "false"      "system.enabled"                 "system.enabled"                "boolean"          "%v"  )
+    "trackingID"                 (list "\"\""       "trackingID"                     "trackingID"                    "string"           "%s"  )
+    "xcluster"                   (list "\"\""       "xcluster"                       "xcluster"                      "string"           "%s"  )
   -}}
   {{- $order := list
     "clusterName"

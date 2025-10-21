@@ -1,18 +1,7 @@
 {{- define "xclusterComponents.addonsetIii" -}}
+  {{- include "xcertificateset.variables" . | nindent 0 }}
   {{ printf `
-{{- $environment                      := index .context "apiextensions.crossplane.io/environment" }}
 
-{{- $clusterName                        := $environment.infra.name }}
-{{- $clusterHost                        := $environment.infra.host }}
-{{- $clusterPort                        := $environment.infra.port }}
-{{- $infraKubernetesProviderConfigName  := $environment.infra.kubernetesProviderConfig.name }}
-{{- $trackingID                         := $environment.trackingID }}
-{{- $systemEnabled                      := $environment.system.enabled | default false }}
-{{- $systemName                         := $environment.system.name }}
-{{- $systemNamespace                    := $environment.system.namespace }}
-{{- $systemProjectName                  := $environment.system.project.name }}
-{{- $systemProjectObjectName            := $environment.system.project.object.name }}
-{{- $infraClusterReady                  := "False" }}
 {{- $xAddonSetReady                     := "False" }}
 
 {{- with .observed.resources.xAddonSet }}
@@ -37,7 +26,7 @@ metadata:
     status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
     {{- end }}
     argocd.argoproj.io/tracking-id: {{ $trackingID }}
-  name: {{ $clusterName }}-after-available
+  name: {{ $clusterName }}-addonset-iii
 spec:
   current:
     providerConfigRef:
@@ -46,19 +35,19 @@ spec:
     argocd:
       destination:
         name: {{ $clusterName }}
-      project: {{ $systemProjectName }}
-      namespace: {{ $systemNamespace }}
+      project: default
+      namespace: {{ $argocdDestinationNamespace }}
       providerConfigRef:
         name: default
     cluster:
       name: {{ $clusterName }}
       host: {{ $clusterHost }}
       port: {{ $clusterPort }}
-    namespace: {{ $systemNamespace }}
+    namespace: {{ $namespace }}
     providerConfigRef:
       name: default
     trackingID: {{ $trackingID }}
-    xcluster: {{ $systemName }}
+    xcluster: {{ $xcluster }}
   addons:` -}}
     {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
 {{- end }}
