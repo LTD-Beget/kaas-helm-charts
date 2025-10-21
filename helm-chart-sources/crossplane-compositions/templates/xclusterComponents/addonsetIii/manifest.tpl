@@ -21,28 +21,23 @@ metadata:
     gotemplating.fn.crossplane.io/ready: "True"
     status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
     {{- end }}
-    argocd.argoproj.io/tracking-id: {{ $trackingID }}
   name: {{ $clusterName }}-addonset-iii
 spec:
-  current:
-    providerConfigRef:
-      name: default
   common:
     argocd:
       destination:
         name: {{ $clusterName }}
       project: default
       namespace: {{ $argocdDestinationNamespace }}
-      providerConfigRef:
-        name: default
     cluster:
       name: {{ $clusterName }}
       host: {{ $clusterHost }}
       port: {{ $clusterPort }}
-    namespace: {{ $namespace }}
     providerConfigRef:
       name: default
+    {{- if $trackingID }}
     trackingID: {{ $trackingID }}
+    {{- end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
     {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}

@@ -41,7 +41,6 @@
 
 {{- $customer                          :=                            $environment.base.customer }}
 {{- $name                              :=                            $environment.base.name }}
-{{- $namespace                         :=                            $environment.base.namespace }}
   ` }}
   {{- include "xclusterComponents.variables.emit" . | nindent 0 }}
 

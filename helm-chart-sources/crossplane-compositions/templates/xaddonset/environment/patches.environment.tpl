@@ -1,6 +1,5 @@
 {{ define "environment.xaddonset.patches" }}
 
-  {{- $addonSetProviderConfigRefName    := list "addonSet.providerConfigRef.name"     "%s" }}
   {{- $commonArgocdDestinationName      := list "common.argocd.destination.name"      "%s" }}
   {{- $commonArgocdNamespace            := list "common.argocd.namespace"             "%s" }}
   {{- $commonArgocdProject              := list "common.argocd.project"               "%s" }}
@@ -10,11 +9,6 @@
   {{- $commonProviderConfigRefName      := list "common.providerConfigRef.name"       "%s" }}
   {{- $commonTrackingID                 := list "common.trackingID"                   "%s" }}
   {{- $commonXcluster                   := list "common.xcluster"                     "%s" }}
-  {{- $currentProviderConfigRefName     := list "current.providerConfigRef.name"      "%s" }}
-
-- toFieldPath: {{ index $addonSetProviderConfigRefName 0 }}
-  fromFieldPath: spec.addonSet.providerConfigRef.name
-  type: FromCompositeFieldPath
 
 - toFieldPath: base.name
   fromFieldPath: metadata.name
@@ -107,10 +101,6 @@
       string:
         type: Format
         fmt: {{ index $commonXcluster 1 | quote }}
-  type: FromCompositeFieldPath
-
-- toFieldPath: {{ index $currentProviderConfigRefName 0 }}
-  fromFieldPath: spec.current.providerConfigRef.name
   type: FromCompositeFieldPath
 
 {{- end }}

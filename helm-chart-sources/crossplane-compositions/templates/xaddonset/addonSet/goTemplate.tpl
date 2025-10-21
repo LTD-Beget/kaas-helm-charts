@@ -5,7 +5,6 @@
 {{- $baseName                         := $environment.base.name }}
 {{- $baseNamespace                    := $environment.base.namespace }}
 {{- $baseCustomer                     := $environment.base.customer }}
-{{- $addonSetProviderConfigRefName    := $environment.addonSet.providerConfigRef.name }}{{/* удалить */}}
 {{- $commonArgocdDestinationName      := $environment.common.argocd.destination.name  }}
 {{- $commonArgocdNamespace            := $environment.common.argocd.namespace }}
 {{- $commonArgocdProject              := $environment.common.argocd.project }}
@@ -15,7 +14,6 @@
 {{- $commonProviderConfigRefName      := $environment.common.providerConfigRef.name }}
 {{- $commonTrackingID                 := $environment.common.trackingID }}
 {{- $commonXcluster                   := $environment.common.xcluster }}
-{{- $currentProviderConfigRefName     := $environment.current.providerConfigRef.name }}
 
 {{- $addons := .observed.composite.resource.spec.addons }}
 {{- range $key, $value := $addons }}
@@ -61,9 +59,7 @@ kind: {{ $kind }}
 metadata:
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: {{ $key }}
-    argocd.argoproj.io/tracking-id: {{ $commonTrackingID }}
   name: {{ $name }}
-  namespace: {{ $baseNamespace }}
 spec:
   argocd:
       {{- if $chart }}
@@ -86,7 +82,9 @@ spec:
       {{- if $targetRevision }}
     targetRevision: {{ $targetRevision }}
       {{- end }}
+      {{- if $commonTrackingID }}
     trackingID: {{ $commonTrackingID }}
+      {{- end }}
   cluster: 
     name: {{ $commonClusterName }}
     host: {{ $commonClusterHost }}
@@ -155,7 +153,7 @@ spec:
     - 'Update'
     - 'Observe'
   providerConfigRef:
-    name: {{ $currentProviderConfigRefName }}
+    name: default
   readiness:
     policy: SuccessfulCreate
   watch: true
