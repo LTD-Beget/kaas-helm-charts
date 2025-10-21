@@ -1,5 +1,5 @@
 {{- define "xclusterComponents.addonsetIii" -}}
-  {{- include "xcertificateset.variables" . | nindent 0 }}
+  {{- include "xclusterComponents.variables" . | nindent 0 }}
   {{ printf `
 
 {{- $xAddonSetReady                     := "False" }}
