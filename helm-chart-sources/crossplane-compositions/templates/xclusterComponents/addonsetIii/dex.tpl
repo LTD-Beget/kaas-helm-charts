@@ -5,6 +5,8 @@ dex:
   kind: XAddonsDex
   namespace: beget-dex
   version: v1alpha1
+  dependsOn:
+  - certManager
   values:
     dex:
       config:

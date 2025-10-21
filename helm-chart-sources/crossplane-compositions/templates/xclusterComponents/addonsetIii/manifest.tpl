@@ -47,5 +47,6 @@ spec:
     xcluster: {{ $xcluster }}
   addons:` -}}
     {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
 {{- end }}
