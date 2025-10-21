@@ -12,10 +12,6 @@
   {{- end }}
 {{- end }}
 
-###extra variables
-
-###
-
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
 metadata:
