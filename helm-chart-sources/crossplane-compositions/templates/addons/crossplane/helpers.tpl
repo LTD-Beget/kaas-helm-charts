@@ -107,8 +107,23 @@ default: |
         - kind: ServiceAccount
           name: crossplane
           namespace: beget-crossplane
+  rbacManager:
+    tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
   resourcesCrossplane:
     limits:
       cpu: 750m
       memory: 2048Mi
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
 {{- end }}
