@@ -43,9 +43,5 @@ spec:
     providerConfigRef:
       name: default
     trackingID: {{ $trackingID }}
-    xcluster: {{ $xcluster }}
-  addons:
-    alpha:
-      kind: <->` -}}
-    {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
+    xcluster: {{ $xcluster }}` -}}
 {{- end }}
