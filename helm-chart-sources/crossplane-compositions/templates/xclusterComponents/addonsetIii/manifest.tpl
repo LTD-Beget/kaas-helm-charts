@@ -29,8 +29,6 @@ spec:
       name: default
   common:
     argocd:
-      destination:
-        name: {{ $clusterName }}
       project: default
       namespace: {{ $argocdDestinationNamespace }}
       providerConfigRef:
@@ -39,8 +37,11 @@ spec:
       name: {{ $clusterName }}
       host: {{ $clusterHost }}
       port: {{ $clusterPort }}
+    namespace: {{ $namespace }}
     providerConfigRef:
       name: default
     trackingID: {{ $trackingID }}
-    xcluster: {{ $xcluster }}` -}}
+    xcluster: {{ $xcluster }}
+  addons:` -}}
+    {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
 {{- end }}
