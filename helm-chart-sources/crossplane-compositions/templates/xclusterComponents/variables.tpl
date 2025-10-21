@@ -35,11 +35,14 @@
     "xcluster"
     "argsDexStaticPasswordsAdmin"
     "argsDexStaticClientsApiserver"
-    "argsEtcdbackupS3AccessKey"          
-    "argsEtcdbackupS3SecretAccessKey"     
-    "argsEtcdbackupS3SecretEndpoint"     
+    "argsEtcdbackupS3AccessKey"
+    "argsEtcdbackupS3SecretAccessKey"
+    "argsEtcdbackupS3SecretEndpoint"
     "argsEtcdbackupAppArgsStorecontainer"
-    "argsIncloudUICookieSecret"          
+    "argsIncloudUICookieSecret"
+    "argsGrafanaConfigAdminUser"
+    "argsGrafanaConfigAdminPassword"
+    "argsGrafanaDeploymentEnvOidcSecret"
   -}}
   {{- dict "vars" $vars "order" $order | toYaml -}}
 {{- end -}}
