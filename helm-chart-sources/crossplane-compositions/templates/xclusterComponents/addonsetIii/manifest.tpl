@@ -38,6 +38,7 @@ spec:
     cluster:
       name: {{ $clusterName }}
       host: {{ $clusterHost }}
+      port: {{ $clusterPort }}
     providerConfigRef:
       name: default
     trackingID: {{ $trackingID }}
