@@ -29,10 +29,10 @@ spec:
       name: default
   common:
     argocd:
+      destination:
+        name: {{ $clusterName }}
       project: default
       namespace: {{ $argocdDestinationNamespace }}
-      providerConfigRef:
-        name: default
     cluster:
       name: {{ $clusterName }}
       host: {{ $clusterHost }}
