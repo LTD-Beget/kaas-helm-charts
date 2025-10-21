@@ -30,7 +30,18 @@ spec:
           patches:
             {{- include "xclusterComponents.environment.patches" . | nindent 12 }}
 
-    - step: xcertificateset
+    #- step: xcertificateset
+    #  functionRef:
+    #    name: function-go-templating
+    #  input:
+    #    apiVersion: gotemplating.fn.crossplane.io/v1beta1
+    #    kind: GoTemplate
+    #    source: Inline
+    #    inline:
+    #      template: |-
+    #        {{ `{{- include "xcertificateset.infracluster" . | nindent 12 }}` }}
+
+    - step: xaddonset
       functionRef:
         name: function-go-templating
       input:
@@ -39,4 +50,4 @@ spec:
         source: Inline
         inline:
           template: |-
-            {{- include "xcertificateset.infracluster" . | nindent 12 }}
+            {{- include "xclusterComponents.addonsetIii" . | nindent 12 }}

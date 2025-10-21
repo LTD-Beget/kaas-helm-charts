@@ -1,5 +1,5 @@
 #VariableName  DefaultValue  FromFieldPath  ToFieldPath  Type  Format
-{{- define "xclusterInfra.variables.template" -}}
+{{- define "xclusterComponents.variables.template" -}}
   {{- $vars := dict
     "clusterName" (list "\"\""  "clusterName" "clusterName" "string"  "%s"  )
     "trackingID"  (list "\"\""  "trackingID"  "trackingID"  "string"  "%s"  )
@@ -11,8 +11,8 @@
   {{- dict "vars" $vars "order" $order | toYaml -}}
 {{- end -}}
 
-{{- define "xclusterInfra.variables.emit" -}}
-  {{- $doc  := include "xclusterInfra.variables.template" . | fromYaml -}}
+{{- define "xclusterComponents.variables.emit" -}}
+  {{- $doc  := include "xclusterComponents.variables.template" . | fromYaml -}}
   {{- $vars := $doc.vars -}}
   {{- range $name := $doc.order -}}
     {{- $v    := index $vars $name -}}
@@ -22,13 +22,13 @@
   {{- end -}}
 {{- end -}}
 
-{{- define "xclusterInfra.variables" -}}
+{{- define "xclusterComponents.variables" -}}
   {{ printf `{{- $environment                      := index .context "apiextensions.crossplane.io/environment" }}
 
 {{- $customer                          :=                            $environment.base.customer }}
 {{- $name                              :=                            $environment.base.name }}
 {{- $namespace                         :=                            $environment.base.namespace }}
   ` }}
-  {{- include "xclusterInfra.variables.emit" . | nindent 0 }}
+  {{- include "xclusterComponents.variables.emit" . | nindent 0 }}
 
 {{- end -}}

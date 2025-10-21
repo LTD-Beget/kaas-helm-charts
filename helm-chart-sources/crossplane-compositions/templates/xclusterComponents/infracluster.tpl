@@ -1,5 +1,5 @@
 {{- define "xcertificateset.infracluster" -}}
-  {{- include "xclusterInfra.variables" . | nindent 0 }}
+  {{- include "xcertificateset.variables" . | nindent 0 }}
   {{ printf `
 
 {{- $xCertificateSetReady    := "False" -}}
