@@ -3,13 +3,16 @@ name: Crossplane
 debug: false
 chart: crossplane
 repoURL: https://charts.crossplane.io/stable
-targetRevision: 1.19.1
+targetRevision: 1.20.1
 default: |
   args:
+    - '--enable-realtime-compositions'
     - '--enable-composition-webhook-schema-validation'
     - '--enable-composition-functions'
     - '--enable-usages'
-    - '--poll-interval=10s'
+    - '--poll-interval=5s'
+    - '--sync-interval=1m'
+    - '--max-reconcile-rate=20'
   extraObjects:
     - apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRole
