@@ -4,16 +4,23 @@
     "argocdDestinationName"      (list "\"\""       "argocd.destination.name"        "argocd.destination.name"       "string"           "%s"  )
     "argocdDestinationNamespace" (list "\"\""       "argocd.destination.namespace"   "argocd.destination.namespace"  "string"           "%s"  )
     "argocdDestinationProject"   (list "\"\""       "argocd.destination.project"     "argocd.destination.project"    "string"           "%s"  )
-    "ClusterName"                (list "\"\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
-    "ClusterHost"                (list "\"\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
-    "ClusterPort"                (list "6443"       "cluster.port"                   "cluster.port"                  "string"           "%s"  )
+    "clusterName"                (list "\"\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
+    "clusterHost"                (list "\"\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
+    "clusterPort"                (list "6443"       "cluster.port"                   "cluster.port"                  "string"           "%s"  )
     "systemEnabled"              (list "false"      "system.enabled"                 "system.enabled"                "boolean"          "%v"  )
     "trackingID"                 (list "\"\""       "trackingID"                     "trackingID"                    "string"           "%s"  )
     "xcluster"                   (list "\"\""       "xcluster"                       "xcluster"                      "string"           "%s"  )
   -}}
   {{- $order := list
+    "argocdDestinationName"
+    "argocdDestinationNamespace"
+    "argocdDestinationProject"
     "clusterName"
+    "clusterHost"
+    "clusterPort"
+    "systemEnabled"
     "trackingID"
+    "xcluster"
   -}}
   {{- dict "vars" $vars "order" $order | toYaml -}}
 {{- end -}}
