@@ -17,11 +17,6 @@ kind: XAddonSet
 metadata:
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: xAddonSet
-    {{- if eq $xAddonSetReady "True" }}
-    gotemplating.fn.crossplane.io/ready: "True"
-    status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
-    {{- end }}
-    argocd.argoproj.io/tracking-id: {{ $trackingID }}
   name: {{ $clusterName }}-addonset-iii
 spec:
   current:
