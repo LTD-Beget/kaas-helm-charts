@@ -18,7 +18,6 @@
 {{ $infraTrivyOperatorReady := false }}
 {{ $controlPlaneReplicas    := 3 }}
 {{ $systemEnabled           := false }}
-{{ $systemNamespace         := mock }}
 ###
 
 

@@ -48,10 +48,10 @@ vmAgent:
               key: "incloud.io/clusterName"
               values: [{{ $clusterName }}]
         externalLabels:
-          cluster_full_name: {{ printf "%%s-%%s" $systemNamespace $clusterName }}
-          remotewrite_cluster: {{ printf "%%s-%%s" $systemNamespace $clusterName }}
+          cluster_full_name: {{ printf "%%s-%%s" $customer $clusterName }}
+          remotewrite_cluster: {{ printf "%%s-%%s" $customer $clusterName }}
         extraArgs:
-          remoteWrite.label: remotewrite_cluster={{ printf "%%s-%%s" $systemNamespace $clusterName }}
+          remoteWrite.label: remotewrite_cluster={{ printf "%%s-%%s" $customer $clusterName }}
     kubeControllerManager:
       enabled: true
       vmScrape:
