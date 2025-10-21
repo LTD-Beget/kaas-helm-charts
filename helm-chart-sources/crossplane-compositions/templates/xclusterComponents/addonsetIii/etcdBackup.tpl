@@ -9,8 +9,8 @@ etcdBackup:
     secret:
       s3:
         region: us-east-1
-        accessKeyID: {{ $argsEtcdbackupSecretS3AccessKey }}
-        secretAccessKey: {{ $argsEtcdbackupS3SecretAccesKey }}
+        accessKeyID: {{ $argsEtcdbackupS3AccessKey }}
+        secretAccessKey: {{ $argsEtcdbackupS3SecretAccessKey }}
         endpoint: {{ $argsEtcdbackupS3SecretEndpoint}}
         s3ForcePathStyle: "true"
     app:
