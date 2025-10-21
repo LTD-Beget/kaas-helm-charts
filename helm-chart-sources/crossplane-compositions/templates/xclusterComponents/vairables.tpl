@@ -1,15 +1,15 @@
 #VariableName  DefaultValue  FromFieldPath  ToFieldPath  Type  Format
 {{- define "xclusterComponents.variables.template" -}}
   {{- $vars := dict
-    "argocdDestinationName"      (list "\"\""       "argocd.destination.name"        "argocd.destination.name"       "string"           "%s"  )
-    "argocdDestinationNamespace" (list "\"\""       "argocd.destination.namespace"   "argocd.destination.namespace"  "string"           "%s"  )
-    "argocdDestinationProject"   (list "\"\""       "argocd.destination.project"     "argocd.destination.project"    "string"           "%s"  )
-    "clusterName"                (list "\"\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
-    "clusterHost"                (list "\"\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
+    "argocdDestinationName"      (list "\"mock\""       "argocd.destination.name"        "argocd.destination.name"       "string"           "%s"  )
+    "argocdDestinationNamespace" (list "\"mock\""       "argocd.destination.namespace"   "argocd.destination.namespace"  "string"           "%s"  )
+    "argocdDestinationProject"   (list "\"mock\""       "argocd.destination.project"     "argocd.destination.project"    "string"           "%s"  )
+    "clusterName"                (list "\"mock\""       "cluster.name"                   "cluster.name"                  "string"           "%s"  )
+    "clusterHost"                (list "\"mock\""       "cluster.host"                   "cluster.host"                  "string"           "%s"  )
     "clusterPort"                (list "6443"       "cluster.port"                   "cluster.port"                  "string"           "%s"  )
     "systemEnabled"              (list "false"      "system.enabled"                 "system.enabled"                "boolean"          "%v"  )
-    "trackingID"                 (list "\"\""       "trackingID"                     "trackingID"                    "string"           "%s"  )
-    "xcluster"                   (list "\"\""       "xcluster"                       "xcluster"                      "string"           "%s"  )
+    "trackingID"                 (list "\"mock\""       "trackingID"                     "trackingID"                    "string"           "%s"  )
+    "xcluster"                   (list "\"mock\""       "xcluster"                       "xcluster"                      "string"           "%s"  )
   -}}
   {{- $order := list
     "argocdDestinationName"
