@@ -5,6 +5,8 @@ vmAlert:
   kind: XAddonsVictoriaMetricsAlert
   namespace: beget-vmalert
   version: v1alpha1
+  dependsOn:
+  - prometheus
   values:
     vmalert:
       spec:

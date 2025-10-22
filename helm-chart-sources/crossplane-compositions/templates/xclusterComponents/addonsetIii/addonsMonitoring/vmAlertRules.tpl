@@ -5,5 +5,7 @@ vmAlertRules:
   kind: XAddonsVictoriaMetricsAlertRules
   namespace: beget-vmalert-rules
   version: v1alpha1
+  dependsOn:
+  - vmOperator
   ` }}
 {{- end -}}
