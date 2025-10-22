@@ -29,18 +29,18 @@ metadata:
     gotemplating.fn.crossplane.io/ready: "True"
     status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
     {{- end }}
-  name: {{ $clusterName }}-addonset-iic
+  name: {{ $clusterClientName }}-addonset-iic
 spec:
   common:
     argocd:
       destination:
-        name: {{ $clusterName }}
+        name: {{ $clusterClientName }}
       project: default
       namespace: {{ $argocdDestinationNamespace }}
     cluster:
-      name: {{ $clusterName }}
+      name: {{ $clusterClientName }}
       host: {{ $clusterHost }}
-      port: {{ $clusterPort }}
+      port: {{ $clusterClientPort }}
     providerConfigRef:
       name: default
     {{- if $trackingID }}

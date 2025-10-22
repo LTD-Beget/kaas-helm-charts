@@ -6,8 +6,10 @@
     "argocdDestinationProject"            (list "\"mock\""       "argocd.destination.project"             "argocd.destination.project"           "string"           "%s"  )
     "clientCa"                            (list "\"mock\""       "clientCa"                               "clientCa"                             "string"           "%s"  )
     "clusterName"                         (list "\"mock\""       "cluster.name"                           "cluster.name"                         "string"           "%s"  )
+    "clusterClientName"                   (list "\"mock\""       "clusterClient.name"                     "clusterClient.name"                   "string"           "%s"  )
     "clusterHost"                         (list "\"mock\""       "cluster.host"                           "cluster.host"                         "string"           "%s"  )
     "clusterPort"                         (list "6443"           "cluster.port"                           "cluster.port"                         "integer"          "%s"  )
+    "clusterClientPort"                   (list "26443"          "clusterClient.port"                     "clusterClient.port"                   "integer"          "%s"  )
     "controlPlaneReplicas"                (list "1"              "controlPlaneReplicas"                   "controlPlaneReplicas"                 "integer"          "%s"  )
     "systemEnabled"                       (list "false"          "system.enabled"                         "system.enabled"                       "boolean"          "%v"  )
     "trackingID"                          (list "\"mock\""       "trackingID"                             "trackingID"                           "string"           "%s"  )
@@ -31,8 +33,10 @@
     "argocdDestinationProject"
     "clientCa"
     "clusterName"
+    "clusterClientName"
     "clusterHost"
     "clusterPort"
+    "clusterClientPort"
     "controlPlaneReplicas"
     "systemEnabled"
     "trackingID"

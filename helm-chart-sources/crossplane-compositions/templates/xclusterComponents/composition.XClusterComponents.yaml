@@ -67,8 +67,6 @@ spec:
               policy:
                 fromFieldPath: Optional
                 toFieldPath:   MergeObjects
-                mergeOptions:
-                  appendArrays: true 
 
     - step: xaddonsetclient
       functionRef:
@@ -96,5 +94,3 @@ spec:
               policy:
                 fromFieldPath: Optional
                 toFieldPath:   MergeObjects
-                mergeOptions:
-                  appendArrays: true 
