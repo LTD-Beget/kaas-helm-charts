@@ -5,6 +5,8 @@ vault:
   kind: XAddonsVault
   namespace: beget-vault
   version: v1alpha1
+  dependsOn:
+  - certManager
   values:
     vault:
       injector:

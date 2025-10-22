@@ -5,5 +5,7 @@ capiClusterClass:
   kind: XAddonsCapiClusterClass
   namespace: bcloud-capi
   version: v1alpha1
+  dependsOn:
+  - capi
   ` }}
 {{- end -}}

@@ -5,6 +5,8 @@ capiKubeadmControlPlane:
   kind: XAddonsCapiKubeadmControlPlane
   namespace: beget-capi
   version: v1alpha1
+  dependsOn:
+  - certManager
   values:
     fullnameOverride: "capi-kcp"
   ` }}

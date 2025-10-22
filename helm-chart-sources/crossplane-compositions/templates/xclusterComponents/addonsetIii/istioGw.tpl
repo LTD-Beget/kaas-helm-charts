@@ -7,6 +7,7 @@ istioGW:
   version: v1alpha1
   dependsOn:
     - dex
+    - istioBase
   values:
     gateway:
       service:

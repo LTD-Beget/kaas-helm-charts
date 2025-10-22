@@ -5,6 +5,8 @@ istiod:
   kind: XAddonsIstiod
   namespace: beget-istio
   version: v1alpha1
+  dependsOn:
+  - istioBase
   values:
     istiod:
       replicaCount: {{ $controlPlaneReplicas }}

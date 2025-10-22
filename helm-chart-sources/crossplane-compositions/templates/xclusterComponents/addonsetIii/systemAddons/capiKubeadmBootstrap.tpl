@@ -5,6 +5,8 @@ capiKubeadmBootstrap:
   kind: XAddonsCapiKubeadmBootstrap
   namespace: beget-capi
   version: v1alpha1
+  dependsOn:
+  - certManager
   values:
     fullnameOverride: "capi-kubeadm-bootstrap"
   ` }}
