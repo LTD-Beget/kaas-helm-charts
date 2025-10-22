@@ -51,8 +51,10 @@ spec:
   addons:` -}}
     {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.etcdBackup" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.istioBase" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.istiod" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.istioGw" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.incloudUi" . | nindent 4 }}
@@ -70,6 +72,7 @@ spec:
     {{ include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
   {{- printf `
     {{ if $systemEnabled }}
   ` }}
