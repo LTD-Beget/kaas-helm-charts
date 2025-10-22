@@ -13,9 +13,10 @@
 {{- end }}
 
 ### extra variables
-{{ $infraVMOperatorReady    := false }}
-{{ $istioBaseReady          := false }}
-{{ $infraTrivyOperatorReady := false }}
+{{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
+{{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
+{{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
+{{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 ###
 
 
