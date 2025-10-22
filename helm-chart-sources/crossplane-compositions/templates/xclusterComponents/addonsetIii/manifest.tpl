@@ -16,7 +16,6 @@
 {{ $infraVMOperatorReady    := false }}
 {{ $istioBaseReady          := false }}
 {{ $infraTrivyOperatorReady := false }}
-{{ $systemEnabled           := false }}
 ###
 
 
