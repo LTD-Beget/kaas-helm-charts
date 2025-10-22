@@ -18,7 +18,7 @@
     "argsDexStaticPasswordsAdmin"         (list "\"mock\""       "args.dexStaticPasswordsAdmin"           "args.dexStaticPasswordsAdmin"         "string"           "%s"  )
     "argsDexStaticClientsApiserver"       (list "\"mock\""       "args.dexStaticClientsApiserver"         "args.dexStaticClientsApiserver"       "string"           "%s"  )
     "argsEtcdbackupS3AccessKey"           (list "\"mock\""       "args.etcdbackupS3AccessKey"             "args.etcdbackupS3AccessKey"           "string"           "%s"  )
-    "argsEtcdbackupS3SecretAccessKey"     (list "\"mock\""       "args.etcdbackupS3SecretAccesKey"        "args.etcdbackupS3SecretAccessKey"     "string"           "%s"  )
+    "argsEtcdbackupS3SecretAccessKey"     (list "\"mock\""       "args.etcdbackupS3SecretAccessKey"       "args.etcdbackupS3SecretAccessKey"     "string"           "%s"  )
     "argsEtcdbackupS3SecretEndpoint"      (list "\"mock\""       "args.etcdbackupS3SecretEndpoint"        "args.etcdbackupS3SecretEndpoint"      "string"           "%s"  )
     "argsEtcdbackupAppArgsStorecontainer" (list "\"mock\""       "args.etcdbackupAppArgsStorecontainer"   "args.dexStaticClientsApiserver"       "string"           "%s"  )
     "argsIncloudUICookieSecret"           (list "\"mock\""       "args.incloudUICookieSecret"             "args.incloudUICookieSecret"           "string"           "%s"  )
