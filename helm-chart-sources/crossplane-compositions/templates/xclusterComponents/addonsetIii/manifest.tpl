@@ -16,7 +16,6 @@
 {{ $infraVMOperatorReady    := false }}
 {{ $istioBaseReady          := false }}
 {{ $infraTrivyOperatorReady := false }}
-{{ $controlPlaneReplicas    := 3 }}
 {{ $systemEnabled           := false }}
 ###
 
