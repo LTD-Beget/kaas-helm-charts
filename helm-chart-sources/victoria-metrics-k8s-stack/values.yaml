@@ -2,6 +2,18 @@ victoria-metrics-k8s-stack:
   alertmanager:
     enabled: false
     spec:
+      serviceScrapeSpec:
+        selector:
+          matchLabels:
+            monitoring.in-cloud.io/service: alertmanager
+        endpoints:
+          - port: https-metrics
+            path: /metrics
+            scheme: HTTPS
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              serverName: alertmanager-monitoring
+        jobLabel: alertmanager
       containers:
         - name: rbac-proxy
           image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
@@ -32,42 +44,21 @@ victoria-metrics-k8s-stack:
             defaultMode: 420
             secretName: alertmanager-monitoring-svc-tls
 
-  vmalert:
+  vmagent:
     enabled: false
     spec:
-      containers:
-        - name: rbac-proxy
-          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
-          args:
-            - --secure-listen-address=0.0.0.0:11043
-            - --upstream=http://127.0.0.1:8080
-            - --tls-cert-file=/app/config/metrics/tls/tls.crt
-            - --tls-private-key-file=/app/config/metrics/tls/tls.key
-            - --v=2
-          ports:
-            - name: https-metrics
-              containerPort: 11043
-              protocol: TCP
-          resources:
-            requests:
-              memory: "32Mi"
-              cpu: "10m"
-            limits:
-              memory: "64Mi"
-              cpu: "50m"
-          volumeMounts:
-            - name: rbac-proxy-tls
-              mountPath: /app/config/metrics/tls
-              readOnly: true
-      volumes:
-        - name: rbac-proxy-tls
-          secret:
-            defaultMode: 420
-            secretName: vmalert-monitoring-svc-tls
-
-vmagent:
-    enabled: false
-    spec:
+      serviceScrapeSpec:
+        selector:
+          matchLabels:
+            monitoring.in-cloud.io/service: vmagent
+        endpoints:
+          - port: https-metrics
+            path: /metrics
+            scheme: HTTPS
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              serverName: vmagent-monitoring
+        jobLabel: vmagent
       containers:
         - name: rbac-proxy
           image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
@@ -97,6 +88,51 @@ vmagent:
           secret:
             defaultMode: 420
             secretName: vmagent-monitoring-svc-tls
+
+  vmalert:
+    enabled: false
+    spec:
+      serviceScrapeSpec:
+        selector:
+          matchLabels:
+            monitoring.in-cloud.io/service: vmalert
+        endpoints:
+          - port: https-metrics
+            path: /metrics
+            scheme: HTTPS
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              serverName: vmalert-monitoring
+        jobLabel: vmalert
+      containers:
+        - name: rbac-proxy
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+          args:
+            - --secure-listen-address=0.0.0.0:11043
+            - --upstream=http://127.0.0.1:8080
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11043
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - name: rbac-proxy-tls
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+      volumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: vmalert-monitoring-svc-tls
 
 monitoring:
   enabled: false

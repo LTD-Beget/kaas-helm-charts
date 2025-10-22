@@ -5,17 +5,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-alertmanager-monitoring-svc-tls
+  name: alertmanager-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
   secretName: alertmanager-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}-alertmanager-monitoring
+  commonName: alertmanager-monitoring
   dnsNames:
-    - {{ .Release.Name }}-alertmanager-monitoring
-    - {{ .Release.Name }}-alertmanager-monitoring.{{ .Release.Namespace }}
-    - {{ .Release.Name }}-alertmanager-monitoring.{{ .Release.Namespace }}.svc
+    - alertmanager-monitoring
+    - alertmanager-monitoring.{{ .Release.Namespace }}
+    - alertmanager-monitoring.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
