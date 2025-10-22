@@ -64,3 +64,37 @@ spec:
             - toFieldPath: status.addonStatus
               fromFieldPath: spec.addonStatus
               type: ToCompositeFieldPath
+              policy:
+                fromFieldPath: Optional
+                toFieldPath:   MergeObjects
+                mergeOptions:
+                  appendArrays: true 
+
+    - step: xaddonsetclient
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |-
+            {{- include "xclusterComponents.addonsetIic" . | nindent 12 }}
+
+    - step: xaddonsetclient-status
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+        - name: xAddonSetClient
+          patches:
+            - toFieldPath: status.addonStatus
+              fromFieldPath: spec.addonStatus
+              type: ToCompositeFieldPath
+              policy:
+                fromFieldPath: Optional
+                toFieldPath:   MergeObjects
+                mergeOptions:
+                  appendArrays: true 

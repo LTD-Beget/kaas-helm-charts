@@ -4,6 +4,7 @@
     "argocdDestinationName"               (list "\"mock\""       "argocd.destination.name"                "argocd.destination.name"              "string"           "%s"  )
     "argocdDestinationNamespace"          (list "\"mock\""       "argocd.destination.namespace"           "argocd.destination.namespace"         "string"           "%s"  )
     "argocdDestinationProject"            (list "\"mock\""       "argocd.destination.project"             "argocd.destination.project"           "string"           "%s"  )
+    "clientCa"                            (list "\"mock\""       "clientCa"                               "clientCa"                             "string"           "%s"  )
     "clusterName"                         (list "\"mock\""       "cluster.name"                           "cluster.name"                         "string"           "%s"  )
     "clusterHost"                         (list "\"mock\""       "cluster.host"                           "cluster.host"                         "string"           "%s"  )
     "clusterPort"                         (list "6443"           "cluster.port"                           "cluster.port"                         "integer"          "%s"  )
@@ -28,6 +29,7 @@
     "argocdDestinationName"
     "argocdDestinationNamespace"
     "argocdDestinationProject"
+    "clientCa"
     "clusterName"
     "clusterHost"
     "clusterPort"
