@@ -8,6 +8,7 @@ istiod:
   values:
     istiod:
       replicaCount: {{ $controlPlaneReplicas }}
+      autoscaleMin: "1"
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
