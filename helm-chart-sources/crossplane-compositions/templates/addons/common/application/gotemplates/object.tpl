@@ -65,6 +65,8 @@ spec:
                 value: |-
                   {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
                   {{ "{{ $mergedValues | toYaml | nindent 18 }}" }}
+              - name: "RELEASE_NAME"
+                value: {{ "\"{{ $argocdReleaseName }}\"" }}
           {{- else }}
           helm:
             releaseName: {{ "\"{{ $argocdReleaseName }}\"" }}
