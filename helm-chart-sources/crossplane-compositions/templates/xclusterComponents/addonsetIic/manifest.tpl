@@ -3,8 +3,10 @@
   {{ printf `
 
 {{- $xAddonSetReady                     := "False" }}
+{{- $xAddonSetClientExists              := false }}
 
 {{- with .observed.resources.xAddonSetClient }}
+{{- $xAddonSetClientExists = true }}
   {{- range (dig "resource" "status" "conditions" (list) . )}}
     {{- if and (eq .type "Ready") (eq .status "True") }}
       {{- $xAddonSetReady = "True" }}
@@ -19,6 +21,7 @@
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 ###
 
+{{ if or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
 
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
@@ -50,5 +53,9 @@ spec:
   addons:` -}}
     {{ include "xclusterComponents.addonsetIic.kubeadmResources" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIic.konnectivityAgent" . | nindent 4 }}
+
+  {{- printf `
+{{- end }}
+  ` }}
 
 {{- end }}

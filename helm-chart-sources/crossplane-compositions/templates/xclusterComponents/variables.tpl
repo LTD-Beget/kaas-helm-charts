@@ -11,6 +11,8 @@
     "clusterPort"                         (list "6443"           "cluster.port"                           "cluster.port"                         "integer"          "%s"  )
     "clusterClientPort"                   (list "26443"          "clusterClient.port"                     "clusterClient.port"                   "integer"          "%s"  )
     "controlPlaneReplicas"                (list "1"              "controlPlaneReplicas"                   "controlPlaneReplicas"                 "integer"          "%s"  )
+    "clientEnabled"                       (list "false"          "clusterClient.enabled"                  "clusterClient.enabled"                "boolean"          "%v"  )
+    "clientClusterReady"                  (list "false"          "clusterClient.ready"                    "clusterClient.ready"                  "boolean"          "%v"  )
     "systemEnabled"                       (list "false"          "system.enabled"                         "system.enabled"                       "boolean"          "%v"  )
     "trackingID"                          (list "\"mock\""       "trackingID"                             "trackingID"                           "string"           "%s"  )
     "xcluster"                            (list "\"mock\""       "xcluster"                               "xcluster"                             "string"           "%s"  )
@@ -38,6 +40,8 @@
     "clusterPort"
     "clusterClientPort"
     "controlPlaneReplicas"
+    "clientEnabled"
+    "clientClusterReady"
     "systemEnabled"
     "trackingID"
     "xcluster"
