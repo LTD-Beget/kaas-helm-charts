@@ -57,9 +57,9 @@ spec:
           chart: {{ "\"{{ $chart }}\"" }}
           repoURL: {{ "\"{{ $repoURL }}\"" }}
           targetRevision: {{ "\"{{ $targetRevision }}\"" }}
-          {{- if .plugin }}
+          {{- if .pluginName }}
           plugin:
-            name: {{ .plugin.name }}
+            name: {{ "\"{{ $pluginName }}\"" }}
             env:
               - name: "HELM_VALUES"
                 value: |-

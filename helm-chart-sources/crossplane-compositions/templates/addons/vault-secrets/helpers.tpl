@@ -4,7 +4,6 @@ debug: false
 path: helm-chart-sources/vault-secrets
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 targetRevision: HEAD
-plugin:
-  name: argocd-vault-plugin-helm-with-values
+pluginName: argocd-vault-plugin-helm-with-values
 
 {{- end }}
