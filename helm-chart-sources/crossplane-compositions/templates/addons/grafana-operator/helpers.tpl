@@ -4,8 +4,7 @@ debug: false
 path: helm-chart-sources/grafana-operator
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 targetRevision: feat/monitoring
-plugin:
-  name: kustomize-helm-with-values
+pluginName: kustomize-helm-with-values
 default: |
   grafana-operator:
     namespaceScope: false
