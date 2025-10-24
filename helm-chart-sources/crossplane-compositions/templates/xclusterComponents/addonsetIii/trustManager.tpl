@@ -23,7 +23,7 @@ trustManager:
       name: "ca"
       sources:
         - secret:
-            name: {{ $infraName }}-ca-oidc
+            name: ca-oidc
             key: tls.crt
         - secret:
             name: selfsigned-cluster-ca
