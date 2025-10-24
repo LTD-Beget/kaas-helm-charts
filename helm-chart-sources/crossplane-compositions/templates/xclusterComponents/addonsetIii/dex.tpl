@@ -28,7 +28,7 @@ dex:
           - email: artem@beget.ru
             username: artem
             userID: 00000000-0000-0000-0000-000000000001
-            hash: "$$2a$$10$$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+            hash: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
         staticClients:
           - id: grafana
             name: Grafana
