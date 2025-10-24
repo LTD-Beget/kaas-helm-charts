@@ -20,7 +20,7 @@ certManager:
       secureService:
         enabled: true
         issuer:
-          name: selfsigned-cluster-ca
+          name: selfsigned-cluster-issuer
     issuers:
       selfsignedIssuer:
         kind: Issuer
