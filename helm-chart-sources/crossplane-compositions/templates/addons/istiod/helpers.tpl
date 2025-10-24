@@ -23,6 +23,11 @@ default: |
       istioNamespace: beget-istio
       proxy:
         tracer: zipkin
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 manifest:
   spec:
     forProvider:
