@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crossplane
+spec:
+  template:
+    spec:
+      hostNetwork: true
+      containers:
+        - name: crossplane
+          env:
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: KUBERNETES_SERVICE_PORT
+              value: '6443'
+      initContainers:
+        - name: crossplane-init
+          env:
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: KUBERNETES_SERVICE_PORT
+              value: '6443'
