@@ -5,6 +5,7 @@ dex:
   kind: XAddonsDex
   namespace: beget-dex
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   dependsOn:
   - certManager
   values:
@@ -85,10 +86,14 @@ dex:
         subjects:
           kind: User
           name: "admin@beget.ru"
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
     {{ if $istioBaseReady }}
     istio:
       virtualService:

@@ -5,10 +5,15 @@ certManagerCsiDriver:
   kind: XAddonsCertManagerCsiDriver
   namespace: beget-certmanager-csi-driver
   version: v1alpha1
-  {{ if $infraVMOperatorReady }}
+  pluginName: kustomize-helm-with-values
   values:
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-  {{ end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

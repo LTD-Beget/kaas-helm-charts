@@ -5,9 +5,9 @@ istioGW:
   kind: XAddonsIstioGw
   namespace: beget-istio-gw
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   dependsOn:
     - dex
-    - istioBase
   values:
     gateway:
       service:
@@ -35,12 +35,14 @@ istioGW:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-      {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-      type: VictoriaMetrics
-      namespace: beget-istio-gw
-      {{- end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
     tls:
       enabled: true
       issuer:
