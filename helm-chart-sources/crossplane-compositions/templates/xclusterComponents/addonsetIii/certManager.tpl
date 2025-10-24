@@ -6,6 +6,8 @@ certManager:
   namespace: beget-certmanager
   version: v1alpha1
   values:
+  dependsOn: 
+  - cilium
     cert-manager:
       clusterResourceNamespace: beget-system
   {{ if $infraVMOperatorReady }}

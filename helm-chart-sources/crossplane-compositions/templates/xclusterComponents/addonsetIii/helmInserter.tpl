@@ -6,6 +6,8 @@ helmInserterTest:
   namespace: beget-argocd
   version: v1alpha1
   releaseName: namespace-test
+  dependsOn: 
+  - cilium
   values:
     resources:
       namespaceTest:

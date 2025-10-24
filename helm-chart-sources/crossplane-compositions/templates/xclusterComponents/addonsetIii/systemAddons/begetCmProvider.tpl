@@ -5,6 +5,8 @@ begetCmProvider:
   kind: XAddonsBegetCmProvider
   namespace: beget-cm-provider
   version: v1alpha1
+  dependsOn: 
+  - cilium
   values:
     appSpec:
       applications:

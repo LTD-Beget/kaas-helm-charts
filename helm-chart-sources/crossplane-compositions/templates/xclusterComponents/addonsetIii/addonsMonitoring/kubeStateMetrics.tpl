@@ -5,6 +5,8 @@ kubeStateMetrics:
   kind: XAddonsKubeStateMetrics
   namespace: beget-kube-state-metrics
   version: v1alpha1
+  dependsOn: 
+  - cilium
   values:
     monitoring:
       enabled: true

@@ -5,6 +5,8 @@ certManagerCsiDriver:
   kind: XAddonsCertManagerCsiDriver
   namespace: beget-certmanager-csi-driver
   version: v1alpha1
+  dependsOn: 
+  - cilium
   {{ if $infraVMOperatorReady }}
   values:
     monitoring:

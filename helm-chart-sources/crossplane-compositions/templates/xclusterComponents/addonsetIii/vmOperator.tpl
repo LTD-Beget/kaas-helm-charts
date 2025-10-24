@@ -5,6 +5,8 @@ vmOperator:
   kind: XAddonsVictoriaMetricsOperator
   namespace: beget-vm-operator
   version: v1alpha1
+  dependsOn: 
+  - cilium
   values:
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
