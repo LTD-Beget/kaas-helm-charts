@@ -1,9 +1,9 @@
 {{- define "addons.victoriametricsalertrules" }}
 name: VictoriaMetricsAlertRules
 debug: false
-chart: victoria-metrics-k8s-stack
-repoURL: https://victoriametrics.github.io/helm-charts/
-targetRevision: 0.52.0
+path: helm-chart-sources/victoria-metrics-k8s-stack
+repoURL: https://github.com/LTD-Beget/kaas-helm-charts
+targetRevision: feat/monitoring
 default: |
   {{- include "addons.victoriametricsalertrules.default.values" . | nindent 2 }}
 immutable: |
