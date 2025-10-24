@@ -5,6 +5,7 @@ vmAlert:
   kind: XAddonsVictoriaMetricsAlert
   namespace: beget-vmalert
   version: v1alpha1
+  releaseName: vmalert
   values:
     vmalert:
       spec:

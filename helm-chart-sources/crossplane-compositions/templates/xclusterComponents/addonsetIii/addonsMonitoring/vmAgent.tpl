@@ -5,6 +5,7 @@ vmAgent:
   kind: XAddonsVictoriaMetricsAgent
   namespace: beget-vmagent
   version: v1alpha1
+  releaseName: vmagent
   values:
     fullnameOverride: "vmagent"
     vmagent:
