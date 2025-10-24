@@ -17,7 +17,7 @@
 {{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
-{{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetIii) }}
+{{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 ###
 
 
