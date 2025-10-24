@@ -6,7 +6,6 @@ metadata:
 spec:
   template:
     spec:
-      hostNetwork: true
       containers:
         - name: rbac-proxy
           image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
