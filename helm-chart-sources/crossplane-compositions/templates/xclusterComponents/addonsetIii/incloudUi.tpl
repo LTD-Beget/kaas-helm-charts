@@ -5,6 +5,7 @@ incloudUi:
   kind: XAddonsIncloudUi
   namespace: beget-incloud-ui
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   dependsOn:
   - dex
   values:
@@ -64,11 +65,14 @@ incloudUi:
             host: incloud-ui-oauth2-proxy
             port: 80
     {{ end }}
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-      type: VictoriaMetrics
-    {{- end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"

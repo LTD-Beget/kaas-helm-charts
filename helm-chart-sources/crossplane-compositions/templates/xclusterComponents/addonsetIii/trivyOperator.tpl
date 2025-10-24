@@ -5,6 +5,7 @@ trivyOperator:
   kind: XAddonsTrivyOperator
   namespace: beget-trivy-operator
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   values:
     trivy-operator:
       trivyOperator:
@@ -32,9 +33,13 @@ trivyOperator:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}
