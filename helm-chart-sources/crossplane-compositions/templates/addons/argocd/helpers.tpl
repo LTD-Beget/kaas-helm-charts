@@ -194,7 +194,7 @@ default: |
                   - |
                     if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
                       find . -name 'Chart.yaml' &&
-                      find . -name 'values.yaml' &&
+                      find . -name 'values.yaml'
                     fi
             generate:
               command:
