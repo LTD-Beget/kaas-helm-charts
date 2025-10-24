@@ -124,7 +124,6 @@ default: |
                 weight: 100
         probeNamespaceSelector: {}
         priorityClassName: system-cluster-critical
-        tolerations: {}
     coreDns:
       enabled: false
     kubeDns:
