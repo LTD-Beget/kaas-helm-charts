@@ -37,4 +37,9 @@ default: |
                     limits:
                       cpu: 1
                       memory: 2Gi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 {{- end }}

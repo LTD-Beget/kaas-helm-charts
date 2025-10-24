@@ -7,7 +7,12 @@ kubeStateMetrics:
   version: v1alpha1
   values:
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

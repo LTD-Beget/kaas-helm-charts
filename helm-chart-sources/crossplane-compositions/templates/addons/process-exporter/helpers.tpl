@@ -52,4 +52,9 @@ default: |
           - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
             cmdline:
             - '.+'
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 {{- end }}

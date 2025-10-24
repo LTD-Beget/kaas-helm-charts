@@ -35,4 +35,9 @@ default: |
         memory: 128Mi
 
     priorityClassName: system-cluster-critical
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 {{- end }}

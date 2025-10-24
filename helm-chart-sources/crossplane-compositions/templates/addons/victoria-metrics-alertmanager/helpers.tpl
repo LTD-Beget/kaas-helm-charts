@@ -38,6 +38,11 @@ default: |
           - name: GOMAXPROCS
             value: '1'
         podMetadata: {}
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 
 immutable: |
   victoria-metrics-k8s-stack:
