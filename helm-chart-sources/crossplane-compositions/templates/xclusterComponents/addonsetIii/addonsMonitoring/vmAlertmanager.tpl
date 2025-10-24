@@ -5,6 +5,7 @@ vmAlertmanager:
   kind: XAddonsVictoriaMetricsAlertmanager
   namespace: beget-alertmanager
   version: v1alpha1
+  releaseName: vmalertmanager
   values:
     fullnameOverride: "alertmanager"
     alertmanager:
