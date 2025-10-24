@@ -6,13 +6,9 @@ kubeStateMetrics:
   namespace: beget-kube-state-metrics
   version: v1alpha1
   values:
-    monitoring:
     {{ if $infraVMOperatorReady }}
+    monitoring:
       enabled: true
     {{ end }}
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

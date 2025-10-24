@@ -74,13 +74,9 @@ vmAgent:
               tlsConfig:
                 caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                 serverName: {{ printf "%%s-scheduler" $clusterName }}
-    monitoring:
     {{ if $infraVMOperatorReady }}
+    monitoring:
       enabled: true
     {{ end }}
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}
