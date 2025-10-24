@@ -58,13 +58,12 @@ spec:
           repoURL: {{ "\"{{ $repoURL }}\"" }}
           targetRevision: {{ "\"{{ $targetRevision }}\"" }}
           {{- if .pluginName }}
+          helm: null
           plugin:
             name: {{ "\"{{ $pluginName }}\"" }}
             env:
               - name: "HELM_VALUES"
-                value: |-
-                  {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
-                  {{ "{{ $mergedValues | toYaml | nindent 18 }}" }}
+                value: {{ "\"{{ merge $immutableValues $userValues $defaultValues | toYaml | b64enc }}\"" }}
               - name: "RELEASE_NAME"
                 value: {{ "\"{{ $argocdReleaseName }}\"" }}
           {{- else }}
@@ -73,6 +72,7 @@ spec:
             values: |-
               {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
               {{ "{{ $mergedValues | toYaml | nindent 14 }}" }}
+          plugin: null
           {{- end }}
   readiness:
     policy: DeriveFromCelQuery
