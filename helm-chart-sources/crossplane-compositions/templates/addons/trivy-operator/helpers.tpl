@@ -22,4 +22,9 @@ default: |
           requests:
             cpu: 100m
             memory: 128Mi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 {{- end }}
