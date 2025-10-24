@@ -14,5 +14,11 @@ vmOperator:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}
