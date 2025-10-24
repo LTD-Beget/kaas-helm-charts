@@ -16,7 +16,10 @@ prometheus:
           - web.enable-remote-write-receiver
     monitoring:
       enabled: true
-      type: VictoriaMetrics
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
       namespace: beget-prometheus
       grafana:
         datasource:

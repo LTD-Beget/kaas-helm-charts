@@ -23,6 +23,11 @@ default: |
       limits:
         cpu: 500m
         memory: 750Mi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 manifest:
   spec:
     forProvider:

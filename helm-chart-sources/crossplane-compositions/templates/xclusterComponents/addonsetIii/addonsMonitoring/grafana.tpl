@@ -63,8 +63,13 @@ grafana:
                         cpu: "1"
                         memory: "2Gi"
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
     {{ if $istioBaseReady }}
     istio:
       virtualService:
