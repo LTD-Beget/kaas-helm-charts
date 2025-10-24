@@ -5,8 +5,6 @@ grafanaOperator:
   kind: XAddonsGrafanaOperator
   namespace: beget-grafana-operator
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     monitoring:
       enabled: true

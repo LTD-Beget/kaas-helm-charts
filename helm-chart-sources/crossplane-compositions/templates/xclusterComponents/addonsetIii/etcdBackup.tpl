@@ -5,8 +5,6 @@ etcdBackup:
   kind: XAddonsEtcdBackup
   namespace: beget-etcd-backups
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     secret:
       s3:

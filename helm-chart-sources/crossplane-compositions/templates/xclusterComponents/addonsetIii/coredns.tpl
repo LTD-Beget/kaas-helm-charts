@@ -5,8 +5,6 @@ coredns:
   kind: XAddonsCoredns
   namespace: beget-coredns
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     coredns:
       replicaCount: {{ $controlPlaneReplicas }}

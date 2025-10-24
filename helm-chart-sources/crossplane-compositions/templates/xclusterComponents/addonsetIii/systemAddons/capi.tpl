@@ -5,7 +5,5 @@ capi:
   kind: XAddonsCapi
   namespace: beget-capi
   version: v1alpha1
-  dependsOn: 
-  - cilium
   ` }}
 {{- end -}}

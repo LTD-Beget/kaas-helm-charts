@@ -5,8 +5,6 @@ prometheusNodeExporter:
   kind: XAddonsPrometheusNodeExporter
   namespace: beget-prometheus-node-exporter
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     monitoring:
       enabled: true

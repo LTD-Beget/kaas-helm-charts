@@ -5,8 +5,6 @@ metricsServer:
   kind: XAddonsMetricsServer
   namespace: beget-metrics-server
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     monitoring:
       enabled: true

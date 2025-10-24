@@ -5,8 +5,6 @@ trivyOperator:
   kind: XAddonsTrivyOperator
   namespace: beget-trivy-operator
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     trivy-operator:
       trivyOperator:

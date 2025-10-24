@@ -5,8 +5,6 @@ trustManager:
   kind: XAddonsTrustManager
   namespace: beget-trust-manager
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     trust-manager:
       tolerations:

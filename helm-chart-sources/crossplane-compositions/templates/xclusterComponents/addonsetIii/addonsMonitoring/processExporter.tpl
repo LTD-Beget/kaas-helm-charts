@@ -5,8 +5,6 @@ processExporter:
   kind: XAddonsProcessExporter
   namespace: beget-process-exporter
   version: v1alpha1
-  dependsOn: 
-  - cilium
   values:
     monitoring:
       enabled: true
