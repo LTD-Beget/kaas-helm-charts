@@ -62,14 +62,10 @@ grafana:
                       limits:
                         cpu: "1"
                         memory: "2Gi"
-    monitoring:
     {{ if $infraVMOperatorReady }}
+    monitoring:
       enabled: true
     {{ end }}
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
     {{ if $istioBaseReady }}
     istio:
       virtualService:

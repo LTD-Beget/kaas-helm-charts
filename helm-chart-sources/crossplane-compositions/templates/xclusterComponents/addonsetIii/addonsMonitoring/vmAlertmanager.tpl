@@ -22,13 +22,9 @@ vmAlertmanager:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-    monitoring:
     {{ if $infraVMOperatorReady }}
+    monitoring:
       enabled: true
     {{ end }}
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}
