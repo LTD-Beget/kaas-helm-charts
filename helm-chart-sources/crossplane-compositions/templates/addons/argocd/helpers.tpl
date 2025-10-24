@@ -192,7 +192,7 @@ default: |
                   - bash
                   - '-c'
                   - |
-                    if [ -n "$${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
+                    if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
                       find . -name 'Chart.yaml' &&
                       find . -name 'values.yaml' &&
                     fi
@@ -201,10 +201,11 @@ default: |
                 - bash
                 - '-c'
                 - |
-                  if [ -z "$${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                      ARGOCD_ENV_RELEASE_NAME="$${ARGOCD_APP_NAME#*_}"
+                  if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
+                      ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
                   fi
-                  helm template "$${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "$${ARGOCD_APP_NAMESPACE}" -f <(echo "$${ARGOCD_ENV_HELM_VALUES}") .
+                  echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
+                  helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .
           kustomize-helm-with-values:
             allowConcurrency: true
             lockRepo: false
@@ -214,7 +215,7 @@ default: |
                   - bash
                   - '-c'
                   - |
-                    if [ -n "$${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
+                    if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
                       find . -name 'Chart.yaml' &&
                       find . -name 'values.yaml' &&
                       find . -name 'patches/kustomization.yaml';
@@ -224,10 +225,11 @@ default: |
                 - bash
                 - '-c'
                 - |
-                  if [ -z "$${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                      ARGOCD_ENV_RELEASE_NAME="$${ARGOCD_APP_NAME#*_}"
+                  if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
+                      ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
                   fi
-                  helm template "$${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "$${ARGOCD_APP_NAMESPACE}" -f <(echo "$${ARGOCD_ENV_HELM_VALUES}") . > ./patches/base.yaml;
+                  echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
+                  helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml;
                   kustomize build ./patches
       params:
         application.namespaces: '*'
@@ -240,7 +242,7 @@ default: |
         server.rootpath: /argocd
         server.staticassets: /shared/app
       secret:
-        argocdServerAdminPassword: "$$2a$$10$$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+        argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
     dex:
       enabled: false
     notifications:
