@@ -78,18 +78,17 @@ spec:
         annotations:
           argocd.argoproj.io/tracking-id: '{{ $trackingID }}'
           deployed.in-cloud.io/status: '{{ $appReady }}'
-        {{- if $finalizerEnabled }}
+        {{- if $finalizerDisabled }}
+        finalizers: []
+        {{- else }}
         finalizers: 
           - 'resources-finalizer.argocd.argoproj.io'
-        {{- else }}
-        finalizers: []
         {{- end }}
         labels:
           cluster.x-k8s.io/cluster-name: '{{ $clusterName }}'
         name: '{{ $name }}'
         namespace: '{{ $argocdNamespace }}'
 ` (.default | default "" ) (.immutable | default "" ) $appName }}
-  {{- $appName := printf "%sApp" $singularCamel }}
   {{- merge (.manifest | default dict) (include "addons.common.application.gotemplates.object" . | fromYaml) | toYaml | nindent 6 }}
 
 {{- end }}

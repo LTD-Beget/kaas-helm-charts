@@ -9,7 +9,7 @@
     "argocdReleaseName"           (list (printf "\"%s\"" $singularKebab)            "argocd.releaseName"            "argocd.releaseName"            "string"  "%s"    )
     "chart"                       (list (printf "\"%s\"" (default "" .chart))       "argocd.chart"                  "argocd.chart"                  "string"  "%s"    )
     "clusterName"                 (list "\"\""                                      "cluster.name"                  "cluster.name"                  "string"  "%s"    )
-    "finalizerEnabled"            (list "true"                                      "argocd.finalizerEnabled"       "argocd.finalizerEnabled"       "bool"    "%s"    )
+    "finalizerDisabled"           (list "false"                                     "argocd.finalizerDisabled"      "argocd.finalizerDisabled"      "bool"    "%s"    )
     "host"                        (list "\"\""                                      "cluster.host"                  "cluster.host"                  "string"  "%s"    )
     "path"                        (list (printf "\"%s\"" (default "" .path))        "argocd.path"                   "argocd.path"                   "string"  "%s"    )
     "port"                        (list "6443"                                      "cluster.port"                  "cluster.port"                  "string"  "%.0f"  )
@@ -28,7 +28,7 @@
     "argocdReleaseName"
     "chart"
     "clusterName"
-    "finalizerEnabled"
+    "finalizerDisabled"
     "host"
     "path"
     "port"
