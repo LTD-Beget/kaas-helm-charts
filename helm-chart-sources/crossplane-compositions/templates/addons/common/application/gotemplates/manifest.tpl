@@ -78,7 +78,10 @@ spec:
         annotations:
           argocd.argoproj.io/tracking-id: '{{ $trackingID }}'
           deployed.in-cloud.io/status: '{{ $appReady }}'
-        finalizers: {{ $finalizers | toJson }}
+        {{- if $finalizerEnabled }}
+        finalizers: 
+          - 'resources-finalizer.argocd.argoproj.io'
+        {{- end }}
         labels:
           cluster.x-k8s.io/cluster-name: '{{ $clusterName }}'
         name: '{{ $name }}'
