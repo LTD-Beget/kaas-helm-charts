@@ -120,14 +120,11 @@ default: |
                     effect: NoSchedule
 manifest:
   spec:
-    forProvider:
-      manifest:
-        spec:
-          syncPolicy:
-            retry:
-              limit: 100
-              backoff:
-                duration: 5s
-                factor: 1
-                maxDuration: 3m0s
+    syncPolicy:
+      retry:
+        limit: 100
+        backoff:
+          duration: 5s
+          factor: 1
+          maxDuration: 3m0s
 {{- end }}

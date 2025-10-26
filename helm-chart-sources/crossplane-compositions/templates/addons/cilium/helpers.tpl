@@ -35,12 +35,9 @@ immutable: |
     k8sServicePort: {{ "{{ .port }}" }}
 manifest:
   spec:
-    forProvider:
-      manifest:
-        spec:
-          ignoreDifferences:
-          - group: admissionregistration.k8s.io
-            kind: Service
-            jqPathExpressions:
-              - .spec.ports[]?.nodePort
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: Service
+      jqPathExpressions:
+        - .spec.ports[]?.nodePort
 {{- end }}

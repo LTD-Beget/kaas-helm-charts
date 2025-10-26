@@ -9,12 +9,9 @@ default: |
     istioNamespace: beget-istio
 manifest:
   spec:
-    forProvider:
-      manifest:
-        spec:
-          ignoreDifferences:
-          - group: admissionregistration.k8s.io
-            kind: ValidatingWebhookConfiguration
-            jsonPointers:
-            - /webhooks/0/failurePolicy
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
 {{- end }}

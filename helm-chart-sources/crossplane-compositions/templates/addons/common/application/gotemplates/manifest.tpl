@@ -50,9 +50,41 @@
 %s
 {{- end }}
 {{- $immutableValues := include "immutable.values" $context | fromYaml | default dict }}
-
-` (.default | default "" ) (.immutable | default "" ) }}
-
-{{- merge (.manifest | default dict) (include "addons.common.application.gotemplates.object" . | fromYaml) | toYaml }}
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    deployed.in-cloud.io/status: '{{ $appReady }}'
+    gotemplating.fn.crossplane.io/composition-resource-name: %s
+    gotemplating.fn.crossplane.io/ready: '{{ $appReady }}'
+  name: '{{ $name }}-app'
+spec:
+  deletionPolicy: Delete
+  managementPolicies:
+  - '*'
+  providerConfigRef:
+    name: '{{ $providerConfigRefName }}'
+  readiness:
+    celQuery: >
+      object.metadata.annotations['deployed.in-cloud.io/status'] == 'True'
+    policy: DeriveFromCelQuery
+  watch: true
+  forProvider:
+    manifest:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        annotations:
+          argocd.argoproj.io/tracking-id: '{{ $trackingID }}'
+          deployed.in-cloud.io/status: '{{ $appReady }}'
+        finalizers: {{ $finalizers | toJson }}
+        labels:
+          cluster.x-k8s.io/cluster-name: '{{ $clusterName }}'
+        name: '{{ $name }}'
+        namespace: '{{ $argocdNamespace }}'
+` (.default | default "" ) (.immutable | default "" ) $appName }}
+  {{- $appName := printf "%sApp" $singularCamel }}
+  {{- merge (.manifest | default dict) (include "addons.common.application.gotemplates.object" . | fromYaml) | toYaml | nindent 6 }}
 
 {{- end }}

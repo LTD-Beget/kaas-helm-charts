@@ -30,13 +30,10 @@ default: |
         name: selfsigned-cluster-issuer
 manifest:
   spec:
-    forProvider:
-      manifest:
-        spec:
-          syncPolicy:
-            syncOptions:
-            - CreateNamespace=true
-            - ServerSideApply=true
+    syncPolicy:
+      syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
 
 
 {{- end }}
