@@ -81,6 +81,8 @@ spec:
         {{- if $finalizerEnabled }}
         finalizers: 
           - 'resources-finalizer.argocd.argoproj.io'
+        {{- else }}
+        finalizers: []
         {{- end }}
         labels:
           cluster.x-k8s.io/cluster-name: '{{ $clusterName }}'
