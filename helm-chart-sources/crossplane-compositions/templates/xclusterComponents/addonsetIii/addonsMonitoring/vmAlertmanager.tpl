@@ -5,8 +5,7 @@ vmAlertmanager:
   kind: XAddonsVictoriaMetricsAlertmanager
   namespace: beget-alertmanager
   version: v1alpha1
-  dependsOn:
-  - vmOperator
+  releaseName: vmalertmanager
   values:
     fullnameOverride: "alertmanager"
     alertmanager:
@@ -24,6 +23,9 @@ vmAlertmanager:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-
+    {{ if $infraVMOperatorReady }}
+    monitoring:
+      enabled: true
+    {{ end }}
   ` }}
 {{- end -}}

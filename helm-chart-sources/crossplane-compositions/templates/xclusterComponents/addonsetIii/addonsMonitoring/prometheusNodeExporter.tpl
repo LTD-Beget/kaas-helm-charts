@@ -6,8 +6,9 @@ prometheusNodeExporter:
   namespace: beget-prometheus-node-exporter
   version: v1alpha1
   values:
+    {{ if $infraVMOperatorReady }}
     monitoring:
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
   ` }}
 {{- end -}}

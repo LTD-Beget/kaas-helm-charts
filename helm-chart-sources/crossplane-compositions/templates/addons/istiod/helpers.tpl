@@ -3,7 +3,8 @@ name: Istiod
 debug: false
 path: helm-chart-sources/istiod
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+targetRevision: feat/monitoring
+pluginName: kustomize-helm-with-values
 default: |
   istiod:
     base:
@@ -22,6 +23,11 @@ default: |
       istioNamespace: beget-istio
       proxy:
         tracer: zipkin
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 manifest:
   spec:
     forProvider:

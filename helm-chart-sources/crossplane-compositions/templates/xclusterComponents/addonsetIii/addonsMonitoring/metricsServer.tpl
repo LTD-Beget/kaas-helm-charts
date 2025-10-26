@@ -6,9 +6,9 @@ metricsServer:
   namespace: beget-metrics-server
   version: v1alpha1
   values:
+    {{ if $infraVMOperatorReady }}
     monitoring:
       enabled: true
-      type: VictoriaMetrics
-
+    {{ end }}
   ` }}
 {{- end -}}

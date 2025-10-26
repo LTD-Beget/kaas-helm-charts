@@ -5,6 +5,7 @@ trustManager:
   kind: XAddonsTrustManager
   namespace: beget-trust-manager
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   values:
     trust-manager:
       tolerations:
@@ -19,17 +20,25 @@ trustManager:
           namespace: beget-system
     bundle:
       enabled: true
-      name: "oidc-ca.crt"
-      sourceSecret:
-        name: {{ $clusterName }}-ca-oidc-crt
+      name: "ca"
+      sources:
+        - secret:
+            name: ca-oidc
+            key: tls.crt
+        - secret:
+            name: selfsigned-cluster-ca
+            key: tls.crt
       target:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: {{ $clusterName }}
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-      type: VictoriaMetrics
-    {{- end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

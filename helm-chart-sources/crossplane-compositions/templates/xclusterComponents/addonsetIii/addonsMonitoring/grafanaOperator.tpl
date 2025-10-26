@@ -6,8 +6,9 @@ grafanaOperator:
   namespace: beget-grafana-operator
   version: v1alpha1
   values:
+    {{ if $infraVMOperatorReady }}
     monitoring:
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
   ` }}
 {{- end -}}

@@ -62,9 +62,10 @@ grafana:
                       limits:
                         cpu: "1"
                         memory: "2Gi"
+    {{ if $infraVMOperatorReady }}
     monitoring:
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
     {{ if $istioBaseReady }}
     istio:
       virtualService:

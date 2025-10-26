@@ -6,8 +6,9 @@ kubeStateMetrics:
   namespace: beget-kube-state-metrics
   version: v1alpha1
   values:
+    {{ if $infraVMOperatorReady }}
     monitoring:
       enabled: true
-      type: VictoriaMetrics
+    {{ end }}
   ` }}
 {{- end -}}

@@ -3,7 +3,8 @@ name: GrafanaOperator
 debug: false
 path: helm-chart-sources/grafana-operator
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+targetRevision: feat/monitoring
+pluginName: kustomize-helm-with-values
 default: |
   grafana-operator:
     namespaceScope: false
@@ -22,6 +23,11 @@ default: |
       limits:
         cpu: 500m
         memory: 750Mi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 manifest:
   spec:
     forProvider:

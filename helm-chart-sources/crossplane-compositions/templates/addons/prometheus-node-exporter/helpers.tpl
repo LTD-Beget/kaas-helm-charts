@@ -3,7 +3,8 @@ name: PrometheusNodeExporter
 debug: false
 path: helm-chart-sources/prometheus-node-exporter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+targetRevision: feat/monitoring
+pluginName: kustomize-helm-with-values
 default: |
   prometheus-node-exporter:
     service:
@@ -22,6 +23,8 @@ default: |
       runAsNonRoot: true
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
+    serviceAccount:
+      automountServiceAccountToken: true
     resources:
       requests:
         cpu: 100m
@@ -29,4 +32,9 @@ default: |
       limits:
         cpu: 512m
         memory: 256Mi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 {{- end }}

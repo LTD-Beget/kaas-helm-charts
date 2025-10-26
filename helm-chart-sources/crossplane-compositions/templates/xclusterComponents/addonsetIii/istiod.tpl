@@ -5,12 +5,10 @@ istiod:
   kind: XAddonsIstiod
   namespace: beget-istio
   version: v1alpha1
-  dependsOn:
-  - istioBase
+  pluginName: kustomize-helm-with-values
   values:
     istiod:
       replicaCount: {{ $controlPlaneReplicas }}
-      autoscaleMin: "1"
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -26,9 +24,13 @@ istiod:
                   app.kubernetes.io/name: istiod
                   app.kubernetes.io/instance: istiod
               topologyKey: kubernetes.io/hostname
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-    {{- end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

@@ -27,6 +27,7 @@
     {{- $path := dig "path" "" . }}
     {{- $permitionToCreateAddon := "True" }}
     {{- $releaseName := dig "releaseName" "" . }}
+    {{- $pluginName := dig "pluginName" "" . }}
     {{- $repoURL := dig "repoURL" "" . }}
     {{- $targetRevision := dig "targetRevision" "" . }}
     {{- $values := get . "values" | default (dict) }}
@@ -71,6 +72,9 @@ spec:
     namespace: {{ $commonArgocdNamespace }}
       {{- if $path }}
     path: {{ $path }}
+      {{- end }}
+      {{- if $pluginName  }}
+    pluginName: {{ $pluginName }}
       {{- end }}
     project: {{ $commonArgocdProject }}
       {{- if $releaseName }}

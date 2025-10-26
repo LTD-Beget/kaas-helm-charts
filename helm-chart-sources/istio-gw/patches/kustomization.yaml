@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./base.yaml
+
+patches:
+  - path: ./deployment.istio-gw.yaml
+    target:
+      kind: Deployment
+      name: istio-gw
+
+  - path: ./service.istio-gw.yaml
+    target:
+      kind: Service
+      name: istio-gw

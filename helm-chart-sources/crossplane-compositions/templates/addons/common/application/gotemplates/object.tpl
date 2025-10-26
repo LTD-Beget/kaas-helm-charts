@@ -57,20 +57,22 @@ spec:
           chart: {{ "\"{{ $chart }}\"" }}
           repoURL: {{ "\"{{ $repoURL }}\"" }}
           targetRevision: {{ "\"{{ $targetRevision }}\"" }}
-          {{- if .plugin }}
+          {{- if .pluginName }}
+          helm: null
           plugin:
-            name: {{ .plugin.name }}
+            name: {{ "\"{{ $pluginName }}\"" }}
             env:
               - name: "HELM_VALUES"
-                value: |-
-                  {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
-                  {{ "{{ $mergedValues | toYaml | nindent 18 }}" }}
+                value: {{ "\"{{ merge $immutableValues $userValues $defaultValues | toYaml | b64enc }}\"" }}
+              - name: "RELEASE_NAME"
+                value: {{ "\"{{ $argocdReleaseName }}\"" }}
           {{- else }}
           helm:
             releaseName: {{ "\"{{ $argocdReleaseName }}\"" }}
             values: |-
               {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
               {{ "{{ $mergedValues | toYaml | nindent 14 }}" }}
+          plugin: null
           {{- end }}
   readiness:
     policy: DeriveFromCelQuery

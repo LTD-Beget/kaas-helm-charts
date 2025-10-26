@@ -3,7 +3,8 @@ name: IstioGw
 debug: false
 path: helm-chart-sources/istio-gw
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+targetRevision: feat/monitoring
+pluginName: kustomize-helm-with-values
 default: |
   gateway:
     priorityClassName: system-cluster-critical
@@ -13,6 +14,11 @@ default: |
       requests:
         cpu: 100m
         memory: 128Mi
+  monitoring:
+    secureService:
+      enabled: true
+      issuer:
+        name: selfsigned-cluster-issuer
 manifest:
   spec:
     forProvider:

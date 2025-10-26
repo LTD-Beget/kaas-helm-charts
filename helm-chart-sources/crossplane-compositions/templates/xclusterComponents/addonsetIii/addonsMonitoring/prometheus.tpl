@@ -16,7 +16,6 @@ prometheus:
           - web.enable-remote-write-receiver
     monitoring:
       enabled: true
-      type: VictoriaMetrics
       namespace: beget-prometheus
       grafana:
         datasource:

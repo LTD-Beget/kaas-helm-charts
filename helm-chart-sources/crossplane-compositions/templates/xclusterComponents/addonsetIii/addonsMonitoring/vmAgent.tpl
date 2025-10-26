@@ -5,8 +5,7 @@ vmAgent:
   kind: XAddonsVictoriaMetricsAgent
   namespace: beget-vmagent
   version: v1alpha1
-  dependsOn:
-  - vmOperator
+  releaseName: vmagent
   values:
     fullnameOverride: "vmagent"
     vmagent:
@@ -76,5 +75,9 @@ vmAgent:
               tlsConfig:
                 caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                 serverName: {{ printf "%%s-scheduler" $clusterName }}
+    {{ if $infraVMOperatorReady }}
+    monitoring:
+      enabled: true
+    {{ end }}
   ` }}
 {{- end -}}
