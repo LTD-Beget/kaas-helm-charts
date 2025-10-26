@@ -3,7 +3,7 @@ name: KubeStateMetrics
 debug: false
 path: helm-chart-sources/kube-state-metrics
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   kube-state-metrics:

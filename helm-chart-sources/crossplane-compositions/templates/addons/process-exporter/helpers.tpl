@@ -3,7 +3,7 @@ name: ProcessExporter
 debug: false
 path: helm-chart-sources/process-exporter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   prometheus-process-exporter:

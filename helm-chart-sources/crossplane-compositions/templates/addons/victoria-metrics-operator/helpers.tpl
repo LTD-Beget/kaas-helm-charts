@@ -3,7 +3,7 @@ name: VictoriaMetricsOperator
 debug: false
 path: helm-chart-sources/victoria-metrics-operator
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   victoria-metrics-operator:

@@ -3,7 +3,7 @@ name: Coredns
 debug: false
 path: helm-chart-sources/coredns
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   coredns:

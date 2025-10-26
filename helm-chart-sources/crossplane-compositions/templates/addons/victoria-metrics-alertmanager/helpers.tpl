@@ -3,7 +3,7 @@ name: VictoriaMetricsAlertmanager
 debug: false
 path: helm-chart-sources/victoria-metrics-k8s-stack
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 default: |
   victoria-metrics-k8s-stack:
     alertmanager:

@@ -3,7 +3,7 @@ name: Prometheus
 debug: false
 path: helm-chart-sources/prometheus
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   prometheus:

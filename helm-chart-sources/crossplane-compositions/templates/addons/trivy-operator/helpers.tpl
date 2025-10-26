@@ -3,7 +3,7 @@ name: TrivyOperator
 debug: false
 path: helm-chart-sources/trivy-operator
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   trivy-operator:

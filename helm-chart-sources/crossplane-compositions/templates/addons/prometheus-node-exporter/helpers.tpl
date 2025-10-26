@@ -3,7 +3,7 @@ name: PrometheusNodeExporter
 debug: false
 path: helm-chart-sources/prometheus-node-exporter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   prometheus-node-exporter:

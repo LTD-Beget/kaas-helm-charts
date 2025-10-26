@@ -3,7 +3,7 @@ name: IncloudUi
 debug: false
 path: helm-chart-sources/incloud-ui
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/monitoring
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   monitoring:
