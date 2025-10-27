@@ -8,7 +8,7 @@ crossplane:
   version: v1alpha1
   targetRevision: 1.20.1
   values:
-    hostNetwork: true
+    hostNetwork: false
     args:
       - '--enable-realtime-compositions'
       - '--enable-composition-webhook-schema-validation'
