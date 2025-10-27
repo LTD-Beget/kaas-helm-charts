@@ -21,6 +21,7 @@
     {{- $AddonCreated := "False" }}
     {{- $apiVersion := .apiVersion }}
     {{- $chart := dig "chart" "" . }}
+    {{- $finalizerDisabled := dig "finalizerDisabled" false . }}
     {{- $kind := .kind }}
     {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
     {{- $namespace := .namespace }}
@@ -69,6 +70,9 @@ spec:
     destination:
       name: {{ $commonArgocdDestinationName }}
       namespace: {{ $namespace }}
+      {{- if $finalizerDisabled }}
+    finalizerDisabled: {{ $finalizerDisabled }}
+      {{- end }}
     namespace: {{ $commonArgocdNamespace }}
       {{- if $path }}
     path: {{ $path }}
