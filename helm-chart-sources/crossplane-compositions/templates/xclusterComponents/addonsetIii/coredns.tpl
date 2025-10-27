@@ -23,9 +23,13 @@ coredns:
                   app.kubernetes.io/name: coredns
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
-  {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
-  {{ end }}
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}
