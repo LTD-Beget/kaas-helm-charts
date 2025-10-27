@@ -81,9 +81,7 @@ spec:
         annotations:
           argocd.argoproj.io/tracking-id: '{{ $trackingID }}'
           deployed.in-cloud.io/status: '{{ $appReady }}'
-        {{- if $finalizerDisabled }}
-        finalizers: []
-        {{- else }}
+        {{- if not $finalizerDisabled }}
         finalizers: 
           - 'resources-finalizer.argocd.argoproj.io'
         {{- end }}
