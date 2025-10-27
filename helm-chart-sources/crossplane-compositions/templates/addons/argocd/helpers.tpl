@@ -1,9 +1,9 @@
 {{- define "addons.argocd" }}
 name: Argocd
 debug: false
-path: helm-chart-sources/argocd
-repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+path: .
+repoURL: https://gitlab.beget.ru/cloud/k8s/charts/argocd-infra-advanced.git
+targetRevision: kustomize
 pluginName: kustomize-helm-with-values
 default: |
   argo-cd:
@@ -235,8 +235,8 @@ default: |
         application.namespaces: '*'
         applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
         applicationsetcontroller.namespaces: '*'
-        repo.server: 127.0.0.1:8081
-        redis.server: 127.0.0.1:6379
+        # repo.server: 127.0.0.1:8081
+        # redis.server: 127.0.0.1:6379
         controller.sharding.algorithm: round-robin
         server.basehref: /argocd
         server.rootpath: /argocd
@@ -254,7 +254,7 @@ default: |
       image:
         imagePullPolicy: IfNotPresent
       replicas: 1
-      hostNetwork: true
+      # hostNetwork: true
       exporter:
         enabled: true
         resources:
@@ -281,7 +281,7 @@ default: |
       enabled: true
       image:
         imagePullPolicy: IfNotPresent
-      hostNetwork: true
+      # hostNetwork: true
       extraArgs:
         - --kubeconfig
         - /etc/kubernetes/admin.conf
@@ -315,7 +315,7 @@ default: |
     repoServer:
       image:
         imagePullPolicy: IfNotPresent
-      hostNetwork: true
+      # hostNetwork: true
       containerSecurityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -389,7 +389,7 @@ default: |
     server:
       image:
         imagePullPolicy: IfNotPresent
-      hostNetwork: true
+      # hostNetwork: true
       containerSecurityContext:
         runAsNonRoot: false
         runAsUser: 0
@@ -401,10 +401,10 @@ default: |
         seccompProfile:
           type: RuntimeDefault
       extraArgs:
-        - --repo-server
-        - 127.0.0.1:8081
-        - --redis
-        - 127.0.0.1:6379
+        # - --repo-server
+        # - 127.0.0.1:8081
+        # - --redis
+        # - 127.0.0.1:6379
         - --kubeconfig
         - /etc/kubernetes/admin.conf
       volumes:
@@ -439,7 +439,7 @@ default: |
     controller:
       image:
         imagePullPolicy: IfNotPresent
-      hostNetwork: true
+      # hostNetwork: true
       containerSecurityContext:
         runAsNonRoot: false
         runAsUser: 0
@@ -451,10 +451,10 @@ default: |
         seccompProfile:
           type: RuntimeDefault
       extraArgs:
-        - --repo-server
-        - 127.0.0.1:8081
-        - --redis
-        - 127.0.0.1:6379
+        # - --repo-server
+        # - 127.0.0.1:8081
+        # - --redis
+        # - 127.0.0.1:6379
         - --kubeconfig
         - /etc/kubernetes/admin.conf
       volumes:
