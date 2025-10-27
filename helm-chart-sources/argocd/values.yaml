@@ -178,8 +178,8 @@ argo-cd:
       application.namespaces: '*'
       applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
       applicationsetcontroller.namespaces: '*'
-      repo.server: 127.0.0.1:8081
-      redis.server: 127.0.0.1:6379
+      # repo.server: 127.0.0.1:8081
+      # redis.server: 127.0.0.1:6379
       controller.sharding.algorithm: round-robin
       server.basehref: /argocd
       server.rootpath: /argocd
@@ -224,7 +224,7 @@ argo-cd:
     enabled: true
     image:
       imagePullPolicy: IfNotPresent
-    hostNetwork: true
+    hostNetwork: false
     extraArgs:
       - --kubeconfig
       - /etc/kubernetes/admin.conf
@@ -258,7 +258,7 @@ argo-cd:
   repoServer:
     image:
       imagePullPolicy: IfNotPresent
-    hostNetwork: true
+    hostNetwork: false
     containerSecurityContext:
       runAsNonRoot: true
       runAsUser: 999
@@ -299,7 +299,7 @@ argo-cd:
   server:
     image:
       imagePullPolicy: IfNotPresent
-    hostNetwork: true
+    hostNetwork: false
     containerSecurityContext:
       runAsNonRoot: false
       runAsUser: 0
@@ -349,7 +349,7 @@ argo-cd:
   controller:
     image:
       imagePullPolicy: IfNotPresent
-    hostNetwork: true
+    hostNetwork: false
     containerSecurityContext:
       runAsNonRoot: false
       runAsUser: 0
