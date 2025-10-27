@@ -1,9 +1,9 @@
 {{- define "addons.argocd" }}
 name: Argocd
 debug: false
-path: .
-repoURL: https://gitlab.beget.ru/cloud/k8s/charts/argocd-infra-advanced.git
-targetRevision: kustomize
+path: helm-chart-sources/argocd
+repoURL: https://github.com/LTD-Beget/kaas-helm-charts
+targetRevision: feat/xclusterComponents
 pluginName: kustomize-helm-with-values
 default: |
   argo-cd:
