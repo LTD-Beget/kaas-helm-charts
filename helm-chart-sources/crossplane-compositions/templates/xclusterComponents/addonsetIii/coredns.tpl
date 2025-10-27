@@ -3,8 +3,16 @@
 coredns:
   apiVersion: in-cloud.io/v1alpha1
   kind: XAddonsCoredns
+  finalizerDisabled: false
   namespace: beget-coredns
   version: v1alpha1
+  dependsOn: 
+  - cilium
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     coredns:
       replicaCount: {{ $controlPlaneReplicas }}
@@ -24,12 +32,15 @@ coredns:
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
     monitoring:
+      keepKey: ""
     {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
+    {{ if $certManagerReady }}
       secureService:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+    {{ end }}
   ` }}
 {{- end -}}

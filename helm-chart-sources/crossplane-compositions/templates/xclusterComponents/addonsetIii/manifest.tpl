@@ -50,9 +50,14 @@ spec:
     xcluster: {{ $xcluster }}
   addons:` -}}
     {{ include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
+    {{ include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.etcdBackup" . | nindent 4 }}
     {{ include "xclusterComponents.addonsetIii.istioBase" . | nindent 4 }}
