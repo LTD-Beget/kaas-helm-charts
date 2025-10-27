@@ -62,7 +62,10 @@ metadata:
 spec:
   deletionPolicy: Delete
   managementPolicies:
-  - '*'
+  - 'Create'
+  - 'Update'
+  - 'Delete'
+  - 'Observe'
   providerConfigRef:
     name: '{{ $providerConfigRefName }}'
   readiness:
