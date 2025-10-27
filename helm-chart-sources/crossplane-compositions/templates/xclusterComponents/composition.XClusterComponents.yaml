@@ -92,5 +92,5 @@ spec:
               fromFieldPath: spec.addonStatus
               type: ToCompositeFieldPath
               policy:
-                fromFieldPath: Optional
+                fromFieldPath: required
                 toFieldPath:   MergeObjects

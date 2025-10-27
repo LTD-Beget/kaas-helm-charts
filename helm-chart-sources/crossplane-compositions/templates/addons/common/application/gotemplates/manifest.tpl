@@ -82,7 +82,7 @@ spec:
           argocd.argoproj.io/tracking-id: '{{ $trackingID }}'
           deployed.in-cloud.io/status: '{{ $appReady }}'
         {{- if not $finalizerDisabled }}
-        finalizers: 
+        finalizers:
           - 'resources-finalizer.argocd.argoproj.io'
         {{- end }}
         labels:
