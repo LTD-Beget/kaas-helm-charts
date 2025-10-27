@@ -1,0 +1,27 @@
+argo-cd: {}
+# some values for metallb
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: argocd
+      route:
+        host: argocd-server
+        port: 443
+  destinationRule:
+    enabled: false
+    host: argocd-server
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true

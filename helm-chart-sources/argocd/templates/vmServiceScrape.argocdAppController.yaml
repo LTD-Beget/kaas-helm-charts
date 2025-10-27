@@ -1,0 +1,16 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: argocd-application-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-metrics
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+  jobLabel: argocd-app-controller
+{{- end }}
