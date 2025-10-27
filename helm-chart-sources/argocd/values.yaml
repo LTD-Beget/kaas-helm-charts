@@ -347,6 +347,7 @@ argo-cd:
                 app.kubernetes.io/name: argocd-redis
             topologyKey: kubernetes.io/hostname
   controller:
+    dynamicClusterDistribution: true
     image:
       imagePullPolicy: IfNotPresent
     hostNetwork: false
@@ -379,7 +380,7 @@ argo-cd:
       sizeLimit: 500Mi
     metrics:
       enabled: true
-    replicas: 1
+    replicas: 2
     resources:
       limits:
         ephemeral-storage: 500Mi
