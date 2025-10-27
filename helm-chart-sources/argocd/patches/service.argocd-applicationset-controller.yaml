@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-applicationset-controller-metrics
+  labels:
+    monitoring.in-cloud.io/service: argocd-applicationset-controller
+spec:
+  ports:
+    - name: https-metrics
+      port: 11040
+      protocol: TCP
+      targetPort: https-metrics
