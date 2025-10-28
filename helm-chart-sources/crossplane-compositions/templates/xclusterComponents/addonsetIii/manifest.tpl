@@ -24,7 +24,7 @@
   {{- $xAddonSetClientExists      = true }}
 {{- end }}
 
-{{- xAddonSetClientEnabled       := or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
+{{- $xAddonSetClientEnabled       := or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
 ###
 
 apiVersion: in-cloud.io/v1alpha1
