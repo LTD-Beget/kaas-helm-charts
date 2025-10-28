@@ -47,11 +47,6 @@ spec:
     {{- end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
-    {{ include "xclusterComponents.addonsetIic.kubeadmResources" . | nindent 4 }}
-    {{ include "xclusterComponents.addonsetIic.konnectivityAgent" . | nindent 4 }}
-
-  {{- printf `
-{{- end }}
-  ` }}
-
+    {{- include "xclusterComponents.addonsetIic.kubeadmResources" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIic.konnectivityAgent" . | nindent 4 }}
 {{- end }}
