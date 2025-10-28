@@ -12,6 +12,15 @@
   {{- end }}
 {{- end }}
 
+{{- $addonSetReady := dig "resource" "metadata" "annotations" "deployed.in-cloud.io/status" "False" (get $.observed.resources "xAddonSet" | default (dict)) }}
+{{- if eq $addonSetReady "False" }}
+  {{- range (dig "resource" "status" "conditions" (list) (get $.observed.resources "xAddonSet" | default (dict))) }}
+    {{- if and (eq .type "Ready") (eq .status "True") }}
+      {{- $addonSetReady = "True" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
 ### extra variables
 {{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
 {{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
@@ -20,11 +29,11 @@
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 ###
 
-
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
 metadata:
   annotations:
+    deployed.in-cloud.io/status: '{{ $addonSetReady }}'
     gotemplating.fn.crossplane.io/composition-resource-name: xAddonSet
     {{- if eq $xAddonSetReady "True" }}
     gotemplating.fn.crossplane.io/ready: "True"

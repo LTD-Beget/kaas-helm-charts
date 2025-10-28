@@ -11,6 +11,8 @@ crossplaneCompositions:
   - crossplane
   values:
     xclusterComponents:
+      infra:
+        ready: {{ $addonSetReady }}
       client:
         enabled: {{ $clientEnabled }}
   ` }}
