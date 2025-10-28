@@ -9,5 +9,9 @@ crossplaneCompositions:
   targetRevision: feat/xclusterComponents
   dependsOn:
   - crossplane
+  values:
+    xclusterComponents:
+      client:
+        enabled: {{ $clientEnabled }}
   ` }}
 {{- end -}}
