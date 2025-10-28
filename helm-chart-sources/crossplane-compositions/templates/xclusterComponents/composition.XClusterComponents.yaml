@@ -80,7 +80,6 @@ spec:
           template: |-
             {{- include "xclusterComponents.addonsetIic" . | nindent 12 }}
 
-  {{- if .Values.xclusterComponents.infra.ready }}
     - step: xaddonsetclient-status
       functionRef:
         name: function-patch-and-transform
@@ -96,5 +95,4 @@ spec:
               policy:
                 fromFieldPath: Required
                 toFieldPath:   MergeObjects
-  {{- end }}
 {{- end }}

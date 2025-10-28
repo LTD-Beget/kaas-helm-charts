@@ -3,10 +3,8 @@
   {{ printf `
 
 {{- $xAddonSetReady                     := "False" }}
-{{- $xAddonSetClientExists              := false }}
 
 {{- with .observed.resources.xAddonSetClient }}
-{{- $xAddonSetClientExists = true }}
   {{- range (dig "resource" "status" "conditions" (list) . )}}
     {{- if and (eq .type "Ready") (eq .status "True") }}
       {{- $xAddonSetReady = "True" }}
@@ -20,8 +18,6 @@
 {{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 ###
-
-{{ if or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
 
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
