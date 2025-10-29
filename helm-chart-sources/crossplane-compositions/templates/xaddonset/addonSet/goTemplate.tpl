@@ -26,7 +26,7 @@
     {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
     {{- $namespace := .namespace }}
     {{- $path := dig "path" "" . }}
-    {{- $permitionToCreateAddon := true }}
+    {{- $permitionToCreateAddon := "True" }}
     {{- $releaseName := dig "releaseName" "" . }}
     {{- $pluginName := dig "pluginName" "" . }}
     {{- $repoURL := dig "repoURL" "" . }}
@@ -38,20 +38,20 @@
     {{- else }}
       {{- if and (hasKey . "dependsOn") (gt (len .dependsOn) 0) }}
         {{- range .dependsOn }}
-          {{- if not (dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict))) }}
-            {{- $permitionToCreateAddon = false }}
+          {{- if eq (dig "resource" "status" "deployed" "False" (get $.observed.resources . | default (dict))) "False" }}
+            {{- $permitionToCreateAddon = "False" }}
           {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if or $permitionToCreateAddon (eq $AddonCreated "True") }}
+    {{- if or (eq $permitionToCreateAddon "True") (eq $AddonCreated "True") }}
 
 ---
 apiVersion: {{ $apiVersion }}
 kind: {{ $kind }}
 metadata:
   annotations:
-    checkin-test: {{ $permitionToCreateAddon | quote}}
+    checkin-test: {{ $permitionToCreateAddon }}
     gotemplating.fn.crossplane.io/composition-resource-name: {{ $key }}
   name: {{ $name }}
 spec:
