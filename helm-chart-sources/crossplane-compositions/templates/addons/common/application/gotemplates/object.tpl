@@ -36,14 +36,14 @@ spec:
       name: {{ "\"{{ $pluginName }}\"" }}
       env:
         - name: "HELM_VALUES"
-          value: {{ "\"{{ merge $immutableValues $userValues $defaultValues | toYaml | b64enc }}\"" }}
+          value: {{ "\"{{ merge $defaultValues $userValues $immutableValues | toYaml | b64enc }}\"" }}
         - name: "RELEASE_NAME"
           value: {{ "\"{{ $argocdReleaseName }}\"" }}
     {{- else }}
     helm:
       releaseName: {{ "\"{{ $argocdReleaseName }}\"" }}
       values: |-
-        {{ "{{ $mergedValues := merge $immutableValues $userValues $defaultValues }}" }}
+        {{ "{{ $mergedValues := merge $defaultValues $userValues $immutableValues }}" }}
         {{ "{{ $mergedValues | toYaml | nindent 14 }}" }}
     plugin: null
     {{- end }}
