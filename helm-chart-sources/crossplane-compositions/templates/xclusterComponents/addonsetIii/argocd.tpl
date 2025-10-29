@@ -92,7 +92,10 @@ argocd:
                     argocd-vault-plugin generate -s beget-argocd:avp-config -
   {{ end }}
         secret:
-          argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+          argocdServerAdminPassword: {{ $argsArgocdServerAdminPassword }}
+          argocdServerAdminCreationTimestamp: {{ $xRCreationTimestamp }}
+      redisSecretInit:
+        enabled: false
       repoServer:
         volumes:
           - configMap:

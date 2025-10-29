@@ -17,6 +17,7 @@
     "trackingID"                          (list "\"mock\""       "trackingID"                             "trackingID"                           "string"           "%s"  )
     "xcluster"                            (list "\"mock\""       "xcluster"                               "xcluster"                             "string"           "%s"  )
 
+    "argsArgocdServerAdminPassword"       (list "\"mock\""       "args.argocdServerAdminPassword"         "args.argocdServerAdminPassword"       "string"           "%s"  )
     "argsDexStaticPasswordsAdmin"         (list "\"mock\""       "args.dexStaticPasswordsAdmin"           "args.dexStaticPasswordsAdmin"         "string"           "%s"  )
     "argsDexStaticClientsApiserver"       (list "\"mock\""       "args.dexStaticClientsApiserver"         "args.dexStaticClientsApiserver"       "string"           "%s"  )
     "argsEtcdbackupS3AccessKey"           (list "\"mock\""       "args.etcdbackupS3AccessKey"             "args.etcdbackupS3AccessKey"           "string"           "%s"  )
@@ -45,6 +46,7 @@
     "systemEnabled"
     "trackingID"
     "xcluster"
+    "argsArgocdServerAdminPassword"
     "argsDexStaticPasswordsAdmin"
     "argsDexStaticClientsApiserver"
     "argsEtcdbackupS3AccessKey"
