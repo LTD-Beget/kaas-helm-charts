@@ -20,7 +20,7 @@
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 
-{{- xRCreationTimestamp := $.observed.composite.resource.metadata.creationTimestamp }}
+{{- $xRCreationTimestamp := $.observed.composite.resource.metadata.creationTimestamp }}
 
 {{- with .observed.resources.xAddonSetClient }}
   {{- $xAddonSetClientExists      = true }}
