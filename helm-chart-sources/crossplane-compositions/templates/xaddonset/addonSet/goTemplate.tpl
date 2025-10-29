@@ -37,10 +37,9 @@
       {{- $AddonCreated = "True" }}
     {{- else }}
       {{- if and (hasKey . "dependsOn") (gt (len .dependsOn) 0) }}
-        {{- $permitionToCreateAddon = false }}
         {{- range .dependsOn }}
-          {{- if (dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict))) }}
-            {{- $permitionToCreateAddon = true }}
+          {{- if not (dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict))) }}
+            {{- $permitionToCreateAddon = false }}
           {{- end }}
         {{- end }}
       {{- end }}
