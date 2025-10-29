@@ -37,8 +37,11 @@
       {{- $AddonCreated = "True" }}
     {{- else }}
       {{- if and (hasKey . "dependsOn") (gt (len .dependsOn) 0) }}
+        {{- $permitionToCreateAddon = false }}
         {{- range .dependsOn }}
-          {{- $permitionToCreateAddon = dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict)) }}
+          {{- if (dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict))) }}
+            {{- $permitionToCreateAddon = true }}
+          {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
@@ -49,6 +52,7 @@ apiVersion: {{ $apiVersion }}
 kind: {{ $kind }}
 metadata:
   annotations:
+    checkin-test: {{ $permitionToCreateAddon }}
     gotemplating.fn.crossplane.io/composition-resource-name: {{ $key }}
   name: {{ $name }}
 spec:
