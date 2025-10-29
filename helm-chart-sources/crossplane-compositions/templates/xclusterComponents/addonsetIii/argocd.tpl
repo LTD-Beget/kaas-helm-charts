@@ -93,7 +93,7 @@ argocd:
   {{ end }}
         secret:
           argocdServerAdminPassword: {{ $argsArgocdServerAdminPassword }}
-          argocdServerAdminCreationTimestamp: {{ $xRCreationTimestamp }}
+          argocdServerAdminPasswordMtime: {{ $xRCreationTimestamp }}
       redisSecretInit:
         enabled: false
       repoServer:
