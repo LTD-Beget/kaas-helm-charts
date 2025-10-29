@@ -26,7 +26,7 @@
     {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
     {{- $namespace := .namespace }}
     {{- $path := dig "path" "" . }}
-    {{- $permitionToCreateAddon := "True" }}
+    {{- $permitionToCreateAddon := true }}
     {{- $releaseName := dig "releaseName" "" . }}
     {{- $pluginName := dig "pluginName" "" . }}
     {{- $repoURL := dig "repoURL" "" . }}
@@ -38,22 +38,11 @@
     {{- else }}
       {{- if and (hasKey . "dependsOn") (gt (len .dependsOn) 0) }}
         {{- range .dependsOn }}
-          {{- $statusReadyExists := "False" }}
-          {{- range (dig "resource" "status" "conditions" (list) (get $.observed.resources . | default (dict))) }}
-            {{- if (eq .type "Ready")  }}
-              {{- $statusReadyExists = "True" }}
-              {{- if (ne .status "True") }}
-                {{- $permitionToCreateAddon = "False" }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- if (ne $statusReadyExists "True") }}
-            {{- $permitionToCreateAddon = "False" }}
-          {{- end }}
+          {{- $permitionToCreateAddon = dig "resource" "status" "deployed" false (get $.observed.resources . | default (dict)) }}
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if or (eq $permitionToCreateAddon "True") (eq $AddonCreated "True") }}
+    {{- if or $permitionToCreateAddon (eq $AddonCreated "True") }}
 
 ---
 apiVersion: {{ $apiVersion }}
