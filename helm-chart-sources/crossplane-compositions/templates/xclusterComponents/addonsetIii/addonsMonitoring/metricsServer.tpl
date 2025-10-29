@@ -5,6 +5,8 @@ metricsServer:
   kind: XAddonsMetricsServer
   namespace: beget-metrics-server
   version: v1alpha1
+  dependsOn:
+    - certManagerCsiDriver
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

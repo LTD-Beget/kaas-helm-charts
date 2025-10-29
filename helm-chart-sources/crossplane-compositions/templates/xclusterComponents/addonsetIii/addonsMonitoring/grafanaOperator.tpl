@@ -5,6 +5,8 @@ grafanaOperator:
   kind: XAddonsGrafanaOperator
   namespace: beget-grafana-operator
   version: v1alpha1
+  dependsOn:
+    - certManagerCsiDriver
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

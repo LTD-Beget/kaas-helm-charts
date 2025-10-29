@@ -6,5 +6,7 @@ vmAlertRules:
   namespace: beget-vmalert-rules
   version: v1alpha1
   releaseName: vmalertrules
+  dependsOn:
+    - vmOperator
   ` }}
 {{- end -}}

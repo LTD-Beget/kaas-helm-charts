@@ -5,6 +5,8 @@ prometheusNodeExporter:
   kind: XAddonsPrometheusNodeExporter
   namespace: beget-prometheus-node-exporter
   version: v1alpha1
+  dependsOn:
+    - vmOperator
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

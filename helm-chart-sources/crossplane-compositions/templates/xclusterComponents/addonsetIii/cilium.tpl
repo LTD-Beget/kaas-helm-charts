@@ -6,6 +6,8 @@ cilium:
   finalizerDisabled: false
   namespace: beget-cilium
   version: v1alpha1
+  dependsOn:
+    - istioGW
   {{ if $certManagerReady }}
   pluginName: kustomize-helm-with-values
   {{ else }}

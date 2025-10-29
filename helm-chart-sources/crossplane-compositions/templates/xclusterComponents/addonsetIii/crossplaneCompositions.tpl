@@ -7,8 +7,6 @@ crossplaneCompositions:
   namespace: beget-crossplane
   version: v1alpha1
   targetRevision: feat/xclusterComponents
-  dependsOn:
-  - crossplane
   values:
     xclusterComponents:
       client:

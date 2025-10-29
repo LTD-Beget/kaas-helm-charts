@@ -6,6 +6,8 @@ trustManager:
   namespace: beget-trust-manager
   version: v1alpha1
   pluginName: kustomize-helm-with-values
+  dependsOn:
+    - certManagerCsiDriver
   values:
     trust-manager:
       tolerations:

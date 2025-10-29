@@ -57,7 +57,6 @@ spec:
     {{- end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
-    {{- include "xclusterComponents.addonsetIii.helmInserterTest" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}

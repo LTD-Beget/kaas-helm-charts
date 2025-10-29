@@ -6,6 +6,8 @@ argocd:
   finalizerDisabled: false
   namespace: beget-argocd
   version: v1alpha1
+  dependsOn:
+    - istioGW
   {{ if and $certManagerReady }}
   pluginName: kustomize-helm-with-values
   {{ else }}

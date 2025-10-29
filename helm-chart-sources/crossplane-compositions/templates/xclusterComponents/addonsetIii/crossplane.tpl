@@ -7,6 +7,8 @@ crossplane:
   namespace: beget-crossplane
   version: v1alpha1
   targetRevision: 1.20.1
+  dependsOn:
+    - istioGW
   values:
     hostNetwork: false
     args:

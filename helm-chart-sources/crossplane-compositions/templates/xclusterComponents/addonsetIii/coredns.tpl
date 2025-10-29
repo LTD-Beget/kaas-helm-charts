@@ -7,7 +7,7 @@ coredns:
   namespace: beget-coredns
   version: v1alpha1
   dependsOn: 
-  - cilium
+    - istioGW
   {{ if $certManagerReady }}
   pluginName: kustomize-helm-with-values
   {{ else }}

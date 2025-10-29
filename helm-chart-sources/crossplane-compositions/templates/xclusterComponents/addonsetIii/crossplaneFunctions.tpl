@@ -7,7 +7,7 @@ crossplaneFunctions:
   namespace: beget-crossplane
   version: v1alpha1
   dependsOn:
-  - crossplane
+    - istioGW
   values:
     components:
       kubernetes:

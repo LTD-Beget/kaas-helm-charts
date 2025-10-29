@@ -6,6 +6,8 @@ vmAlert:
   namespace: beget-vmalert
   version: v1alpha1
   releaseName: vmalert
+  dependsOn:
+    - vmOperator
   values:
     victoria-metrics-k8s-stack:
       vmalert:

@@ -6,6 +6,8 @@ vmAlertmanager:
   namespace: beget-alertmanager
   version: v1alpha1
   releaseName: vmalertmanager
+  dependsOn:
+    - vmOperator
   values:
     victoria-metrics-k8s-stack:
       fullnameOverride: "alertmanager"
