@@ -278,7 +278,7 @@ default: |
           ephemeral-storage: 100Mi
           memory: 128Mi
     redisSecretInit:
-      enabled: true
+      enabled: false
       image:
         imagePullPolicy: IfNotPresent
       # hostNetwork: true
