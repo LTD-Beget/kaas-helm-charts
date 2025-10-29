@@ -51,7 +51,7 @@ apiVersion: {{ $apiVersion }}
 kind: {{ $kind }}
 metadata:
   annotations:
-    checkin-test: {{ $permitionToCreateAddon }}
+    checkin-test: {{ $permitionToCreateAddon | quote }}
     gotemplating.fn.crossplane.io/composition-resource-name: {{ $key }}
   name: {{ $name }}
 spec:
