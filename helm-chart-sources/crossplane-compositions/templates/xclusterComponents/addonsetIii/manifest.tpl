@@ -65,6 +65,7 @@ spec:
   addons:` -}}
     {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
   {{ printf `
     {{- if or $xAddonSetClientReady (not $clientEnabled)}}
   ` -}}
@@ -72,7 +73,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.etcdBackup" . | nindent 4 }}
