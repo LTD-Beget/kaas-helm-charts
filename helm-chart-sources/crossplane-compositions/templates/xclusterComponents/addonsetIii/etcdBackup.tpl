@@ -6,7 +6,7 @@ etcdBackup:
   namespace: beget-etcd-backups
   version: v1alpha1
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     secret:
       s3:

@@ -7,7 +7,7 @@ trustManager:
   version: v1alpha1
   pluginName: kustomize-helm-with-values
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     trust-manager:
       tolerations:

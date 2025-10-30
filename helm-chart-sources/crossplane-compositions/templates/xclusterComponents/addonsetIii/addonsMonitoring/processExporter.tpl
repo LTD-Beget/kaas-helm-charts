@@ -6,7 +6,7 @@ processExporter:
   namespace: beget-process-exporter
   version: v1alpha1
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

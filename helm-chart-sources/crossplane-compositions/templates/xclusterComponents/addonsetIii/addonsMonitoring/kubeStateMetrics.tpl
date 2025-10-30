@@ -6,7 +6,7 @@ kubeStateMetrics:
   namespace: beget-kube-state-metrics
   version: v1alpha1
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

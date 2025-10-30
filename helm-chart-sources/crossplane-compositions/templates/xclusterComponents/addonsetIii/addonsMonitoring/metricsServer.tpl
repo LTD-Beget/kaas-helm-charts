@@ -6,7 +6,7 @@ metricsServer:
   namespace: beget-metrics-server
   version: v1alpha1
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

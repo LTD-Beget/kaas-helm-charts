@@ -6,7 +6,7 @@ grafanaOperator:
   namespace: beget-grafana-operator
   version: v1alpha1
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     {{ if $infraVMOperatorReady }}
     monitoring:

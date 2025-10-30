@@ -26,7 +26,13 @@
   {{- $xAddonSetClientExists      = true }}
 {{- end }}
 
-{{- $xAddonSetClientEnabled       := or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
+{{- $xAddonSetClientEnabled      := or (and $clientEnabled $clientClusterReady) (and $clientEnabled $xAddonSetClientExists) }}
+
+{{- $xAddonSetClientObserve      := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSetClient" | default (dict)) }}
+{{- $konnectivityAgentReady      := dig "konnectivityAgent" "deployed" false ($xAddonSetClientObserve) }}
+{{- $kubeadmResourcesReady       := dig "kubeadmResources"  "deployed" false ($xAddonSetClientObserve) }}
+
+{{- $xAddonSetClientReady        := and $konnectivityAgentReady $kubeadmResourcesReady }}
 ###
 
 apiVersion: in-cloud.io/v1alpha1
@@ -57,11 +63,14 @@ spec:
     {{- end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
+    {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
+  {{ printf `
+    {{- if or $xAddonSetClientReady (not $clientEnabled)}}
+  ` -}}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
@@ -87,6 +96,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
   {{- printf `
+    {{- end }}
     {{- if $systemEnabled }}
   ` }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}

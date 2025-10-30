@@ -7,7 +7,7 @@ trivyOperator:
   version: v1alpha1
   pluginName: kustomize-helm-with-values
   dependsOn:
-    - certManagerCsiDriver
+    - vmOperator
   values:
     trivy-operator:
       trivyOperator:
