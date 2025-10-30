@@ -67,7 +67,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
   {{ printf `
-    {{- if or $xAddonSetClientReady (not $clientEnabled)}}
+    {{- if or (and false $xAddonSetClientReady (not $clientEnabled))}}
   ` -}}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
