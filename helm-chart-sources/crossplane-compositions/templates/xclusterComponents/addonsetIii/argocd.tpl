@@ -15,6 +15,8 @@ argocd:
   {{ end }}
   values:
     argo-cd:
+      crds:
+        install: true
       configs:
         cmp:
           create: true
