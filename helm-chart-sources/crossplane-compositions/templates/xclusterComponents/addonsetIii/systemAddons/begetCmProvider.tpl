@@ -13,7 +13,7 @@ begetCmProvider:
             manager:
               image:
                 pullPolicy: Always
-                tag: lb-name
+                tag: v1.2.2
           enabled: true
           tolerations:
           - effect: NoExecute
