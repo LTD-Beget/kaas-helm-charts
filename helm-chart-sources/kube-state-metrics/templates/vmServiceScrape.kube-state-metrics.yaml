@@ -13,6 +13,7 @@ spec:
     - port: https-metrics
       path: /metrics
       scheme: HTTPS
+      honorLabels: true
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}
