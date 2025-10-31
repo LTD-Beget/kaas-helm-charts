@@ -35,9 +35,9 @@ patches:
       kind: Service
       name: argocd-applicationset-controller-metrics
 
-  - path: ./statefulset.argocd-application-controller.yaml
+  - path: ./deployment.argocd-application-controller.yaml
     target:
-      kind: StatefulSet
+      kind: Deployment
       name: argocd-application-controller
 
   - path: ./service.argocd-application-controller.yaml
