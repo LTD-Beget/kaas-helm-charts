@@ -1,6 +1,6 @@
 {{- define "xclusterComponents.addonsetIii.vmAgentAdditionalRbac" -}}
   {{- printf `
-helmInserterVMScrape:
+helmInserterVMAgentAdditionalRbac:
   apiVersion: in-cloud.io/v1alpha1
   kind: XAddonsHelmInserter
   namespace: beget-vmagent
