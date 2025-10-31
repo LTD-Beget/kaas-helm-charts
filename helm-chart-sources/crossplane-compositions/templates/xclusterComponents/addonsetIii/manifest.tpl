@@ -91,6 +91,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.prometheus" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.prometheusNodeExporter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAgent" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.vmAgentAdditionalRbac" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
