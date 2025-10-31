@@ -5,7 +5,7 @@ helmInserterVMAgentAdditionalRbac:
   kind: XAddonsHelmInserter
   namespace: beget-vmagent
   version: v1alpha1
-  releaseName: {{ $infraName }}-vm-agent-additional
+  releaseName: vmagent-additional
   values:
     resources:
       tokenreviewClusterRole:
