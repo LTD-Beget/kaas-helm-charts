@@ -119,10 +119,10 @@ crossplaneFunctions:
                       effect: NoSchedule
                   containers:
                     - name: package-runtime
-  {{- if $systemEnabled }}
                       resources:
-                        requests: { cpu: "700m", memory: "128Mi" }
-                        limits:   { cpu: "1", memory: "200Mi" }
+                        requests: { cpu: "400m", memory: "128Mi" }
+                        limits:   { cpu: "2", memory: "500Mi" }
+  {{- if $systemEnabled }}
               replicas: 3
   {{- end }}
       fec:
