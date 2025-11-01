@@ -28,8 +28,8 @@ crossplaneFunctions:
                         - --enable-watches
                         - --poll-jitter-percentage=1
                       resources:
-                        requests: { cpu: "500m", memory: "512Mi" }
-                        limits:   { cpu: "2", memory: "2Gi" }
+                        requests: { cpu: "2", memory: "768Mi" }
+                        limits:   { cpu: "4", memory: "2Gi" }
                   tolerations:
                     - key: node-role.kubernetes.io/control-plane
                       operator: Exists
