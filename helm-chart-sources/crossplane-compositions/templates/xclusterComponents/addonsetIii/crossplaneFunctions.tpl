@@ -110,14 +110,6 @@ crossplaneFunctions:
                   pkg.crossplane.io/function: function-go-templating
               template:
                 spec:
-                  containers:
-                    - name: package-runtime
-  {{- if $systemEnabled }}
-                      resources:
-                        requests: { cpu: "700m", memory: "128Mi" }
-                        limits:   { cpu: "1", memory: "200Mi" }
-                  replicas: 3
-  {{- end }}
                   tolerations:
                     - key: node-role.kubernetes.io/control-plane
                       operator: Exists
@@ -125,6 +117,14 @@ crossplaneFunctions:
                     - key: node-role.kubernetes.io/master
                       operator: Exists
                       effect: NoSchedule
+                  containers:
+                    - name: package-runtime
+  {{- if $systemEnabled }}
+                      resources:
+                        requests: { cpu: "700m", memory: "128Mi" }
+                        limits:   { cpu: "1", memory: "200Mi" }
+              replicas: 3
+  {{- end }}
       fec:
         # package: dmkolbin/crossplane-function-environment-configs
         # tag: v0.4.0
