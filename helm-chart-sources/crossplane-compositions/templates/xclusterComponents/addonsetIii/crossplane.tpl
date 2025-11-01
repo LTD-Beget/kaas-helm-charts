@@ -10,29 +10,19 @@ crossplane:
   dependsOn:
     - istioGW
   values:
-    hostNetwork: false
+  {{- if $systemEnabled }}
     args:
       - '--enable-realtime-compositions'
       - '--enable-composition-webhook-schema-validation'
       - '--enable-composition-functions'
       - '--enable-usages'
+      - '--leader-elect'
+      - '--max-reconcile-rate=30'
       - '--poll-interval=5s'
       - '--sync-interval=1m'
-      - '--max-reconcile-rate=20'
-    tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
-    rbacManager:
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
+    resources:
+      requests: { cpu: "1", memory: "1Gi" }
+      limits:   { cpu: "4", memory: "4Gi" }
+  {{- end }}
   ` }}
 {{- end -}}

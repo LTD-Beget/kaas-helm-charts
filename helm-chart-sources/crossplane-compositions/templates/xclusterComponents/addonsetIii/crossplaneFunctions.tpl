@@ -27,6 +27,9 @@ crossplaneFunctions:
                         - --poll=5s
                         - --enable-watches
                         - --poll-jitter-percentage=1
+                      resources:
+                        requests: { cpu: "500m", memory: "512Mi" }
+                        limits:   { cpu: "2", memory: "2Gi" }
                   tolerations:
                     - key: node-role.kubernetes.io/control-plane
                       operator: Exists
@@ -100,6 +103,12 @@ crossplaneFunctions:
         runtimeConfig:
           deploymentTemplate:
             spec:
+              containers:
+                - name: package-runtime
+                  resources:
+                    requests: { cpu: "700m", memory: "128Mi" }
+                    limits:   { cpu: "1", memory: "200Mi" }
+              replicas: 3
               selector:
                 matchLabels:
                   pkg.crossplane.io/function: function-go-templating

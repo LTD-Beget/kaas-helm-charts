@@ -107,6 +107,7 @@ default: |
         - kind: ServiceAccount
           name: crossplane
           namespace: beget-crossplane
+  hostNetwork: false
   rbacManager:
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
