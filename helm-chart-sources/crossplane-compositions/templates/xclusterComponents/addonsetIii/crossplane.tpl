@@ -16,7 +16,7 @@ crossplane:
       - '--enable-composition-webhook-schema-validation'
       - '--enable-composition-functions'
       - '--enable-usages'
-      - '--leader-elect'
+      - '--leader-election'
       - '--max-reconcile-rate=30'
       - '--poll-interval=5s'
       - '--sync-interval=1m'
