@@ -136,6 +136,11 @@ spec:
                 type: FromCompositeFieldPath
                 policy:
                   fromFieldPath: Required
+              - toFieldPath: spec.deletionPolicy
+                fromFieldPath: spec.destination.deletionPolicy
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Optional
 
               - toFieldPath: spec.forProvider.manifest.spec
                 fromFieldPath: source.spec
