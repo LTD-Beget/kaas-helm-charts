@@ -100,6 +100,9 @@ spec:
     {{- end }}
     {{- if $systemEnabled }}
   ` }}
+    {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.ccm" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.csrc" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.capi" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.capiClusterClass" . | nindent 4 }}
