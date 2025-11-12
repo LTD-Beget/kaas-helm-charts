@@ -1,0 +1,60 @@
+{{- if .Values.loadBalancerService.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ default (printf "%s-lb" .Release.Name) .Values.loadBalancerService.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- with .Values.loadBalancerService.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ default .Chart.Name | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    {{- with .Values.loadBalancerService.labels }}
+      {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: LoadBalancer
+  {{- with .Values.loadBalancerService.loadBalancerClass }}
+  loadBalancerClass: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.ipFamilies }}
+  ipFamilies:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.loadBalancerService.healthCheckNodePort }}
+  healthCheckNodePort: {{ . }}
+  {{- end }}
+
+  {{- /* selector: either user-provided or sane defaults for vminsert */}}
+  selector:
+  {{- if .Values.loadBalancerService.selector }}
+    {{ toYaml .Values.loadBalancerService.selector | nindent 4 }}
+  {{- else }}
+    app.kubernetes.io/name: "victoria-metrics-cluster"
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  {{- end }}
+  ports:
+  {{- if .Values.loadBalancerService.ports }}
+    {{ toYaml .Values.loadBalancerService.ports | nindent 4 }}
+  {{- else }}
+    - name: http
+      port: 8480
+      targetPort: 8480
+      protocol: TCP
+  {{- end }}
+{{- end }}
