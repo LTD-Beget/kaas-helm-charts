@@ -5,7 +5,7 @@ path: helm-chart-sources/victoria-metrics-cluster
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 targetRevision: feat/vmcluster
 immutable: |
-  victoria-metrics-k8s-stack:
+  victoria-metrics-cluster:
     vmselect:
       enabled: true
     vminsert:
