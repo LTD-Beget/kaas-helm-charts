@@ -8,12 +8,8 @@ immutable: |
   victoria-metrics-k8s-stack:
     alertmanager:
       enabled: false
-    defaultDashboards:
-      enabled: false
     defaultRules:
       create: false
-    grafana:
-      enabled: false
     prometheus-node-exporter:
       enabled: false
     serviceAccount:
@@ -27,5 +23,27 @@ immutable: |
     vmcluster:
       enabled: true
     vmsingle:
+      enabled: false
+    coreDns:
+      enabled: false
+    defaultDashboards:
+      enabled: false
+    kubeDns:
+      enabled: false
+    grafana:
+      enabled: false
+    kube-state-metrics:
+      enabled: false
+    kubeApiServer:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeEtcd:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubelet:
       enabled: false
 {{- end }}
