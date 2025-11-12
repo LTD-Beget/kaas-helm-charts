@@ -26,6 +26,10 @@ vmCluster:
                 cpu: "50"
                 memory: 64Mi
             #TODO change hostpath
+            tolerations:
+              - key: "dedicated"
+                value: "monitoring"
+                effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,6 +58,10 @@ vmCluster:
                 cpu: "50m"
                 memory: "64Mi"
             priorityClassName: system-node-critical
+            tolerations:
+              - key: "dedicated"
+                value: "monitoring"
+                effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -73,6 +81,10 @@ vmCluster:
               maxLabelsPerTimeseries: "80"
               insert.maxQueueDuration: 60s
               maxConcurrentInserts: "256"
+            tolerations:
+              - key: "dedicated"
+                value: "monitoring"
+                effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
