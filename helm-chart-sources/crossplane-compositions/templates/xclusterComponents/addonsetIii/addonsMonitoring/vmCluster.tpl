@@ -20,7 +20,7 @@ vmCluster:
             storage:
               emptyDir:
                 sizeLimit: 1000Mi
-            claimTemplates: {}
+            claimTemplates: []
             resources:
               requests:
                 cpu: "50"
