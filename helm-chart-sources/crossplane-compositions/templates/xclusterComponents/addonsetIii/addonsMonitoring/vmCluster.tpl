@@ -1,0 +1,95 @@
+{{- define "xclusterComponents.addonsetIii.vmCluster" -}}
+  {{- printf `
+vmCluster:
+  apiVersion: in-cloud.io/v1alpha1
+  kind: XAddonsVictoriaMetricsCluster
+  namespace: beget-vmcluster
+  version: v1alpha1
+  releaseName: vmcluster
+  dependsOn:
+    - vmOperator
+  values:
+    victoria-metrics-k8s-stack:
+      vmcluster:
+        spec:
+          retentionPeriod: "1"
+          replicationFactor: 2
+          vmstorage:
+            replicaCount: 2
+            storageDataPath: /vm-data
+            storage: {}
+            resources:
+              requests:
+                cpu: "50"
+                memory: 64Mi
+            #TODO change hostpath
+            volumeMounts:
+              - name: vm-data
+                mountPath: /vm-data
+            volumes:
+              - name: vm-data
+                emptyDir:
+                  sizeLimit: 1000Mi
+            affinity:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: node-role.kubernetes.io/monitoring
+                          operator: Exists
+          vmselect:
+            enabled: true
+            extraArgs:
+              dedup.minScrapeInterval: 30s
+              search.maxQueryDuration: 60s
+              search.maxQueryLen: "20971520"
+              search.maxSeries: "300000000"
+              search.maxSamplesPerQuery: "2000000000"
+              search.maxSamplesPerSeries: "2000000000"
+              search.maxUniqueTimeseries: "300000000"
+              search.maxSeriesPerAggrFunc: "600000000"
+              search.maxConcurrentRequests: "128"
+              search.maxLabelsAPIDuration: 60s
+              search.logSlowQueryDuration: 60s
+            cacheMountPath: "/select-cache"
+            storage: {}
+            volumeMounts:
+              - name: select-cache
+                mountPath: /select-cache
+            volumes:
+              - name: select-cache
+                emptyDir:
+                  sizeLimit: 1000Mi
+            resources:
+              requests:
+                cpu: "50m"
+                memory: "64Mi"
+            priorityClassName: system-node-critical
+            affinity:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: node-role.kubernetes.io/monitoring
+                          operator: Exists
+          vminsert:
+            enabled: true
+            priorityClassName: system-cluster-critical
+            resources:
+              requests:
+                cpu: "50m"
+                memory: "64Mi"
+            extraArgs:
+              maxLabelValueLen: "8192"
+              maxLabelsPerTimeseries: "80"
+              insert.maxQueueDuration: 60s
+              maxConcurrentInserts: "256"
+            affinity:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: node-role.kubernetes.io/monitoring
+                          operator: Exists
+  ` }}
+{{- end -}}
