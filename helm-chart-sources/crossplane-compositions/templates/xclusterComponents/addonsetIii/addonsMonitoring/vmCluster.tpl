@@ -52,6 +52,7 @@ vmCluster:
               search.maxLabelsAPIDuration: 60s
               search.logSlowQueryDuration: 60s
             cacheMountPath: "/select-cache"
+            claimTemplates: []
             storage: {}
             resources:
               requests:
