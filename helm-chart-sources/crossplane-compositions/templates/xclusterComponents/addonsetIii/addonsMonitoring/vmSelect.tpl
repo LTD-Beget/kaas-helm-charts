@@ -22,5 +22,7 @@ vmSelect:
                 - matchExpressions:
                     - key: node-role.kubernetes.io/monitoring
                       operator: Exists
+    loadBalancerService:
+      enabled: false
   ` }}
 {{- end -}}
