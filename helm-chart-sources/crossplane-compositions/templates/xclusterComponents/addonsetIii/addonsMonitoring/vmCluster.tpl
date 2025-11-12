@@ -17,19 +17,15 @@ vmCluster:
           vmstorage:
             replicaCount: 2
             storageDataPath: /vm-data
-            storage: {}
+            storage:
+              emptyDir:
+                sizeLimit: 1000Mi
+            claimTemplates: {}
             resources:
               requests:
                 cpu: "50"
                 memory: 64Mi
             #TODO change hostpath
-            volumeMounts:
-              - name: vm-data
-                mountPath: /vm-data
-            volumes:
-              - name: vm-data
-                emptyDir:
-                  sizeLimit: 1000Mi
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -53,13 +49,6 @@ vmCluster:
               search.logSlowQueryDuration: 60s
             cacheMountPath: "/select-cache"
             storage: {}
-            volumeMounts:
-              - name: select-cache
-                mountPath: /select-cache
-            volumes:
-              - name: select-cache
-                emptyDir:
-                  sizeLimit: 1000Mi
             resources:
               requests:
                 cpu: "50m"
