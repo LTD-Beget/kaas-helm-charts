@@ -13,28 +13,40 @@ vmStorage:
       vmselect:
         enabled: true
         tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
+          - key: "dedicated"
+            value: "monitoring"
             effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/monitoring
+                      operator: Exists
       vminsert:
         enabled: true
         tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
+          - key: "dedicated"
+            value: "monitoring"
             effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/monitoring
+                      operator: Exists
       vmstorage:
         tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
+          - key: "dedicated"
+            value: "monitoring"
             effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/monitoring
+                      operator: Exists
   ` }}
 {{- end -}}
