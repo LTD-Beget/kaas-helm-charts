@@ -96,8 +96,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vmInsert" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vmSelect" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmStorage" . | nindent 4 }}
   {{- printf `
     {{- end }}
