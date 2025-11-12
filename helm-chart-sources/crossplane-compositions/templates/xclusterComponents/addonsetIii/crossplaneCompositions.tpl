@@ -6,7 +6,7 @@ crossplaneCompositions:
   finalizerDisabled: false
   namespace: beget-crossplane
   version: v1alpha1
-  targetRevision: feat/xclusterComponents
+  targetRevision: feat/vmcluster
   values:
     xclusterComponents:
       client:
