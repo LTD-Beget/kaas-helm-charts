@@ -23,8 +23,8 @@ vmCluster:
             claimTemplates: []
             resources:
               requests:
-                cpu: "50"
-                memory: 64Mi
+                cpu: "50m"
+                memory: "64Mi"
             #TODO change hostpath
             tolerations:
               - key: "dedicated"
