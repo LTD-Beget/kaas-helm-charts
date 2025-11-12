@@ -8,5 +8,15 @@ vmStorage:
   releaseName: vmstorage
   dependsOn:
     - vmOperator
+  values:
+    victoria-metrics-cluster:
+      vmstorage:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
   ` }}
 {{- end -}}
