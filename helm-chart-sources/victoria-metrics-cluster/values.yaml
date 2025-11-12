@@ -1,0 +1,46 @@
+victoria-metrics-cluster:
+  vmselect:
+    enabled: false
+    emptyDir:
+      sizeLimit: "1000Mi"
+    persistentVolume:
+      enabled: false
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+
+  vminsert:
+    enabled: false
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+
+  vmauth:
+    enabled: false
+
+  vmstorage:
+    enabled: false
+    emptyDir:
+      sizeLimit: "1000Mi"
+    persistentVolume:
+      enabled: false
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+  
+  vmbackupmanager:
+    enabled: false
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
