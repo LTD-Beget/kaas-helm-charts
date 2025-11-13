@@ -16,7 +16,7 @@ metadata:
       {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  type: {{ default (printf "%s-lb" .Release.Name) .Values.additionalService.vmcluster.name | quote }}
+  type: {{ default LoadBalancer .Values.additionalService.vmcluster.name | quote }}
   {{- with .Values.additionalService.vmcluster.loadBalancerClass }}
   loadBalancerClass: {{ . | quote }}
   {{- end }}
