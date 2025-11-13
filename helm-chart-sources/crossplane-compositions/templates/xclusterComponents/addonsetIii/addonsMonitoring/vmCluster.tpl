@@ -17,10 +17,11 @@ vmCluster:
           vmstorage:
             replicaCount: 2
             storageDataPath: /vm-data
+            claimTemplates: []
             storage:
               emptyDir:
                 sizeLimit: 1000Mi
-            claimTemplates: []
+              volumeClaimTemplate: {}
             resources:
               requests:
                 cpu: "50m"
@@ -53,7 +54,10 @@ vmCluster:
               search.logSlowQueryDuration: 60s
             cacheMountPath: "/select-cache"
             claimTemplates: []
-            storage: {}
+            storage:
+              emptyDir:
+                sizeLimit: 1000Mi
+              volumeClaimTemplate: {}
             resources:
               requests:
                 cpu: "50m"
