@@ -38,8 +38,18 @@ vmCluster:
                     - matchExpressions:
                         - key: node-role.kubernetes.io/monitoring
                           operator: Exists
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmstorage
+                    topologyKey: kubernetes.io/hostname
           vmselect:
             enabled: true
+            replicaCount: 2
             extraArgs:
               dedup.minScrapeInterval: 30s
               search.maxQueryDuration: 60s
@@ -74,8 +84,18 @@ vmCluster:
                     - matchExpressions:
                         - key: node-role.kubernetes.io/monitoring
                           operator: Exists
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmselect
+                    topologyKey: kubernetes.io/hostname
           vminsert:
             enabled: true
+            replicaCount: 2
             priorityClassName: system-cluster-critical
             resources:
               requests:
@@ -97,5 +117,14 @@ vmCluster:
                     - matchExpressions:
                         - key: node-role.kubernetes.io/monitoring
                           operator: Exists
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vminsert
+                    topologyKey: kubernetes.io/hostname
   ` }}
 {{- end -}}
