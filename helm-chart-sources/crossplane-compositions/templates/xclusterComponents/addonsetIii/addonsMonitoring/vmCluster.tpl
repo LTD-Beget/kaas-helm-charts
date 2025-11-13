@@ -126,5 +126,18 @@ vmCluster:
                           values:
                             - vminsert
                     topologyKey: kubernetes.io/hostname
+    additionalService:
+      vmcluster:
+        enabled: true
+        name: vminsert-lb
+        annotations:
+          lb.beget.com/algorithm: "round_robin"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+        labels:
+          app: "vminsert"
+        selector:
+          app.kubernetes.io/name: "vminsert"
   ` }}
 {{- end -}}
