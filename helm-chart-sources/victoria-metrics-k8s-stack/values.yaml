@@ -144,3 +144,7 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+
+additionalService:
+  vmcluster:
+    enabled: false
