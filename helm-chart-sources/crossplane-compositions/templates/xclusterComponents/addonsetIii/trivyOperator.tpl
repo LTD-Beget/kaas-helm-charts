@@ -20,6 +20,9 @@ trivyOperator:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
+          - key: "dedicated"
+            value: "monitoring"
+            effect: "NoSchedule" 
       nodeCollector:
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
@@ -27,6 +30,9 @@ trivyOperator:
             effect: "NoSchedule"
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            value: "monitoring"
             effect: "NoSchedule"            
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
