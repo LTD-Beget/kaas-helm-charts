@@ -12,7 +12,7 @@ helmInserter:
         apiVersion: v1
         kind: Namespace
         metadata:
-          name: {{ $customer }}
+          name: {{ $systemNamespace }}
           labels:
             in-cloud.io/clusterName: {{ $clusterName }}
       appProjectCustomer:
@@ -29,7 +29,7 @@ helmInserter:
           - group: '*'
             kind: '*'
           destinations:
-          - namespace: {{ $customer }}
+          - namespace: {{ $systemNamespace }}
             server: '*'
           - namespace: '*'
             name: {{ $clusterName }}

@@ -3,7 +3,7 @@
 ccm:
   apiVersion: in-cloud.io/v1alpha1
   kind: XAddonsCcm
-  namespace: {{ $customer }}
+  namespace: {{ $systemNamespace }}
   version: v1alpha1
   releaseName: {{ $clusterName }}
   dependsOn:
@@ -16,8 +16,10 @@ ccm:
             manager:
               extraArgs:
                 v: 7
+              extraEnv:
+                USE_INTERNAL_LB: "true"
               image:
-                tag: single-process
+                tag: lb
           imagePullSecrets:
           - name: regcred
           tolerations:

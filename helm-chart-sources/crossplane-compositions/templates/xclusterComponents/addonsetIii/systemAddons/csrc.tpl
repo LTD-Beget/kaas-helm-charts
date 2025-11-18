@@ -3,7 +3,7 @@
 csrc:
   apiVersion: in-cloud.io/v1alpha1
   kind: XAddonsCsrc
-  namespace: {{ $customer }}
+  namespace: {{ $systemNamespace }}
   version: v1alpha1
   releaseName: {{ $clusterName }}
   dependsOn:
