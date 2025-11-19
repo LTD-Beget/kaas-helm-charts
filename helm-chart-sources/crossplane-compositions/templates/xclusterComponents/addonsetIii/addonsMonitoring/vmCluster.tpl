@@ -12,6 +12,7 @@ vmCluster:
     victoria-metrics-k8s-stack:
       vmcluster:
         spec:
+          clusterDomainName: cluster.local
           retentionPeriod: "1"
           replicationFactor: 2
           vmstorage:
