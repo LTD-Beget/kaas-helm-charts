@@ -24,6 +24,7 @@ prometheus:
           namespace: beget-grafana #should be the same as grafana-dashboards
           selector: grafana
           type: prometheus
+          isDefault: false
           url: "http://prometheus-server.beget-prometheus.svc:80"
           jsonData:
             tlsSkipVerify: true
