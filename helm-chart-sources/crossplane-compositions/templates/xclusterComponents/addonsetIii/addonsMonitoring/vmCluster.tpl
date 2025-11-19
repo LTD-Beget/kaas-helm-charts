@@ -8,6 +8,7 @@ vmCluster:
   releaseName: vmcluster
   dependsOn:
     - vmOperator
+    - grafanaOperator
   values:
     victoria-metrics-k8s-stack:
       vmcluster:
@@ -140,5 +141,22 @@ vmCluster:
           app: "vminsert"
         selector:
           app.kubernetes.io/name: "vminsert"
+    monitoring:
+      enabled: false
+      namespace: beget-prometheus
+      grafana:
+        vmDatasource:
+          enabled: true
+          name: {{ printf "victoriametrics-%%s" $clusterName }}
+          namespace: beget-grafana
+          selector: grafana
+          type: prometheus
+          isDefault: false
+          url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc.cluster.local:8481/select/0/prometheus"
+          jsonData:
+            httpMethod: POST
+            timeInterval: 5s
+            queryTimeout: "60s"
+            tlsSkipVerify: true
   ` }}
 {{- end -}}

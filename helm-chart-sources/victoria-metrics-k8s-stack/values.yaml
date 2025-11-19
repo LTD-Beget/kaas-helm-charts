@@ -144,6 +144,9 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+  grafana:
+    vmDatasource:
+      enabled: false
 
 additionalService:
   vmcluster:
