@@ -5,6 +5,7 @@ prometheus:
   kind: XAddonsPrometheus
   namespace: beget-prometheus
   version: v1alpha1
+  targetRevision: feat/vmcluster
   dependsOn:
   - grafanaOperator
   values:
