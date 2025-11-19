@@ -13,7 +13,7 @@ spec:
     name: {{ .Values.monitoring.grafana.datasource.name }}
     type: {{ .Values.monitoring.grafana.datasource.type }}
     access: proxy
-    isDefault: true
+    isDefault: {{ .Values.monitoring.grafana.vmDatasource.isDefault | default false }}
     url: {{ .Values.monitoring.grafana.datasource.url }}
     {{- if .Values.monitoring.grafana.datasource.jsonData }}
     jsonData:
