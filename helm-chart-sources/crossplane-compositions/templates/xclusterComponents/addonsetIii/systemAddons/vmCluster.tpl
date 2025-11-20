@@ -22,7 +22,7 @@ vmCluster:
             claimTemplates: []
             storage:
               emptyDir:
-                sizeLimit: 1000Mi
+                sizeLimit: 5000Mi
               volumeClaimTemplate: {}
             resources:
               requests:

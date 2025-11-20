@@ -20,7 +20,7 @@
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 
-{{- $xRCreationTimestamp := $.observed.composite.resource.metadata.creationTimestamp }}
+{{- $xRCreationTimestamp         := $.observed.composite.resource.metadata.creationTimestamp }}
 
 {{- with .observed.resources.xAddonSetClient }}
   {{- $xAddonSetClientExists      = true }}
@@ -33,6 +33,14 @@
 {{- $kubeadmResourcesReady       := dig "kubeadmResources"  "deployed" false ($xAddonSetClientObserve) }}
 
 {{- $xAddonSetClientReady        := and $konnectivityAgentReady $kubeadmResourcesReady }}
+
+{{- $remoteWriteUrlVmAgent  := "" }}
+{{- if $systemEnabled }}
+  {{- $remoteWriteUrlVmAgent = "http://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus" }}
+{{- end }}
+{{- if not $systemEnabled }}
+  {{- $remoteWriteUrlVmAgent = printf "http://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
+{{- end }}  
 ###
 
 apiVersion: in-cloud.io/v1alpha1
@@ -96,7 +104,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
   {{- printf `
     {{- end }}
     {{- if $systemEnabled }}
@@ -112,6 +119,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.crossplaneXcluster" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
   {{- printf `
     {{- end }}
   ` }}
