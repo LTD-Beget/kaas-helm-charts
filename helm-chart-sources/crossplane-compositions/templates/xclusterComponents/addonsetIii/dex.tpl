@@ -86,8 +86,8 @@ dex:
         secretName: {{ $clusterName }}-dex-tls
         commonName: dex
         ipAddresses:
-          - 127.0.0.1
-          - {{ $systemDexVip }}
+          - "127.0.0.1"
+          - {{ $systemDexVip | quote }}
         dnsNames:
           - dex.beget-dex.svc
           - dex.beget-dex.svc.cluster.local
