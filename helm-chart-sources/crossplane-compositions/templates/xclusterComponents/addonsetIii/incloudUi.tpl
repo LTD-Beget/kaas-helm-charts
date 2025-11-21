@@ -6,6 +6,7 @@ incloudUi:
   namespace: beget-incloud-ui
   version: v1alpha1
   pluginName: kustomize-helm-with-values
+  targetRevision: feat/vmcluster
   dependsOn:
   - dex
   values:
@@ -25,13 +26,13 @@ incloudUi:
         extraArgs:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:80"
           redirect-url: "https://localhost/oauth2/callback"
-          oidc-issuer-url: "https://dex.beget-dex.svc:5554"
+          oidc-issuer-url: {{ printf "https://%%s:5554" $systemDexVip }}
           insecure-oidc-skip-issuer-verification: true
           login-url: https://localhost/dex/auth
           proxy-prefix: "/oauth2"
           skip-oidc-discovery: true
-          oidc-jwks-url: "https://dex.beget-dex.svc:5554/keys"
-          redeem-url: "https://dex.beget-dex.svc:5554/token"
+          oidc-jwks-url: {{ printf "https://%%s:5554/keys" $systemDexVip }}
+          redeem-url: {{ printf "https://%%s:5554/token" $systemDexVip }}
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"

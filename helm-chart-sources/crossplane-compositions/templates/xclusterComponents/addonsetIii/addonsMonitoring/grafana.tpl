@@ -34,8 +34,8 @@ grafana:
             scopes: "openid email profile groups"
             tls_skip_verify_insecure: "true"
             auth_url:  "https://localhost/auth"
-            token_url: "https://dex.beget-dex.svc.cluster.local:5554/token"
-            api_url:   "https://dex.beget-dex.svc.cluster.local:5554/userinfo"
+            token_url: {{ printf "https://%%s:5554/token" $systemDexVip }}
+            api_url: {{ printf "https://%%s:5554/userinfo" $systemDexVip }}
         deployment:
           spec:
             template:

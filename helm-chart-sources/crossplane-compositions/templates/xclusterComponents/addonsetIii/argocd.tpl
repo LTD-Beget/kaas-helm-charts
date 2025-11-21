@@ -6,6 +6,7 @@ argocd:
   finalizerDisabled: false
   namespace: beget-argocd
   version: v1alpha1
+  targetRevision: feat/vmcluster
   dependsOn:
     - istioGW
   {{ if and $certManagerReady }}
@@ -18,6 +19,16 @@ argocd:
       crds:
         install: true
       configs:
+        cm:
+          url: https://localhost/argocd
+          oidc.config: |
+            name: Dex
+            issuer: {{ printf "https://%%s:5554" $systemDexVip }}
+            clientID: argocd
+            clientSecret: argo-cd-super-secret
+            requestedScopes: ["openid","profile","email","groups"]
+            insecureSkipVerify: true
+          oidc.tls.insecure.skip.verify: "true"
         cmp:
           create: true
           plugins:

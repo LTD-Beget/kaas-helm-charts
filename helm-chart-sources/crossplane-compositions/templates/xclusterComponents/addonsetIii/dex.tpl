@@ -12,7 +12,7 @@ dex:
   values:
     dex:
       config:
-        issuer: https://dex.beget-dex.svc:5554
+        issuer: {{ printf "https://%%s:5554" $systemDexVip }}
         storage:
           type: kubernetes
           config: { inCluster: true }
@@ -85,6 +85,9 @@ dex:
         name: {{ $clusterName }}-dex-tls
         secretName: {{ $clusterName }}-dex-tls
         commonName: dex
+        ipAddresses:
+          - 127.0.0.1
+          - {{ $systemDexVip }}
         dnsNames:
           - dex.beget-dex.svc
           - dex.beget-dex.svc.cluster.local
