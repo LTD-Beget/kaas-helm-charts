@@ -82,7 +82,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.etcdBackup" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.istioBase" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.istiod" . | nindent 4 }}
@@ -96,7 +95,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.kubeStateMetrics" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.metricsServer" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.processExporter" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.prometheus" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.prometheusNodeExporter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAgent" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.helmInsVMAgentAddRbac" . | nindent 4 }}
@@ -119,6 +117,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.crossplaneXcluster" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
   {{- printf `
     {{- end }}
