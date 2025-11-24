@@ -11,7 +11,12 @@ istioGW:
   values:
     gateway:
       service:
-        type: NodePort
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
         ports:
           - name: status-port
             port: 15021
