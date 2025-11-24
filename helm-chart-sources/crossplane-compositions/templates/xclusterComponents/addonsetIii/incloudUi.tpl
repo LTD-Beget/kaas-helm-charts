@@ -7,8 +7,10 @@ incloudUi:
   version: v1alpha1
   pluginName: kustomize-helm-with-values
   targetRevision: feat/vmcluster
+  {{- if $systemEnabled }}
   dependsOn:
   - dex
+  {{- end }}
   values:
     incloud-web-chart:
       incloud-web-resources:
