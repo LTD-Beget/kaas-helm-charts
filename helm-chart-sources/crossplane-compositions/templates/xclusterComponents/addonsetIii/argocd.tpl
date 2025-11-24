@@ -23,7 +23,7 @@ argocd:
           url: {{ printf "https://%%s/argocd" $systemIstioGwVip }}
           oidc.config: |
             name: Dex
-            issuer: {{ printf "https://%%s/dex" $systemIstioGwVip }}
+            issuer: {{ printf "https://%%s" $systemIstioGwVip }}
             clientID: argocd
             clientSecret: argo-cd-super-secret
             requestedScopes: ["openid","profile","email","groups"]
