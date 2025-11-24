@@ -14,7 +14,7 @@
     "clientEnabled"                       (list "false"          "clusterClient.enabled"                  "clusterClient.enabled"                "boolean"          "%v"  )
     "clientClusterReady"                  (list "false"          "clusterClient.ready"                    "clusterClient.ready"                  "boolean"          "%v"  )
     "systemEnabled"                       (list "false"          "system.enabled"                         "system.enabled"                       "boolean"          "%v"  )
-    "systemDexVip"                        (list "1"              "system.dexVIP"                          "system.dexVIP"                        "integer"          "%s"  )
+    "systemDexVip"                        (list "1"              "system.dexVip"                          "system.dexVip"                        "integer"          "%s"  )
     "systemVmInsertVip"                   (list "1"              "system.vmInsertVIP"                     "system.vmInsertVIP"                   "integer"          "%s"  )
     "systemNamespace"                     (list "\"mock\""       "systemNamespace"                        "systemNamespace"                      "string"           "%s"  )
     "trackingID"                          (list "\"mock\""       "trackingID"                             "trackingID"                           "string"           "%s"  )
