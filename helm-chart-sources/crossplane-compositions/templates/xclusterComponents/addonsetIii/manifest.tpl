@@ -89,7 +89,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.incloudUi" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trustManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trivyOperator" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaDashboards" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.kubeStateMetrics" . | nindent 4 }}
@@ -119,6 +118,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
   {{- printf `
     {{- end }}
   ` }}
