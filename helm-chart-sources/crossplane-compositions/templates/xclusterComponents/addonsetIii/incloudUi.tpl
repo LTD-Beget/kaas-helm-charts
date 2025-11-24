@@ -25,14 +25,14 @@ incloudUi:
           cookieSecret: {{ $argsIncloudUICookieSecret }}
         extraArgs:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:80"
-          redirect-url: "https://localhost/oauth2/callback"
-          oidc-issuer-url: {{ printf "https://%%s:5554" $systemDexVip }}
+          redirect-url: {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
+          oidc-issuer-url: {{ printf "https://%%s:5554/dex" $systemIstioGwVip }}
           insecure-oidc-skip-issuer-verification: true
-          login-url: https://localhost/dex/auth
+          login-url: {{ printf "https://%%s/dex/auth" $systemIstioGwVip }}
           proxy-prefix: "/oauth2"
           skip-oidc-discovery: true
-          oidc-jwks-url: {{ printf "https://%%s:5554/keys" $systemDexVip }}
-          redeem-url: {{ printf "https://%%s:5554/token" $systemDexVip }}
+          oidc-jwks-url: {{ printf "https://%%s:5554/keys" $systemIstioGwVip }}
+          redeem-url: {{ printf "https://%%s:5554/token" $systemIstioGwVip }}
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"
