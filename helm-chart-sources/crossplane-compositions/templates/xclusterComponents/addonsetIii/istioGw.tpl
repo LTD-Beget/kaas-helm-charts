@@ -7,7 +7,7 @@ istioGW:
   version: v1alpha1
   pluginName: kustomize-helm-with-values
   dependsOn:
-    - dex
+    - istioBase
   values:
     gateway:
       service:
