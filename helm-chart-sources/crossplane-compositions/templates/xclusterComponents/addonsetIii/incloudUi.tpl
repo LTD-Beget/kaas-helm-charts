@@ -26,13 +26,13 @@ incloudUi:
         extraArgs:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:80"
           redirect-url: {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
-          oidc-issuer-url: {{ printf "https://%%s:5554/dex" $systemIstioGwVip }}
+          oidc-issuer-url: {{ printf "https://%%s/dex" $systemIstioGwVip }}
           insecure-oidc-skip-issuer-verification: true
           login-url: {{ printf "https://%%s/dex/auth" $systemIstioGwVip }}
           proxy-prefix: "/oauth2"
           skip-oidc-discovery: true
-          oidc-jwks-url: {{ printf "https://%%s:5554/keys" $systemIstioGwVip }}
-          redeem-url: {{ printf "https://%%s:5554/token" $systemIstioGwVip }}
+          oidc-jwks-url: {{ printf "https://%%s/keys" $systemIstioGwVip }}
+          redeem-url: {{ printf "https://%%s/token" $systemIstioGwVip }}
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"

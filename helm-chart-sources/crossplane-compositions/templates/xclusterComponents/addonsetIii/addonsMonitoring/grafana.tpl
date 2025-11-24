@@ -33,9 +33,9 @@ grafana:
             client_secret: ${GRAFANA_OIDC_CLIENT_SECRET}
             scopes: "openid email profile groups"
             tls_skip_verify_insecure: "true"
-            auth_url: {{ printf "https://%%s:5554/auth" $systemIstioGwVip }}
-            token_url: {{ printf "https://%%s:5554/token" $systemIstioGwVip }}
-            api_url: {{ printf "https://%%s:5554/userinfo" $systemIstioGwVip }}
+            auth_url: {{ printf "https://%%s/auth" $systemIstioGwVip }}
+            token_url: {{ printf "https://%%s/token" $systemIstioGwVip }}
+            api_url: {{ printf "https://%%s/userinfo" $systemIstioGwVip }}
         deployment:
           spec:
             template:
