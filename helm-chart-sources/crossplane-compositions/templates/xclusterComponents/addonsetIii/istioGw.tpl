@@ -61,6 +61,7 @@ istioGW:
           - "*"
         ipAddresses:
           - 127.0.0.1
+          - {{ $systemIstioGwVip }}
     extraGateway:
       enabled: true
       name: default

@@ -20,10 +20,10 @@ argocd:
         install: true
       configs:
         cm:
-          url: https://localhost/argocd
+          url: {{ printf "https://%%s:5554/argocd" $systemIstioGwVip }}
           oidc.config: |
             name: Dex
-            issuer: {{ printf "https://%%s:5554" $systemDexVip }}
+            issuer: {{ printf "https://%%s:5554/dex" $systemIstioGwVip }}
             clientID: argocd
             clientSecret: argo-cd-super-secret
             requestedScopes: ["openid","profile","email","groups"]
