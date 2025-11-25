@@ -48,6 +48,7 @@ istioGW:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+    {{- if $systemEnabled }}
     tls:
       enabled: true
       issuer:
@@ -62,6 +63,7 @@ istioGW:
         ipAddresses:
           - 127.0.0.1
           - {{ $systemIstioGwVip }}
+    {{- end }}
     extraGateway:
       enabled: true
       name: default

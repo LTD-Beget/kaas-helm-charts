@@ -97,7 +97,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
   {{- printf `
     {{- end }}
     {{- if $systemEnabled }}
@@ -111,6 +110,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.capiKubeadmBootstrap" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.capiKubeadmControlPlane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneXcluster" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trivyOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
