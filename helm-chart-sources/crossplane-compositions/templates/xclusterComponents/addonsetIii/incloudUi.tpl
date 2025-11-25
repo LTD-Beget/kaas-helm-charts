@@ -10,6 +10,9 @@ incloudUi:
   {{- if $systemEnabled }}
   dependsOn:
   - dex
+  {{- else }}
+  dependsOn:
+  - certManager
   {{- end }}
   values:
     incloud-web-chart:
