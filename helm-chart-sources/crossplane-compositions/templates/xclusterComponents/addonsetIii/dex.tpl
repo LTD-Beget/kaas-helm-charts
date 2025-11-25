@@ -46,6 +46,7 @@ dex:
             secret: argo-cd-super-secret
             redirectURIs:
               - {{ printf "https://%%s/argocd/auth/callback" $systemIstioGwVip }}
+              - "https://localhost/argocd/auth/callback"
           - id: apiserver
             name: apiserver
             redirectURIs:
