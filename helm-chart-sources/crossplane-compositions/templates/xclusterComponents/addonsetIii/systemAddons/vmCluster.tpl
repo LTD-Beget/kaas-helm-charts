@@ -156,5 +156,19 @@ vmCluster:
           jsonData:
             timeInterval: 5s
             tlsSkipVerify: true
+    tls:
+      enabled: true
+      issuer:
+        kind: ClusterIssuer
+        name: oidc-ca
+      certificate:
+        name: {{ $clusterName }}-vminsert
+        secretName: {{ $clusterName }}-vminsert
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+          - {{ $systemVmInsertVip }}
   ` }}
 {{- end -}}
