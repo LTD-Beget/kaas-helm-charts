@@ -20,7 +20,11 @@ argocd:
         install: true
       configs:
         cm:
+          {{- if $systemEnabled }}
           url: {{ printf "https://%%s/argocd" $systemIstioGwVip }}
+          {{- else }}
+          url: "https://localhost/argocd"
+          {{- end }}
           oidc.config: |
             name: Dex
             issuer: {{ printf "https://%%s" $systemIstioGwVip }}
