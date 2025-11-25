@@ -5,6 +5,7 @@ vmAgent:
   kind: XAddonsVictoriaMetricsAgent
   namespace: beget-vmagent
   version: v1alpha1
+  targetRevision: feat/vmcluster
   releaseName: vmagent
   dependsOn:
     - vmOperator
@@ -25,7 +26,7 @@ vmAgent:
               app: vmagent
               incloud-metrics: "infra"
           remoteWrite:
-            - url: http://prometheus-server.beget-prometheus.svc:80/api/v1/write
+            - url: {{ $remoteWriteUrlVmAgent }}
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In

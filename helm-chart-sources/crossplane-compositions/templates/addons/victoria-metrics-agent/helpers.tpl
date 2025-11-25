@@ -124,12 +124,7 @@ default: |
                 weight: 100
         probeNamespaceSelector: {}
         priorityClassName: system-cluster-critical
-    coreDns:
-      enabled: false
-    kubeDns:
-      enabled: false
-    kube-state-metrics:
-      enabled: false
+
     kubeApiServer:
       enabled: true
       vmScrape:
@@ -197,6 +192,12 @@ default: |
         name: selfsigned-cluster-issuer
 immutable: |
   victoria-metrics-k8s-stack:
+    coreDns:
+      enabled: false
+    kubeDns:
+      enabled: false
+    kube-state-metrics:
+      enabled: false
     alertmanager:
       enabled: false
     defaultDashboards:

@@ -1,0 +1,60 @@
+{{- if .Values.additionalService.vmcluster.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ default (printf "%s-lb" .Release.Name) .Values.additionalService.vmcluster.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- with .Values.additionalService.vmcluster.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ default .Chart.Name | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    {{- with .Values.additionalService.vmcluster.labels }}
+      {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ default "LoadBalancer" .Values.additionalService.vmcluster.serviceType | quote }}
+  {{- with .Values.additionalService.vmcluster.loadBalancerClass }}
+  loadBalancerClass: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.ipFamilies }}
+  ipFamilies:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.additionalService.vmcluster.healthCheckNodePort }}
+  healthCheckNodePort: {{ . }}
+  {{- end }}
+
+  {{- /* selector: either user-provided or sane defaults for vminsert */}}
+  selector:
+  {{- if .Values.additionalService.vmcluster.selector }}
+    {{ toYaml .Values.additionalService.vmcluster.selector | nindent 4 }}
+  {{- else }}
+    app.kubernetes.io/name: "vminsert"
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  {{- end }}
+  ports:
+  {{- if .Values.additionalService.vmcluster.ports }}
+    {{ toYaml .Values.additionalService.vmcluster.ports | nindent 4 }}
+  {{- else }}
+    - name: http
+      port: 8480
+      targetPort: 8480
+      protocol: TCP
+  {{- end }}
+{{- end }}

@@ -7,11 +7,16 @@ istioGW:
   version: v1alpha1
   pluginName: kustomize-helm-with-values
   dependsOn:
-    - dex
+    - istioBase
   values:
     gateway:
       service:
-        type: NodePort
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
         ports:
           - name: status-port
             port: 15021
@@ -43,6 +48,7 @@ istioGW:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+    {{- if $systemEnabled }}
     tls:
       enabled: true
       issuer:
@@ -56,6 +62,22 @@ istioGW:
           - "*"
         ipAddresses:
           - 127.0.0.1
+          - {{ $systemIstioGwVip }}
+    {{- else }}
+    tls:
+      enabled: true
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+      certificate:
+        name: {{ $clusterName }}-gateway
+        secretName: {{ $clusterName }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+    {{- end }}
     extraGateway:
       enabled: true
       name: default

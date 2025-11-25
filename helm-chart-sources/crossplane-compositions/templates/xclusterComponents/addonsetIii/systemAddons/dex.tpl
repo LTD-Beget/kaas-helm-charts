@@ -6,12 +6,13 @@ dex:
   namespace: beget-dex
   version: v1alpha1
   pluginName: kustomize-helm-with-values
+  targetRevision: feat/vmcluster
   dependsOn:
   - certManager
   values:
     dex:
       config:
-        issuer: https://dex.beget-dex.svc:5554
+        issuer: {{ printf "https://%%s" $systemIstioGwVip }}
         storage:
           type: kubernetes
           config: { inCluster: true }
@@ -39,12 +40,13 @@ dex:
             name: incloud-ui-oauth2-proxy
             secret: incloud-ui-super-secret
             redirectURIs:
-              - https://localhost/oauth2/callback
+              - {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
           - id: argocd
             name: Argocd
             secret: argo-cd-super-secret
             redirectURIs:
-              - https://localhost/argocd/auth/callback
+              - {{ printf "https://%%s/argocd/auth/callback" $systemIstioGwVip }}
+              - "https://localhost/argocd/auth/callback"
           - id: apiserver
             name: apiserver
             redirectURIs:
@@ -53,6 +55,13 @@ dex:
             secret: {{ $argsDexStaticClientsApiserver }}
       https:
         enabled: true
+      service:
+        annotations:
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+        type: LoadBalancer
       volumeMounts:
         - name: tls
           mountPath: /etc/dex/tls
@@ -77,6 +86,9 @@ dex:
         name: {{ $clusterName }}-dex-tls
         secretName: {{ $clusterName }}-dex-tls
         commonName: dex
+        ipAddresses:
+          - "127.0.0.1"
+          - {{ $systemDexVip | quote }}
         dnsNames:
           - dex.beget-dex.svc
           - dex.beget-dex.svc.cluster.local

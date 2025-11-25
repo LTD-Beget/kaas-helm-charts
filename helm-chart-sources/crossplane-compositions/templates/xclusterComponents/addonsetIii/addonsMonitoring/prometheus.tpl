@@ -5,6 +5,7 @@ prometheus:
   kind: XAddonsPrometheus
   namespace: beget-prometheus
   version: v1alpha1
+  targetRevision: feat/vmcluster
   dependsOn:
   - grafanaOperator
   values:
@@ -24,6 +25,7 @@ prometheus:
           namespace: beget-grafana #should be the same as grafana-dashboards
           selector: grafana
           type: prometheus
+          isDefault: false
           url: "http://prometheus-server.beget-prometheus.svc:80"
           jsonData:
             tlsSkipVerify: true
