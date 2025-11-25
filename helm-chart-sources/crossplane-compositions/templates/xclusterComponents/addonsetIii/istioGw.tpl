@@ -63,6 +63,20 @@ istioGW:
         ipAddresses:
           - 127.0.0.1
           - {{ $systemIstioGwVip }}
+    {{- else }}
+    tls:
+      enabled: true
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+      certificate:
+        name: {{ $clusterName }}-gateway
+        secretName: {{ $clusterName }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
     {{- end }}
     extraGateway:
       enabled: true
