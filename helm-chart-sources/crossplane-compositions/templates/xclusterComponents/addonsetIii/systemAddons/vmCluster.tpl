@@ -181,7 +181,8 @@ vmCluster:
           secretName: {{ $clusterName }}-vminsert
           commonName: vminsert
           dnsNames:
-            - "*"
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
             - {{ $systemVmInsertVip }}
