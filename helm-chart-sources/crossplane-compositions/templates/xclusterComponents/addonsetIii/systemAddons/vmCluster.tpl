@@ -98,6 +98,9 @@ vmCluster:
           vminsert:
             enabled: true
             replicaCount: 2
+            rollingUpdate:
+              maxSurge: 0
+              maxUnavailable: 1
             priorityClassName: system-cluster-critical
             resources:
               requests:
@@ -108,10 +111,21 @@ vmCluster:
               maxLabelsPerTimeseries: "80"
               insert.maxQueueDuration: 60s
               maxConcurrentInserts: "256"
+              tls: "true"
+              tlsCertFile: "/tls/tls.crt"
+              tlsKeyFile: "/tls/tls.key"
             tolerations:
               - key: "dedicated"
                 value: "monitoring"
                 effect: "NoSchedule"
+            volumes:
+              - name: vminsert-tls
+                secret:
+                  secretName: {{ $clusterName }}-vminsert
+            volumeMounts:
+              - name: vminsert-tls
+                mountPath: /tls
+                readOnly: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -161,7 +175,7 @@ vmCluster:
         enabled: true
         issuer:
           kind: ClusterIssuer
-          name: oidc-ca
+          name: selfsigned-cluster-issuer
         certificate:
           name: {{ $clusterName }}-vminsert
           secretName: {{ $clusterName }}-vminsert

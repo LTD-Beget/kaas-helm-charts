@@ -169,18 +169,3 @@ tls:
         - vminsert.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
-  vmAgent:
-    enabled: false
-    issuer:
-      enabled: false
-      name: default-issuer-name
-      secretName: default-ca
-    certificate:
-      name: vmagent-tls
-      secretName: vmagent-tls
-      duration: 8760h
-      renewBefore: 720h
-      commonName: vmagent
-      issuer:
-        kind: ClusterIssuer
-        name: default-issuer-name

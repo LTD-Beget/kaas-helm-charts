@@ -36,10 +36,10 @@
 
 {{- $remoteWriteUrlVmAgent  := "" }}
 {{- if $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = "http://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus" }}
+  {{- $remoteWriteUrlVmAgent = "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus" }}
 {{- end }}
 {{- if not $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = printf "http://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
+  {{- $remoteWriteUrlVmAgent = printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
 {{- end }}  
 ###
 

@@ -27,6 +27,16 @@ vmAgent:
               incloud-metrics: "infra"
           remoteWrite:
             - url: {{ $remoteWriteUrlVmAgent }}
+              tlsConfig:
+                caFile: /tls/cabundle/ca.crt
+          volumes:
+            - name: ca-bundle
+              configMap:
+                name: system-ca-bundle
+          volumeMounts:
+            - name: ca-bundle
+              mountPath: /tls/cabundle
+              readOnly: true
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In

@@ -20,6 +20,7 @@ spec:
     managedNamespaceMetadata:
       labels:
         in-cloud.io/clusterName: {{ "\"{{ $clusterName }}\"" }}
+        in-cloud.io/caBundle: "approved"
     automated:
       prune: true
       selfHeal: true
