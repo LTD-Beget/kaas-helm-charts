@@ -5,6 +5,7 @@ vmCluster:
   kind: XAddonsVictoriaMetricsCluster
   namespace: beget-vmcluster
   version: v1alpha1
+  targetRevision: saving/vmInsert-tls
   releaseName: vmcluster
   dependsOn:
     - vmOperator
