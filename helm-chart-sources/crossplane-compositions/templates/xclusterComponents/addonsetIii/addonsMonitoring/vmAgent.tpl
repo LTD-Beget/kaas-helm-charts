@@ -67,6 +67,7 @@ vmAgent:
             remotewrite_cluster: {{ printf "%%s-%%s" $customer $clusterName }}
           extraArgs:
             remoteWrite.label: remotewrite_cluster={{ printf "%%s-%%s" $customer $clusterName }}
+            remoteWrite.tlsInsecureSkipVerify: "false"
       kubeControllerManager:
         enabled: true
         vmScrape:
