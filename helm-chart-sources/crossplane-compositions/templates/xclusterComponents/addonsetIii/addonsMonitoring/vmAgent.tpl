@@ -65,12 +65,19 @@ vmAgent:
               incloud-metrics: "infra"
           remoteWrite:
             - url: {{ $remoteWriteUrlVmAgent }}
+            {{- if not $systemEnabled }}
               tlsConfig:
                 caFile: /tls/cabundle/ca.crt
+            {{- else }}
+              tlsConfig:
+                caFile: /etc/ssl/certs/ca.crt
+            {{- end }}
           volumeMounts:
+            {{- if not $systemEnabled }}
             - name: ca-bundle
               mountPath: /tls/cabundle
               readOnly: true
+            {{- end }}
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
               readOnly: true
@@ -82,9 +89,11 @@ vmAgent:
               secret:
                 defaultMode: 420
                 secretName: vmagent-monitoring-svc-tls
+            {{- if not $systemEnabled }}
             - name: ca-bundle
               configMap:
                 name: system-ca-bundle
+            {{- end }}
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
