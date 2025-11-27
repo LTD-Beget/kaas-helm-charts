@@ -55,13 +55,6 @@ dex:
             secret: {{ $argsDexStaticClientsApiserver }}
       https:
         enabled: true
-      service:
-        annotations:
-          lb.beget.com/algorithm: "round_robin" # or "least_conns"
-          lb.beget.com/type: "internal"
-          lb.beget.com/healthcheck-interval-seconds: "60"
-          lb.beget.com/healthcheck-timeout-seconds: "5"
-        type: LoadBalancer
       volumeMounts:
         - name: tls
           mountPath: /etc/dex/tls
