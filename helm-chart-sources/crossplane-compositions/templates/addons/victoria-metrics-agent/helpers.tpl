@@ -20,56 +20,6 @@ default: |
         securityContext:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
-        containers:
-          - name: config-reloader
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 100m
-              memory: 200Mi
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 65534
-          - name: vmagent
-            securityContext:
-              readOnlyRootFilesystem: true
-              allowPrivilegeEscalation: false
-          - name: rbac-proxy
-            image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
-            args:
-              - --secure-listen-address=0.0.0.0:11043
-              - --upstream=http://127.0.0.1:8429
-              - --tls-cert-file=/app/config/metrics/tls/tls.crt
-              - --tls-private-key-file=/app/config/metrics/tls/tls.key
-              - --v=2
-            ports:
-              - name: https-metrics
-                containerPort: 11043
-                protocol: TCP
-            resources:
-              requests:
-                memory: "32Mi"
-                cpu: "10m"
-              limits:
-                memory: "64Mi"
-                cpu: "50m"
-            volumeMounts:
-              - name: rbac-proxy-tls
-                mountPath: /app/config/metrics/tls
-                readOnly: true
-        volumeMounts:
-          - name: trusted-ca-certs
-            mountPath: /etc/ssl/certs
-            readOnly: true
-        volumes:
-          - name: trusted-ca-certs
-            configMap:
-              name: ca
-          - name: rbac-proxy-tls
-            secret:
-              defaultMode: 420
-              secretName: vmagent-monitoring-svc-tls
         extraEnvs:
           - name: GOMAXPROCS
             value: '1'

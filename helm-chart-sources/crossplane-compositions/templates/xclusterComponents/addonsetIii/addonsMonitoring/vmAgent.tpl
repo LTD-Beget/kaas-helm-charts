@@ -14,6 +14,44 @@ vmAgent:
       fullnameOverride: "vmagent"
       vmagent:
         spec:
+          containers:
+            - name: config-reloader
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 65534
+            - name: vmagent
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+            - name: rbac-proxy
+              image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=http://127.0.0.1:8429
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
               operator: "Exists"
@@ -29,14 +67,24 @@ vmAgent:
             - url: {{ $remoteWriteUrlVmAgent }}
               tlsConfig:
                 caFile: /tls/cabundle/ca.crt
-          volumes:
-            - name: ca-bundle
-              configMap:
-                name: system-ca-bundle
           volumeMounts:
             - name: ca-bundle
               mountPath: /tls/cabundle
               readOnly: true
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vmagent-monitoring-svc-tls
+            - name: ca-bundle
+              configMap:
+                name: system-ca-bundle
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
