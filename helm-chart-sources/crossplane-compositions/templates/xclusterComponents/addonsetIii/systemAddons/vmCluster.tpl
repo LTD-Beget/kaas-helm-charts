@@ -164,7 +164,7 @@ vmCluster:
       certificate:
         name: {{ $clusterName }}-vminsert
         secretName: {{ $clusterName }}-vminsert
-        commonName: infra-gateway
+        commonName: vminsert
         dnsNames:
           - "*"
         ipAddresses:
