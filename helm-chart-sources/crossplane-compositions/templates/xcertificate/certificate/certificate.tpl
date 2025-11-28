@@ -14,7 +14,7 @@ metadata:
   name: {{ $certificateName }}
   namespace: {{ $commonNamespace }}
 spec: 
-  isCA: true
+  isCA: {{ $certificateIsCa }}
   commonName: {{ $certificateCommonName }}
   secretName: {{ $certificateSecretName }}
   duration: {{ $certificateDuration }}

@@ -26,6 +26,7 @@ spec:
   readiness:
     policy: DeriveFromCelQuery
     celQuery: "object.status.conditions.exists(c, c.type == 'Ready' && c.status == 'True')"
+  {{- if eq $issuerSignerType "selfsigned" }}
   references:
     - patchesFrom:
         apiVersion: kubernetes.crossplane.io/v1alpha2
@@ -33,6 +34,7 @@ spec:
         name: {{ $issuerSignerObjectName }}
         fieldPath: "metadata.annotations['status.in-cloud.io/ready']"
       toFieldPath: "metadata.annotations['dependency.in-cloud.io/ready']"
+  {{- end}}
   watch: true
   ` }}
 {{- end -}}
