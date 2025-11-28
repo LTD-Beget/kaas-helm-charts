@@ -30,10 +30,17 @@ trustManager:
         - secret:
             name: selfsigned-cluster-ca
             key: tls.crt
+      {{- if $systemEnabled }}
+      target:
+        namespaceSelector:
+          matchLabels:
+            in-cloud.io/caBundle: "approved"
+      {{- else }}
       target:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: {{ $clusterName }}
+      {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

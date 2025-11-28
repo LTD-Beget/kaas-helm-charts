@@ -5,6 +5,7 @@ vmCluster:
   kind: XAddonsVictoriaMetricsCluster
   namespace: beget-vmcluster
   version: v1alpha1
+  targetRevision: saving/vmInsert-tls
   releaseName: vmcluster
   dependsOn:
     - vmOperator
@@ -98,6 +99,9 @@ vmCluster:
           vminsert:
             enabled: true
             replicaCount: 2
+            rollingUpdate:
+              maxSurge: 0
+              maxUnavailable: 1
             priorityClassName: system-cluster-critical
             resources:
               requests:
@@ -108,10 +112,21 @@ vmCluster:
               maxLabelsPerTimeseries: "80"
               insert.maxQueueDuration: 60s
               maxConcurrentInserts: "256"
+              tls: "true"
+              tlsCertFile: "/tls/tls.crt"
+              tlsKeyFile: "/tls/tls.key"
             tolerations:
               - key: "dedicated"
                 value: "monitoring"
                 effect: "NoSchedule"
+            volumes:
+              - name: vminsert-tls
+                secret:
+                  secretName: {{ $clusterName }}-vminsert
+            volumeMounts:
+              - name: vminsert-tls
+                mountPath: /tls
+                readOnly: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -156,5 +171,21 @@ vmCluster:
           jsonData:
             timeInterval: 5s
             tlsSkipVerify: true
+    tls:
+      vmInsert:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: {{ $clusterName }}-vminsert
+          secretName: {{ $clusterName }}-vminsert
+          commonName: vminsert
+          dnsNames:
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+          ipAddresses:
+            - 127.0.0.1
+            - {{ $systemVmInsertVip }}
   ` }}
 {{- end -}}

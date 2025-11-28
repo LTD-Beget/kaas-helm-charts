@@ -41,6 +41,7 @@ dex:
             secret: incloud-ui-super-secret
             redirectURIs:
               - {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
+              - "https://localhost/oauth2/callback"
           - id: argocd
             name: Argocd
             secret: argo-cd-super-secret
