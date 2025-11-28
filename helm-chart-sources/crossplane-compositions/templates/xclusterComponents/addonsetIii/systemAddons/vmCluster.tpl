@@ -18,14 +18,17 @@ vmCluster:
           retentionPeriod: "1"
           replicationFactor: 2
           vmstorage:
-            replicaCount: 2
+            replicaCount: 3
             storageDataPath: /vm-data
             claimTemplates: []
             storage:
               emptyDir:
-                sizeLimit: 5000Mi
+                sizeLimit: 210Gi
               volumeClaimTemplate: {}
             resources:
+              limits:
+                cpu: "5"
+                memory: 10Gi
               requests:
                 cpu: "50m"
                 memory: "64Mi"
@@ -52,7 +55,7 @@ vmCluster:
                     topologyKey: kubernetes.io/hostname
           vmselect:
             enabled: true
-            replicaCount: 2
+            replicaCount: 3
             extraArgs:
               dedup.minScrapeInterval: 30s
               search.maxQueryDuration: 60s
@@ -69,9 +72,12 @@ vmCluster:
             claimTemplates: []
             storage:
               emptyDir:
-                sizeLimit: 1000Mi
+                sizeLimit: 20Gi
               volumeClaimTemplate: {}
             resources:
+              limits:
+                cpu: "5"
+                memory: "10Gi"
               requests:
                 cpu: "50m"
                 memory: "64Mi"
@@ -98,12 +104,15 @@ vmCluster:
                     topologyKey: kubernetes.io/hostname
           vminsert:
             enabled: true
-            replicaCount: 2
+            replicaCount: 3
             rollingUpdate:
               maxSurge: 0
               maxUnavailable: 1
             priorityClassName: system-cluster-critical
             resources:
+              limits:
+                cpu: "4"
+                memory: "8Gi"
               requests:
                 cpu: "50m"
                 memory: "64Mi"
