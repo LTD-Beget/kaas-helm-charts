@@ -6,7 +6,7 @@ argocd:
   finalizerDisabled: false
   namespace: beget-argocd
   version: v1alpha1
-  targetRevision: feat/vmcluster
+  targetRevision: feat/xclusterComponents
   dependsOn:
     - istioGW
   {{ if and $certManagerReady }}

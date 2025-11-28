@@ -6,7 +6,7 @@ crossplaneCompositions:
   finalizerDisabled: false
   namespace: beget-crossplane
   version: v1alpha1
-  targetRevision: saving/vmInsert-tls
+  targetRevision: feat/xclusterComponents
   values:
     xclusterComponents:
       client:
