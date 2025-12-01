@@ -62,17 +62,17 @@ incloudUi:
       bff:
         env:
           BASE_ALLOWED_AUTH_HEADERS: user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization
-     clusters:
-      - name: default
-        description: default
-        tenant: dev
-        scheme: http
-        api: 100.87.0.28
-      - name: cluster2
-        description: cluster2
-        tenant: dev
-        scheme: http
-        api: 45.147.176.161    
+      clusters:
+        - name: default
+          description: default
+          tenant: dev
+          scheme: http
+          api: 100.87.0.28
+        - name: cluster2
+          description: cluster2
+          tenant: dev
+          scheme: http
+          api: 45.147.176.161    
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
