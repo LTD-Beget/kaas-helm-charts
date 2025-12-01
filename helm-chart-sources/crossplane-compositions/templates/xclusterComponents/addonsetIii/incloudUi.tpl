@@ -72,7 +72,7 @@ incloudUi:
           description: cluster2
           tenant: dev
           scheme: http
-          api: 45.147.176.161    
+          api: 93.189.231.174   
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
