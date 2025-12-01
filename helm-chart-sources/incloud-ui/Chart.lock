@@ -1,6 +1,9 @@
 dependencies:
 - name: incloud-web-chart
-  repository: file://charts/incloud-web-chart
-  version: 1.1.1
-digest: sha256:b78d7ef11ee02cdd2f6ae98d54ec2b4de1032b9110872debd704d2930a23c5ee
-generated: "2025-11-30T18:29:45.309495+03:00"
+  repository: oci://registry-1.docker.io/prorobotech
+  version: 1.2.0-rc1
+- name: incloud-web-resources
+  repository: oci://registry-1.docker.io/prorobotech
+  version: 1.2.0-rc1
+digest: sha256:6f91a8cd0b4450131aed41fd346cee1bc8db6962a290e5ed67fc13bf712a69c9
+generated: "2025-12-01T16:57:08.267914+03:00"

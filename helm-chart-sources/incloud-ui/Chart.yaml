@@ -23,9 +23,12 @@ keywords:
 
 version: 0.1.1
 
-appVersion: "1.1.1"
+appVersion: "1.2.0"
 
 dependencies:
   - name: incloud-web-chart
-    version: "1.1.1"
-    repository: "file://charts/incloud-web-chart"
+    version: "1.2.0-rc1"
+    repository: "oci://registry-1.docker.io/prorobotech"
+  - name: incloud-web-resources
+    version: "1.2.0-rc1"
+    repository: "oci://registry-1.docker.io/prorobotech"
