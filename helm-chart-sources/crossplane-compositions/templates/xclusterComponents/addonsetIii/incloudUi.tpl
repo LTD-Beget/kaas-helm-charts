@@ -15,14 +15,14 @@ incloudUi:
   - certManager
   {{- end }}
   values:
+    incloud-web-resources:
+      enabled: true
+      addons:
+        argocd:
+          enabled: true
+        trivy:
+          enabled: {{ $infraTrivyOperatorReady }}
     incloud-web-chart:
-      incloud-web-resources:
-        enabled: true
-        addons:
-          argocd:
-            enabled: true
-          trivy:
-            enabled: {{ $infraTrivyOperatorReady }}
       oauth2-proxy:
         enabled: true
         config:
@@ -33,7 +33,7 @@ incloudUi:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:8081"
           redirect-url: {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
           oidc-issuer-url: {{ printf "https://%%s/dex" $systemIstioGwVip }}
-          insecure-oidc-skip-issuer-verification: false
+          insecure-oidc-skip-issuer-verification: true
           login-url: {{ printf "https://%%s/dex/auth" $systemIstioGwVip }}
           proxy-prefix: "/oauth2"
           skip-oidc-discovery: true
@@ -62,6 +62,17 @@ incloudUi:
       bff:
         env:
           BASE_ALLOWED_AUTH_HEADERS: user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization
+     clusters:
+      - name: default
+        description: default
+        tenant: dev
+        scheme: http
+        api: 100.87.0.28
+      - name: cluster2
+        description: cluster2
+        tenant: dev
+        scheme: http
+        api: 45.147.176.161    
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
