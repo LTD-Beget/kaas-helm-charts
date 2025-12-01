@@ -13,8 +13,12 @@ istioGW:
       service:
         type: LoadBalancer
         annotations:
-          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          {{- if $systemEnabled }}
           lb.beget.com/type: "internal"
+          {{- else }}
+          lb.beget.com/type: "external"
+          {{- end }}
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
         ports:
