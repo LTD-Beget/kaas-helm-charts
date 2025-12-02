@@ -1,0 +1,29 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if and .Values.monitoring.secureService.enabled $vmstack.vmagent.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vmagent-monitoring-svc-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: vmagent-monitoring-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: vmagent-monitoring
+  dnsNames:
+    - vmagent-monitoring
+    - vmagent-monitoring.{{ .Release.Namespace }}
+    - vmagent-monitoring.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}

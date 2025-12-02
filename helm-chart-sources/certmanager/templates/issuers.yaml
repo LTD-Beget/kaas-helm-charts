@@ -1,0 +1,16 @@
+{{- range $_, $issuer := .Values.issuers }}
+---
+apiVersion: cert-manager.io/v1
+kind: {{ $issuer.kind }}
+metadata:
+  name: {{ $issuer.name }}
+{{- if eq $issuer.kind "Issuer" }}
+  {{- if $issuer.namespace }}
+  namespace: {{ $issuer.namespace }}
+  {{- else }}
+  namespace: {{ $.Release.Namespace }}
+  {{- end }}
+{{- end }}
+spec:
+  {{ $issuer.spec | toYaml | nindent 2 }}
+{{- end }}

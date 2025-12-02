@@ -1,0 +1,89 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+{{- if not .Values.composition.developmentMode }}
+kind: Composition
+metadata:
+  name: certificateclaims.in-cloud.io
+spec:
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCertificate
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-certificateclaims.in-cloud.io" .Release.Name }}
+spec:
+  revision: {{ .Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCertificate
+{{- end }}
+  mode: Pipeline
+  pipeline:
+    - step: environment-configs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+          - type: Reference
+            ref:
+              name: xcertificate-environment
+
+    - step: set-environment-xcertificate
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        environment:
+          patches:
+            {{- include "xcertificate.environment.patches" . | nindent 12 }}
+
+    - step: issuer-signer
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificate.issuersigner.object" . | nindent 12 }}
+
+    - step: certificate
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificate.certificate.object" . | nindent 12 }}
+
+    - step: issuer
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificate.issuer.object" . | nindent 12 }}
+
+{{- if .Values.composition.xcertificate.debug }}
+    - step: debug-certificate
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificate.currentContext" . | nindent 12 }}
+{{- end }}

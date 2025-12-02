@@ -1,0 +1,23 @@
+{{- if .Values.monitoring.grafana.datasource.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafana-datasource
+  namespace: {{ .Values.monitoring.grafana.datasource.namespace }}
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: {{ .Values.monitoring.grafana.datasource.selector | default "grafana" }}
+  datasource:
+    name: {{ .Values.monitoring.grafana.datasource.name }}
+    type: {{ .Values.monitoring.grafana.datasource.type }}
+    access: proxy
+    isDefault: {{ .Values.monitoring.grafana.datasource.isDefault | default false }}
+    url: {{ .Values.monitoring.grafana.datasource.url }}
+    {{- if .Values.monitoring.grafana.datasource.jsonData }}
+    jsonData:
+      {{ toYaml .Values.monitoring.grafana.datasource.jsonData | nindent 6 }}
+    {{- end }}
+
+{{- end }}

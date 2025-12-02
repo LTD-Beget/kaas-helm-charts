@@ -1,0 +1,161 @@
+{{- define "goTemplate.addonSet" -}}
+  {{ printf `
+{{- $environment                      := index .context "apiextensions.crossplane.io/environment" }}
+
+{{- $baseName                         := $environment.base.name }}
+{{- $baseNamespace                    := $environment.base.namespace }}
+{{- $baseCustomer                     := $environment.base.customer }}
+{{- $commonArgocdDestinationName      := $environment.common.argocd.destination.name  }}
+{{- $commonArgocdNamespace            := $environment.common.argocd.namespace }}
+{{- $commonArgocdProject              := $environment.common.argocd.project }}
+{{- $commonClusterName                := $environment.common.cluster.name }}
+{{- $commonClusterHost                := $environment.common.cluster.host }}
+{{- $commonClusterPort                := $environment.common.cluster.port }}
+{{- $commonProviderConfigRefName      := $environment.common.providerConfigRef.name }}
+{{- $commonTrackingID                 := $environment.common.trackingID }}
+{{- $commonXcluster                   := $environment.common.xcluster }}
+
+{{- $addons := .observed.composite.resource.spec.addons }}
+{{- range $key, $value := $addons }}
+  {{- with $value }}
+    {{- $AddonCreated := "False" }}
+    {{- $apiVersion := .apiVersion }}
+    {{- $chart := dig "chart" "" . }}
+    {{- $finalizerDisabled := dig "finalizerDisabled" false . }}
+    {{- $kind := .kind }}
+    {{- $name := printf "%%s-%%s" $commonClusterName ($key | lower) }}
+    {{- $namespace := .namespace }}
+    {{- $path := dig "path" "" . }}
+    {{- $permitionToCreateAddon := "True" }}
+    {{- $releaseName := dig "releaseName" "" . }}
+    {{- $pluginName := dig "pluginName" "" . }}
+    {{- $repoURL := dig "repoURL" "" . }}
+    {{- $targetRevision := dig "targetRevision" "" . }}
+    {{- $values := get . "values" | default (dict) }}
+    {{- $version := .version }}
+    {{- if hasKey $.observed.resources $key }}
+      {{- $AddonCreated = "True" }}
+    {{- else }}
+      {{- if and (hasKey . "dependsOn") (gt (len .dependsOn) 0) }}
+        {{- range .dependsOn }}
+          {{- if eq (dig "resource" "status" "deployed" "False" (get $.observed.resources . | default (dict))) "False" }}
+            {{- $permitionToCreateAddon = "False" }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if or (eq $permitionToCreateAddon "True") (eq $AddonCreated "True") }}
+
+---
+apiVersion: {{ $apiVersion }}
+kind: {{ $kind }}
+metadata:
+  annotations:
+    checkin-test: {{ $permitionToCreateAddon | quote }}
+    gotemplating.fn.crossplane.io/composition-resource-name: {{ $key }}
+  name: {{ $name }}
+spec:
+  argocd:
+      {{- if $chart }}
+    chart: {{ $chart }}
+      {{- end }}
+    destination:
+      name: {{ $commonArgocdDestinationName }}
+      namespace: {{ $namespace }}
+      {{- if $finalizerDisabled }}
+    finalizerDisabled: {{ $finalizerDisabled }}
+      {{- end }}
+    namespace: {{ $commonArgocdNamespace }}
+      {{- if $path }}
+    path: {{ $path }}
+      {{- end }}
+      {{- if $pluginName  }}
+    pluginName: {{ $pluginName }}
+      {{- end }}
+    project: {{ $commonArgocdProject }}
+      {{- if $releaseName }}
+    releaseName: {{ $releaseName }}
+      {{- end }}
+      {{- if $repoURL }}
+    repoUrl: {{ $repoURL }}
+      {{- end }}
+      {{- if $targetRevision }}
+    targetRevision: {{ $targetRevision }}
+      {{- end }}
+      {{- if $commonTrackingID }}
+    trackingID: {{ $commonTrackingID }}
+      {{- end }}
+  cluster: 
+    name: {{ $commonClusterName }}
+    host: {{ $commonClusterHost }}
+    port: {{ $commonClusterPort }}
+    xcluster: {{ $commonXcluster }}
+  compositeDeletePolicy: Foreground
+  providerConfigRef:
+    name: {{ $commonProviderConfigRefName }}
+  values:
+    {{ $values | toYaml | nindent 10 }}
+  version: v1alpha1
+
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $xAddonReady := "False" }}
+
+{{- range (default (list) .observed.composite.resource.status.conditions ) }}
+  {{- if eq .type "Ready" }}
+    {{- $xAddonReady = (.status) }}
+  {{- end }}
+{{- end }}
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonSetStatus
+  name: {{ $baseName }}-status
+spec:
+  forProvider:
+    manifest:
+      apiVersion: in-cloud.io/v1alpha1
+      kind: XAddonSet
+      metadata:
+        annotations:
+{{- if eq $xAddonReady "True" }}
+          status.in-cloud.io/ready: {{ $xAddonReady | quote }}
+{{- end }}
+        name: {{ $baseName }}
+      spec:
+        addonStatus:
+{{- range $key, $value := $addons }}
+  {{- with $value }}
+          {{ $key }}:
+    {{- $status     := dig "resource" "status" (dict) (get $.observed.resources $key | default (dict)) }}
+    {{- $conditions := dig "conditions" (list) ($status) }}
+    {{- $health     := dig "health" "Unknown" ($status) }}
+    {{- $deployed   := dig "deployed" false ($status) }}
+    {{- $ready      := "False" }}
+    {{- range $conditions}}
+      {{- if eq .type "Ready" }}
+        {{- $ready = .status | quote }}
+      {{- end }}
+    {{- end }}
+            health: {{ $health }}
+            deployed: {{ $deployed }}
+            ready: {{ $ready }}
+            conditions:
+              {{- $conditions | toYaml | nindent 14 }}
+  {{- end }}
+{{- end }}
+  managementPolicies:
+    - 'Update'
+    - 'Observe'
+  providerConfigRef:
+    name: default
+  readiness:
+    policy: SuccessfulCreate
+  watch: true
+  ` }}
+{{- end -}}

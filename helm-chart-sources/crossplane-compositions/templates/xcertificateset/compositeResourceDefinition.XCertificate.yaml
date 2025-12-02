@@ -1,0 +1,39 @@
+{{- if not .Values.composition.developmentMode }}
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xcertificatesets.in-cloud.io
+spec:
+  group: in-cloud.io
+  names:
+    kind: XCertificateSet
+    plural: xcertificatesets
+    singular: xcertificateset
+    shortNames:
+      - xcertset
+  claimNames:
+    kind: CertificateSetClaim
+    plural: certificatesetclaims
+    singular: certificatesetclaim
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      served: true
+      schema:
+        openAPIV3Schema:
+          description: XCertificateSet is the Schema for the xcertificatesets API.
+          type: object
+          required:
+            - spec
+          properties:
+            metadata:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+{{- end }}

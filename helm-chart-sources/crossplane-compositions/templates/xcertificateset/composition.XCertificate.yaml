@@ -1,0 +1,67 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+{{- if not .Values.composition.developmentMode }}
+kind: Composition
+metadata:
+  name: certificatesetclaims.in-cloud.io
+spec:
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCertificateSet
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-certificatesetclaims.in-cloud.io" .Release.Name }}
+spec:
+  revision: {{ .Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCertificateSet
+{{- end }}
+  mode: Pipeline
+  pipeline:
+    - step: environment-configs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+          - type: Reference
+            ref:
+              name: xcertificateset-environment
+
+    - step: set-environment-xcertificateset
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        environment:
+          patches:
+            {{- include "xcertificateset.environment.patches" . | nindent 12 }}
+
+    - step: xcertificates
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificateset.xcertificate" . | nindent 12 }}
+
+{{- if .Values.composition.xcertificateset.debug }}
+    - step: debug-xcertificates
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{- include "xcertificateset.currentContext" . | nindent 12 }}
+{{- end }}

@@ -1,0 +1,48 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xclustercomponents.in-cloud.io
+spec:
+  group: in-cloud.io
+  names:
+    kind: XClusterComponent
+    plural: xclustercomponents
+    singular: xclustercomponent
+  claimNames:
+    kind: XClusterComponentsClaim
+    plural: xclustercomponentclaims
+    singular: xclustercomponentclaim
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      served: true
+      schema:
+        openAPIV3Schema:
+          description: XClusterComponents is the Schema for the xclustercomponents API.
+          type: object
+          required:
+            - spec
+          properties:
+            metadata:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+              properties:
+                addonStatus:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                  additionalProperties:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    properties:
+                      conditions:
+                        type: array
+                        items:
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true

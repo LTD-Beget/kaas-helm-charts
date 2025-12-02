@@ -10,6 +10,10 @@ spec:
   duration: {{ default "8760h" .Values.tls.certificate.duration }}
   renewBefore: {{ default "720h" .Values.tls.certificate.renewBefore }}
   commonName: {{ default "dex" .Values.tls.certificate.commonName }}
+  {{- with .Values.tls.certificate.ipAddresses }}
+  ipAddresses:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   dnsNames:
     {{- range $d := .Values.tls.certificate.dnsNames }}
     - {{ $d | quote }}

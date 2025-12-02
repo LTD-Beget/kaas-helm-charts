@@ -1,0 +1,155 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+{{- if not .Values.composition.developmentMode }}
+kind: Composition
+metadata:
+  name: copyclaims.in-cloud.io
+spec:
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCopy
+{{- else }}
+kind: CompositionRevision
+metadata:
+  name: {{ printf "%s-copyclaims.in-cloud.io" .Release.Name }}
+spec:
+  revision: {{ .Values.composition.compositionRevisionNumber }}
+  compositeTypeRef:
+    apiVersion: in-cloud.io/v1alpha1
+    kind: XCopy
+{{- end }}
+  mode: Pipeline
+  pipeline:
+    - step: environment-configs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+          - type: Reference
+            ref:
+              name: xcopy-environment
+
+    - step: source
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+          - name: "source"
+            base:
+              apiVersion: kubernetes.crossplane.io/v1alpha2
+              kind: Object
+              metadata:
+                name: "mock-source"
+              spec:
+                managementPolicies:
+                - Observe
+            patches:
+              - toFieldPath: metadata.name
+                fromFieldPath: metadata.name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-source"
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.metadata.name
+                fromFieldPath: spec.source.name
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.metadata.namespace
+                fromFieldPath: spec.source.namespace
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.apiVersion
+                fromFieldPath: spec.common.apiVersion
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.kind
+                fromFieldPath: spec.common.kind
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.providerConfigRef.name
+                fromFieldPath: spec.source.providerConfigRef.name
+                type: FromCompositeFieldPath
+              - toFieldPath: source.spec
+                fromFieldPath: status.atProvider.manifest.spec
+                type: ToEnvironmentFieldPath
+              - toFieldPath: source.data
+                fromFieldPath: status.atProvider.manifest.data
+                type: ToEnvironmentFieldPath
+              - toFieldPath: source.metadata.annotations
+                fromFieldPath: status.atProvider.manifest.metadata.annotations
+                type: ToEnvironmentFieldPath
+              - toFieldPath: source.metadata.labels
+                fromFieldPath: status.atProvider.manifest.metadata.labels
+                type: ToEnvironmentFieldPath
+
+    - step: destination
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+          - name: "destination"
+            base:
+              apiVersion: kubernetes.crossplane.io/v1alpha2
+              kind: Object
+              metadata:
+                name: "mock-destination"
+              spec:
+                managementPolicies:
+                - Create
+                - Observe
+                - Update
+            patches:
+              - toFieldPath: metadata.name
+                fromFieldPath: metadata.name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-destination"
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.metadata.name
+                fromFieldPath: spec.destination.name
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Required
+              - toFieldPath: spec.forProvider.manifest.metadata.namespace
+                fromFieldPath: spec.destination.namespace
+                type: FromCompositeFieldPath
+              - toFieldPath: spec.forProvider.manifest.apiVersion
+                fromFieldPath: spec.common.apiVersion
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Required
+              - toFieldPath: spec.forProvider.manifest.kind
+                fromFieldPath: spec.common.kind
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Required
+              - toFieldPath: spec.providerConfigRef.name
+                fromFieldPath: spec.destination.providerConfigRef.name
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Required
+              - toFieldPath: spec.deletionPolicy
+                fromFieldPath: spec.destination.deletionPolicy
+                type: FromCompositeFieldPath
+                policy:
+                  fromFieldPath: Optional
+
+              - toFieldPath: spec.forProvider.manifest.spec
+                fromFieldPath: source.spec
+                type: FromEnvironmentFieldPath
+              - toFieldPath: spec.forProvider.manifest.data
+                fromFieldPath: source.data
+                type: FromEnvironmentFieldPath
+              - toFieldPath: spec.forProvider.manifest.metadata.annotations
+                fromFieldPath: source.metadata.annotations
+                type: FromEnvironmentFieldPath
+              - toFieldPath: spec.forProvider.manifest.metadata.labels
+                fromFieldPath: source.metadata.labels
+                type: FromEnvironmentFieldPath

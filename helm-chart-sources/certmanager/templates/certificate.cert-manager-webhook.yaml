@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.secureService.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-webhook-svc-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: cert-manager-webhook-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ .Release.Name }}-webhook
+  dnsNames:
+    - {{ .Release.Name }}-webhook
+    - {{ .Release.Name }}-webhook.{{ .Release.Namespace }}
+    - {{ .Release.Name }}-webhook.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}

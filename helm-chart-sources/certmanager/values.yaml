@@ -6,3 +6,41 @@ monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
+
+issuers: {}
+  # selfsignedIssuer:
+  #   kind: Issuer
+  #   name: selfsigned-issuer
+  #   spec:
+  #     selfSigned: {}
+
+  # selfsignedClusterIssuer:
+  #   kind: ClusterIssuer
+  #   name: selfsigned-cluster-issuer
+  #   spec:
+  #     ca:
+  #       secretName: selfsigned-cluster-ca.crt
+
+certificates: {}
+  # mainCA:
+  #   name: selfsigned-cluster-ca
+  #   spec:
+  #     issuerRef:
+  #       group: cert-manager.io
+  #       kind: Issuer
+  #       name: selfsigned-issuer
+  #     privateKey:
+  #       algorithm: RSA
+  #       encoding: PKCS1
+  #       size: 4096
+  #     duration: 175200h
+  #     renewBefore: 720h
+  #     isCA: true
+  #     commonName: root-ca
+  #     secretName: selfsigned-cluster-ca.crt

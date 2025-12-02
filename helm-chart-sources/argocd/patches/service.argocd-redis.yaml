@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-redis-metrics
+  labels:
+    monitoring.in-cloud.io/service: argocd-redis
+spec:
+  ports:
+    - name: https-metrics
+      port: 11041
+      protocol: TCP
+      targetPort: https-metrics

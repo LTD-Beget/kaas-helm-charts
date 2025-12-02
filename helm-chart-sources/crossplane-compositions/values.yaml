@@ -1,0 +1,21 @@
+composition:
+  developmentMode: false
+  compositionRevisionNumber: 0
+  xaddonset:
+    debug: false
+  xcertificate:
+    debug: false
+  xcertificateset:
+    debug: false
+
+composite:
+  addons:
+    cilium:
+      application:
+        metadata:
+          labels:
+            some-label: "true"
+
+xclusterComponents:
+  client:
+    enabled: false

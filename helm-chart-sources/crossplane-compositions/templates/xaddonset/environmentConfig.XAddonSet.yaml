@@ -1,0 +1,28 @@
+{{- if not .Values.composition.developmentMode }}
+---
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: EnvironmentConfig
+metadata:
+  name: xaddonset-environment
+data:
+  current:
+    providerConfigRef:
+      name: default
+  addonSet:
+    providerConfigRef:
+      name: default
+  common:
+    argocd:
+      destination:
+        name: apmistcs-my-third-infra
+      namespace: beget-argocd
+      project: apmistcs-my-third
+    cluster:
+      name: apmistcs-my-third-infra
+      host: 62.217.176.226
+      port: 6443
+    providerConfigRef:
+      name: default
+    tracking-id: apmistcs_apmistcs-my-third:argoproj.io/Application:apmistcs/apmistcs-my-third
+    xcluster: apmistcs-my-third
+{{- end }}

@@ -3,15 +3,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: cert-manager
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: cert-manager
+      monitoring.in-cloud.io/service: cert-manager
   endpoints:
-    - port: tcp-prometheus-servicemonitor
+    - port: https-metrics
       path: /metrics
-  jobLabel: "app.kubernetes.io/name"
-
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: cert-manager
+  jobLabel: cert-manager
 {{- end }}

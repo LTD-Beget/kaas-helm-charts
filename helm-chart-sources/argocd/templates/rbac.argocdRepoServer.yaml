@@ -1,0 +1,15 @@
+{{- if and .Values.monitoring.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Name }}-repo-server-kube-rbac-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-rbac-proxy-tokenreview
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-repo-server
+    namespace: {{ .Release.Namespace }}
+{{- end }}

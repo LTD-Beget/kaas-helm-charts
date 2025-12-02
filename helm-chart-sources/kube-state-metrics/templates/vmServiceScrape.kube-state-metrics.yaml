@@ -3,18 +3,19 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: kube-state-metrics
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      monitoring.in-cloud.io/service: kube-state-metrics
   endpoints:
-    - port: http
+    - port: https-metrics
       path: /metrics
+      scheme: HTTPS
       honorLabels: true
-      metricRelabelConfigs:
-        - action: labeldrop
-          regex: (uid|container_id|image_id)
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}
   jobLabel: kube-state-metrics
 {{- end }}

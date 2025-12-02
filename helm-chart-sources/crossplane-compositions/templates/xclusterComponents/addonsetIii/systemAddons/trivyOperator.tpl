@@ -1,0 +1,53 @@
+{{- define "xclusterComponents.addonsetIii.trivyOperator" -}}
+  {{- printf `
+trivyOperator:
+  apiVersion: in-cloud.io/v1alpha1
+  kind: XAddonsTrivyOperator
+  namespace: beget-trivy-operator
+  version: v1alpha1
+  pluginName: kustomize-helm-with-values
+  dependsOn:
+    - vmOperator
+  values:
+    trivy-operator:
+      trivyOperator:
+        scanJobNodeSelector:
+          node-role.kubernetes.io/control-plane: ""
+        scanJobTolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            value: "monitoring"
+            effect: "NoSchedule" 
+      nodeCollector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            value: "monitoring"
+            effect: "NoSchedule"            
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+    {{ if $infraVMOperatorReady }}
+      enabled: true
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+  ` }}
+{{- end -}}

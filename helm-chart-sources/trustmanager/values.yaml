@@ -3,6 +3,12 @@ trust-manager: {}
 monitoring:
   enabled: false
   type: VictoriaMetrics
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
 
 bundle:
   enabled: false
@@ -10,13 +16,8 @@ bundle:
   # опционально
   labels: {}
   annotations: {}
-  sourceSecret:
-    name: "default-crt"
-    key: "tls.crt"
-  extraSecretSources: []
-  # - name: "another-ca-secret"
-  #   namespace: "trust"
-  #   key: "tls.crt"
+
+  sources: []
 
   target:
     configMapKey: "ca.crt"

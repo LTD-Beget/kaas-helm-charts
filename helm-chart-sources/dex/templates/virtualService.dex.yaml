@@ -29,6 +29,12 @@ spec:
             prefix: /static/
         - uri:
             prefix: /theme/
+        - uri:
+            prefix: /token
+        - uri:
+            prefix: /keys
+        - uri:
+            prefix: /userinfo
       route:
         - destination:
             host: {{ .Values.istio.virtualService.http.route.host }}

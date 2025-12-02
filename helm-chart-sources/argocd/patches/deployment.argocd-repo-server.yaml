@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      containers:
+        - name: rbac-proxy
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+          args:
+            - --secure-listen-address=0.0.0.0:11044
+            - --upstream=http://127.0.0.1:8084
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11044
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - mountPath: /app/config/metrics/tls
+              name: argocd-repo-server-metrics
+              readOnly: true
+      volumes:
+      - name: argocd-repo-server-metrics
+        secret:
+          defaultMode: 420
+          secretName: argocd-repo-server-metrics

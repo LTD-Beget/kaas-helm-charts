@@ -1,0 +1,31 @@
+{{- if .Values.tls.vmInsert.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ default "vminsert-tls" .Values.tls.vmInsert.certificate.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ default "vminsert-tls" .Values.tls.vmInsert.certificate.secretName }}
+  duration: {{ default "8760h" .Values.tls.vmInsert.certificate.duration }}
+  renewBefore: {{ default "720h" .Values.tls.vmInsert.certificate.renewBefore }}
+  commonName: {{ default "vminsert" .Values.tls.vmInsert.certificate.commonName }}
+  dnsNames:
+    {{- range $d := .Values.tls.vmInsert.certificate.dnsNames }}
+    - {{ $d | quote }}
+    {{- end }}
+  ipAddresses:
+    {{- range $d := .Values.tls.vmInsert.certificate.ipAddresses }}
+    - {{ $d | quote }}
+    {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.tls.vmInsert.issuer.kind }}
+    name: {{ .Values.tls.vmInsert.issuer.name }}
+{{- end }}

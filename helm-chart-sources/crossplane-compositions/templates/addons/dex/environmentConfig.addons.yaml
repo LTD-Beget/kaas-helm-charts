@@ -1,0 +1,1 @@
+{{- include "addons.common.environmentConfig" (merge (dict "root" .) (include "addons.dex" . | fromYaml)) }}
