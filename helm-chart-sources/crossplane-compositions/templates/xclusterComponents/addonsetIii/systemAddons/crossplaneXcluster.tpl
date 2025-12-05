@@ -5,7 +5,6 @@ crossplaneXcluster:
   kind: XAddonsCrossplaneXcluster
   namespace: beget-crossplane
   version: v1alpha1
-  targetRevision: check/versions
   values:
     composition:
       cluster:

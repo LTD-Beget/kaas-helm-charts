@@ -6,7 +6,6 @@ incloudUi:
   namespace: beget-incloud-ui
   version: v1alpha1
   pluginName: kustomize-helm-with-values
-  targetRevision: feat/xclusterComponents
   {{- if $systemEnabled }}
   dependsOn:
   - dex

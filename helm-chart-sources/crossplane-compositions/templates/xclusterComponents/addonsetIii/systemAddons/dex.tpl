@@ -6,7 +6,6 @@ dex:
   namespace: beget-dex
   version: v1alpha1
   pluginName: kustomize-helm-with-values
-  targetRevision: feat/vmcluster
   dependsOn:
   - certManager
   values:
