@@ -3,7 +3,8 @@ name: MetricsServer
 debug: false
 path: helm-chart-sources/metrics-server
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "metricsserver" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   metrics-server:
     metrics:

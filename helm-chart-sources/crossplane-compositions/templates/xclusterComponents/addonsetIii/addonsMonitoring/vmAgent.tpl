@@ -5,7 +5,6 @@ vmAgent:
   kind: XAddonsVictoriaMetricsAgent
   namespace: beget-vmagent
   version: v1alpha1
-  targetRevision: feat/vmcluster
   releaseName: vmagent
   dependsOn:
     - vmOperator

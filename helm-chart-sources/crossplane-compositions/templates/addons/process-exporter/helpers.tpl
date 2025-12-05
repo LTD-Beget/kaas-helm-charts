@@ -3,7 +3,8 @@ name: ProcessExporter
 debug: false
 path: helm-chart-sources/process-exporter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "processexporter" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: kustomize-helm-with-values
 default: |
   prometheus-process-exporter:

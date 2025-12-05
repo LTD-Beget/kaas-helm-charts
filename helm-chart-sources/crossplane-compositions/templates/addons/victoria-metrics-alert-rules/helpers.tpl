@@ -3,7 +3,8 @@ name: VictoriaMetricsAlertRules
 debug: false
 path: helm-chart-sources/victoria-metrics-k8s-stack
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "victoriametricsalertrules" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   {{- include "addons.victoriametricsalertrules.default.values" . | nindent 2 }}
 immutable: |

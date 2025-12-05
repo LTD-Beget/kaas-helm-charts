@@ -3,5 +3,6 @@ name: CrossplaneXcluster
 debug: false
 path: .
 repoURL: https://gitlab.beget.ru/cloud/k8s/charts/crossplane-xcluster.git
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "crossplanexcluster" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 {{- end }}

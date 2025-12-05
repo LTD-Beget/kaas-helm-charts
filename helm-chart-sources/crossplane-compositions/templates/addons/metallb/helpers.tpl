@@ -3,7 +3,8 @@ name: Metallb
 debug: false
 path: helm-chart-sources/metallb
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "metallb" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   metallb:
     controller:

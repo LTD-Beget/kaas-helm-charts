@@ -5,6 +5,21 @@ crossplaneXcluster:
   kind: XAddonsCrossplaneXcluster
   namespace: beget-crossplane
   version: v1alpha1
-  targetRevision: check/versions
+  values:
+    composition:
+      cluster:
+        spec:
+          clusterNetwork:
+            apiServerPort: 6443
+          topology:
+            class: capi-cluster-class-cluster-template
+            classNamespace: bcloud-capi
+            controlPlane:
+              replicas: 3
+            version: v1.30.4
+      coreProject:
+        metadata:
+          namespace: beget-argocd
+      istioGwVip: {{ $systemIstioGwVip }}
   ` }}
 {{- end -}}

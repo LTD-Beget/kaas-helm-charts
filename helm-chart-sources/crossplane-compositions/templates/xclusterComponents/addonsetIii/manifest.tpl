@@ -13,12 +13,42 @@
   {{- end }}
 {{- end }}
 
+{{ if eq $systemEnabled "True" }}
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: istioGwSvc
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: 'istio-gw-svc-observe'
+spec:
+  deletionPolicy: Orphan
+  managementPolicies:
+  - 'Observe'
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: 'istio-gw'
+        namespace: 'beget-istio-gw'
+  watch: true
+{{- end }}
+
 ### extra variables
 {{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
 {{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
+
+{{- range (index 0 (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict)))).ip }}
+  {{- if eq .ipMode "VIP" }}
+    {{- $systemIstioGwVip        =  .ip }}
+    {{- break }}
+  {{- end }}
+{{- end }}
 
 {{- $xRCreationTimestamp         := $.observed.composite.resource.metadata.creationTimestamp }}
 

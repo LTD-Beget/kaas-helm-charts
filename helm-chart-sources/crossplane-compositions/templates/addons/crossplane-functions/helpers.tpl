@@ -3,7 +3,8 @@ name: CrossplaneFunctions
 debug: false
 path: helm-chart-sources/crossplane-functions
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/crossplane
+{{- $addonValue := dig "composite" "addons" "crossplanefunctions" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   components:
     kubernetes:
