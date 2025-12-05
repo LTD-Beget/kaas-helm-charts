@@ -4,5 +4,6 @@ debug: false
 path: .
 path: helm-chart-sources/helm-inserter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "helminserter" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 {{- end }}

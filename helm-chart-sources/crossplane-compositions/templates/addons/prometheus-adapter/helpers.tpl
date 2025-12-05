@@ -3,7 +3,8 @@ name: PrometheusAdapter
 debug: false
 chart: prometheus-adapter
 repoURL: https://prometheus-community.github.io/helm-charts
-targetRevision: 4.14.1
+{{- $addonValue := dig "composite" "addons" "prometheusadapter" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   prometheus:
     url: http://prometheus-server.beget-prometheus.svc

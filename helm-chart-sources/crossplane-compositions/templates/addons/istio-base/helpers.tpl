@@ -3,7 +3,8 @@ name: IstioBase
 debug: false
 chart: base
 repoURL: https://istio-release.storage.googleapis.com/charts
-targetRevision: 1.26.0
+{{- $addonValue := dig "composite" "addons" "istiobase" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   global:
     istioNamespace: beget-istio

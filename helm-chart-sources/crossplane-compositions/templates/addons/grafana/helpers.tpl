@@ -3,7 +3,8 @@ name: Grafana
 debug: false
 path: helm-chart-sources/grafana
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "grafana" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   grafana:
     name: grafana

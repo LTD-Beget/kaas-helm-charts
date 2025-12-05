@@ -3,7 +3,8 @@ name: Coredns
 debug: false
 path: helm-chart-sources/coredns
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "coredns" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: kustomize-helm-with-values
 default: |
   coredns:

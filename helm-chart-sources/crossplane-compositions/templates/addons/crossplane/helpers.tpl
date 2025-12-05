@@ -3,7 +3,8 @@ name: Crossplane
 debug: false
 chart: crossplane
 repoURL: https://charts.crossplane.io/stable
-targetRevision: 1.20.1
+{{- $addonValue := dig "composite" "addons" "crossplane" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   args:
     - '--enable-realtime-compositions'

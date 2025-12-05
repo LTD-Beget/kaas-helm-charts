@@ -10,11 +10,14 @@ composition:
 
 composite:
   addons:
-    cilium:
-      application:
-        metadata:
-          labels:
-            some-label: "true"
+    common:
+      targetRevision: HEAD
+    crossplane:
+      targetRevision: 1.20.1
+    istiobase:
+      targetRevision: 1.26.0
+    prometheusadapter:
+      targetRevision: 4.14.1
 
 xclusterComponents:
   client:

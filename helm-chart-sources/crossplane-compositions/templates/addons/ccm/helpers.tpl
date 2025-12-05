@@ -3,7 +3,8 @@ name: Ccm
 debug: false
 path: .
 repoURL: https://gitlab.beget.ru/cloud/k8s/charts/beget-cloud-controller-manager-chart.git
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "ccm" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   appSpec:
     applications:

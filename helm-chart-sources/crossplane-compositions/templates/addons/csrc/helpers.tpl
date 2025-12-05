@@ -3,7 +3,8 @@ name: Csrc
 debug: false
 path: .
 repoURL: "https://gitlab.beget.ru/cloud/k8s/charts/beget-certificate-signing-request-controller-chart"
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "csrc" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   appSpec:
     applications:

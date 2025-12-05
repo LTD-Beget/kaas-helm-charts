@@ -3,7 +3,8 @@ name: VictoriaMetricsCluster
 debug: false
 path: helm-chart-sources/victoria-metrics-k8s-stack
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/vmcluster
+{{- $addonValue := dig "composite" "addons" "victoriametricscluster" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 immutable: |
   victoria-metrics-k8s-stack:
     alertmanager:

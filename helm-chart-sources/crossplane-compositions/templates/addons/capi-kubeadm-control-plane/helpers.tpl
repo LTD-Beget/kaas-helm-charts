@@ -3,5 +3,6 @@ name: CapiKubeadmControlPlane
 debug: false
 path: helm-chart-sources/capi-kubeadm-control-plane
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: HEAD
+{{- $addonValue := dig "composite" "addons" "capikubeadmcontrolplane" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 {{- end }}

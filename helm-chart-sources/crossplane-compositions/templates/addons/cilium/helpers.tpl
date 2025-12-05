@@ -3,7 +3,8 @@ name: Cilium
 debug: false
 path: helm-chart-sources/cilium
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "cilium" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: kustomize-helm-with-values
 default: |
   cilium:

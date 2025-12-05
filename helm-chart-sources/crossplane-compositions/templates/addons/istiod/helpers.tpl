@@ -3,7 +3,8 @@ name: Istiod
 debug: false
 path: helm-chart-sources/istiod
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-targetRevision: feat/xclusterComponents
+{{- $addonValue := dig "composite" "addons" "istiod" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
+targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: kustomize-helm-with-values
 default: |
   istiod:
