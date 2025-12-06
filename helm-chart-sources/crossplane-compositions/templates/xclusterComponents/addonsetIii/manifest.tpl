@@ -42,6 +42,7 @@ spec:
 {{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
+{{- $corednsReady                := dig "coredns"  "deployed" false ($xAddonSetObserve) }}
 
 {{- range (index 0 (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict)))).ip }}
   {{- if eq .ipMode "VIP" }}

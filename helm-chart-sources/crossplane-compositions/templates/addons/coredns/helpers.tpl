@@ -27,6 +27,8 @@ default: |
       runAsNonRoot: false
       readOnlyRootFilesystem: true
       runAsUser: 0
+    service:
+      clusterIP: 29.64.0.10
     serviceAccount:
       create: true
       name: coredns
@@ -46,10 +48,6 @@ default: |
               - coredns
           topologyKey: kubernetes.io/hostname
         weight: 100
-immutable: |
-  coredns:
-    service:
-      clusterIP: 29.64.0.10
     servers:
       - zones:
           - zone: cluster.local.
@@ -79,7 +77,6 @@ immutable: |
           - name: log
             configBlock: |-
               class all
-
           - name: health
             configBlock: |-
               lameduck 5s
