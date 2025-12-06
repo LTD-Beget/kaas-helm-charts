@@ -35,7 +35,7 @@ coredns:
                   app.kubernetes.io/name: coredns
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
-  {{ if $systemEnabled }}
+  {{- if $systemEnabled }}
       servers:
         - zones:
             - zone: cluster.local.
