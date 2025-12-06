@@ -15,6 +15,34 @@ argocd:
   {{ end }}
   values:
     argo-cd:
+  {{- if and $systemEnabled $argocdReady }}
+      controller:
+        resources:
+          limits:
+            cpu: '16'
+            ephemeral-storage: 10Gi
+          requests:
+            cpu: 5
+            ephemeral-storage: 500Mi
+            memory: 6Gi
+      global:
+        tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/argocd
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/master
+            operator: Exists
+      redis:
+        resources:
+          limits:
+            cpu: 1
+            ephemeral-storage: 100Mi
+            memory: 1Gi
+  {{- end }}
       crds:
         install: true
       configs:
@@ -187,6 +215,11 @@ argocd:
             volumeMounts:
               - mountPath: /custom-tools
                 name: custom-tools
+        resources:
+          limits:
+            cpu: 1
+            ephemeral-storage: 100Mi
+            memory: 1Gi
       extraObjects:
         - apiVersion: v1
           kind: Secret
