@@ -44,7 +44,7 @@ spec:
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 {{- $corednsReady                := dig "coredns"  "deployed" false ($xAddonSetObserve) }}
 
-{{- range (index 0 (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict)))).ip }}
+{{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}
     {{- $systemIstioGwVip        =  .ip }}
     {{- break }}
