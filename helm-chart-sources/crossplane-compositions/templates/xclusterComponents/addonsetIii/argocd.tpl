@@ -40,7 +40,6 @@ argocd:
         resources:
           limits:
             cpu: 1
-            ephemeral-storage: 100Mi
             memory: 1Gi
   {{- end }}
       crds:
