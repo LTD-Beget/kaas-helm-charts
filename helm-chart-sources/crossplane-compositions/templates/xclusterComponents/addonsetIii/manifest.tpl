@@ -13,7 +13,7 @@
   {{- end }}
 {{- end }}
 
-{{ if eq $systemEnabled "True" }}
+{{- if $systemEnabled }}
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha2
 kind: Object
