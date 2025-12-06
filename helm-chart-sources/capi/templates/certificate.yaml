@@ -11,8 +11,12 @@ spec:
     - {{ include "bcloud-capi.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
     - {{ include "bcloud-capi.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
   issuerRef:
+  {{- if .Values.certificates.useExternalIssuer }}
+    {{ .Values.certificates.externalIssuer | toYaml | nindent 4 }}
+  {{- else }}
     kind: ClusterIssuer
-    name: capi-bcloud-capi-selfsigned-issuer
+    name: {{ include "bcloud-capi.fullname" . }}-selfsigned-issuer
+  {{- end }}
   secretName: {{ include "bcloud-capi.fullname" . }}-webhook-service-cert
   subject:
     organizations:

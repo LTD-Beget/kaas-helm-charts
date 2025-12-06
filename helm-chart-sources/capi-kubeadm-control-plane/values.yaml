@@ -91,3 +91,13 @@ tolerations:
     key: node-role.kubernetes.io/b-cloud-infra
 
 affinity: {}
+
+certificates:
+  useExternalIssuer: false
+  externalIssuer:
+    kind: ClusterIssuer
+    name: ""
+
+monitoring:
+  vmServiceScrape:
+    enabled: true
