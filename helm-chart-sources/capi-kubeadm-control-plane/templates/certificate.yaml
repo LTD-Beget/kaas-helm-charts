@@ -11,8 +11,12 @@ spec:
     - {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
     - {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
   issuerRef:
+  {{- if .Values.certificates.useExternalIssuer }}
+    {{ .Values.certificates.externalIssuer | toYaml | nindent 4 }}
+  {{- else }}
     kind: Issuer
     name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-selfsigned-issuer
+  {{- end }}
   secretName: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service-cert
   subject:
     organizations:

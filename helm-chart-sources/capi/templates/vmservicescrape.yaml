@@ -1,0 +1,25 @@
+{{- if not .Values.monitoring.vmServiceScrape.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ include "bcloud-capi.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "bcloud-capi.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - path: /metrics
+    port: metrics
+    scheme: HTTPS
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tlsConfig:
+      serverName: localhost
+  {{- if not .Values.certificates.useExternalIssuer }}
+      insecureSkipVerify: true
+  {{- end }}
+  jobLabel: {{ include "bcloud-capi.fullname" . }}
+  selector:
+    matchLabels:
+    {{- include "bcloud-capi.selectorLabels" . | nindent 4 }}
+{{- end }}
