@@ -26,6 +26,8 @@ argocd:
             ephemeral-storage: 500Mi
             memory: 6Gi
       global:
+        nodeSelector:
+          node-role.kubernetes.io/argocd: ''
         tolerations:
           - effect: NoSchedule
             key: node-role.kubernetes.io/argocd
