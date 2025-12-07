@@ -9,5 +9,15 @@ capiKubeadmControlPlane:
   - certManager
   values:
     fullnameOverride: "capi-kcp"
+    certificates:
+      useExternalIssuer: true
+      externalIssuer:
+        name: selfsigned-cluster-issuer
+
+    {{ if $infraVMOperatorReady }}
+    monitoring:
+      vmServiceScrape:
+        enabled: true
+    {{ end }}
   ` }}
 {{- end -}}
