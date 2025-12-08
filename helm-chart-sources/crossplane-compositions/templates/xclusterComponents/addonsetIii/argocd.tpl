@@ -218,8 +218,8 @@ argocd:
                 name: custom-tools
         resources:
           limits:
-            cpu: 1
-            memory: 1Gi
+            cpu: 8
+            memory: 8Gi
       extraObjects:
         - apiVersion: v1
           kind: Secret
