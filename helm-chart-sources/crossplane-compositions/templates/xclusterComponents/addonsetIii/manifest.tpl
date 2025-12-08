@@ -44,6 +44,7 @@ spec:
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
 {{- $corednsReady                := dig "coredns"  "deployed" false ($xAddonSetObserve) }}
 {{- $argocdReady                 := dig "argocd"  "deployed" false ($xAddonSetObserve) }}
+{{- $crossplaneReady             := dig "crossplane"  "deployed" false ($xAddonSetObserve) }}
 
 {{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}

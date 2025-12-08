@@ -109,6 +109,9 @@ default: |
           name: crossplane
           namespace: beget-crossplane
   hostNetwork: false
+  metrics:
+    enabled: true
+    port: 8080
   rbacManager:
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
