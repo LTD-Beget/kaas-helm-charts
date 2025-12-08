@@ -9,7 +9,7 @@ crossplane:
   dependsOn:
     - istioGW
   values:
-  {{- if $systemEnabled $crossplaneReady }}
+  {{- if and $systemEnabled $crossplaneReady }}
     args:
       - '--enable-realtime-compositions'
       - '--enable-composition-webhook-schema-validation'
