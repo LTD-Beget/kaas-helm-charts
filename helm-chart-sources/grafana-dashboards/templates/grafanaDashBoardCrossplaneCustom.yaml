@@ -100,7 +100,7 @@ spec:
               "expr": "sum by (controller) (increase(controller_runtime_reconcile_total{cluster_full_name=~\"$cluster_full_name\", controller=~\"(claim|composite)/.*\"}[$__range]))",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "refId": "A"
             }
           ],
@@ -178,7 +178,7 @@ spec:
               "expr": "sum by (controller) (increase(controller_runtime_reconcile_time_seconds_sum{cluster_full_name=~\"$cluster_full_name\", controller=~\"(claim|composite)/.*\"}[$__range])) / sum by (controller) (increase(controller_runtime_reconcile_time_seconds_count{cluster_full_name=~\"$cluster_full_name\", controller=~\"(claim|composite)/.*\"}[$__range]))",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "refId": "A"
             }
           ],
@@ -279,7 +279,7 @@ spec:
               "editorMode": "code",
               "expr": "go_goroutines{cluster_full_name=~\"$cluster_full_name\", namespace=~\"beget-crossplane\", pod=~\"crossplane.*|provider-.*|function-.*\"}",
               "interval": "",
-              "legendFormat": "{{namespace}}/{{pod}}",
+              "legendFormat": "{{`{{namespace}}`}}/{{`{{pod}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -352,7 +352,7 @@ spec:
               "editorMode": "code",
               "expr": "sum by (controller) (increase(controller_runtime_reconcile_errors_total{cluster_full_name=~\"$cluster_full_name\", controller=~\"claim/.*\"}[$__range]))",
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": false,
               "refId": "A"
             }
@@ -431,7 +431,7 @@ spec:
               "editorMode": "code",
               "expr": "sum by (controller) (increase(controller_runtime_reconcile_errors_total{cluster_full_name=~\"$cluster_full_name\", controller=~\"composite/.*\"}[$__range]))",
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": false,
               "refId": "A"
             }
@@ -533,7 +533,7 @@ spec:
               "editorMode": "code",
               "expr": "histogram_quantile(0.95, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", controller=~\"claim/.*\"}[15m])))",
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -629,7 +629,7 @@ spec:
               "editorMode": "code",
               "expr": "histogram_quantile(0.95, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", controller=~\"composite/.*\"}[15m])))",
               "interval": "",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -701,7 +701,7 @@ spec:
             {
               "expr": "topk(5, histogram_quantile(0.95, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", controller=~\"claim/.*\"}[15m]))))",
               "instant": true,
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "refId": "A"
             }
           ],
@@ -778,7 +778,7 @@ spec:
             {
               "expr": "topk(5, histogram_quantile(0.95, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", controller=~\"composite/.*\"}[15m]))))",
               "instant": true,
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "refId": "A"
             }
           ],
