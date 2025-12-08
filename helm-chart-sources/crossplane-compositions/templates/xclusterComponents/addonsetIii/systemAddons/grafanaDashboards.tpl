@@ -15,6 +15,8 @@ grafanaDashboards:
         enabled: true
       cpu:
         enabled: true
+      crossplaneCustom:
+        enabled: true
       processLA:
         enabled: true
       processExporter:
