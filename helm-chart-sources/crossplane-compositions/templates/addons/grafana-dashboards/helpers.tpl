@@ -13,6 +13,8 @@ default: |
       enabled: false
     cpu:
       enabled: false
+    crossplaneCustom:
+      enabled: false
     processLA:
       enabled: false
     processExporter:
