@@ -169,7 +169,6 @@ crossplaneFunctions:
               template:
                 spec:
   {{- if and $systemEnabled $crossplaneReady }}
-                  replicas: 5
                   nodeSelector:
                       node-role.kubernetes.io/crossplane: ''
                   tolerations:
@@ -187,6 +186,7 @@ crossplaneFunctions:
                       resources:
                         requests: { cpu: "1", memory: "1Gi" }
                         limits:   { cpu: "6", memory: "4Gi" }
+              replicas: 5
   {{- else }}
                   tolerations:
                     - key: node-role.kubernetes.io/control-plane
