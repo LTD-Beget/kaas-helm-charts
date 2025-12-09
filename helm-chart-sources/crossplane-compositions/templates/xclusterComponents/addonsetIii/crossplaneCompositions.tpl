@@ -6,6 +6,7 @@ crossplaneCompositions:
   finalizerDisabled: false
   namespace: beget-crossplane
   version: v1alpha1
+  targetRevision: test/branch1
   values:
     xclusterComponents:
       client:
