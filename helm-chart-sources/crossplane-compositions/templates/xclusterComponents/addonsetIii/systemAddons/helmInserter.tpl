@@ -37,5 +37,13 @@ helmInserter:
           - '*'
           sourceNamespaces:
           - '*'
+      clusterIssuerEtcdCa:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: etcd-ca
+        spec:
+          ca:
+            secretName: {{ $clusterName }}-etcd
   ` }}
 {{- end -}}
