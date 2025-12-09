@@ -71,7 +71,6 @@ spec:
     {{- end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
-    {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
@@ -102,6 +101,7 @@ spec:
     {{- end }}
     {{- if $systemEnabled }}
   ` }}
+    {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.ccm" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.csrc" . | nindent 4 }}

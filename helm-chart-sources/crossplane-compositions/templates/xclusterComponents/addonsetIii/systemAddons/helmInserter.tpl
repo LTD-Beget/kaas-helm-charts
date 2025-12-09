@@ -8,15 +8,6 @@ helmInserter:
   version: v1alpha1
   values:
     resources:
-      clusterIssuerEtcdCa:
-        apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          name: etcd-ca
-        spec:
-          ca:
-            secretName: {{ $clusterName }}-etcd
-    {{- if $systemEnabled }}
       namespaceCustomer:
         apiVersion: v1
         kind: Namespace
@@ -46,6 +37,5 @@ helmInserter:
           - '*'
           sourceNamespaces:
           - '*'
-    {{- end }}
   ` }}
 {{- end -}}
