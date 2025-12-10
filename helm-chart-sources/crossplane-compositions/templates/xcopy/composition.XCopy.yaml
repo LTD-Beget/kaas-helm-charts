@@ -84,6 +84,9 @@ spec:
               - toFieldPath: source.metadata.labels
                 fromFieldPath: status.atProvider.manifest.metadata.labels
                 type: ToEnvironmentFieldPath
+              - toFieldPath: source.type
+                fromFieldPath: status.atProvider.manifest.type
+                type: ToEnvironmentFieldPath
 
     - step: destination
       functionRef:
@@ -152,4 +155,7 @@ spec:
                 type: FromEnvironmentFieldPath
               - toFieldPath: spec.forProvider.manifest.metadata.labels
                 fromFieldPath: source.metadata.labels
+                type: FromEnvironmentFieldPath
+              - toFieldPath: spec.forProvider.type
+                fromFieldPath: source.type
                 type: FromEnvironmentFieldPath
