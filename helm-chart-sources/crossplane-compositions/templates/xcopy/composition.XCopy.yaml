@@ -156,6 +156,6 @@ spec:
               - toFieldPath: spec.forProvider.manifest.metadata.labels
                 fromFieldPath: source.metadata.labels
                 type: FromEnvironmentFieldPath
-              - toFieldPath: spec.forProvider.type
+              - toFieldPath: spec.forProvider.manifest.type
                 fromFieldPath: source.type
                 type: FromEnvironmentFieldPath
