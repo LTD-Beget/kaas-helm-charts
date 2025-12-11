@@ -244,6 +244,11 @@ default: |
         server.staticassets: /shared/app
       secret:
         argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+      rbac:
+        create: true
+        policy.default: role:readonly
+        policy.csv: |
+          g, admin@beget.ru, role:admin
     dex:
       enabled: false
     notifications:
