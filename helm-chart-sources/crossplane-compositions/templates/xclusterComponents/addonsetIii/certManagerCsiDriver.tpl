@@ -5,7 +5,6 @@ certManagerCsiDriver:
   kind: XAddonsCertManagerCsiDriver
   namespace: beget-certmanager-csi-driver
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - certManager
   values:

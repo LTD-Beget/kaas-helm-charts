@@ -5,7 +5,6 @@ kubeStateMetrics:
   kind: XAddonsKubeStateMetrics
   namespace: beget-kube-state-metrics
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
   values:

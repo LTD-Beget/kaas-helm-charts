@@ -5,7 +5,6 @@ prometheus:
   kind: XAddonsPrometheus
   namespace: beget-prometheus
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
   - grafanaOperator
   values:

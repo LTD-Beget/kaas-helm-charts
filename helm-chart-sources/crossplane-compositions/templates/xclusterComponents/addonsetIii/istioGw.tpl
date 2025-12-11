@@ -5,7 +5,6 @@ istioGW:
   kind: XAddonsIstioGw
   namespace: beget-istio-gw
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - istioBase
   values:

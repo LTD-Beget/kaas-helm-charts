@@ -5,7 +5,6 @@ incloudUi:
   kind: XAddonsIncloudUi
   namespace: beget-incloud-ui
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
   - certManager
   {{- if $systemEnabled }}

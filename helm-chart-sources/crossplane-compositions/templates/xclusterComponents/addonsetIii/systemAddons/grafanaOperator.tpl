@@ -5,7 +5,6 @@ grafanaOperator:
   kind: XAddonsGrafanaOperator
   namespace: beget-grafana-operator
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
   values:

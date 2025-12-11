@@ -5,7 +5,6 @@ istiod:
   kind: XAddonsIstiod
   namespace: beget-istio
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   values:
     istiod:
       replicaCount: {{ $controlPlaneReplicas }}

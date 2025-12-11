@@ -5,7 +5,6 @@ dex:
   kind: XAddonsDex
   namespace: beget-dex
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
   - certManager
   values:
