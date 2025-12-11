@@ -1,0 +1,20 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .Release.Name }}-rbac-manager-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ .Release.Name }}-rbac-manager-metrics
+  endpoints:
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}-rbac-manager-metrics
+  jobLabel: crossplane-rbac-manager
+{{- end }}

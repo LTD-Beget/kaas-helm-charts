@@ -1,1 +1,11 @@
 crossplane: {}
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
