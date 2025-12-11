@@ -10,6 +10,5 @@ crossplaneCompositions:
     xclusterComponents:
       client:
         enabled: {{ $xAddonSetClientEnabled }}
-
   ` }}
 {{- end -}}

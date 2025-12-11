@@ -234,16 +234,15 @@ argocd:
             AVP_K8S_ROLE: "credentials-ro"
   {{ end }}
     monitoring:
-      keepKey: ""
   {{ if $infraVMOperatorReady }}
       enabled: true
   {{ end }}
-  {{ if $certManagerReady }}
       secureService:
+      {{ if $certManagerReady }}
         enabled: true
+      {{ end }}
         issuer:
           name: selfsigned-cluster-issuer
-  {{ end }}
   {{ if $istioBaseReady }}
     istio:
       virtualService:

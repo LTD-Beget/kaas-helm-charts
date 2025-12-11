@@ -5,7 +5,6 @@ path: helm-chart-sources/prometheus-node-exporter
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "prometheusnodeexporter" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
-pluginName: kustomize-helm-with-values
 default: |
   prometheus-node-exporter:
     service:
@@ -33,9 +32,4 @@ default: |
       limits:
         cpu: 512m
         memory: 256Mi
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 {{- end }}

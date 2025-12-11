@@ -8,15 +8,6 @@ spec:
     spec:
       hostNetwork: true
       containers:
-        - name: crossplane
-          env:
-            - name: KUBERNETES_SERVICE_HOST
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: status.hostIP
-            - name: KUBERNETES_SERVICE_PORT
-              value: '6443'
         - name: rbac-proxy
           image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
           args:
@@ -40,16 +31,6 @@ spec:
             - name: rbac-proxy-tls
               mountPath: /app/config/metrics/tls
               readOnly: true
-      initContainers:
-        - name: crossplane-init
-          env:
-            - name: KUBERNETES_SERVICE_HOST
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: status.hostIP
-            - name: KUBERNETES_SERVICE_PORT
-              value: '6443'
       volumes:
       - name: rbac-proxy-tls
         secret:
