@@ -1,7 +1,7 @@
 {{- define "addons.crossplane" }}
 name: Crossplane
 debug: false
-path: helm-chart-sources/dex
+path: helm-chart-sources/crossplane
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "crossplane" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}

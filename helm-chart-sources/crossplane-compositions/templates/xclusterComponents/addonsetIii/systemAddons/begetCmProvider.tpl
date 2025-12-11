@@ -5,7 +5,6 @@ begetCmProvider:
   kind: XAddonsBegetCmProvider
   namespace: beget-cm-provider
   version: v1alpha1
-  targetRevision: monitoring
   dependsOn:
   - certManager
   values:
