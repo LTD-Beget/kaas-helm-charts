@@ -21,5 +21,6 @@ spec:
   jobLabel: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}
   selector:
     matchLabels:
-    {{- include "bcloud-capi-kubeadm-control-plane.selectorLabels" . | nindent 4 }}
+      monitoring.in-cloud.io/service: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-metrics-service
+      {{- include "bcloud-capi-kubeadm-control-plane.selectorLabels" . | nindent 6 }}
 {{- end }}

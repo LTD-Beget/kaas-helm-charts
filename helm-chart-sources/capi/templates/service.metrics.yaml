@@ -1,9 +1,11 @@
+{{- if .Values.monitoring.vmServiceScrape.enabled }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "bcloud-capi.fullname" . }}-metrics-service
   labels:
+    monitoring.in-cloud.io/service: {{ include "bcloud-capi.fullname" . }}-metrics-service
     {{- include "bcloud-capi.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.metricsService.type }}
@@ -13,4 +15,5 @@ spec:
       protocol: TCP
       name: metrics
   selector:
-    {{- include "bcloud-capi.selectorLabels" . | nindent 4 }}
+    {{- include "bcloud-capi.selectorLabels" . | nindent 6 }}
+{{- end }}
