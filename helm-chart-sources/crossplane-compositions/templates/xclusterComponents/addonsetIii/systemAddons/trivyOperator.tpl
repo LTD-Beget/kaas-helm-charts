@@ -5,7 +5,6 @@ trivyOperator:
   kind: XAddonsTrivyOperator
   namespace: beget-trivy-operator
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
   values:

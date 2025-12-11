@@ -5,7 +5,6 @@ processExporter:
   kind: XAddonsProcessExporter
   namespace: beget-process-exporter
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
   values:

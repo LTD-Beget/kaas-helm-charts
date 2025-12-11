@@ -6,7 +6,6 @@ crossplane:
   finalizerDisabled: false
   namespace: beget-crossplane
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - istioGW
     - certManager
