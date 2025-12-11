@@ -21,5 +21,6 @@ spec:
   jobLabel: {{ include "bcloud-capi.fullname" . }}
   selector:
     matchLabels:
-    {{- include "bcloud-capi.selectorLabels" . | nindent 4 }}
+      monitoring.in-cloud.io/service: {{ include "bcloud-capi.fullname" . }}-metrics-service
+      {{- include "bcloud-capi.selectorLabels" . | nindent 6 }}
 {{- end }}
