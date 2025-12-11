@@ -2,9 +2,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-manager-role
+  name: {{ include "capi-kubeadm-control-plane.fullname" . }}-manager-role
   labels:
-    {{- include "bcloud-capi-kubeadm-control-plane.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
     kubeadm.controlplane.cluster.x-k8s.io/aggregate-to-manager: "true"
 rules:
 - apiGroups:

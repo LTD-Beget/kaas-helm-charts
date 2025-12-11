@@ -3,10 +3,10 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-bootstrap.fullname" . }}
+  name: {{ include "capi-kubeadm-bootstrap.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "bcloud-capi-kubeadm-bootstrap.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
 spec:
   endpoints:
   - path: /metrics
@@ -18,9 +18,9 @@ spec:
   {{- if not .Values.certificates.useExternalIssuer }}
       insecureSkipVerify: true
   {{- end }}
-  jobLabel: {{ include "bcloud-capi-kubeadm-bootstrap.fullname" . }}
+  jobLabel: {{ include "capi-kubeadm-bootstrap.fullname" . }}
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: {{ include "bcloud-capi-kubeadm-bootstrap.fullname" . }}-metrics-service
-      {{- include "bcloud-capi-kubeadm-bootstrap.selectorLabels" . | nindent 6 }}
+      monitoring.in-cloud.io/service: {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service
+      {{- include "capi-kubeadm-bootstrap.selectorLabels" . | nindent 6 }}
 {{- end }}

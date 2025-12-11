@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "bcloud-capi.fullname" . }}-controller-manager
+  name: {{ include "capi.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "bcloud-capi.labels" . | nindent 4 }}
+    {{- include "capi.labels" . | nindent 4 }}
     control-plane: controller-manager
 spec:
   progressDeadlineSeconds: 600
@@ -12,7 +12,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      {{- include "bcloud-capi.selectorLabels" . | nindent 6 }}
+      {{- include "capi.selectorLabels" . | nindent 6 }}
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -25,7 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "bcloud-capi.labels" . | nindent 8 }}
+        {{- include "capi.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -34,7 +34,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "bcloud-capi.serviceAccountName" . }}
+      serviceAccountName: {{ include "capi.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.priorityClassName }}
@@ -118,7 +118,7 @@ spec:
         - name: cert
           secret:
             defaultMode: 420
-            secretName: {{ include "bcloud-capi.fullname" . }}-webhook-service-cert
+            secretName: {{ include "capi.fullname" . }}-webhook-service-cert
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
