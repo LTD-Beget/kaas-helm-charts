@@ -51,9 +51,13 @@ vmAlert:
             url: "http://prometheus-server.beget-prometheus.svc:80"
           notifiers:
             - url: "http://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

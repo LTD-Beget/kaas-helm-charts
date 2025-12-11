@@ -5,12 +5,17 @@ grafanaOperator:
   kind: XAddonsGrafanaOperator
   namespace: beget-grafana-operator
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
   values:
-    {{ if $infraVMOperatorReady }}
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
   ` }}
 {{- end -}}

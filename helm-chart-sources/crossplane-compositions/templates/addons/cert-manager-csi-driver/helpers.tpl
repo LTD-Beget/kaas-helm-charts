@@ -5,7 +5,6 @@ path: helm-chart-sources/certmanager-csi-driver
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "certmanagercsidriver" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
-pluginName: kustomize-helm-with-values
 default: |
   cert-manager-csi-driver:
     tolerations:
@@ -22,9 +21,4 @@ default: |
       requests:
         cpu: 100m
         memory: 128Mi
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 {{- end }}

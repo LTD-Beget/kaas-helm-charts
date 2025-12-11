@@ -24,9 +24,4 @@ default: |
       limits:
         cpu: 250m
         memory: 256Mi
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 {{- end }}

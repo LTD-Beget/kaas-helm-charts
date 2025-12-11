@@ -49,7 +49,9 @@ istioGW:
       enabled: true
     {{ end }}
       secureService:
+      {{ if $certManagerReady }}
         enabled: true
+      {{ end }}
         issuer:
           name: selfsigned-cluster-issuer
     {{- if $systemEnabled }}

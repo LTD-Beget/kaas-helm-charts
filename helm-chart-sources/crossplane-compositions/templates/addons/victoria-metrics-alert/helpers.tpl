@@ -34,11 +34,6 @@ default: |
           url: "http://prometheus-server.beget-prometheus.svc:80"
         notifiers:
           - url: "http://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 immutable: |
   victoria-metrics-k8s-stack:
     alertmanager:

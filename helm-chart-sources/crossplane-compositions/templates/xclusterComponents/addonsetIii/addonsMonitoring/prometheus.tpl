@@ -5,6 +5,7 @@ prometheus:
   kind: XAddonsPrometheus
   namespace: beget-prometheus
   version: v1alpha1
+  pluginName: kustomize-helm-with-values
   dependsOn:
   - grafanaOperator
   values:
@@ -15,7 +16,13 @@ prometheus:
         extraFlags:
           - web.enable-remote-write-receiver
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
       namespace: beget-prometheus
       grafana:
         datasource:
