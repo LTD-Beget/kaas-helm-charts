@@ -3,14 +3,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
-    {{- include "bcloud-capi.labels" . | nindent 4 }}
-  name: {{ include "bcloud-capi.fullname" . }}-leader-election-rolebinding
+    {{- include "capi.labels" . | nindent 4 }}
+  name: {{ include "capi.fullname" . }}-leader-election-rolebinding
   namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "bcloud-capi.fullname" . }}-leader-election-role
+  name: {{ include "capi.fullname" . }}-leader-election-role
 subjects:
   - kind: ServiceAccount
-    name: {{ include "bcloud-capi.serviceAccountName" . }}
+    name: {{ include "capi.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}

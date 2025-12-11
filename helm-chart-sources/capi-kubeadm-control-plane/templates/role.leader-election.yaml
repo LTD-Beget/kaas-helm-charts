@@ -2,10 +2,10 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-leader-election-role
+  name: {{ include "capi-kubeadm-control-plane.fullname" . }}-leader-election-role
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "bcloud-capi-kubeadm-control-plane.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
 rules:
 - apiGroups:
   - ""

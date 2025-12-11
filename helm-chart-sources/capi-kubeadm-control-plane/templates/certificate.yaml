@@ -3,21 +3,21 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   labels:
-    {{- include "bcloud-capi-kubeadm-control-plane.labels" . | nindent 4 }}
-  name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-serving-cert
+    {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
+  name: {{ include "capi-kubeadm-control-plane.fullname" . }}-serving-cert
   namespace: {{ .Release.Namespace }}
 spec:
   dnsNames:
-    - {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
-    - {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
+    - {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
+    - {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
   issuerRef:
   {{- if .Values.certificates.useExternalIssuer }}
     {{ .Values.certificates.externalIssuer | toYaml | nindent 4 }}
   {{- else }}
     kind: Issuer
-    name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-selfsigned-issuer
+    name: {{ include "capi-kubeadm-control-plane.fullname" . }}-selfsigned-issuer
   {{- end }}
-  secretName: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service-cert
+  secretName: {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service-cert
   subject:
     organizations:
       - k8s-sig-cluster-lifecycle

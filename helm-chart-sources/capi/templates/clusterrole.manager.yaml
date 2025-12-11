@@ -2,9 +2,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "bcloud-capi.fullname" . }}-manager-role
+  name: {{ include "capi.fullname" . }}-manager-role
   labels:
-    {{- include "bcloud-capi.labels" . | nindent 4 }}
+    {{- include "capi.labels" . | nindent 4 }}
     cluster.x-k8s.io/aggregate-to-manager: "true"
 rules:
 - apiGroups:

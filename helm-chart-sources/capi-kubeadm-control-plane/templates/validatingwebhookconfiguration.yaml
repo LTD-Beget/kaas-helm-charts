@@ -2,18 +2,18 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-validating-webhook-configuration
+  name: {{ include "capi-kubeadm-control-plane.fullname" . }}-validating-webhook-configuration
   annotations:
-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-serving-cert
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "capi-kubeadm-control-plane.fullname" . }}-serving-cert
   labels:
-    {{- include "bcloud-capi-kubeadm-control-plane.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
 webhooks:
 - admissionReviewVersions:
   - v1
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service
+      name: {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-scale-controlplane-cluster-x-k8s-io-v1beta1-kubeadmcontrolplane
       port: {{ .Values.webhookService.port }}  
@@ -35,7 +35,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service
+      name: {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-controlplane-cluster-x-k8s-io-v1beta1-kubeadmcontrolplane
       port: {{ .Values.webhookService.port }}  
@@ -58,7 +58,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi-kubeadm-control-plane.fullname" . }}-webhook-service
+      name: {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-controlplane-cluster-x-k8s-io-v1beta1-kubeadmcontrolplanetemplate
       port: {{ .Values.webhookService.port }}  
