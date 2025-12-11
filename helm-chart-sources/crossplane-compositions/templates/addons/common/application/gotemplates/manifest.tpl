@@ -90,6 +90,6 @@ spec:
         name: '{{ $name }}'
         namespace: '{{ $argocdNamespace }}'
 ` (.default | default "" ) (.immutable | default "" ) $appName }}
-  {{- merge (.manifest | default dict) (include "addons.common.application.gotemplates.object" . | fromYaml) | toYaml | nindent 6 }}
+  {{- mergeOverwrite  (include "addons.common.application.gotemplates.object" . | fromYaml) (.manifest | default dict) | toYaml | nindent 6 }}
 
 {{- end }}
