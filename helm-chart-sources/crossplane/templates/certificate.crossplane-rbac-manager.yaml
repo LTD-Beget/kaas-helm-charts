@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-rbac-manager-metrics-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: ccrossplane-rbac-manager-svc-tls
+  secretName: crossplane-rbac-manager-svc-tls
   duration: 8760h
   renewBefore: 720h
   commonName: {{ .Release.Name }}-rbac-manager-metrics
