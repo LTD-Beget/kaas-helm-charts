@@ -1,6 +1,5 @@
 {{- range $componentName, $componentValue := .Values.components }}
 {{- if and $componentValue.enabled $componentValue.clusterRoles.enabled }}
-{{- with $componentValue.clusterRoles.rules }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -15,6 +14,5 @@ subjects:
     name: {{ $.Release.Name }}-{{ $componentValue.name }}
     namespace: {{ $.Release.Namespace }}
 
-{{- end }}
 {{- end }}
 {{- end }}
