@@ -12,10 +12,6 @@ spec:
     - {{ include "capi-kubeadm-bootstrap.fullname" . }}-webhook-service.{{ .Release.Namespace }}
     - {{ include "capi-kubeadm-bootstrap.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
     - {{ include "capi-kubeadm-bootstrap.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
-    - {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service
-    - {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service.{{ .Release.Namespace }}
-    - {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service.{{ .Release.Namespace }}.svc
-    - {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
   issuerRef:
   {{- if .Values.certificates.useExternalIssuer }}
     {{ .Values.certificates.externalIssuer | toYaml | nindent 4 }}

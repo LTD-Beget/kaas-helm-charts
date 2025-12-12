@@ -15,9 +15,7 @@ spec:
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
       serverName: localhost
-  {{- if not .Values.certificates.useExternalIssuer }}
       insecureSkipVerify: true
-  {{- end }}
   jobLabel: {{ include "capi-kubeadm-bootstrap.fullname" . }}
   selector:
     matchLabels:

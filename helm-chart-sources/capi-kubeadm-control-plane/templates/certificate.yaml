@@ -12,10 +12,6 @@ spec:
     - {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}
     - {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc
     - {{ include "capi-kubeadm-control-plane.fullname" . }}-webhook-service.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
-    - {{ include "capi-kubeadm-control-plane.fullname" . }}-metrics
-    - {{ include "capi-kubeadm-control-plane.fullname" . }}-metrics.{{ .Release.Namespace }}
-    - {{ include "capi-kubeadm-control-plane.fullname" . }}-metrics.{{ .Release.Namespace }}.svc
-    - {{ include "capi-kubeadm-control-plane.fullname" . }}-metrics.{{ .Release.Namespace }}.svc.{{ .Values.webhookService.domain }}
   issuerRef:
   {{- if .Values.certificates.useExternalIssuer }}
     {{ .Values.certificates.externalIssuer | toYaml | nindent 4 }}
