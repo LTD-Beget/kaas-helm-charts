@@ -1,13 +1,14 @@
-{{- range $componentName, $componentValue := .Values.components }}
+{{- range $_, $componentValue := .Values.components }}
 {{- if $componentValue.enabled }}
 {{- $monitoringValues := $componentValue.monitoring       | default dict }}
 {{- $serviceValues    := $monitoringValues.secureService  | default dict }}
 {{- $runtimeConfig    := $componentValue.runtimeConfig    | default dict }}
-{{- $mathLabels       := include "crossplane-functions.match-labels" (dict 
+{{- $componentName    := printf "%s-%s" $.Release.Name $componentValue.name }}
+{{- $secretName       := printf "%s-svc-tls" $componentName }}
+{{- $mathLabels       := include "crossplane-functions.main" (dict 
   "kind" $componentValue.kind
-  "name" $componentValue.name
+  "name" $componentName
 ) | fromYaml }}
-{{- $secretName       := printf "%s-%s-svc-tls" $.Release.Name $componentValue.name }}
 {{- $monitoringRaw    := include "crossplane-functions.monitoring" (dict
   "securePort"    $serviceValues.port
   "upstreamPort"  $monitoringValues.internalMetricPort
@@ -23,7 +24,7 @@
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
 metadata:
-  name: {{ $.Release.Name }}-{{ $componentValue.name }}
+  name: {{ $componentName }}
 spec:
   {{ $runtimeConfig | toYaml | nindent 2 }}
 {{- end }}
