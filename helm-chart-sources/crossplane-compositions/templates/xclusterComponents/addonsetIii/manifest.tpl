@@ -75,7 +75,7 @@ spec:
   {{- $remoteWriteUrlVmAgent = printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
 {{- end }}  
 ###
-
+---
 apiVersion: in-cloud.io/v1alpha1
 kind: XAddonSet
 metadata:
