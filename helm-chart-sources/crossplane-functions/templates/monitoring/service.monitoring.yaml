@@ -10,7 +10,7 @@ metadata:
   labels:
     monitoring.in-cloud.io/service: {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
   name: {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   ports:
     - name: https-metrics
