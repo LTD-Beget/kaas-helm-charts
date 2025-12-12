@@ -105,12 +105,12 @@ components:
         verbs:
         - '*'
     monitoring:
-      enabled: true
+      enabled: false
       type: VictoriaMetrics
       # Порт метрик предоставляемый сервисом
       internalMetricPort: 8080
       secureService:
-        enabled: true
+        enabled: false
         port: 11052
         issuer:
           kind: ClusterIssuer
