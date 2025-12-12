@@ -34,6 +34,26 @@ spec:
         name: 'istio-gw'
         namespace: 'beget-istio-gw'
   watch: true
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: systemVmInsertSvc
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: 'vm-insert-svc-observe'
+spec:
+  deletionPolicy: Orphan
+  managementPolicies:
+  - 'Observe'
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: 'vminsert-lb'
+        namespace: 'beget-vmcluster'
+  watch: true
 {{- end }}
 
 ### extra variables
@@ -49,6 +69,13 @@ spec:
 {{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "istioGwSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}
     {{- $systemIstioGwVip        =  .ip }}
+    {{- break }}
+  {{- end }}
+{{- end }}
+
+{{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "systemVmInsertSvc" | default (dict))) }}
+  {{- if eq .ipMode "VIP" }}
+    {{- $systemVmInsertVip        =  .ip }}
     {{- break }}
   {{- end }}
 {{- end }}
