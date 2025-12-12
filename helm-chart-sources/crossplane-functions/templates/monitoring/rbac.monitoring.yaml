@@ -1,0 +1,19 @@
+{{- range $componentName, $componentValue := .Values.components }}
+{{- $monitoringValues := $componentValue.monitoring | default dict }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $.Release.Name }}-{{ $componentValue.name }}-kube-rbac-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-rbac-proxy-tokenreview
+subjects:
+  - kind: ServiceAccount
+    name: {{ $.Release.Name }}-{{ $componentValue.name }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

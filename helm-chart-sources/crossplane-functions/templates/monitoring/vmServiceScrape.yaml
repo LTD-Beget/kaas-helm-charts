@@ -1,0 +1,53 @@
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .Release.Name }}-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ .Release.Name }}-metrics
+  endpoints:
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ .Release.Name }}-metrics
+  jobLabel: crossplane
+{{- end }}
+
+
+
+{{- range $componentName, $componentValue := .Values.components }}
+{{- $monitoringValues := $componentValue.monitoring | default dict }}
+{{- $serviceValues    := $monitoringValues.secureService  | default dict }}
+{{- $componentType    := "provider" }}
+{{- if eq $componentValue.kind "Function" }}
+  {{- $componentType  = "function" }}
+{{- end }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
+  endpoints:
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
+  jobLabel: {{ $.Release.Name }}-{{ $componentValue.name }}
+
+{{- end }}
+{{- end }}

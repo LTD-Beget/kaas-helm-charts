@@ -1,5 +1,25 @@
 {{- range $componentName, $componentValue := .Values.components }}
 {{- if $componentValue.enabled }}
+{{- $monitoringValues := $componentValue.monitoring       | default dict }}
+{{- $serviceValues    := $monitoringValues.secureService  | default dict }}
+{{- $runtimeConfig    := $componentValue.runtimeConfig    | default dict }}
+{{- $mathLabels       := (include "crossplane-functions.match-labels" (dict
+  "kind" ($componentValue.kind | lower)
+  "name" $componentValue.name))
+}}
+{{- $monitoringRaw    := dict }}
+{{- $runtimeConfig    = (include "crossplane-functions.deep-merge-with-concat" $runtimeConfig $mathLabels ) }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+{{- $monitoringRaw    := (include "crossplane-functions.monitoring" (dict
+  "securePort"    $serviceValues.port
+  "upstreamPort"  $monitoringValues.internalMetricPort
+  "secretName"    {{ $.Release.Name }}-{{ $componentValue.name }}-svc-tls
+}}
+
+{{- $runtimeConfig    = (include "crossplane-functions.deep-merge-with-concat" $runtimeConfig $monitoringRaw ) }}
+{{- end }}
+
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
