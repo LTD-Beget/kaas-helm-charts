@@ -1,4 +1,4 @@
-{{- if .Values.certificates.useExternalIssuer }}
+{{- if not .Values.certificates.useExternalIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
