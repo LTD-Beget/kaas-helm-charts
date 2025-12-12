@@ -17,6 +17,7 @@ ccm:
               extraArgs:
                 v: 7
               extraEnv:
+                CUSTOMER_LOGIN: {{ $customer }}
                 USE_INTERNAL_LB: "true"
               image:
                 tag: lb
