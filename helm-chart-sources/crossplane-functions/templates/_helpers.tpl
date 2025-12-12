@@ -46,10 +46,10 @@ deploymentTemplate:
 {{- define "crossplane-functions.main" -}}
 {{- $kind := (default "Provider" .kind) -}}
 {{- $name := (default "secret" .name) -}}
+serviceAccountTemplate:
+  metadata:
+    name: {{ $name }}
 deploymentTemplate:
-  serviceAccountTemplate:
-    metadata:
-      name: {{ $name }}
   spec:
     selector:
       matchLabels:
