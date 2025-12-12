@@ -9,16 +9,16 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: {{ $.Release.Name }}-{{ $componentValue.name }}-svc-tls
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   secretName: {{ $.Release.Name }}-{{ $componentValue.name }}-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}-metrics
+  commonName: {{ $.Release.Name }}-metrics
   dnsNames:
     - {{ $.Release.Name }}-{{ $componentValue.name }}-metrics
-    - {{ $.Release.Name }}-{{ $componentValue.name }}-metrics.{{ .Release.Namespace }}
-    - {{ $.Release.Name }}-{{ $componentValue.name }}-metrics.{{ .Release.Namespace }}.svc
+    - {{ $.Release.Name }}-{{ $componentValue.name }}-metrics.{{ $.Release.Namespace }}
+    - {{ $.Release.Name }}-{{ $componentValue.name }}-metrics.{{ $.Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

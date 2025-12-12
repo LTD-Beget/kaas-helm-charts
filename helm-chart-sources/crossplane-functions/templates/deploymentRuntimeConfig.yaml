@@ -3,21 +3,21 @@
 {{- $monitoringValues := $componentValue.monitoring       | default dict }}
 {{- $serviceValues    := $monitoringValues.secureService  | default dict }}
 {{- $runtimeConfig    := $componentValue.runtimeConfig    | default dict }}
-{{- $mathLabels       := (include "crossplane-functions.match-labels" (dict
-  "kind" ($componentValue.kind | lower)
-  "name" $componentValue.name))
-}}
-{{- $monitoringRaw    := dict }}
-{{- $runtimeConfig    = (include "crossplane-functions.deep-merge-with-concat" $runtimeConfig $mathLabels ) }}
+{{- $mathLabels       := include "crossplane-functions.match-labels" (dict 
+  "kind" $componentValue.kind
+  "name" $componentValue.name
+) | fromYaml}}
+{{- $runtimeConfig    = include "crossplane-functions.deep-merge" (list $runtimeConfig ($mathLabels)) | fromYaml }}
 
+{{- $monitoringRaw    := dict }}
 {{- if and $componentValue.enabled $monitoringValues.enabled }}
-{{- $monitoringRaw    := (include "crossplane-functions.monitoring" (dict
+{{- $secretName       := printf "%s-%s-svc-tls" $.Release.Name $componentValue.name }}
+{{- $monitoringRaw    = include "crossplane-functions.monitoring" (dict
   "securePort"    $serviceValues.port
   "upstreamPort"  $monitoringValues.internalMetricPort
-  "secretName"    {{ $.Release.Name }}-{{ $componentValue.name }}-svc-tls
-}}
+  "secretName"    $secretName
+) | toString | fromYaml}}
 
-{{- $runtimeConfig    = (include "crossplane-functions.deep-merge-with-concat" $runtimeConfig $monitoringRaw ) }}
 {{- end }}
 
 ---
@@ -26,14 +26,6 @@ kind: DeploymentRuntimeConfig
 metadata:
   name: {{ $.Release.Name }}-{{ $componentValue.name }}
 spec:
-  {{- if not ( and $componentValue.runtimeConfig $componentValue.runtimeConfig.serviceAccountTemplate) }}
-  serviceAccountTemplate:
-    metadata:
-      name: {{ $.Release.Name }}-{{ $componentValue.name }}
-  {{- end }}
-  {{- if $componentValue.runtimeConfig }}
-  {{- toYaml $componentValue.runtimeConfig | nindent 2 }}
-  {{- end }}
-
+{{ include "crossplane-functions.deep-merge" (list $runtimeConfig $monitoringRaw) | nindent 2 }}
 {{- end }}
 {{- end }}

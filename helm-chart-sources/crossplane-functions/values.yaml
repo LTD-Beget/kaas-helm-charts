@@ -83,17 +83,7 @@ components:
     runtimeConfig: 
       deploymentTemplate:
         spec:
-          selector:
-            matchLabels:
-              pkg.crossplane.io/provider: provider-kubernetes
           template:
-            metadata:
-              annotations:
-                prometheus.io/path: /metrics
-                prometheus.io/port: "8080"
-                prometheus.io/scrape: "true"
-              labels:
-                pkg.crossplane.io/provider: provider-kubernetes
             spec:
               containers:
                 - name: package-runtime
@@ -115,12 +105,12 @@ components:
         verbs:
         - '*'
     monitoring:
-      enabled: false
+      enabled: true
       type: VictoriaMetrics
       # Порт метрик предоставляемый сервисом
       internalMetricPort: 8080
       secureService:
-        enabled: false
+        enabled: true
         port: 11052
         issuer:
           kind: ClusterIssuer

@@ -6,6 +6,11 @@
 deploymentTemplate:
   spec:
     template:
+      metadata:
+        annotations:
+          prometheus.io/path: /metrics
+          prometheus.io/port: "{{ $upstreamPort }}"
+          prometheus.io/scrape: "true"
       spec:
         containers:
           - name: rbac-proxy
@@ -38,55 +43,40 @@ deploymentTemplate:
               secretName: "{{ $secretName }}"
 {{- end -}}
 
-
 {{- define "crossplane-functions.match-labels" -}}
-{{- $kind := (default "secret" .kind) -}}
+{{- $kind := (default "Provider" .kind) -}}
 {{- $name := (default "secret" .name) -}}
-
-selector:
-  matchLabels:
-    pkg.crossplane.io/{{ $kind | lower }}: {{ $name }}
+deploymentTemplate:
+  spec:
+    selector:
+      matchLabels:
+        pkg.crossplane.io/{{ $kind | lower }}: {{ $name }}
+    template:
+      metadata:
+        labels:
+          pkg.crossplane.io/{{ $kind | lower }}: {{ $name }}
 {{- end -}}
 
+{{- define "crossplane-functions.deep-merge" -}}
+{{- $dict1 := index . 0 -}}
+{{- $dict2 := index . 1 -}}
+{{- $result := dict -}}
 
-{{- define "crossplane-functions.deep-merge-with-concat" -}}
-  {{- $first := index . 0 -}}
-  {{- $second := index . 1 -}}
-  
-  {{- if kindIs "map" $first and kindIs "map" $second -}}
-    {{- $result := dict -}}
-    
-    {{- range $key, $value := $first -}}
-      {{- if hasKey $second $key -}}
-        {{- $mergedValue := include "crossplane-functions.deep-merge-with-concat" (list $value (get $second $key)) -}}
-        {{- $result = set $result $key $mergedValue -}}
-      {{- else -}}
-        {{- $result = set $result $key $value -}}
-      {{- end -}}
-    {{- end -}}
-    
-    {{- range $key, $value := $second -}}
-      {{- if not (hasKey $first $key) -}}
-        {{- $result = set $result $key $value -}}
-      {{- end -}}
-    {{- end -}}
-    
-    {{- $result | toYaml -}}
-  {{- else if kindIs "slice" $first and kindIs "slice" $second -}}
-    {{- $result := concat $first $second -}}
-    {{- $result | toYaml -}}
+{{- range $key, $val := $dict1 -}}
+  {{- $_ := set $result $key $val -}}
+{{- end -}}
+
+{{- range $key, $val2 := $dict2 -}}
+  {{- $val1 := index $dict1 $key -}}
+  {{- if and (kindIs "map" $val1) (kindIs "map" $val2) -}}
+    {{- $merged := include "crossplane-functions.deep-merge" (list $val1 $val2) | fromYaml -}}
+    {{- $_ := set $result $key $merged -}}
+  {{- else if and (kindIs "slice" $val1) (kindIs "slice" $val2) -}}
+    {{- $_ := set $result $key (append $val1 $val2) -}}
   {{- else -}}
-    {{- $second | toYaml -}}
+    {{- $_ := set $result $key $val2 -}}
   {{- end -}}
 {{- end -}}
 
-{{- define "crossplane-functions.deep-merge-all-with-concat" -}}
-  {{- $result := index . 0 -}}
-  {{- range $index, $element := . -}}
-    {{- if gt $index 0 -}}
-      {{- $merged := include "crossplane-functions.deep-merge-with-concat" (list $result $element) | fromYaml -}}
-      {{- $result = $merged -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $result | toYaml -}}
+{{- toYaml $result | nindent 0 -}}
 {{- end -}}
