@@ -72,7 +72,7 @@ deploymentTemplate:
     {{- $merged := include "crossplane-functions.deep-merge" (list $val1 $val2) | fromYaml -}}
     {{- $_ := set $result $key $merged -}}
   {{- else if and (kindIs "slice" $val1) (kindIs "slice" $val2) -}}
-    {{- $_ := set $result $key (append $val1 $val2) -}}
+    {{- $_ := set $result $key (concat $val1 $val2) -}}
   {{- else -}}
     {{- $_ := set $result $key $val2 -}}
   {{- end -}}
