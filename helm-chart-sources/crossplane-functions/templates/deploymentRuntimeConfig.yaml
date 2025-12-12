@@ -6,18 +6,17 @@
 {{- $mathLabels       := include "crossplane-functions.match-labels" (dict 
   "kind" $componentValue.kind
   "name" $componentValue.name
-) | fromYaml}}
-{{- $runtimeConfig    = include "crossplane-functions.deep-merge" (list $runtimeConfig ($mathLabels)) | fromYaml }}
-
-{{- $monitoringRaw    := dict }}
-{{- if and $componentValue.enabled $monitoringValues.enabled }}
+) | fromYaml }}
 {{- $secretName       := printf "%s-%s-svc-tls" $.Release.Name $componentValue.name }}
-{{- $monitoringRaw    = include "crossplane-functions.monitoring" (dict
+{{- $monitoringRaw    := include "crossplane-functions.monitoring" (dict
   "securePort"    $serviceValues.port
   "upstreamPort"  $monitoringValues.internalMetricPort
   "secretName"    $secretName
-) | toString | fromYaml}}
+) | toString | fromYaml }}
+{{- $runtimeConfig    = include "crossplane-functions.deep-merge" (list $runtimeConfig ($mathLabels)) | fromYaml }}
 
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+{{- $runtimeConfig      = include "crossplane-functions.deep-merge" (list $runtimeConfig $monitoringRaw) | fromYaml }}
 {{- end }}
 
 ---
@@ -26,6 +25,6 @@ kind: DeploymentRuntimeConfig
 metadata:
   name: {{ $.Release.Name }}-{{ $componentValue.name }}
 spec:
-{{ include "crossplane-functions.deep-merge" (list $runtimeConfig $monitoringRaw) | nindent 2 }}
+  {{ $runtimeConfig | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
