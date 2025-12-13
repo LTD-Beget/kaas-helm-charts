@@ -44,11 +44,13 @@ deploymentTemplate:
 {{- end -}}
 
 {{- define "crossplane-functions.main" -}}
-{{- $kind := (default "Provider" .kind) -}}
-{{- $name := (default "secret" .name) -}}
+{{- $kind     := (default "Provider" .kind) -}}
+{{- $name     := (default "secret" .name) -}}
+{{- $release  := (default "release" .release) -}}
+
 serviceAccountTemplate:
   metadata:
-    name: {{ $name }}
+    name: {{ $release }}-{{ $name }}
 deploymentTemplate:
   spec:
     selector:
