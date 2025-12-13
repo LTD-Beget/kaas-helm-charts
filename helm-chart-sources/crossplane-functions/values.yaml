@@ -29,17 +29,6 @@ components:
     tag: v0.8.2
     packagePullPolicy: IfNotPresent
     runtimeConfig: {}
-    monitoring:
-      enabled: false
-      type: VictoriaMetrics
-      # Порт метрик предоставляемый сервисом
-      internalMetricPort: 8080
-      secureService:
-        enabled: false
-        port: 11053
-        issuer:
-          kind: ClusterIssuer
-          name: default
 
   far:
     enabled: true
