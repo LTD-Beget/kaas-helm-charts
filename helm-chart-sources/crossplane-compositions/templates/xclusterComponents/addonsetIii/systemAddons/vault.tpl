@@ -40,6 +40,8 @@ vault:
               request_timeout = "5s"
               lock_timeout    = "15s"
             }
+            
+            service_registration "kubernetes" {}
         dataStorage:
           enabled: false
         postStart:
