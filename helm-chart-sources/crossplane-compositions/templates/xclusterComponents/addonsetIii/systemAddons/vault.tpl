@@ -90,6 +90,11 @@ vault:
           - name: etcd-client-vault
             mountPath: /vault/userconfig/etcd-client-vault
             readOnly: true
+        standalone:
+          enabled: false
+        service:
+          standby:
+            enabled: false
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"
