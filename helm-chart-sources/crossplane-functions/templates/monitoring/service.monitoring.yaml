@@ -19,6 +19,6 @@ spec:
       protocol: TCP
       targetPort: https-metrics
   selector:
-    pkg.crossplane.io/{{ $componentValue.kind | lower }}: {{ $componentName }}
+    pkg.crossplane.io/{{ $componentValue.kind | lower }}: {{ $componentValue.name }}
 {{- end }}
 {{- end }}
