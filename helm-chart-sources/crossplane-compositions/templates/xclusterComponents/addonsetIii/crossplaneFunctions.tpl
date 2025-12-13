@@ -90,16 +90,6 @@ crossplaneFunctions:
                       operator: Exists
                       effect: NoSchedule
   {{- end }}
-        monitoring:
-        {{ if $infraVMOperatorReady }}
-          enabled: true
-        {{ end }}
-          type: VictoriaMetrics
-          secureService:
-            enabled: true
-            port: 11053
-            issuer:
-              name: selfsigned-cluster-issuer
       far:
         # package: dmkolbin/crossplane-function-auto-ready
         # tag: v0.4.2
