@@ -1,0 +1,103 @@
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: {{ include "vault-k8s-auth-sync.fullname" . }}-files
+#   labels:
+#     {{- include "vault-k8s-auth-sync.labels" . | nindent 4 }}
+# data:
+#   entrypoint.sh: |
+#     # автоансил
+#     # автоинит, если нет секрета с ключами.
+#     # кубавторизация
+#     # полиси на чтение секретов
+#     # полиси на чтение метрик
+
+
+
+
+
+#     #!/bin/sh
+
+#     echo "--- Определение и валидация переменных"
+#     TMP_DIR=$(mktemp -d -p /tmp)
+#     echo "TMP_DIR: ${TMP_DIR}"
+#     echo ""
+#     echo ""
+#     echo "--- Получение данных о Kubernetes"
+#     K8S_ENDPOINT=$(grep -oP 'server: \K.*' ${KUBECONFIG})
+#     echo "K8S_ENDPOINT: ${K8S_ENDPOINT}"
+#     K8S_ISSUER=$(kubectl get --raw /.well-known/openid-configuration | grep -oP 'issuer":"\K.*?(?=")')
+#     echo "K8S_ISSUER: ${K8S_ISSUER}"
+
+#     echo ""
+#     echo ""
+#     echo "--- Получение авторизационного токена Vault"
+#     {{- if eq .Values.config.vault.authMethod "appRole" }}
+#     echo "Авторизация через appRole"
+#     VAULT_APPROLE_MOUNT_PATH="{{ .Values.config.vault.appRole.mountPath }}"
+#     echo "VAULT_APPROLE_MOUNT_PATH: ${VAULT_APPROLE_MOUNT_PATH}"
+#     VAULT_APPROLE_ROLE_ID="{{ .Values.config.vault.appRole.roleID }}"
+#     echo "VAULT_APPROLE_ROLE_ID: ${VAULT_APPROLE_ROLE_ID}"
+#     VAULT_APPROLE_SECRET_ID="{{ .Values.config.vault.appRole.secretID }}"
+#     echo "VAULT_APPROLE_SECRET_ID: ${VAULT_APPROLE_SECRET_ID}"
+#     VAULT_TOKEN=$(vault write -field=token auth/${VAULT_APPROLE_MOUNT_PATH}/login role_id=${VAULT_APPROLE_ROLE_ID} secret_id=${VAULT_APPROLE_SECRET_ID})
+#     {{- else if eq .Values.config.vault.authMethod "kubernetes" }}
+#     echo "Авторизация через kubernetes jwt"
+#     VAULT_KUBERNETES_MOUNT_PATH="{{ .Values.config.vault.kubernetes.mountPath }}"
+#     echo "VAULT_KUBERNETES_MOUNT_PATH: ${VAULT_KUBERNETES_MOUNT_PATH}"
+#     VAULT_KUBERNETES_ROLE="{{ .Values.config.vault.kubernetes.role }}"
+#     echo "VAULT_KUBERNETES_ROLE: ${VAULT_KUBERNETES_ROLE}"
+#     VAULT_KUBERNETES_JWT=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+#     echo "VAULT_KUBERNETES_JWT: ${VAULT_KUBERNETES_JWT}"
+#     VAULT_TOKEN=$(vault write -field=token auth/${VAULT_KUBERNETES_MOUNT_PATH}/login role=${VAULT_KUBERNETES_ROLE} jwt=${VAULT_KUBERNETES_JWT})
+#     {{- else }}
+#     echo "Авторизация по токену"
+#     VAULT_TOKEN={{ .Values.config.vault.token }}
+#     {{- end }}
+
+#     if [ -z "${VAULT_TOKEN}" ]; then
+#       echo "Ошибка: Не удалось авторизоваться"
+#       exit 1
+#     fi
+
+#     echo ""
+#     echo ""
+#     echo "--- Авторизация в Vault по токену"
+#     vault login ${VAULT_TOKEN}
+
+#     echo ""
+#     echo ""
+#     echo "--- Включение метода аутентификации kubernetes для ${FULL_CLUSTER_NAME}"
+#     vault auth enable -path=${FULL_CLUSTER_NAME} kubernetes
+
+#     echo ""
+#     echo ""
+#     echo "--- Настройка метода аутентификации kubernetes для ${FULL_CLUSTER_NAME}"
+#     vault write auth/${FULL_CLUSTER_NAME}/config token_reviewer_jwt=${SERVICEACCOUNT_TOKEN} kubernetes_host=${K8S_ENDPOINT} issuer=${K8S_ISSUER} kubernetes_ca_cert=@${SERVICEACCOUNT_CA_PATH} disable_local_ca_jwt=true
+
+#     echo ""
+#     echo ""
+#     echo "--- Получение accessor для ${FULL_CLUSTER_NAME}"
+#     VAULT_ACCESSOR=$(vault read -field=accessor sys/auth/${FULL_CLUSTER_NAME})
+#     echo "VAULT_ACCESSOR: ${VAULT_ACCESSOR}"
+
+#     echo ""
+#     echo ""
+#     echo "--- Добавление политики ${FULL_CLUSTER_NAME}-ro на чтение секретов"
+#     vault policy write ${FULL_CLUSTER_NAME}-ro -<<EOF
+#     path "sys/mounts" { capabilities = ["read"] }
+
+#     path "secret/data/projects/+/environments/${CLUSTER_ENV}/instances/{{ "{{" }}identity.entity.aliases.${VAULT_ACCESSOR}.metadata.service_account_namespace{{ "}}" }}/*" {
+#       capabilities = ["read"]
+#     }
+
+#     path "secret/metadata/projects/+/environments/${CLUSTER_ENV}/instances/{{ "{{" }}identity.entity.aliases.${VAULT_ACCESSOR}.metadata.service_account_namespace{{ "}}" }}/*" {
+#       capabilities = ["list"]
+#     }
+#     EOF
+
+#     echo ""
+#     echo ""
+#     echo "--- Матчим политику ${FULL_CLUSTER_NAME}-ro с ServiceAccount"
+#     vault write auth/${FULL_CLUSTER_NAME}/role/${FULL_CLUSTER_NAME}-ro bound_service_account_names="*" bound_service_account_namespaces="*" policies=${FULL_CLUSTER_NAME}-ro ttl=5m
