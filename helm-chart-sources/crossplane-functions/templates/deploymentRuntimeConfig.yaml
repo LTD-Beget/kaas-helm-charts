@@ -6,8 +6,9 @@
 {{- $componentName    := printf "%s-%s" $.Release.Name $componentValue.name }}
 {{- $secretName       := printf "%s-svc-tls" $componentName }}
 {{- $mathLabels       := include "crossplane-functions.main" (dict 
-  "kind" $componentValue.kind
-  "name" $componentName
+  "kind"    $componentValue.kind
+  "name"    $componentValue.name
+  "release" $.Release.Name
 ) | fromYaml }}
 {{- $monitoringRaw    := include "crossplane-functions.monitoring" (dict
   "securePort"    $serviceValues.port
