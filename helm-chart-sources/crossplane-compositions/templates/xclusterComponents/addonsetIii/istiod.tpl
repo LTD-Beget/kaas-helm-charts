@@ -5,6 +5,11 @@ istiod:
   kind: XAddonsIstiod
   namespace: beget-istio
   version: v1alpha1
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     istiod:
       replicaCount: {{ $controlPlaneReplicas }}

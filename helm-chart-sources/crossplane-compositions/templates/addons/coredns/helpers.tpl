@@ -5,7 +5,7 @@ path: helm-chart-sources/coredns
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "coredns" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
-pluginName: kustomize-helm-with-values
+pluginName: helm-with-values
 default: |
   coredns:
     isClusterService: true

@@ -7,6 +7,11 @@ prometheus:
   version: v1alpha1
   dependsOn:
   - grafanaOperator
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     prometheus:
       server:

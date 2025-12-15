@@ -7,6 +7,11 @@ trivyOperator:
   version: v1alpha1
   dependsOn:
     - vmOperator
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     trivy-operator:
       trivyOperator:
