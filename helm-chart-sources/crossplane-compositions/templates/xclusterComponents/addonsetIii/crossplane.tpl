@@ -42,7 +42,7 @@ crossplane:
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
           operator: Exists
-
+  {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
@@ -51,6 +51,5 @@ crossplane:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
-  {{- end }}
   ` }}
 {{- end -}}
