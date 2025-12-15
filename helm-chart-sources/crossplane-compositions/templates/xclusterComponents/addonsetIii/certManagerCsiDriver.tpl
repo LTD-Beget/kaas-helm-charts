@@ -7,6 +7,11 @@ certManagerCsiDriver:
   version: v1alpha1
   dependsOn:
     - certManager
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     monitoring:
     {{ if $infraVMOperatorReady }}
