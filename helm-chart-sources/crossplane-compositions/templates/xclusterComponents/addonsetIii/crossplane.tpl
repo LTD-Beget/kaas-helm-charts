@@ -9,6 +9,11 @@ crossplane:
   dependsOn:
     - istioGW
     - certManager
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
   # TODO: Зачем дожидаться $crossplaneReady
   {{- if and $systemEnabled $crossplaneReady }}
