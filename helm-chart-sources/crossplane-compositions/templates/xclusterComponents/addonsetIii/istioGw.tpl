@@ -7,6 +7,11 @@ istioGW:
   version: v1alpha1
   dependsOn:
     - istioBase
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     gateway:
       service:

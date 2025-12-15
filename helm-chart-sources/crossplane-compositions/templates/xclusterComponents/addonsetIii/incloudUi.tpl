@@ -10,6 +10,11 @@ incloudUi:
   {{- if $systemEnabled }}
   - dex
   {{- end }}
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     incloud-web-resources:
       enabled: true

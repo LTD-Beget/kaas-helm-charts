@@ -7,6 +7,11 @@ vmOperator:
   version: v1alpha1
   dependsOn:
     - certManagerCsiDriver
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     victoria-metrics-operator:
       tolerations:
