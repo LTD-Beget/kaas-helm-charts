@@ -7,5 +7,9 @@ capiClusterClass:
   version: v1alpha1
   dependsOn:
   - capi
+  values:
+    inCloud:
+      serviceAccount:
+        name: capi
   ` }}
 {{- end -}}
