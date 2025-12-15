@@ -1,9 +1,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-bootstrap.fullname" . }}-manager-role
+  name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-manager-role
   labels:
-    {{- include "bcloud-capi-kubeadm-bootstrap.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
 rules:
 - apiGroups:
   - ""

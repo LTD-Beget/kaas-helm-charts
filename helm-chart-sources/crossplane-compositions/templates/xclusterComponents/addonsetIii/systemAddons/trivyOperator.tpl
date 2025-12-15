@@ -5,9 +5,13 @@ trivyOperator:
   kind: XAddonsTrivyOperator
   namespace: beget-trivy-operator
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     trivy-operator:
       trivyOperator:

@@ -5,9 +5,13 @@ certManagerCsiDriver:
   kind: XAddonsCertManagerCsiDriver
   namespace: beget-certmanager-csi-driver
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - certManager
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     monitoring:
     {{ if $infraVMOperatorReady }}

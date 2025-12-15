@@ -1,19 +1,32 @@
-{{- range $componentName, $componentValue := .Values.components }}
+{{- range $_, $componentValue := .Values.components }}
 {{- if $componentValue.enabled }}
+{{- $monitoringValues := $componentValue.monitoring       | default dict }}
+{{- $serviceValues    := $monitoringValues.secureService  | default dict }}
+{{- $runtimeConfig    := $componentValue.runtimeConfig    | default dict }}
+{{- $componentName    := printf "%s-%s" $.Release.Name $componentValue.name }}
+{{- $secretName       := printf "%s-svc-tls" $componentName }}
+{{- $mathLabels       := include "crossplane-functions.main" (dict 
+  "kind"    $componentValue.kind
+  "name"    $componentValue.name
+  "release" $.Release.Name
+) | fromYaml }}
+{{- $monitoringRaw    := include "crossplane-functions.monitoring" (dict
+  "securePort"    $serviceValues.port
+  "upstreamPort"  $monitoringValues.internalMetricPort
+  "secretName"    $secretName
+) | toString | fromYaml }}
+{{- $runtimeConfig    = include "crossplane-functions.deep-merge" (list $runtimeConfig ($mathLabels)) | fromYaml }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+{{- $runtimeConfig      = include "crossplane-functions.deep-merge" (list $runtimeConfig $monitoringRaw) | fromYaml }}
+{{- end }}
+
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
 metadata:
-  name: {{ $.Release.Name }}-{{ $componentValue.name }}
+  name: {{ $componentName }}
 spec:
-  {{- if not ( and $componentValue.runtimeConfig $componentValue.runtimeConfig.serviceAccountTemplate) }}
-  serviceAccountTemplate:
-    metadata:
-      name: {{ $.Release.Name }}-{{ $componentValue.name }}
-  {{- end }}
-  {{- if $componentValue.runtimeConfig }}
-  {{- toYaml $componentValue.runtimeConfig | nindent 2 }}
-  {{- end }}
-
+  {{ $runtimeConfig | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}

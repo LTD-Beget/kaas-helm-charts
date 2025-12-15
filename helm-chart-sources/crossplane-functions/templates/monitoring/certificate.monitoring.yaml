@@ -1,0 +1,34 @@
+{{- range $componentName, $componentValue := .Values.components }}
+{{- $monitoringValues := $componentValue.monitoring       | default dict }}
+{{- $certValues       := $monitoringValues.secureService  | default dict }}
+{{- $certIssuerValues := $certValues.issuer               | default dict }}
+{{- $componentName    := printf "%s-%s" $.Release.Name $componentValue.name }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled $certValues.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $componentName }}-svc-tls
+  namespace: {{ $.Release.Namespace }}
+spec:
+  secretName: {{ $componentName }}-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ $.Release.Name }}-metrics
+  dnsNames:
+    - {{ $componentName }}-metrics
+    - {{ $componentName }}-metrics.{{ $.Release.Namespace }}
+    - {{ $componentName }}-metrics.{{ $.Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ $certIssuerValues.kind }}
+    name: {{ $certIssuerValues.name }}
+{{- end }}
+{{- end }}

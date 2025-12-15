@@ -5,9 +5,13 @@ istioGW:
   kind: XAddonsIstioGw
   namespace: beget-istio-gw
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - istioBase
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     gateway:
       service:
@@ -49,7 +53,9 @@ istioGW:
       enabled: true
     {{ end }}
       secureService:
+      {{ if $certManagerReady }}
         enabled: true
+      {{ end }}
         issuer:
           name: selfsigned-cluster-issuer
     {{- if $systemEnabled }}

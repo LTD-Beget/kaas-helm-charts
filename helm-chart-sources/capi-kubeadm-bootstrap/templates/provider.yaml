@@ -3,7 +3,7 @@ apiVersion: clusterctl.cluster.x-k8s.io/v1alpha3
 kind: Provider
 metadata:
   labels:
-    {{- include "bcloud-capi-kubeadm-bootstrap.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
     clusterctl.cluster.x-k8s.io/core: inventory
   name: bootstrap-kubeadm
   namespace: {{ .Release.Namespace }}

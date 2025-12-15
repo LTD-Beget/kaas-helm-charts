@@ -7,6 +7,11 @@ prometheus:
   version: v1alpha1
   dependsOn:
   - grafanaOperator
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     prometheus:
       server:
@@ -15,7 +20,13 @@ prometheus:
         extraFlags:
           - web.enable-remote-write-receiver
     monitoring:
+    {{ if $infraVMOperatorReady }}
       enabled: true
+    {{ end }}
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
       namespace: beget-prometheus
       grafana:
         datasource:

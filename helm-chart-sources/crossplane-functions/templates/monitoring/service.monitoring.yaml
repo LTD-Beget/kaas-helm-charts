@@ -1,0 +1,24 @@
+{{- range $componentName, $componentValue := .Values.components }}
+{{- $monitoringValues := $componentValue.monitoring | default dict }}
+{{- $serviceValues    := $monitoringValues.secureService  | default dict }}
+{{- $componentName    := printf "%s-%s" $.Release.Name $componentValue.name }}
+
+{{- if and $componentValue.enabled $monitoringValues.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    monitoring.in-cloud.io/service: {{ $componentName }}-metrics
+  name: {{ $componentName }}-metrics
+  namespace: {{ $.Release.Namespace }}
+spec:
+  ports:
+    - name: https-metrics
+      port: {{ $serviceValues.port }}
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    pkg.crossplane.io/{{ $componentValue.kind | lower }}: {{ $componentValue.name }}
+{{- end }}
+{{- end }}

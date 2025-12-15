@@ -11,9 +11,17 @@ composition:
 composite:
   addons:
     common:
-      targetRevision: HEAD
-    crossplane:
-      targetRevision: 1.20.1
+      targetRevision: feature/monitoring
+    begetcmprovider:
+      targetRevision: monitoring # TODO: merge to HEAD
+    ccm:
+      targetRevision: HEAD # TODO: delete
+    crossplanexcluster:
+      targetRevision: HEAD # TODO: delete
+    csrc:
+      targetRevision: HEAD # TODO: delete
+    capiclusterclass:
+      targetRevision: HEAD # TODO: delete
     istiobase:
       targetRevision: 1.26.0
     prometheusadapter:

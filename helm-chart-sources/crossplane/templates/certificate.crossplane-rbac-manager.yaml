@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.secureService.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-rbac-manager-metrics-svc-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: crossplane-rbac-manager-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ .Release.Name }}-rbac-manager-metrics
+  dnsNames:
+    - {{ .Release.Name }}-rbac-manager-metrics
+    - {{ .Release.Name }}-rbac-manager-metrics.{{ .Release.Namespace }}
+    - {{ .Release.Name }}-rbac-manager-metrics.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}

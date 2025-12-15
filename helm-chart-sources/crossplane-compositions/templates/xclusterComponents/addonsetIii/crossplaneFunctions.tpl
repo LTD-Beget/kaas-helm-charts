@@ -11,14 +11,9 @@ crossplaneFunctions:
   values:
     components:
       kubernetes:
-        # package: dmkolbin/crossplane-provider-kubernetes
-        # tag: v1.0.1
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/provider: provider-kubernetes
               template:
                 spec:
                   containers:
@@ -52,15 +47,23 @@ crossplaneFunctions:
                       operator: Exists
                       effect: NoSchedule
   {{- end }}
+        monitoring:
+        {{ if $infraVMOperatorReady }}
+          enabled: true
+        {{ end }}
+          type: VictoriaMetrics
+          secureService:
+            enabled: true
+            port: 11052
+            issuer:
+              name: selfsigned-cluster-issuer
+
       fpat:
         # package: dmkolbin/crossplane-function-patch-and-transform
         # tag: v0.8.2
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/function: function-patch-and-transform
               template:
                 spec:
                   containers:
@@ -93,9 +96,6 @@ crossplaneFunctions:
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/function: function-auto-ready 
               template:
                 spec:
                   containers:
@@ -128,9 +128,6 @@ crossplaneFunctions:
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/function: function-extra-resources
               template:
                 spec:
                   containers:
@@ -163,9 +160,6 @@ crossplaneFunctions:
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/function: function-go-templating
               template:
                 spec:
   {{- if and $systemEnabled $crossplaneReady }}
@@ -207,9 +201,6 @@ crossplaneFunctions:
         runtimeConfig:
           deploymentTemplate:
             spec:
-              selector:
-                matchLabels:
-                  pkg.crossplane.io/function: function-environment-configs
               template:
                 spec:
   {{- if and $systemEnabled $crossplaneReady }}

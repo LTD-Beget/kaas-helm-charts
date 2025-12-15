@@ -1,10 +1,12 @@
+{{- if not .Values.certificates.useExternalIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: {{ include "bcloud-capi-kubeadm-bootstrap.fullname" . }}-selfsigned-issuer
+  name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-selfsigned-issuer
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "bcloud-capi-kubeadm-bootstrap.labels" . | nindent 4 }}
+    {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
 spec:
   selfSigned: {}
+{{- end }}

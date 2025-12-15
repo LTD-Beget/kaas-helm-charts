@@ -5,7 +5,18 @@ begetCmProvider:
   kind: XAddonsBegetCmProvider
   namespace: beget-cm-provider
   version: v1alpha1
+  dependsOn:
+  - certManager
   values:
+    certificates:
+      useExternalIssuer: true
+      externalIssuer:
+        name: selfsigned-cluster-issuer
+    {{ if $infraVMOperatorReady }}
+    monitoring:
+      vmServiceScrape:
+        enabled: true
+    {{ end }}
     appSpec:
       applications:
         providerBegetControllerManager:

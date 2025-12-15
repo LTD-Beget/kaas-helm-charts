@@ -5,7 +5,7 @@ path: helm-chart-sources/prometheus
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "prometheus" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
-pluginName: kustomize-helm-with-values
+pluginName: helm-with-values
 default: |
   prometheus:
     server:
@@ -27,11 +27,6 @@ default: |
         requests:
           cpu: 100m
           memory: 128Mi
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 immutable: |
   prometheus:
     server:

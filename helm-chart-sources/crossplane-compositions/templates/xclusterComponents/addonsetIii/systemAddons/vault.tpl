@@ -40,6 +40,8 @@ vault:
               request_timeout = "5s"
               lock_timeout    = "15s"
             }
+            
+            service_registration "kubernetes" {}
         dataStorage:
           enabled: false
         postStart:
@@ -90,6 +92,11 @@ vault:
           - name: etcd-client-vault
             mountPath: /vault/userconfig/etcd-client-vault
             readOnly: true
+        standalone:
+          enabled: false
+        service:
+          standby:
+            enabled: false
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"

@@ -94,15 +94,14 @@ coredns:
                 lameduck 5s
   {{- end }}
     monitoring:
-      keepKey: ""
     {{ if $infraVMOperatorReady }}
       enabled: true
     {{ end }}
-    {{ if $certManagerReady }}
       secureService:
+      {{ if $certManagerReady }}
         enabled: true
+      {{ end }}
         issuer:
           name: selfsigned-cluster-issuer
-    {{ end }}
   ` }}
 {{- end -}}

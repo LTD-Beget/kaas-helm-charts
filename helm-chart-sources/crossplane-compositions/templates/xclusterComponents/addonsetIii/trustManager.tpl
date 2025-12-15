@@ -5,9 +5,13 @@ trustManager:
   kind: XAddonsTrustManager
   namespace: beget-trust-manager
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
   dependsOn:
     - vmOperator
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     trust-manager:
       tolerations:

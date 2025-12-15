@@ -2,18 +2,18 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
-  name: {{ include "bcloud-capi.fullname" . }}-validating-webhook-configuration
+  name: {{ include "capi.fullname" . }}-validating-webhook-configuration
   annotations:
-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "bcloud-capi.fullname" . }}-serving-cert
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "capi.fullname" . }}-serving-cert
   labels:
-    {{- include "bcloud-capi.labels" . | nindent 4 }}
+    {{- include "capi.labels" . | nindent 4 }}
 webhooks:
 - admissionReviewVersions:
   - v1
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-cluster
       port: {{ .Values.webhookService.port }}
@@ -37,7 +37,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-clusterclass
       port: {{ .Values.webhookService.port }}
@@ -61,7 +61,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-machine
       port: {{ .Values.webhookService.port }}
@@ -84,7 +84,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-machinedeployment
       port: {{ .Values.webhookService.port }}
@@ -107,7 +107,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-machinedrainrule
       port: {{ .Values.webhookService.port }}
@@ -152,7 +152,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-machineset
       port: {{ .Values.webhookService.port }}
@@ -175,7 +175,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-runtime-cluster-x-k8s-io-v1alpha1-extensionconfig
       port: {{ .Values.webhookService.port }}
@@ -198,7 +198,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-cluster-x-k8s-io-v1beta1-machinepool
       port: {{ .Values.webhookService.port }}
@@ -221,7 +221,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-addons-cluster-x-k8s-io-v1beta1-clusterresourceset
       port: {{ .Values.webhookService.port }}
@@ -244,7 +244,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-addons-cluster-x-k8s-io-v1beta1-clusterresourcesetbinding
       port: {{ .Values.webhookService.port }}
@@ -267,7 +267,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-ipam-cluster-x-k8s-io-v1beta1-ipaddress
       port: {{ .Values.webhookService.port }}
@@ -291,7 +291,7 @@ webhooks:
   - v1beta1
   clientConfig:
     service:
-      name: {{ include "bcloud-capi.fullname" . }}-webhook-service
+      name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
       path: /validate-ipam-cluster-x-k8s-io-v1beta1-ipaddressclaim
       port: {{ .Values.webhookService.port }}

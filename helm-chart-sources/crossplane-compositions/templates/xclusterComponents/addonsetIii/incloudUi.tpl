@@ -5,14 +5,16 @@ incloudUi:
   kind: XAddonsIncloudUi
   namespace: beget-incloud-ui
   version: v1alpha1
-  pluginName: kustomize-helm-with-values
-  {{- if $systemEnabled }}
-  dependsOn:
-  - dex
-  {{- else }}
   dependsOn:
   - certManager
+  {{- if $systemEnabled }}
+  - dex
   {{- end }}
+  {{ if $certManagerReady }}
+  pluginName: kustomize-helm-with-values
+  {{ else }}
+  pluginName: helm-with-values
+  {{ end }}
   values:
     incloud-web-resources:
       enabled: true

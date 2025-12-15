@@ -5,7 +5,7 @@ path: helm-chart-sources/grafana-operator
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "grafanaoperator" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
-pluginName: kustomize-helm-with-values
+pluginName: helm-with-values
 default: |
   grafana-operator:
     namespaceScope: false
@@ -24,17 +24,10 @@ default: |
       limits:
         cpu: 500m
         memory: 750Mi
-  monitoring:
-    secureService:
-      enabled: true
-      issuer:
-        name: selfsigned-cluster-issuer
 manifest:
   spec:
     syncPolicy:
       syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-
-
 {{- end }}

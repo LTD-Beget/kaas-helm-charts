@@ -10,7 +10,7 @@ patches:
       kind: Deployment
       name: crossplane
 
-  - path: ./deployment.crossplane.yaml
+  - path: ./deployment.crossplane-rbac-manager.yaml
     target:
       kind: Deployment
       name: crossplane-rbac-manager
