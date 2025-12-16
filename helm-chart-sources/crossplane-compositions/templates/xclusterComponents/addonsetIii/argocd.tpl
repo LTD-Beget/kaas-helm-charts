@@ -154,7 +154,7 @@ argocd:
         extraContainers:
           - name: helm-with-values
             command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.15"
+            image: "quay.io/argoproj/argocd:v2.14.10"
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
@@ -168,7 +168,7 @@ argocd:
                 name: cmp-plugin
           - name: kustomize-helm-with-values
             command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.15"
+            image: "quay.io/argoproj/argocd:v2.14.10"
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
@@ -183,7 +183,7 @@ argocd:
   {{ if $systemEnabled }}
           - name: argocd-vault-plugin-helm-with-values
             command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.15"
+            image: "quay.io/argoproj/argocd:v2.14.10"
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
