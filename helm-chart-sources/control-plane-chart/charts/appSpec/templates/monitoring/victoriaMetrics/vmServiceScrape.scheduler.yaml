@@ -12,10 +12,10 @@ spec:
     - port: https-metrics
       scheme: "https"
       tlsConfig:
-        serverName: {{ $appValue.clusterName }}-scheduler
+        serverName: {{ $.Release.Name }}-scheduler
         ca:
           secret:
-            name: {{ $appValue.clusterName }}-ca-crt
+            name: {{ $appValue.clusterName }}-ca
             key: ca.crt
   selector:
     matchLabels:
