@@ -8,7 +8,7 @@ metadata:
   name: front-proxy-ca
   namespace: {{ $.Release.Namespace }}
   labels:
-    cluster.x-k8s.io/cluster-name: my-first-client
+    cluster.x-k8s.io/cluster-name: {{ $appValue.clusterName }}
 spec:
   isCA: true
   commonName: front-proxy-ca
