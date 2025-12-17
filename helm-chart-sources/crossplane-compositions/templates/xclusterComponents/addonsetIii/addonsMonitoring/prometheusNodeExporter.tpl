@@ -13,6 +13,25 @@ prometheusNodeExporter:
   pluginName: helm-with-values
   {{ end }}
   values:
+    prometheus-node-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      {{- if $systemEnabled }}
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule" 
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule" 
+        - key: "dedicated"
+          value: "vminsert"
+          effect: "NoSchedule" 
+      {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
