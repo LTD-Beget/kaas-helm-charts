@@ -42,8 +42,8 @@ etcdBackup:
         - --defragmentation-schedule=10 0 */3 * *
       resources:
         limits:
-          cpu: 500m
-          memory: 1024Mi
+          cpu: 1000m
+          memory: 2048Mi
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
