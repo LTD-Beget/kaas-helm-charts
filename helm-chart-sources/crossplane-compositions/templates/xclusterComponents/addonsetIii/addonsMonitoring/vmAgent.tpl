@@ -13,6 +13,18 @@ vmAgent:
       fullnameOverride: "vmagent"
       vmagent:
         spec:
+          serviceScrapeSpec:
+            selector:
+              matchLabels:
+                monitoring.in-cloud.io/service: vmagent
+            endpoints:
+              - port: https-metrics
+                path: /metrics
+                scheme: HTTPS
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  serverName: vmagent-monitoring
+            jobLabel: vmagent
           containers:
             - name: config-reloader
               requests:
