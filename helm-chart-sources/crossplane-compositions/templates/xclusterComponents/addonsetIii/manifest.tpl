@@ -154,8 +154,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.prometheusNodeExporter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAgent" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.helmInsVMAgentAddRbac" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
   {{- printf `
     {{- end }}
@@ -175,6 +173,8 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaDashboards" . | nindent 4 }}

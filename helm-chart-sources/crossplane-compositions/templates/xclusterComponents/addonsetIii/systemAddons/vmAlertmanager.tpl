@@ -13,6 +13,47 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
+          serviceScrapeSpec:
+            selector:
+              matchLabels:
+                monitoring.in-cloud.io/service: alertmanager
+            endpoints:
+              - port: https-metrics
+                path: /metrics
+                scheme: HTTPS
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  serverName: alertmanager-monitoring
+            jobLabel: alertmanager
+          containers:
+            - name: rbac-proxy
+              image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=http://127.0.0.1:9093
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+          volumes:
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: alertmanager-monitoring-svc-tls
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
