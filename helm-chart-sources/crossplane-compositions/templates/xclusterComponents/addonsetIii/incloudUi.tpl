@@ -16,13 +16,6 @@ incloudUi:
   pluginName: helm-with-values
   {{ end }}
   values:
-    incloud-web-resources:
-      enabled: true
-      addons:
-        argocd:
-          enabled: true
-        trivy:
-          enabled: {{ $infraTrivyOperatorReady }}
     incloud-web-chart:
       oauth2-proxy:
         enabled: true

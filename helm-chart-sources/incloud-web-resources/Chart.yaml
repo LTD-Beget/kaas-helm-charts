@@ -1,0 +1,31 @@
+apiVersion: v2
+name: incloud-web-resources
+description: Chart for configuring Kubernetes Web UI InCloud
+
+type: application
+
+# Chart (packaging) version — semver. Bump on ANY template/values change.
+
+# Application version — free-form string. Tie it to app images/tags you ship.
+# Tip: keep it in sync with image tags from values.yaml.
+
+# Minimal supported Kubernetes version (features used: apps/v1, probes, fsGroupChangePolicy, etc.)
+kubeVersion: ">=1.22.0-0"
+
+# Helpful discoverability
+keywords:
+  - incloud
+  - openapi-ui
+  - bff
+  - web
+  - kubernetes
+  - helm
+
+version: 0.1.1
+
+appVersion: "1.2.0"
+
+dependencies:
+  - name: incloud-web-resources
+    version: "1.2.0-rc1"
+    repository: "oci://registry-1.docker.io/prorobotech"
