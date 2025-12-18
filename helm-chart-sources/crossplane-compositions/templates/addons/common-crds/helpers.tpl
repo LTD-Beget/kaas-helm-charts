@@ -9,4 +9,10 @@ pluginName: helm-with-values
 default: |
   argocd:
     enabled: true
+manifest:
+  spec:
+    syncPolicy:
+      syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
 {{- end }}
