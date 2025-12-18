@@ -172,7 +172,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trivyOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.vaultSecrets" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertmanager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
