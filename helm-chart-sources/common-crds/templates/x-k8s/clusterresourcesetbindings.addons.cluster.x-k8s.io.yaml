@@ -1,0 +1,287 @@
+{{- if .Values.xK8s.enabled }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: beget-capi/capi-serving-cert
+    controller-gen.kubebuilder.io/version: v0.14.0
+  labels:
+    cluster.x-k8s.io/provider: cluster-api
+    clusterctl.cluster.x-k8s.io: ""
+  name: clusterresourcesetbindings.addons.cluster.x-k8s.io
+spec:
+  conversion:
+    strategy: Webhook
+    webhook:
+      clientConfig:
+        caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUU4RENDQXRpZ0F3SUJBZ0lRQkpjSkRJcGR2djU5bVUxWmFldmVlakFOQmdrcWhraUc5dzBCQVEwRkFEQVMKTVJBd0RnWURWUVFERXdkeWIyOTBMV05oTUI0WERUSTFNVEl3TlRFeU16TXdPRm9YRFRRMU1URXpNREV5TXpNdwpPRm93RWpFUU1BNEdBMVVFQXhNSGNtOXZkQzFqWVRDQ0FpSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnSVBBRENDCkFnb0NnZ0lCQU1CZnZHckNjVHE4S2xSQTJwVlcvdFEyazN3WjlFMExSQ1R5T0h2a0pQL0IzaUo4YkFXK3BYSkYKcmwzQkxNRzcrNi9sa29HbHdqenByL2R0N3F5SlNIZkF4LzkwMllzZFgxYTNsUFRWd0NwQzlQV1ljNE1OSE4xOApWT0tvZkZ5WHlnOVMzSUp5UlB3bklQRm00cnpWcTJLQk5HRjJQK0ZRWmc4VTdlZWIrbjVGMlFSUDUxc2RxM0NPCmxObHQyREZCNWJ6QUtQVXlxWXRFWmp3WnY1Z0FvemNUU3FuZzFjMmNyUTlJYllrR3I4UzU4OXQrMVRqL1NXdnMKMi9tdm8yQlQ4dWh2NkIyZlhiWUxVQVJDMm1lZmxYQytLNHdQOTRQU05wQ2poY3BUWlRvVXJoK2RhdXdsUjF4RwpvajFvbytEelJuSG56eDQ2WFA3ZmtkaHZNelNaZ1JYclgxcHJyMjN4ZUtwbHV4Y0FzOWg0TG1xaU96ODNUcFhSCmhESkQ5aWcwRmJacDEwVE9QdkdVZmo2NFhVTDF0cDUvejc5dnRleWVDZEx1ZFJiM1R5VEZTTklBbkl0V1hUdGQKSlhLVkpHWXh5MFVWTHFJQWlFQW5HTnN2ZTJtdlVrcWJpcWdCVERwYUVqdE9vMHArS3dUUUYvT2M2ZlFiREhySgo0cHVYNy8zdVJva09hc3h2dEhPZEs0dWJ3eDIvS0pjL25TWE1jWnd3QlpLcXBmdWRBaWJENU5RTEx4cG1BYkQ0ClNaNU43UzBTRmtoSXVOaEpWSm14R0dJRm8rTklxMUpPVjRWRGxGQmswZnE1WDhKdlc5aCtUOUpqblVTQjFPdUUKbFdkR0NmNDFuSGJyT21LcWpnSEZxRkpza1JHRnlvSHBHM1NEY256S3MzT1JuajhjQUd5dEFnTUJBQUdqUWpCQQpNQTRHQTFVZER3RUIvd1FFQXdJQ3BEQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01CMEdBMVVkRGdRV0JCVDBpZ00rCmVaTHpOV3FVNHFROVNEeWkzVkVlTmpBTkJna3Foa2lHOXcwQkFRMEZBQU9DQWdFQVNKN3hzVTVhUjFOUE51M0UKN0FrS1VqK3VMZUltUTgwcEdaUm1jdHkrUUZnRFllZXEwQ3BGWlFNSFlRc01JS3k5YXVtakJtZGVGTlUwc2xjeQpib3A4UXpvNjY2TlN0YVYrVjMvcVluMXREU0RyV0NibW9YZTBKYW8vM0wwbkNFTmNaQmtvcTdWZXBnemRGUEhxCkV3MnFFNHdMeml1OEZPbWRjenRvQ2NKVzJFMmJFc2ZWSW5rTUQzYnlhMlBFeUVXc0d3MVpXc2oxYkhVY0ZsN3kKcXFJMUowd25CcWNxRWljOGc1aE1xK2R3UjhqalNnOW1zQU8xQXVScnJsM3ZuQWlMVlBIOXVsSUQ5Zzh5NzlwUgphS0UrZDBxdWhzUTA0Yy9OdUxrMEY1VWRiY1daeDVLQnNlOEVmRjgwUFZpWDNWUFlqUDZJWUkxSVdSQ2NNMmtLCmM5RzFlZUlQbFJnOWpJdCsvRDVDMXNCdFJyTHdhMS9Vd2E0d0JXdTFrSUJ6Q2l6cDVWWDVJenMwZDEzb0VFUjkKclhUanlyNnl2Mis1QTREYW9GamtCek5neWRuZXpzZHdtVW1HeVlneUlRcGplOFB5SStTVFQ5bFFGd2FsTUtLNgpCenFYbU9NaGV6bWRtZHdxNGlPRURZeHArbjRlY3YvakFTcDdrcGltVXN4aFhoelhQc0d3ajlPU3lOY2xuZC93CnE0NnJ3bFZiRm5yanFpWldiVzNKaXFFSGhydGNCRlBGMmNEQnVRcXlnUFA1a291MGo1UlZ2MkFoamRhUWw0NUIKS3BJRXN4bUpPeGJsdnBwMHlrakFBeENNbitQR2M4ZzdSbXhrVmo1bkdITjhNTU84c0plYnZoWmtLK0JwMGoxbwpuVTcyeWs1NjhxWFpRTmkrOFVlR1BWY1RMUGs9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+        service:
+          name: capi-webhook-service
+          namespace: beget-capi
+          path: /convert
+          port: 9443
+      conversionReviewVersions:
+        - v1
+        - v1beta1
+  group: addons.cluster.x-k8s.io
+  names:
+    categories:
+      - cluster-api
+    kind: ClusterResourceSetBinding
+    listKind: ClusterResourceSetBindingList
+    plural: clusterresourcesetbindings
+    singular: clusterresourcesetbinding
+  scope: Namespaced
+  versions:
+    - deprecated: true
+      name: v1alpha3
+      schema:
+        openAPIV3Schema:
+          description: |-
+            ClusterResourceSetBinding lists all matching ClusterResourceSets with the cluster it belongs to.
+
+            Deprecated: This type will be removed in one of the next releases.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ClusterResourceSetBindingSpec defines the desired state of ClusterResourceSetBinding.
+              properties:
+                bindings:
+                  description: bindings is a list of ClusterResourceSets and their resources.
+                  items:
+                    description: ResourceSetBinding keeps info on all of the resources in a ClusterResourceSet.
+                    properties:
+                      clusterResourceSetName:
+                        description: clusterResourceSetName is the name of the ClusterResourceSet that is applied to the owner cluster of the binding.
+                        type: string
+                      resources:
+                        description: resources is a list of resources that the ClusterResourceSet has.
+                        items:
+                          description: ResourceBinding shows the status of a resource that belongs to a ClusterResourceSet matched by the owner cluster of the ClusterResourceSetBinding object.
+                          properties:
+                            applied:
+                              description: applied is to track if a resource is applied to the cluster or not.
+                              type: boolean
+                            hash:
+                              description: |-
+                                hash is the hash of a resource's data. This can be used to decide if a resource is changed.
+                                For "ApplyOnce" ClusterResourceSet.spec.strategy, this is no-op as that strategy does not act on change.
+                              type: string
+                            kind:
+                              description: 'kind of the resource. Supported kinds are: Secrets and ConfigMaps.'
+                              enum:
+                                - Secret
+                                - ConfigMap
+                              type: string
+                            lastAppliedTime:
+                              description: lastAppliedTime identifies when this resource was last applied to the cluster.
+                              format: date-time
+                              type: string
+                            name:
+                              description: name of the resource that is in the same namespace with ClusterResourceSet object.
+                              minLength: 1
+                              type: string
+                          required:
+                            - applied
+                            - kind
+                            - name
+                          type: object
+                        type: array
+                    required:
+                      - clusterResourceSetName
+                    type: object
+                  type: array
+              type: object
+          type: object
+      served: false
+      storage: false
+      subresources:
+        status: {}
+    - additionalPrinterColumns:
+        - description: Time duration since creation of ClusterResourceSetBinding
+          jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      deprecated: true
+      name: v1alpha4
+      schema:
+        openAPIV3Schema:
+          description: |-
+            ClusterResourceSetBinding lists all matching ClusterResourceSets with the cluster it belongs to.
+
+            Deprecated: This type will be removed in one of the next releases.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ClusterResourceSetBindingSpec defines the desired state of ClusterResourceSetBinding.
+              properties:
+                bindings:
+                  description: bindings is a list of ClusterResourceSets and their resources.
+                  items:
+                    description: ResourceSetBinding keeps info on all of the resources in a ClusterResourceSet.
+                    properties:
+                      clusterResourceSetName:
+                        description: clusterResourceSetName is the name of the ClusterResourceSet that is applied to the owner cluster of the binding.
+                        type: string
+                      resources:
+                        description: resources is a list of resources that the ClusterResourceSet has.
+                        items:
+                          description: ResourceBinding shows the status of a resource that belongs to a ClusterResourceSet matched by the owner cluster of the ClusterResourceSetBinding object.
+                          properties:
+                            applied:
+                              description: applied is to track if a resource is applied to the cluster or not.
+                              type: boolean
+                            hash:
+                              description: |-
+                                hash is the hash of a resource's data. This can be used to decide if a resource is changed.
+                                For "ApplyOnce" ClusterResourceSet.spec.strategy, this is no-op as that strategy does not act on change.
+                              type: string
+                            kind:
+                              description: 'kind of the resource. Supported kinds are: Secrets and ConfigMaps.'
+                              enum:
+                                - Secret
+                                - ConfigMap
+                              type: string
+                            lastAppliedTime:
+                              description: lastAppliedTime identifies when this resource was last applied to the cluster.
+                              format: date-time
+                              type: string
+                            name:
+                              description: name of the resource that is in the same namespace with ClusterResourceSet object.
+                              minLength: 1
+                              type: string
+                          required:
+                            - applied
+                            - kind
+                            - name
+                          type: object
+                        type: array
+                    required:
+                      - clusterResourceSetName
+                    type: object
+                  type: array
+              type: object
+          type: object
+      served: false
+      storage: false
+      subresources:
+        status: {}
+    - additionalPrinterColumns:
+        - description: Time duration since creation of ClusterResourceSetBinding
+          jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1beta1
+      schema:
+        openAPIV3Schema:
+          description: ClusterResourceSetBinding lists all matching ClusterResourceSets with the cluster it belongs to.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ClusterResourceSetBindingSpec defines the desired state of ClusterResourceSetBinding.
+              properties:
+                bindings:
+                  description: bindings is a list of ClusterResourceSets and their resources.
+                  items:
+                    description: ResourceSetBinding keeps info on all of the resources in a ClusterResourceSet.
+                    properties:
+                      clusterResourceSetName:
+                        description: clusterResourceSetName is the name of the ClusterResourceSet that is applied to the owner cluster of the binding.
+                        type: string
+                      resources:
+                        description: resources is a list of resources that the ClusterResourceSet has.
+                        items:
+                          description: ResourceBinding shows the status of a resource that belongs to a ClusterResourceSet matched by the owner cluster of the ClusterResourceSetBinding object.
+                          properties:
+                            applied:
+                              description: applied is to track if a resource is applied to the cluster or not.
+                              type: boolean
+                            hash:
+                              description: |-
+                                hash is the hash of a resource's data. This can be used to decide if a resource is changed.
+                                For "ApplyOnce" ClusterResourceSet.spec.strategy, this is no-op as that strategy does not act on change.
+                              type: string
+                            kind:
+                              description: 'kind of the resource. Supported kinds are: Secrets and ConfigMaps.'
+                              enum:
+                                - Secret
+                                - ConfigMap
+                              type: string
+                            lastAppliedTime:
+                              description: lastAppliedTime identifies when this resource was last applied to the cluster.
+                              format: date-time
+                              type: string
+                            name:
+                              description: name of the resource that is in the same namespace with ClusterResourceSet object.
+                              minLength: 1
+                              type: string
+                          required:
+                            - applied
+                            - kind
+                            - name
+                          type: object
+                        type: array
+                    required:
+                      - clusterResourceSetName
+                    type: object
+                  type: array
+                clusterName:
+                  description: |-
+                    clusterName is the name of the Cluster this binding applies to.
+                    Note: this field mandatory in v1beta2.
+                  type: string
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
+{{- end }}

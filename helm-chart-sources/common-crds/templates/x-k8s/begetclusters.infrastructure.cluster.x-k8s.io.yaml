@@ -1,0 +1,223 @@
+{{- if .Values.xK8s.enabled }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    cluster.x-k8s.io/v1beta1: v1beta1
+    clusterctl.cluster.x-k8s.io: ""
+  name: begetclusters.infrastructure.cluster.x-k8s.io
+spec:
+  conversion:
+    strategy: None
+  group: infrastructure.cluster.x-k8s.io
+  names:
+    kind: BegetCluster
+    listKind: BegetClusterList
+    plural: begetclusters
+    singular: begetcluster
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - description: Cluster infrastructure is ready
+          jsonPath: .status.ready
+          name: Ready
+          type: string
+        - description: API Endpoint
+          jsonPath: .spec.controlPlaneEndpoint
+          name: Endpoint
+          type: string
+      name: v1beta1
+      schema:
+        openAPIV3Schema:
+          description: BegetCluster is the Schema for the begetclusters API.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: BegetClusterSpec defines the desired state of BegetCluster.
+              properties:
+                controlPlaneEndpoint:
+                  description: APIEndpoint represents a reachable Kubernetes API endpoint.
+                  properties:
+                    host:
+                      description: The hostname on which the API server is serving.
+                      type: string
+                    port:
+                      description: The port on which the API server is serving.
+                      format: int32
+                      type: integer
+                  required:
+                    - host
+                    - port
+                  type: object
+                customerLogin:
+                  type: string
+                loadBalancerSpec:
+                  properties:
+                    displayName:
+                      maxLength: 63
+                      minLength: 3
+                      pattern: ([a-z]([-a-z0-9]{0,61}[a-z0-9])?)?
+                      type: string
+                    healthcheck:
+                      default: {}
+                      properties:
+                        healthcheckIntervalSec:
+                          default: 3
+                          type: integer
+                        healthcheckThreshold:
+                          default: 3
+                          type: integer
+                        healthcheckTimeoutSec:
+                          default: 1
+                          type: integer
+                      type: object
+                    listener:
+                      properties:
+                        address:
+                          type: string
+                        internal:
+                          default: false
+                          type: boolean
+                        ports:
+                          description: load balancer listener port mapping
+                          items:
+                            properties:
+                              from:
+                                default: 6443
+                                format: int32
+                                maximum: 65535
+                                minimum: 1
+                                type: integer
+                              to:
+                                default: 6443
+                                format: int32
+                                maximum: 65535
+                                minimum: 1
+                                type: integer
+                              type:
+                                default: generic
+                                enum:
+                                  - generic
+                                  - controlPlane
+                                type: string
+                            required:
+                              - from
+                              - to
+                            type: object
+                          type: array
+                      type: object
+                    loadBalancerType:
+                      default: external
+                      enum:
+                        - external
+                        - internal
+                      type: string
+                    name:
+                      maxLength: 63
+                      minLength: 3
+                      pattern: ([a-z]([-a-z0-9]{0,61}[a-z0-9])?)?
+                      type: string
+                  required:
+                    - displayName
+                    - listener
+                    - name
+                  type: object
+                region:
+                  type: string
+              required:
+                - customerLogin
+                - loadBalancerSpec
+                - region
+              type: object
+            status:
+              description: BegetClusterStatus defines the observed state of BegetCluster.
+              properties:
+                conditions:
+                  description: Conditions provide observations of the operational state of a Cluster API resource.
+                  items:
+                    description: Condition defines an observation of a Cluster API resource operational state.
+                    properties:
+                      lastTransitionTime:
+                        description: |-
+                          Last time the condition transitioned from one status to another.
+                          This should be when the underlying condition changed. If that is not known, then using the time when
+                          the API field changed is acceptable.
+                        format: date-time
+                        type: string
+                      message:
+                        description: |-
+                          A human readable message indicating details about the transition.
+                          This field may be empty.
+                        type: string
+                      reason:
+                        description: |-
+                          The reason for the condition's last transition in CamelCase.
+                          The specific API may choose whether or not this field is considered a guaranteed API.
+                          This field may be empty.
+                        type: string
+                      severity:
+                        description: |-
+                          severity provides an explicit classification of Reason code, so the users or machines can immediately
+                          understand the current situation and act accordingly.
+                          The Severity field MUST be set only when Status=False.
+                        type: string
+                      status:
+                        description: status of the condition, one of True, False, Unknown.
+                        type: string
+                      type:
+                        description: |-
+                          type of condition in CamelCase or in foo.example.com/CamelCase.
+                          Many .condition.type values are consistent across resources like Available, but because arbitrary conditions
+                          can be useful (see .node.status.conditions), the ability to deconflict is important.
+                        type: string
+                    required:
+                      - lastTransitionTime
+                      - status
+                      - type
+                    type: object
+                  type: array
+                loadBalancer:
+                  properties:
+                    backendId:
+                      type: string
+                    listenerAddress:
+                      type: string
+                    listenerPorts:
+                      items:
+                        format: int32
+                        type: integer
+                      type: array
+                    loadBalancerId:
+                      type: string
+                    name:
+                      type: string
+                  type: object
+                ready:
+                  default: false
+                  type: boolean
+              required:
+                - loadBalancer
+                - ready
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
+{{- end }}
