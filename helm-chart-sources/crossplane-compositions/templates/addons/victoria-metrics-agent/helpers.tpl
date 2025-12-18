@@ -15,9 +15,11 @@ default: |
           requests:
             cpu: "100m"
             memory: "128Mi"
+            ephemeral-storage: "1Gi"
           limits:
             cpu: "500m"
             memory: "500Mi"
+            ephemeral-storage: "1Gi"
         securityContext:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
@@ -28,7 +30,9 @@ default: |
           remoteWrite.tlsInsecureSkipVerify: "true"
           remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
           promscrape.streamParse: "true"
-          promscrape.maxScrapeSize: "100000000"
+          promscrape.maxScrapeSize: "33554432"
+          remoteWrite.maxDiskUsagePerURL: "67108864"
+          remoteWrite.queues: "24"
           remoteWrite.shardByURL: "true"
           remoteWrite.shardByURLReplicas: "3"
         replicaCount: 1
