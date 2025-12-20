@@ -93,7 +93,10 @@ vmAlert:
             url: "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
             concurrency: 4
             tlsConfig:
-              caFile: /etc/ssl/certs/ca.crt
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
           remoteRead:
             url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
           datasource:
