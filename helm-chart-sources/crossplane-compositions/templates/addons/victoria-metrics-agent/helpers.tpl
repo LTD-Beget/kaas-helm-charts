@@ -57,7 +57,9 @@ default: |
         minScrapeInterval: 15s
         maxScrapeInterval: 60s
         remoteWrite:
-          - url: http://prometheus-server.beget-prometheus.svc:80/api/v1/write
+          - url: https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write
+            tlsConfig:
+              caFile: /etc/ssl/certs/ca.crt
         externalLabels:
           cluster_full_name: "cluster" #namespace-cluster_name
           remotewrite_cluster: cluster #namespace-cluster_name

@@ -26,12 +26,14 @@ default: |
           maxUnavailable: 0
 
         remoteWrite:
-          url: "http://prometheus-server.beget-prometheus.svc:80/api/v1/write"
+          url: "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
           concurrency: 4
+          tlsConfig:
+            caFile: /etc/ssl/certs/ca.crt
         remoteRead:
-          url: "http://prometheus-server.beget-prometheus.svc:80"
+          url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
         datasource:
-          url: "http://prometheus-server.beget-prometheus.svc:80"
+          url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
         notifiers:
           - url: "http://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
 immutable: |
