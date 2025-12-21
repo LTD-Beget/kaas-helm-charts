@@ -12,8 +12,6 @@ composite:
   addons:
     istiobase:
       targetRevision: 1.26.0
-    begetcmprovider:
-      targetRevision: monitoring # TODO: merge to HEAD
 
 xclusterComponents:
   client:
