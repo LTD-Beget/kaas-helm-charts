@@ -6,7 +6,7 @@ incloudWebResources:
   namespace: beget-incloud-ui
   version: v1alpha1
   dependsOn:
-  - incloudUi
+    - incloudUi
   values:
     incloud-web-resources:
       enabled: true

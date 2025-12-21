@@ -6,7 +6,7 @@ dex:
   namespace: beget-dex
   version: v1alpha1
   dependsOn:
-  - certManager
+    - certManager
   {{ if $certManagerReady }}
   pluginName: kustomize-helm-with-values
   {{ else }}

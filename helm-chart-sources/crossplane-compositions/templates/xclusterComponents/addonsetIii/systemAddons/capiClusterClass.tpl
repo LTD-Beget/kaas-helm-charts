@@ -6,7 +6,7 @@ capiClusterClass:
   namespace: bcloud-capi
   version: v1alpha1
   dependsOn:
-  - capi
+    - capi
   values:
     inCloud:
       serviceAccount:

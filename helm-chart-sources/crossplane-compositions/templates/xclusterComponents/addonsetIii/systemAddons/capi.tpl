@@ -6,7 +6,7 @@ capi:
   namespace: beget-capi
   version: v1alpha1
   dependsOn:
-  - certManager
+    - certManager
   values:
     certificates:
       useExternalIssuer: true

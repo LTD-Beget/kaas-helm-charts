@@ -6,7 +6,7 @@ begetCmProvider:
   namespace: beget-cm-provider
   version: v1alpha1
   dependsOn:
-  - certManager
+    - certManager
   values:
     certificates:
       useExternalIssuer: true

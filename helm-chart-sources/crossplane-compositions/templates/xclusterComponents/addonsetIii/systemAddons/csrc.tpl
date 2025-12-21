@@ -7,7 +7,7 @@ csrc:
   version: v1alpha1
   releaseName: {{ $clusterName }}
   dependsOn:
-  - helmInserter
+    - helmInserter
   values:
     appSpec:
       applications:
