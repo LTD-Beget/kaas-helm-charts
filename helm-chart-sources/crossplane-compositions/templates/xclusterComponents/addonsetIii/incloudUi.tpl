@@ -6,10 +6,10 @@ incloudUi:
   namespace: beget-incloud-ui
   version: v1alpha1
   dependsOn:
-  - certManager
-  {{- if $systemEnabled }}
-  - dex
-  {{- end }}
+    - certManager
+  {{ if $systemEnabled }}
+    - dex
+  {{ end }}
   {{ if $certManagerReady }}
   pluginName: kustomize-helm-with-values
   {{ else }}
