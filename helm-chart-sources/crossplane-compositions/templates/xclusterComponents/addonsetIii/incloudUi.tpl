@@ -6,11 +6,9 @@ incloudUi:
   namespace: beget-incloud-ui
   version: v1alpha1
   dependsOn:
+    - certManager
   {{ if $systemEnabled }}
-    - certManager
     - dex
-  {{ else }}
-    - certManager
   {{ end }}
   {{ if $certManagerReady }}
   pluginName: kustomize-helm-with-values
@@ -19,12 +17,12 @@ incloudUi:
   {{ end }}
   values:
     incloud-web-chart:
-      oauth2-proxy:
+      oauth2-proxy: |
         enabled: true
         config:
           clientID: "kubernetes"
           clientSecret: "incloud-ui-super-secret"
-          cookieSecret: {{ $argsIncloudUICookieSecret }}
+          cookieSecret: "{{ $argsIncloudUICookieSecret }}"
         extraArgs:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:8081"
           redirect-url: {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
@@ -44,7 +42,7 @@ incloudUi:
             effect: "NoSchedule"
       ingress:
         enabled: false
-      web:
+      web: |
         env:
           LOGIN_URL: "/oauth2/userinfo"
           LOGIN_USERNAME_FIELD: "email"
@@ -58,7 +56,7 @@ incloudUi:
       bff:
         env:
           BASE_ALLOWED_AUTH_HEADERS: user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization
-      clusters:
+      clusters: |
         - name: default
           description: default
           tenant: dev
