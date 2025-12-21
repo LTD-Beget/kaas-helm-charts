@@ -12,19 +12,8 @@ composite:
   addons:
     istiobase:
       targetRevision: 1.26.0
-    common:
-      targetRevision: feature/monitoring # TODO: merge to HEAD
-    # gitlabRefs
     begetcmprovider:
       targetRevision: monitoring # TODO: merge to HEAD
-    ccm:
-      targetRevision: HEAD
-    crossplanexcluster:
-      targetRevision: HEAD
-    csrc:
-      targetRevision: HEAD
-    capiclusterclass:
-      targetRevision: HEAD
 
 xclusterComponents:
   client:
