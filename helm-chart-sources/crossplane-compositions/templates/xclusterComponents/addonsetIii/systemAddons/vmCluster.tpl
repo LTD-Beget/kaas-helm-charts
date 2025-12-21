@@ -92,7 +92,7 @@ vmCluster:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/vminsert
+                        - key: node-role.kubernetes.io/monitoring
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
