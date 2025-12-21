@@ -145,7 +145,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.istioGw" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.incloudUi" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.incloudWebResources" . | nindent 4 }}
-    {{- include "xclusterComponents.addonsetIii.kubeStateMetrics" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.trustManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.metricsServer" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.processExporter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.prometheusNodeExporter" . | nindent 4 }}
