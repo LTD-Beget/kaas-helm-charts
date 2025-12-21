@@ -39,7 +39,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
             {{ end }}
         monitoring:
         {{ if $infraVMOperatorReady }}
@@ -70,7 +70,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists	
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
             {{ end }}
       far:
         runtimeConfig:
@@ -90,7 +90,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
             {{ end }}
       fer:
         runtimeConfig:
@@ -110,7 +110,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
             {{ end }}
       fgt:
         runtimeConfig:
@@ -130,7 +130,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
                   containers:
                     - name: package-runtime
                       resources:
@@ -162,7 +162,7 @@ crossplaneFunctions:
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
                   nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane: ''
             {{ end }}
   ` }}
 {{- end -}}
