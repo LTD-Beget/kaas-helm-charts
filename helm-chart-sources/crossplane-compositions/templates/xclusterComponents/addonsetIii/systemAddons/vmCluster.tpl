@@ -27,7 +27,6 @@ vmCluster:
             resources:
               limits:
                 cpu: "5"
-                memory: 10Gi
               requests:
                 cpu: "50m"
                 memory: "64Mi"
@@ -85,12 +84,15 @@ vmCluster:
               - key: "dedicated"
                 value: "monitoring"
                 effect: "NoSchedule"
+              - key: "dedicated"
+                value: "vminsert"
+                effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vminsert
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -111,7 +113,6 @@ vmCluster:
             resources:
               limits:
                 cpu: "4"
-                memory: "8Gi"
               requests:
                 cpu: "50m"
                 memory: "64Mi"
@@ -127,6 +128,9 @@ vmCluster:
               - key: "dedicated"
                 value: "monitoring"
                 effect: "NoSchedule"
+              - key: "dedicated"
+                value: "vminsert"
+                effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
                 secret:
@@ -140,7 +144,7 @@ vmCluster:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vminsert
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
