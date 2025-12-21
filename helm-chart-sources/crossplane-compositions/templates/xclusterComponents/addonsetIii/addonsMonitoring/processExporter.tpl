@@ -30,7 +30,7 @@ processExporter:
           effect: "NoSchedule" 
         - key: "dedicated"
           value: "vminsert"
-          effect: "NoSchedule" e" 
+          effect: "NoSchedule"
       {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
