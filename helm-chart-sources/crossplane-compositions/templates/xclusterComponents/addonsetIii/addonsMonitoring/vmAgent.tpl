@@ -76,12 +76,11 @@ vmAgent:
               incloud-metrics: "infra"
           remoteWrite:
             - url: {{ $remoteWriteUrlVmAgent }}
-            {{ if not $systemEnabled }}
               tlsConfig:
-                caFile: /tls/cabundle/ca.crt
-            {{ else }}
-              tlsConfig:
+            {{ if $systemEnabled }}
                 caFile: /etc/ssl/certs/ca.crt
+            {{ else }}
+                caFile: /tls/cabundle/ca.crt
             {{ end }}
           volumeMounts:
             {{ if not $systemEnabled }}

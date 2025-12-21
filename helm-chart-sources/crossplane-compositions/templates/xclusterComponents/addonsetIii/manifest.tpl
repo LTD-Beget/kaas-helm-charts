@@ -94,13 +94,10 @@ spec:
 
 {{- $xAddonSetClientReady        := and $konnectivityAgentReady $kubeadmResourcesReady }}
 
-{{- $remoteWriteUrlVmAgent  := "" }}
+{{- $remoteWriteUrlVmAgent  := printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
 {{- if $systemEnabled }}
   {{- $remoteWriteUrlVmAgent = "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus" }}
 {{- end }}
-{{- if not $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
-{{- end }}  
 ###
 ---
 apiVersion: in-cloud.io/v1alpha1
