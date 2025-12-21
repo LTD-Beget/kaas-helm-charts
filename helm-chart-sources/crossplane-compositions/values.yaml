@@ -10,12 +10,21 @@ composition:
 
 composite:
   addons:
-    begetcmprovider:
-      targetRevision: monitoring # TODO: merge to HEAD
     istiobase:
       targetRevision: 1.26.0
-    prometheusadapter:
-      targetRevision: 4.14.1
+    common:
+      targetRevision: feature/monitoring # TODO: merge to HEAD
+    # gitlabRefs
+    begetcmprovider:
+      targetRevision: monitoring # TODO: merge to HEAD
+    ccm:
+      targetRevision: HEAD
+    crossplanexcluster:
+      targetRevision: HEAD
+    csrc:
+      targetRevision: HEAD
+    capiclusterclass:
+      targetRevision: HEAD
 
 xclusterComponents:
   client:
