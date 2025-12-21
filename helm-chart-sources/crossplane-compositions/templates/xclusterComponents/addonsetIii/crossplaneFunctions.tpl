@@ -28,24 +28,18 @@ crossplaneFunctions:
                         limits:   { cpu: "8", memory: "8Gi" }
                   nodeSelector:
                       node-role.kubernetes.io/crossplane: ''
+  {{- end }}
                   tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
-                      operator: Exists	
-                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
-  {{- else }}
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
   {{- end }}
         monitoring:
         {{ if $infraVMOperatorReady }}
@@ -66,29 +60,19 @@ crossplaneFunctions:
             spec:
               template:
                 spec:
-                  containers:
-                    - name: package-runtime
-  {{- if and $systemEnabled $crossplaneReady }}
-                  nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
                   tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists	
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
-  {{- else }}
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
+                  nodeSelector:
+                      node-role.kubernetes.io/crossplane: ''
   {{- end }}
       far:
         # package: dmkolbin/crossplane-function-auto-ready
@@ -98,29 +82,19 @@ crossplaneFunctions:
             spec:
               template:
                 spec:
-                  containers:
-                    - name: package-runtime
-  {{- if and $systemEnabled $crossplaneReady }}
-                  nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
                   tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
-                      operator: Exists	
-                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
-  {{- else }}
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
+                  nodeSelector:
+                      node-role.kubernetes.io/crossplane: ''
   {{- end }}
       fer:
         # package: dmkolbin/crossplane-function-extra-resources
@@ -130,29 +104,19 @@ crossplaneFunctions:
             spec:
               template:
                 spec:
-                  containers:
-                    - name: package-runtime
-  {{- if and $systemEnabled $crossplaneReady }}
-                  nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
                   tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
-                      operator: Exists	
-                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
-  {{- else }}
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
+                  nodeSelector:
+                      node-role.kubernetes.io/crossplane: ''
   {{- end }}
       fgt:
         # package: dmkolbin/crossplane-function-go-templating
@@ -162,19 +126,19 @@ crossplaneFunctions:
             spec:
               template:
                 spec:
-  {{- if and $systemEnabled $crossplaneReady }}
-                  nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
                   tolerations:
-                    - effect: NoSchedule
-                      key: node-role.kubernetes.io/crossplane	
-                      operator: Exists	
                     - key: node-role.kubernetes.io/control-plane
                       operator: Exists
                       effect: NoSchedule
                     - key: node-role.kubernetes.io/master
                       operator: Exists
                       effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                  nodeSelector:
+                      node-role.kubernetes.io/crossplane: ''
                   containers:
                     - name: package-runtime
                       resources:
@@ -182,13 +146,6 @@ crossplaneFunctions:
                         limits:   { cpu: "6", memory: "4Gi" }
               replicas: 5
   {{- else }}
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
                   containers:
                     - name: package-runtime
                       resources:
@@ -203,29 +160,19 @@ crossplaneFunctions:
             spec:
               template:
                 spec:
-  {{- if and $systemEnabled $crossplaneReady }}
-                  nodeSelector:
-                      node-role.kubernetes.io/crossplane: ''
                   tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+  {{- if and $systemEnabled $crossplaneReady }}
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
-                      operator: Exists	
-                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
-  {{- else }}
-                  containers:
-                    - name: package-runtime
-                  tolerations:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-                      effect: NoSchedule
-                    - key: node-role.kubernetes.io/master
-                      operator: Exists
-                      effect: NoSchedule
+                  nodeSelector:
+                      node-role.kubernetes.io/crossplane: ''
   {{- end }}
   ` }}
 {{- end -}}
