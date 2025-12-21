@@ -5,10 +5,6 @@ victoria-metrics-k8s-stack:
     clusterLabel: cluster_full_name
   defaultRules:
     create: true
-    additionalRuleLabels:
-      cluster_full_name: "{{ $labels.cluster_full_name }}"
-      remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
-      in-cloud-metrics: "infra"
     labels:
       cluster_full_name: "in-cloud-cluster-name"
       remotewrite_cluster: "in-cloud-cluster-name"
