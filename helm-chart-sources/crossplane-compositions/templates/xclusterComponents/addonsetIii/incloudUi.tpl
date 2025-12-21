@@ -61,16 +61,16 @@ incloudUi:
           description: default
           tenant: dev
           scheme: http
-          {{ if $systemEnabled }}
+        {{ if $systemEnabled }}
           api: {{ $systemIstioGwVip }}
-          {{ else }}
+        {{ else }}
           api: 127.0.0.1
-          {{ end }}
+        {{ end }}
         - name: cluster2
           description: cluster2
           tenant: dev
           scheme: http
-          api: 93.189.231.174   
+          api: 93.189.231.174  # TODO: dynamicaly cluster-list
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

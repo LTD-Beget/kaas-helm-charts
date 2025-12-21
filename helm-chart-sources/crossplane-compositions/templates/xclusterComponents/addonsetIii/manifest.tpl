@@ -146,6 +146,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.istioBase" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.istiod" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.istioGw" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.incloudUi" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.incloudWebResources" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trustManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.kubeStateMetrics" . | nindent 4 }}

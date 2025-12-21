@@ -14,6 +14,6 @@ incloudWebResources:
         argocd:
           enabled: true
         trivy:
-          enabled: {{ $infraTrivyOperatorReady }}
+          enabled: true # {{ $infraTrivyOperatorReady }}
   ` }}
 {{- end -}}

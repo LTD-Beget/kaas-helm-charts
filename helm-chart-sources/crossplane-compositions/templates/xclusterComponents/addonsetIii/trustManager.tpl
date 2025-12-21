@@ -37,11 +37,11 @@ trustManager:
       target:
         namespaceSelector:
           matchLabels:
-      {{ if $systemEnabled }}
+          {{ if $systemEnabled }}
             in-cloud.io/caBundle: "approved"
-      {{ else }}
+          {{ else }}
             in-cloud.io/clusterName: {{ $clusterName }}
-      {{ end }}
+          {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
