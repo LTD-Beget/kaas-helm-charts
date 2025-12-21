@@ -17,24 +17,6 @@ incloudUi:
   {{ end }}
   values:
     incloud-web-chart:
-      defaultWebResources:
-        breadcrumbs:
-          default:
-            stock-cluster-factory-namespace-details: false
-            stock-cluster-factory-base-factory-clusterscoped-api: false
-            stock-cluster-factory-base-factory-clusterscoped-builtin: false
-            stock-project-factory-base-factory-namespaced-api: false
-            stock-project-factory-base-factory-namespaced-builtin: false
-        customcolumnsoverride:
-          stock-cluster-v1_namespaces: false
-          stock-namespace-v1_namespaces: false
-        factory:
-          default:
-            base-factory-clusterscoped-api: false
-            base-factory-clusterscoped-builtin: false
-            base-factory-namespaced-api: false
-            base-factory-namespaced-builtin: false
-            namespace-details: false
       oauth2-proxy:
         enabled: true
         config:
