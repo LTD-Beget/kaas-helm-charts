@@ -68,7 +68,7 @@ spec:
                 fromFieldPath: Optional
                 toFieldPath:   MergeObjects
 
-{{- if .Values.xclusterComponents.client.enabled }}
+{{ if .Values.xclusterComponents.client.enabled }}
     - step: xaddonsetclient
       functionRef:
         name: function-go-templating
@@ -95,4 +95,4 @@ spec:
               policy:
                 fromFieldPath: Required
                 toFieldPath:   MergeObjects
-{{- end }}
+{{ end }}

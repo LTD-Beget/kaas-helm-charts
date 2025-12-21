@@ -17,11 +17,11 @@ istioGW:
       service:
         type: LoadBalancer
         annotations:
-          {{- if $systemEnabled }}
+          {{ if $systemEnabled }}
           lb.beget.com/type: "internal"
-          {{- else }}
+          {{ else }}
           lb.beget.com/type: "external"
-          {{- end }}
+          {{ end }}
           lb.beget.com/algorithm: "round_robin" # or "least_conns"
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
@@ -58,12 +58,8 @@ istioGW:
       {{ end }}
         issuer:
           name: selfsigned-cluster-issuer
-    {{- if $systemEnabled }}
     tls:
       enabled: true
-      issuer:
-        kind: ClusterIssuer
-        name: oidc-ca
       certificate:
         name: {{ $clusterName }}-gateway
         secretName: {{ $clusterName }}-gateway
@@ -72,22 +68,16 @@ istioGW:
           - "*"
         ipAddresses:
           - 127.0.0.1
+    {{ if $systemEnabled }}
           - {{ $systemIstioGwVip }}
-    {{- else }}
-    tls:
-      enabled: true
       issuer:
         kind: ClusterIssuer
         name: selfsigned-cluster-issuer
-      certificate:
-        name: {{ $clusterName }}-gateway
-        secretName: {{ $clusterName }}-gateway
-        commonName: infra-gateway
-        dnsNames:
-          - "*"
-        ipAddresses:
-          - 127.0.0.1
-    {{- end }}
+    {{ else }}
+      issuer:
+        kind: ClusterIssuer
+        name: oidc-ca
+    {{ end }}
     extraGateway:
       enabled: true
       name: default

@@ -21,7 +21,7 @@ prometheusNodeExporter:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-      {{- if $systemEnabled }}
+      {{ if $systemEnabled }}
         - key: "node-role.kubernetes.io/argocd"
           operator: "Exists"
           effect: "NoSchedule" 
@@ -31,7 +31,7 @@ prometheusNodeExporter:
         - key: "dedicated"
           value: "vminsert"
           effect: "NoSchedule" 
-      {{- end }}
+      {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

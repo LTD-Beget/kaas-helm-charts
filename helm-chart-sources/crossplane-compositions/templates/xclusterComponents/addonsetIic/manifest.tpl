@@ -24,10 +24,10 @@ kind: XAddonSet
 metadata:
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: xAddonSetClient
-    {{- if eq $xAddonSetReady "True" }}
+    {{ if eq $xAddonSetReady "True" }}
     gotemplating.fn.crossplane.io/ready: "True"
     status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
-    {{- end }}
+    {{ end }}
   name: {{ $clusterClientName }}-addonset-iic
 spec:
   common:
@@ -42,9 +42,9 @@ spec:
       port: {{ $clusterClientPort }}
     providerConfigRef:
       name: default
-    {{- if $trackingID }}
+    {{ if $trackingID }}
     trackingID: {{ $trackingID }}
-    {{- end }}
+    {{ end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
     {{- include "xclusterComponents.addonsetIic.kubeadmResources" . | nindent 4 }}

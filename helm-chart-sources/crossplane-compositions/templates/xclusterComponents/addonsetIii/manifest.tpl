@@ -13,7 +13,7 @@
   {{- end }}
 {{- end }}
 
-{{- if $systemEnabled }}
+{{ if $systemEnabled }}
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha2
 kind: Object
@@ -54,7 +54,7 @@ spec:
         name: 'vminsert-lb'
         namespace: 'beget-vmcluster'
   watch: true
-{{- end }}
+{{ end }}
 
 ### extra variables
 {{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
@@ -108,10 +108,10 @@ kind: XAddonSet
 metadata:
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: xAddonSet
-    {{- if eq $xAddonSetReady "True" }}
+    {{ if eq $xAddonSetReady "True" }}
     gotemplating.fn.crossplane.io/ready: "True"
     status.in-cloud.io/ready: {{ $xAddonSetReady | quote }}
-    {{- end }}
+    {{ end }}
   name: {{ $clusterName }}-addonset-iii
 spec:
   common:
@@ -126,16 +126,16 @@ spec:
       port: {{ $clusterPort }}
     providerConfigRef:
       name: default
-    {{- if $trackingID }}
+    {{ if $trackingID }}
     trackingID: {{ $trackingID }}
-    {{- end }}
+    {{ end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
     {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
   {{ printf `
-    {{- if or $xAddonSetClientReady (not $clientEnabled)}}
+    {{ if or $xAddonSetClientReady (not $clientEnabled)}}
   ` -}}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
@@ -157,8 +157,8 @@ spec:
     {{- include "xclusterComponents.addonsetIii.helmInsVMAgentAddRbac" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmOperator" . | nindent 4 }}
   {{- printf `
-    {{- end }}
-    {{- if $systemEnabled }}
+    {{ end }}
+    {{ if $systemEnabled }}
   ` }}
     {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}
@@ -180,7 +180,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.grafanaDashboards" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaOperator" . | nindent 4 }}
   {{- printf `
-    {{- end }}
+    {{ end }}
   ` }}
 
 {{- end }}

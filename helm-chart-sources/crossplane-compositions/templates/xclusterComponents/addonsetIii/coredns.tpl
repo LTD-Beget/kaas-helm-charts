@@ -15,11 +15,11 @@ coredns:
   {{ end }}
   values:
     coredns:
-  {{- if $corednsReady }}
+  {{ if $corednsReady }}
       replicaCount: {{ $controlPlaneReplicas }}
-  {{- else  }}
+  {{ else  }}
       replicaCount: 1
-  {{- end }}
+  {{ end }}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -35,7 +35,7 @@ coredns:
                   app.kubernetes.io/name: coredns
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
-  {{- if $systemEnabled }}
+  {{ if $systemEnabled }}
       servers:
         - zones:
             - zone: cluster.local.
@@ -92,7 +92,7 @@ coredns:
             - name: health
               configBlock: |-
                 lameduck 5s
-  {{- end }}
+  {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

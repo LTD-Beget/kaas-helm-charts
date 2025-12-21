@@ -15,7 +15,7 @@ argocd:
   {{ end }}
   values:
     argo-cd:
-  {{- if and $systemEnabled $argocdReady }}
+  {{ if and $systemEnabled $argocdReady }}
       controller:
         resources:
           limits:
@@ -43,16 +43,16 @@ argocd:
           limits:
             cpu: 1
             memory: 1Gi
-  {{- end }}
+  {{ end }}
       crds:
         install: true
       configs:
         cm:
-          {{- if $systemEnabled }}
+          {{ if $systemEnabled }}
           url: {{ printf "https://%%s/argocd" $systemIstioGwVip }}
-          {{- else }}
+          {{ else }}
           url: "https://localhost/argocd"
-          {{- end }}
+          {{ end }}
           oidc.config: |
             name: Dex
             issuer: {{ printf "https://%%s" $systemIstioGwVip }}

@@ -16,9 +16,9 @@ metadata:
     argocd.argoproj.io/tracking-id: {{ $trackingID }}
     gotemplating.fn.crossplane.io/composition-resource-name: xCertificateSet
     gotemplating.fn.crossplane.io/ready: {{ $xCertificateSetReady | quote }}
-  {{- if eq $xCertificateSetReady "True" }}
+  {{ if eq $xCertificateSetReady "True" }}
     status.in-cloud.io/ready: {{ $xCertificateSetReady | quote }}
-  {{- end }}
+  {{ end }}
   labels:
     cluster.x-k8s.io/cluster-name: {{ $clusterName }}
   name: {{ $clusterName }}

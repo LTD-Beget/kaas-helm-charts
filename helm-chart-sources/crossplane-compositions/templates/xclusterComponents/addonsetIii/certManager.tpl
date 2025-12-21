@@ -12,7 +12,7 @@ certManager:
   {{ end }}
   values:
     cert-manager:
-  {{- if $systemEnabled }}
+  {{ if $systemEnabled }}
       cainjector:
         resources:
           limits:
@@ -24,7 +24,7 @@ certManager:
         resources:
           limits:
             cpu: 1
-  {{- end }}
+  {{ end }}
       clusterResourceNamespace: beget-system
     monitoring:
     {{ if $infraVMOperatorReady }}

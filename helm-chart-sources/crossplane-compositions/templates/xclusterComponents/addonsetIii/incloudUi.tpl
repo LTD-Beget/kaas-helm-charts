@@ -61,11 +61,11 @@ incloudUi:
           description: default
           tenant: dev
           scheme: http
-          {{- if $systemEnabled }}
+          {{ if $systemEnabled }}
           api: {{ $systemIstioGwVip }}
-          {{- else }}
+          {{ else }}
           api: 127.0.0.1
-          {{- end }}
+          {{ end }}
         - name: cluster2
           description: cluster2
           tenant: dev

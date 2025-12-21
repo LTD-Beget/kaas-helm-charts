@@ -16,7 +16,7 @@ crossplane:
   {{ end }}
   values:
   # TODO: Зачем дожидаться $crossplaneReady
-  {{- if and $systemEnabled $crossplaneReady }}
+  {{ if and $systemEnabled $crossplaneReady }}
     crossplane:
       args:
         - '--enable-realtime-compositions'
@@ -42,7 +42,7 @@ crossplane:
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
           operator: Exists
-  {{- end }}
+  {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

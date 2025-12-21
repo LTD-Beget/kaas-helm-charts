@@ -21,13 +21,13 @@
   {{- $fmt  := index $v 4 }}
 - toFieldPath: {{ $dst }}
   fromFieldPath: spec.{{ $src }}
-  {{- if eq $typ "string" }}
+  {{ if eq $typ "string" }}
   transforms:
     - type: string
       string:
         type: Format
         fmt: {{ $fmt | quote }}
-  {{- end }}
+  {{ end }}
   type: FromCompositeFieldPath
 {{- end }}
 {{- end -}}
