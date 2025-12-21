@@ -1,8 +1,14 @@
 {{- define "addons.victoriametricsalertrules.default.values" -}}
   {{- printf `%s` `
 victoria-metrics-k8s-stack:
+  global:
+    clusterLabel: cluster_full_name
   defaultRules:
     create: true
+    additionalRuleLabels:
+      cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+      remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
+      in-cloud-metrics: "infra"
     labels:
       cluster_full_name: "in-cloud-cluster-name"
       remotewrite_cluster: "in-cloud-cluster-name"
@@ -114,6 +120,9 @@ victoria-metrics-k8s-stack:
     #   groups:
     coredns:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: coredns
@@ -224,6 +233,8 @@ victoria-metrics-k8s-stack:
             severity: warning
     cert-manager:
       additionalLabels:
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: cert-manager
@@ -293,6 +304,9 @@ victoria-metrics-k8s-stack:
 
     etcd:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: etcd
@@ -397,6 +411,9 @@ victoria-metrics-k8s-stack:
             severity: warning
     api-usage:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: pre-release-lifecycle
@@ -434,6 +451,9 @@ victoria-metrics-k8s-stack:
             severity: info
     audit-errors:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: apiserver-audit
@@ -452,6 +472,9 @@ victoria-metrics-k8s-stack:
             severity: warning
     cluster-monitoring-victoriametrics:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: jobs
@@ -460,29 +483,32 @@ victoria-metrics-k8s-stack:
           expr: absent(up{job="vmagent-vmagent"})
           for: 2m
           annotations:
-            description: VMAgent is absesnt in {{"{{"}} $labels.cluster}}.
-            summary: VMAgent is absesnt in {{"{{"}} $labels.cluster}}.
+            description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+            summary: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
             severity: critical
         - alert: VMAlertJobAbsent
           expr: absent(up{job="vmalert-vmalert"})
           for: 2m
           annotations:
-            description: VMAlert is absesnt in {{"{{"}} $labels.cluster}}.
-            summary: VMAlert is absesnt in {{"{{"}} $labels.cluster}}.
+            description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+            summary: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
             severity: critical
         - alert: VMAlertmanagerJobAbsent
           expr: absent(up{job="vmalertmanager-alertmanager"})
           for: 2m
           annotations:
-            description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster}}.
-            summary: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster}}.
+            description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+            summary: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
             severity: critical
 
     cluster-monitoring-victoriametrics-operator:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: pods
@@ -509,6 +535,9 @@ victoria-metrics-k8s-stack:
               This may be caused by updates in the cluster, or it may be a lack of resources or incorrect configuration.
     cluster-monitoring-prometheus-operator:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: kubernetes.rules
@@ -864,6 +893,9 @@ victoria-metrics-k8s-stack:
 
     cpu-utilization:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: control-plane-cpu-utilization
@@ -932,6 +964,9 @@ victoria-metrics-k8s-stack:
             severity: critical
     kube-apiserver-requests:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
         - name: apiserver-requests-in-flight
@@ -943,6 +978,9 @@ victoria-metrics-k8s-stack:
               record: cluster:apiserver_current_inflight_requests:sum:max_over_time:2m
     node-exporter-rules:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
         - name: node-exporter.rules
@@ -1017,6 +1055,9 @@ victoria-metrics-k8s-stack:
               record: instance:node_network_transmit_drop_excluding_lo:rate1m
     podsecurity:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: pod-security-violation
@@ -1039,6 +1080,9 @@ victoria-metrics-k8s-stack:
             severity: info
     prometheus-k8s-prometheus-rules:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: prometheus
@@ -1307,6 +1351,9 @@ victoria-metrics-k8s-stack:
             severity: critical
     prometheus-k8s-rules:
       additionalLabels:
+        
+        cluster_full_name: "{{"{{"}} $labels.cluster_full_name }}"
+        remotewrite_cluster: "{{"{{"}} $labels.remotewrite_cluster }}"
         in-cloud-metrics: "infra"
       groups:
       - name: multus-admission-controller-monitor-service.rules
