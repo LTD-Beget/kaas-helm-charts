@@ -17,7 +17,7 @@ incloudUi:
   {{ end }}
   values:
     incloud-web-chart:
-      oauth2-proxy: |
+      oauth2-proxy:
         enabled: true
         config:
           clientID: "kubernetes"
@@ -42,7 +42,7 @@ incloudUi:
             effect: "NoSchedule"
       ingress:
         enabled: false
-      web: |
+      web:
         env:
           LOGIN_URL: "/oauth2/userinfo"
           LOGIN_USERNAME_FIELD: "email"
@@ -55,8 +55,8 @@ incloudUi:
           ICON_SVG: "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJub25lIiBjbGFzcz0iYmVnZXQtaWNvbl9fY29udGVudCI+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0yNi41MzggMjBDMjkuNTcwNyAxOC4wNzgxIDMxLjU4MzcgMTQuNjkzOCAzMS41ODM3IDEwLjgzOTdDMzEuNTgzNyA0Ljg1MzAzIDI2LjcyNzQgMCAyMC43MzY3IDBDMTQuNzQ2IDAgOS44ODk2OSA0Ljg1MzAzIDkuODg5NjkgMTAuODM5N0M5Ljg4OTY5IDE2LjgyNjQgMTQuNzQ2IDIxLjY3OTQgMjAuNzM2NyAyMS42Nzk0QzIyLjczNTkgMjEuNjc5NCAyNC42MTYyIDIyLjQ1NzMgMjYuMDI5OSAyMy44NzA3QzI3LjQ0MzYgMjUuMjgzNCAyOC4yMjI3IDI3LjE2MjQgMjguMjIyNyAyOS4xNjAzQzI4LjIyMjcgMzEuMTU4MiAyNy40NDQzIDMzLjAzNzIgMjYuMDI5OSAzNC40NDk5QzI0LjYxNjIgMzUuODYyNyAyMi43MzU5IDM2LjY0MTIgMjAuNzM2NyAzNi42NDEyQzE4LjczNzUgMzYuNjQxMiAxNi44NTcyIDM1Ljg2MzQgMTUuNDQzNSAzNC40NDk5QzE0LjAyOTggMzMuMDM3MiAxMy4yNTA3IDMxLjE1ODIgMTMuMjUwNyAyOS4xNjAzQzEzLjI1MDcgMjguNDYwNSAxMy4zNDY4IDI3Ljc3NTkgMTMuNTMyMSAyNy4xMjAzTDE1LjI4OCAyOC4xMjc1TDE1LjA5MDkgMjQuODMxNkwxNC44OTM5IDIxLjUzNTdMMTEuOTQ3IDIzLjAyODZMOSAyNC41MjE0TDEwLjU1NjggMjUuNDE0QzEwLjEyNjEgMjYuNTgxNSA5Ljg4OTY5IDI3Ljg0MjkgOS44ODk2OSAyOS4xNjAzQzkuODg5NjkgMzUuMTQ3IDE0Ljc0NiA0MCAyMC43MzY3IDQwQzI2LjcyNzQgNDAgMzEuNTgzNyAzNS4xNDcgMzEuNTgzNyAyOS4xNjAzQzMxLjU4MzcgMjUuMzA2MiAyOS41NzA3IDIxLjkyMTkgMjYuNTM4IDIwWk0yMC43MzY3IDE4LjMyMDZDMTguNzM3NSAxOC4zMjA2IDE2Ljg1NzIgMTcuNTQyNyAxNS40NDM1IDE2LjEyOTNDMTQuMDI5OCAxNC43MTY2IDEzLjI1MDcgMTIuODM3NiAxMy4yNTA3IDEwLjgzOTdDMTMuMjUwNyA4Ljg0MTg0IDE0LjAyOTEgNi45NjI4IDE1LjQ0MzUgNS41NTAwN0MxNi44NTcyIDQuMTM3MzQgMTguNzM3NSAzLjM1ODc4IDIwLjczNjcgMy4zNTg3OEMyMi43MzU5IDMuMzU4NzggMjQuNjE2MiA0LjEzNjY0IDI2LjAyOTkgNS41NTAwN0MyNy40NDM2IDYuOTYyOCAyOC4yMjI3IDguODQxODQgMjguMjIyNyAxMC44Mzk3QzI4LjIyMjcgMTIuODM3NiAyNy40NDQzIDE0LjcxNjYgMjYuMDI5OSAxNi4xMjkzQzI0LjYxNjIgMTcuNTQyMSAyMi43MzU5IDE4LjMyMDYgMjAuNzM2NyAxOC4zMjA2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L3N2Zz4K"
       bff:
         env:
-          BASE_ALLOWED_AUTH_HEADERS: user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization
-      clusters: |
+          BASE_ALLOWED_AUTH_HEADERS: "user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization"
+      clusters:
         - name: default
           description: default
           tenant: dev
