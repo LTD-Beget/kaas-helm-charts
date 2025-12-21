@@ -21,32 +21,22 @@ victoria-metrics-k8s-stack:
       etcdMembersDown:
         spec:
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
       etcdHighNumberOfFailedGRPCRequests:
         spec:
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
       KubeContainerWaiting:
         spec:
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
       KubePodNotReady:
         spec:
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
       KubeCPUQuotaOvercommit:
         spec:
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
       CPUThrottlingHigh:
         spec:
@@ -56,8 +46,6 @@ victoria-metrics-k8s-stack:
             sum(increase(container_cpu_cfs_periods_total{job="kubelet", metrics_path="/metrics/cadvisor", namespace=~"beget.*|kube.*"}[5m])) without (id, metrics_path, name, image, endpoint, job, node)
               > ( 25 / 100 )
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
 
     groups:
@@ -143,8 +131,6 @@ victoria-metrics-k8s-stack:
             absent(up{job="coredns-coredns-metrics"} == 1)
           for: 1m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSLatencyHigh
@@ -156,8 +142,6 @@ victoria-metrics-k8s-stack:
             histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (instance,pod)) > 4
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSErrorsHigh
@@ -171,8 +155,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSErrorsHigh
@@ -186,8 +168,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
       - name: coredns_forward
         params:
@@ -202,8 +182,6 @@ victoria-metrics-k8s-stack:
             histogram_quantile(0.99, sum(rate(coredns_forward_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (pod, instance, rcode)) > 4
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSForwardErrorsHigh
@@ -217,8 +195,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSForwardErrorsHigh
@@ -232,8 +208,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSForwardHealthcheckFailureCount
@@ -245,8 +219,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance) (rate(coredns_forward_healthcheck_failures_total{job="coredns-coredns-metrics"}[5m])) > 0
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CoreDNSForwardHealthcheckBrokenCount
@@ -258,8 +230,6 @@ victoria-metrics-k8s-stack:
             sum without (pod, instance) (rate(coredns_forward_healthcheck_broken_total{job="coredns-coredns-metrics"}[5m])) > 0
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
     cert-manager:
       additionalLabels:
@@ -278,8 +248,6 @@ victoria-metrics-k8s-stack:
           expr: absent(up{job="cert-manager"})
           for: 1m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
       - name: certificates
         params:
@@ -301,8 +269,6 @@ victoria-metrics-k8s-stack:
             ) < (21 * 24 * 3600) # 21 days in seconds
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CertManagerCertNotReady
@@ -319,8 +285,6 @@ victoria-metrics-k8s-stack:
             )
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: CertManagerHittingRateLimits
@@ -336,8 +300,6 @@ victoria-metrics-k8s-stack:
             ) > 0
           for: 5m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
     etcd:
@@ -352,8 +314,6 @@ victoria-metrics-k8s-stack:
           expr: (rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m) / rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)) > 1.15
           for: 2m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             summary: "Etcd high deviv fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})"
@@ -363,8 +323,6 @@ victoria-metrics-k8s-stack:
           expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) > 0.5
           for: 2m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             summary: "Etcd high fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})"
@@ -374,8 +332,6 @@ victoria-metrics-k8s-stack:
           expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[1m])) > 0.25
           for: 2m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             summary: "Etcd high commit durations (instance {{"{{"}} $labels.instance {{"}}"}})"
@@ -385,8 +341,6 @@ victoria-metrics-k8s-stack:
           expr: etcd_server_has_leader == 0
           for: 0m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             summary: "Etcd no Leader (instance {{"{{"}} $labels.instance {{"}}"}})"
@@ -396,8 +350,6 @@ victoria-metrics-k8s-stack:
           expr: increase(etcd_server_leader_changes_seen_total[5m]) > 1
           for: 0m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             summary: "Etcd high number of leader changes (instance {{"{{"}} $labels.instance {{"}}"}})"
@@ -418,8 +370,6 @@ victoria-metrics-k8s-stack:
             > 0
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: etcdDatabaseQuotaLowSpace
@@ -433,8 +383,6 @@ victoria-metrics-k8s-stack:
             (last_over_time(etcd_mvcc_db_total_size_in_bytes[5m]) / last_over_time(etcd_server_quota_backend_bytes[5m]))*100 > 95
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: etcdExcessiveDatabaseGrowth
@@ -449,8 +397,6 @@ victoria-metrics-k8s-stack:
             predict_linear(etcd_mvcc_db_total_size_in_bytes[4h], 4*60*60) > etcd_server_quota_backend_bytes
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: etcdDatabaseHighFragmentationRatio
@@ -467,8 +413,6 @@ victoria-metrics-k8s-stack:
             (last_over_time(etcd_mvcc_db_total_size_in_use_in_bytes[5m]) / last_over_time(etcd_mvcc_db_total_size_in_bytes[5m])) < 0.5 and etcd_mvcc_db_total_size_in_use_in_bytes > 104857600
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
     api-usage:
       additionalLabels:
@@ -491,8 +435,6 @@ victoria-metrics-k8s-stack:
             group(apiserver_requested_deprecated_apis{removed_release="1.25"}) by (group,version,resource) and (sum by(group,version,resource) (rate(apiserver_request_total{system_client!="kube-controller-manager",system_client!="cluster-policy-controller"}[4h]))) > 0
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: info
 
         - alert: APIRemovedInNextEUSReleaseInUse
@@ -509,8 +451,6 @@ victoria-metrics-k8s-stack:
             group(apiserver_requested_deprecated_apis{removed_release=~"1\\.2[5]"}) by (group,version,resource) and (sum by(group,version,resource) (rate(apiserver_request_total{system_client!="kube-controller-manager",system_client!="cluster-policy-controller"}[4h]))) > 0
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: info
     audit-errors:
       additionalLabels:
@@ -529,8 +469,6 @@ victoria-metrics-k8s-stack:
             sum by (job, instance)(rate(apiserver_audit_error_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) / sum by (job, instance) (rate(apiserver_audit_event_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) > 0
           for: 1m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
     cluster-monitoring-victoriametrics:
       additionalLabels:
@@ -545,8 +483,6 @@ victoria-metrics-k8s-stack:
             description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
             summary: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
 
         - alert: VMAlertJobAbsent
@@ -556,8 +492,6 @@ victoria-metrics-k8s-stack:
             description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
             summary: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
 
         - alert: VMAlertmanagerJobAbsent
@@ -567,8 +501,6 @@ victoria-metrics-k8s-stack:
             description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
             summary: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
 
     cluster-monitoring-victoriametrics-operator:
@@ -581,8 +513,6 @@ victoria-metrics-k8s-stack:
           expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system"}[10m]) * 600>=1
           for: 1m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             description: A control-plane pod restarted
@@ -594,8 +524,6 @@ victoria-metrics-k8s-stack:
           expr: rate(kube_pod_container_status_restarts_total{namespace=~"beget.*|kube.*"}[10m]) * 600>=1
           for: 1m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
           annotations:
             description: Pod restarted
@@ -629,23 +557,17 @@ victoria-metrics-k8s-stack:
         - expr: max without(endpoint, instance, job, pod, service) (kube_node_labels and
             on(node) kube_node_role{role="control-plane"})
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             label_node_role_kubernetes_io: master
             label_node_role_kubernetes_io_master: "true"
           record: cluster:master_nodes
         - expr: max without(endpoint, instance, job, pod, service) (kube_node_labels and
             on(node) kube_node_role{role="infra"})
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             label_node_role_kubernetes_io_infra: "true"
           record: cluster:infra_nodes
         - expr: max without(endpoint, instance, job, pod, service) (cluster:master_nodes
             and on(node) cluster:infra_nodes)
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             label_node_role_kubernetes_io_infra: "true"
             label_node_role_kubernetes_io_master: "true"
           record: cluster:master_infra_nodes
@@ -656,8 +578,6 @@ victoria-metrics-k8s-stack:
         - expr: kube_node_labels and on(node) (sum(label_replace(node_cpu_info, "node",
             "$1", "instance", "(.*)")) by (node, package, core) == 2)
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             label_node_hyperthread_enabled: "true"
           record: cluster:hyperthread_enabled_nodes
         - expr: count(sum(virt_platform) by (instance, type, system_manufacturer, system_product_name,
@@ -838,8 +758,6 @@ victoria-metrics-k8s-stack:
             == 0
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: AlertmanagerReceiversNotConfigured
@@ -852,8 +770,6 @@ victoria-metrics-k8s-stack:
           expr: cluster:alertmanager_integrations:max == 0
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: MultipleContainersOOMKilled
@@ -867,8 +783,6 @@ victoria-metrics-k8s-stack:
             == 1) > 5
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: info
         - expr: avg_over_time((((count((max by (node) (up{job="kubelet",metrics_path="/metrics"}
             == 1) and max by (node) (kube_node_status_condition{condition="Ready",status="true"}
@@ -947,8 +861,6 @@ victoria-metrics-k8s-stack:
             owner_name) (kube_replicationcontroller_owner{job="kube-state-metrics"})),"workload",
             "$1", "owner_name", "(.*)"))
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             workload_type: deploymentconfig
           record: namespace_workload_pod:kube_pod_owner:relabel
       - name: openshift-etcd-telemetry.rules
@@ -957,22 +869,16 @@ victoria-metrics-k8s-stack:
           record: instance:etcd_mvcc_db_total_size_in_bytes:sum
         - expr: histogram_quantile(0.99, sum by (instance, le) (rate(etcd_disk_wal_fsync_duration_seconds_bucket{job="etcd"}[5m])))
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             quantile: "0.99"
           record: instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile
         - expr: histogram_quantile(0.99, sum by (instance, le) (rate(etcd_network_peer_round_trip_time_seconds_bucket{job="etcd"}[5m])))
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             quantile: "0.99"
           record: instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile
         - expr: sum by (instance) (etcd_mvcc_db_total_size_in_use_in_bytes{job="etcd"})
           record: instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum
         - expr: histogram_quantile(0.99, sum by (instance, le) (rate(etcd_disk_backend_commit_duration_seconds_bucket{job="etcd"}[5m])))
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             quantile: "0.99"
           record: instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile
       - name: openshift-sre.rules
@@ -1013,8 +919,6 @@ victoria-metrics-k8s-stack:
             > 60
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: ExtremelyHighIndividualControlPlaneCPU
@@ -1034,8 +938,6 @@ victoria-metrics-k8s-stack:
             100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
           for: 5m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: ExtremelyHighIndividualControlPlaneCPU
@@ -1055,8 +957,6 @@ victoria-metrics-k8s-stack:
             100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
     kube-apiserver-requests:
       additionalLabels:
@@ -1163,8 +1063,6 @@ victoria-metrics-k8s-stack:
           expr: |
             sum(increase(pod_security_evaluations_total{decision="deny",mode="audit",resource="pod"}[1d])) by (policy_level) > 0
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             namespace: in-cloud-monitoring
             severity: info
     prometheus-k8s-prometheus-rules:
@@ -1183,8 +1081,6 @@ victoria-metrics-k8s-stack:
             max_over_time(prometheus_config_last_reload_successful{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) == 0
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusNotificationQueueRunningFull
@@ -1202,8 +1098,6 @@ victoria-metrics-k8s-stack:
             )
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusErrorSendingAlertsToSomeAlertmanagers
@@ -1223,8 +1117,6 @@ victoria-metrics-k8s-stack:
             > 1
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusNotConnectedToAlertmanagers
@@ -1237,8 +1129,6 @@ victoria-metrics-k8s-stack:
             max_over_time(prometheus_notifications_alertmanagers_discovered{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) < 1
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusTSDBReloadsFailing
@@ -1251,8 +1141,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_tsdb_reloads_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
           for: 4h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusTSDBCompactionsFailing
@@ -1265,8 +1153,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_tsdb_compactions_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
           for: 4h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusNotIngestingSamples
@@ -1285,8 +1171,6 @@ victoria-metrics-k8s-stack:
             )
           for: 10m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusDuplicateTimestamps
@@ -1300,8 +1184,6 @@ victoria-metrics-k8s-stack:
             rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusOutOfOrderTimestamps
@@ -1314,8 +1196,6 @@ victoria-metrics-k8s-stack:
             rate(prometheus_target_scrapes_sample_out_of_order_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 1h
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusRemoteStorageFailures
@@ -1338,8 +1218,6 @@ victoria-metrics-k8s-stack:
             > 1
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusRemoteWriteBehind
@@ -1359,8 +1237,6 @@ victoria-metrics-k8s-stack:
             > 120
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: info
 
         - alert: PrometheusRemoteWriteDesiredShards
@@ -1382,8 +1258,6 @@ victoria-metrics-k8s-stack:
             )
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: VMRuleFailures
@@ -1396,8 +1270,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_rule_evaluation_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusMissingRuleEvaluations
@@ -1410,8 +1282,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_rule_group_iterations_missed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusTargetLimitHit
@@ -1426,8 +1296,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusLabelLimitHit
@@ -1442,8 +1310,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_target_scrape_pool_exceeded_label_limits_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusScrapeBodySizeLimitHit
@@ -1457,8 +1323,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_target_scrapes_exceeded_body_size_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusScrapeSampleLimitHit
@@ -1473,8 +1337,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_target_scrapes_exceeded_sample_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
           for: 15m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: warning
 
         - alert: PrometheusTargetSyncFailure
@@ -1488,8 +1350,6 @@ victoria-metrics-k8s-stack:
             increase(prometheus_target_sync_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[30m]) > 0
           for: 5m
           labels:
-            cluster_full_name: "{{ $labels.cluster_full_name }}"
-            remotewrite_cluster: "{{ $labels.remotewrite_cluster }}"
             severity: critical
     prometheus-k8s-rules:
       additionalLabels:
