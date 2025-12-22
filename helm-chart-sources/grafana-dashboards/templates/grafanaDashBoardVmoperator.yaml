@@ -11,8 +11,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
-  json: |-
-    `{{
+  json: |
     {
       "annotations": {
         "list": [
@@ -181,7 +180,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "max(operator_controller_objects_count{job=~\"$job\",instance=~\"$instance\"}) by (controller)",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -254,7 +253,7 @@ spec:
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{instance}}`}}",
               "range": false,
               "refId": "A"
             }
@@ -570,7 +569,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(operator_prometheus_converter_watch_events_total{job=~\"$job\"}[$__interval])) by (event_type,object_type_name)",
               "instant": false,
-              "legendFormat": "{{object_type_name}} {{event_type}}",
+              "legendFormat": "{{`{{object_type_name}}`}} {{`{{event_type}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -639,7 +638,7 @@ spec:
               "expr": "sum(flag{is_set=\"true\", job=~\"$job\", instance=~\"$instance\"}) by(job, instance, name, value)",
               "format": "table",
               "instant": true,
-              "legendFormat": "{{object_type_name}} {{event_type}}",
+              "legendFormat": "{{`{{object_type_name}}`}} {{`{{event_type}}`}}",
               "range": false,
               "refId": "A"
             }
@@ -735,7 +734,7 @@ spec:
               "expr": "sum(config_parameter{job=~\"$job\", instance=~\"$instance\", value!=\"\"}) by(job, instance, name, value)",
               "format": "table",
               "instant": true,
-              "legendFormat": "{{object_type_name}} {{event_type}}",
+              "legendFormat": "{{`{{object_type_name}}`}} {{`{{event_type}}`}}",
               "range": false,
               "refId": "A"
             }
@@ -863,7 +862,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "sum(rate(controller_runtime_reconcile_total{job=~\"$job\",instance=~\"$instance\",result=~\"requeue_after|requeue|success\"}[$__rate_interval])) by(controller)",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -966,7 +965,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "sum(rate(operator_log_messages_total{job=~\"$job\",instance=~\"$instance\"}[$__rate_interval])) by (level)",
-              "legendFormat": "{{label_name}}",
+              "legendFormat": "{{`{{label_name}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1084,7 +1083,7 @@ spec:
               "exemplar": false,
               "expr": "sum(rate(controller_runtime_reconcile_errors_total{job=~\"$job\",instance=~\"$instance\"}[$__rate_interval])) by(controller) > 0 ",
               "instant": false,
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             },
@@ -1096,7 +1095,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(controller_runtime_reconcile_total{job=~\"$job\",instance=~\"$instance\",result=\"error\"}[$__rate_interval])) by(controller) > 0",
               "hide": false,
-              "legendFormat": "result errors: {{controller}}",
+              "legendFormat": "result errors: {{`{{controller}}`}}",
               "range": true,
               "refId": "B"
             }
@@ -1199,7 +1198,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "sum(rate(operator_reconcile_throttled_events_total[$__rate_interval])) by(controller)",
-              "legendFormat": "{{controller}}",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1302,7 +1301,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "max(workqueue_depth{job=~\"$job\",instance=~\"$instance\"}) by (name)",
-              "legendFormat": "{{label_name}}",
+              "legendFormat": "{{`{{label_name}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1407,7 +1406,7 @@ spec:
               },
               "editorMode": "code",
               "expr": "histogram_quantile(0.99, sum(rate(controller_runtime_reconcile_time_seconds_bucket{job=~\"$job\"}[$__rate_interval])) by (le, controller) )",
-              "legendFormat": "q.99 {{controller}}",
+              "legendFormat": "q.99 {{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1510,7 +1509,7 @@ spec:
               "editorMode": "code",
               "expr": "sum(rate(rest_client_requests_total{job=~\"$job\"}[$__interval])) by (method, code)",
               "instant": false,
-              "legendFormat": "{{method}} {{code}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{code}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1848,7 +1847,7 @@ spec:
               "editorMode": "code",
               "expr": "histogram_quantile(0.99, sum(rate(rest_client_request_duration_seconds_bucket{job=~\"$job\"}[$__rate_interval])) by (le, method, api))",
               "instant": false,
-              "legendFormat": "{{method}} {{api}}",
+              "legendFormat": "{{`{{method}}`}} {{`{{api}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2391,5 +2390,4 @@ spec:
       "version": 8,
       "gnetId": 17869
     }
-    }}`
 {{- end }}

@@ -12,7 +12,6 @@ spec:
     matchLabels:
       dashboards: "grafana"
   json: |-
-    `{{
     {
       "annotations": {
         "list": [
@@ -44,7 +43,7 @@ spec:
             "hide": false,
             "iconColor": "red",
             "name": "alerts",
-            "titleFormat": "{{alertname}}"
+            "titleFormat": "{{`{{alertname}}`}}"
           },
           {
             "datasource": {
@@ -56,7 +55,7 @@ spec:
             "hide": true,
             "iconColor": "dark-blue",
             "name": "version change",
-            "textFormat": "{{version}}",
+            "textFormat": "{{`{{version}}`}}",
             "titleFormat": "Version change"
           },
           {
@@ -69,7 +68,7 @@ spec:
             "hide": false,
             "iconColor": "dark-yellow",
             "name": "restarts",
-            "textFormat": "{{job}} restarted"
+            "textFormat": "{{`{{job}}`}} restarted"
           }
         ]
       },
@@ -916,7 +915,7 @@ spec:
               "expr": "sum(min_over_time(up{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (job)",
               "format": "time_series",
               "instant": false,
-              "legendFormat": "{{job}}",
+              "legendFormat": "{{`{{job}}`}}",
               "refId": "A"
             }
           ],
@@ -1041,7 +1040,7 @@ spec:
               "exemplar": true,
               "expr": "sum(rate(vm_rows_inserted_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (type) > 0 ",
               "interval": "",
-              "legendFormat": "{{type}}",
+              "legendFormat": "{{`{{type}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1151,7 +1150,7 @@ spec:
               "expr": "sum(rate(vm_http_requests_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (path) > 0",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{path}}",
+              "legendFormat": "{{`{{path}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1369,7 +1368,7 @@ spec:
               "expr": "max(vm_request_duration_seconds{job=~\"$job\", instance=~\"$instance\", quantile=\"0.99\"}) by (path) > 0",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{path}}",
+              "legendFormat": "{{`{{path}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1479,7 +1478,7 @@ spec:
               "expr": "sum(rate(vm_http_request_errors_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (job, path) > 0",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{path}} ({{job}})",
+              "legendFormat": "{{`{{path}}`}} ({{`{{job}}`}})",
               "range": true,
               "refId": "A"
             }
@@ -1598,7 +1597,7 @@ spec:
               "hide": false,
               "interval": "5m",
               "intervalFactor": 1,
-              "legendFormat": "{{job}} - {{level}}",
+              "legendFormat": "{{`{{job}}`}} - {{`{{level}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -2070,7 +2069,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - waiting",
+                  "legendFormat": "{{`{{job}}`}} - waiting",
                   "range": true,
                   "refId": "A"
                 },
@@ -2085,7 +2084,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - stalled",
+                  "legendFormat": "{{`{{job}}`}} - stalled",
                   "range": true,
                   "refId": "B"
                 }
@@ -2193,7 +2192,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - waiting",
+                  "legendFormat": "{{`{{job}}`}} - waiting",
                   "range": true,
                   "refId": "A"
                 },
@@ -2208,7 +2207,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - stalled",
+                  "legendFormat": "{{`{{job}}`}} - stalled",
                   "range": true,
                   "refId": "B"
                 }
@@ -2333,7 +2332,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "read {{job}}",
+                  "legendFormat": "read {{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -2348,7 +2347,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "write {{job}}",
+                  "legendFormat": "write {{`{{job}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -2477,7 +2476,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -2602,7 +2601,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "read {{job}}",
+                  "legendFormat": "read {{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -2617,7 +2616,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "write {{job}}",
+                  "legendFormat": "write {{`{{job}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -2837,7 +2836,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - waiting",
+                  "legendFormat": "{{`{{job}}`}} - waiting",
                   "range": true,
                   "refId": "A"
                 },
@@ -2852,7 +2851,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} - stalled",
+                  "legendFormat": "{{`{{job}}`}} - stalled",
                   "range": true,
                   "refId": "B"
                 }
@@ -3071,7 +3070,7 @@ spec:
                   "exemplar": true,
                   "expr": "sum(max_over_time(vm_tcplistener_conns{job=~\"$job\", instance=~\"$instance\"}[$__interval])) by(job)",
                   "interval": "1m",
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -4344,7 +4343,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{instance}} => {{addr}}",
+                  "legendFormat": "{{`{{instance}}`}} => {{`{{addr}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -4922,7 +4921,7 @@ spec:
                   "expr": "sum(changes(vm_app_start_timestamp{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(job) > 0",
                   "format": "time_series",
                   "instant": false,
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "refId": "A"
                 }
               ],
@@ -5605,7 +5604,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{addr}}",
+                  "legendFormat": "{{`{{addr}}`}}",
                   "refId": "A"
                 }
               ],
@@ -7525,7 +7524,7 @@ spec:
                   "expr": "sum(rate(vm_tcplistener_read_bytes_total{job=~\"$job_storage\", instance=~\"$instance\"}[$__rate_interval])) by(name) * 8 > 0",
                   "format": "time_series",
                   "intervalFactor": 1,
-                  "legendFormat": "read from {{name}}",
+                  "legendFormat": "read from {{`{{name}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -7539,7 +7538,7 @@ spec:
                   "format": "time_series",
                   "hide": false,
                   "intervalFactor": 1,
-                  "legendFormat": "write to {{name}}",
+                  "legendFormat": "write to {{`{{name}}`}}",
                   "range": true,
                   "refId": "B"
                 }
@@ -7648,7 +7647,7 @@ spec:
                   "exemplar": true,
                   "expr": "vm_storage_is_read_only{job=~\"$job_storage\", instance=~\"$instance\"} > 0",
                   "interval": "",
-                  "legendFormat": "{{ instance }}",
+                  "legendFormat": "{{`{{ instance }}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -9727,7 +9726,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{instance}} => {{addr}}",
+                  "legendFormat": "{{`{{instance}}`}} => {{`{{addr}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -10237,7 +10236,7 @@ spec:
                   "exemplar": true,
                   "expr": "max_over_time(process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])",
                   "interval": "",
-                  "legendFormat": "{{instance}} ({{job}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{job}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -10343,7 +10342,7 @@ spec:
                   "exemplar": true,
                   "expr": "max_over_time(process_resident_memory_anon_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])",
                   "interval": "",
-                  "legendFormat": "{{instance}} ({{job}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{job}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -10625,7 +10624,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{instance}}",
+                  "legendFormat": "{{`{{instance}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -10733,7 +10732,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{instance}} ({{job}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{job}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -10839,7 +10838,7 @@ spec:
                   "expr": "sum(vm_data_size_bytes{job=~\"$job\", instance=~\"$instance\", type=~\"indexdb.*\"}) by(job, instance)",
                   "format": "time_series",
                   "intervalFactor": 1,
-                  "legendFormat": "{{job}}:{{instance}} (indexdb)",
+                  "legendFormat": "{{`{{job}}`}}:{{`{{instance}}`}} (indexdb)",
                   "range": true,
                   "refId": "A"
                 },
@@ -10853,7 +10852,7 @@ spec:
                   "format": "time_series",
                   "hide": false,
                   "intervalFactor": 1,
-                  "legendFormat": "{{job}}:{{instance}} (datapoints)",
+                  "legendFormat": "{{`{{job}}`}}:{{`{{instance}}`}} (datapoints)",
                   "range": true,
                   "refId": "B"
                 }
@@ -11062,7 +11061,7 @@ spec:
                   },
                   "editorMode": "code",
                   "expr": "sum(rate(process_major_pagefaults_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (job,instance)",
-                  "legendFormat": "{{instance}} ({{job}})",
+                  "legendFormat": "{{`{{instance}}`}} ({{`{{job}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -11368,5 +11367,4 @@ spec:
       "version": 1,
       "gnetId": 11176
     }
-    }}`
 {{- end }}

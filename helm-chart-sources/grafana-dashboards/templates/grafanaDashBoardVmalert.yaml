@@ -12,7 +12,6 @@ spec:
     matchLabels:
       dashboards: "grafana"
   json: |-
-    `{{
     {
       "annotations": {
         "list": [
@@ -44,7 +43,7 @@ spec:
             "hide": true,
             "iconColor": "dark-blue",
             "name": "version",
-            "textFormat": "{{short_version}}",
+            "textFormat": "{{`{{short_version}}`}}",
             "titleFormat": "Version change"
           },
           {
@@ -57,7 +56,7 @@ spec:
             "hide": false,
             "iconColor": "dark-yellow",
             "name": "restarts",
-            "textFormat": "{{job}}:{{instance}} restarted"
+            "textFormat": "{{`{{job}}`}}:{{`{{instance}}`}} restarted"
           }
         ]
       },
@@ -690,7 +689,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "interval": "",
-              "legendFormat": "{{job}}",
+              "legendFormat": "{{`{{job}}`}}",
               "refId": "A"
             }
           ],
@@ -808,7 +807,7 @@ spec:
               "exemplar": false,
               "expr": "sum(increase(vmalert_alerts_fired_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(job)",
               "interval": "",
-              "legendFormat": "{{job}}",
+              "legendFormat": "{{`{{job}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -914,7 +913,7 @@ spec:
               "exemplar": false,
               "expr": "topk($topk, max(sum(\n    rate(vmalert_iteration_duration_seconds_sum{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}[$__rate_interval])\n/\n    rate(vmalert_iteration_duration_seconds_count{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}[$__rate_interval])\n) by(job, instance, group, file)) \nby(job, group, file))",
               "interval": "",
-              "legendFormat": "({{job}}) {{group}}({{file}})",
+              "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}({{`{{file}}`}})",
               "range": true,
               "refId": "A"
             }
@@ -1018,7 +1017,7 @@ spec:
               "exemplar": false,
               "expr": "sum(rate(vmalert_execution_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by (job)",
               "interval": "",
-              "legendFormat": "{{job}}",
+              "legendFormat": "{{`{{job}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1364,7 +1363,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -1589,7 +1588,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 },
@@ -1605,7 +1604,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "limit ({{job}})",
+                  "legendFormat": "limit ({{`{{job}}`}})",
                   "range": true,
                   "refId": "B"
                 }
@@ -1720,7 +1719,7 @@ spec:
                   "exemplar": false,
                   "expr": "max(\n    max_over_time(process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])\n) by(job)",
                   "interval": "",
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -1826,7 +1825,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - waiting",
+                  "legendFormat": "{{`{{instance}}`}} - waiting",
                   "range": true,
                   "refId": "A"
                 },
@@ -1841,7 +1840,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - stalled",
+                  "legendFormat": "{{`{{instance}}`}} - stalled",
                   "range": true,
                   "refId": "B"
                 }
@@ -1947,7 +1946,7 @@ spec:
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - waiting",
+                  "legendFormat": "{{`{{instance}}`}} - waiting",
                   "range": true,
                   "refId": "A"
                 },
@@ -1962,7 +1961,7 @@ spec:
                   "hide": false,
                   "interval": "",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - stalled",
+                  "legendFormat": "{{`{{instance}}`}} - stalled",
                   "range": true,
                   "refId": "B"
                 }
@@ -2747,7 +2746,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(increase(vmalert_iteration_missed_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(job, group, file) > 0",
                   "interval": "1m",
-                  "legendFormat": "({{job}}) {{group}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -2852,7 +2851,7 @@ spec:
                   "expr": "sum(changes(vm_app_start_timestamp{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval]) > 0) by(job)",
                   "format": "time_series",
                   "instant": false,
-                  "legendFormat": "{{job}}",
+                  "legendFormat": "{{`{{job}}`}}",
                   "refId": "A"
                 }
               ],
@@ -2967,7 +2966,7 @@ spec:
                   "exemplar": false,
                   "expr": "topk($topk, sum(vmalert_alerts_firing{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}) by(job, group, file, alertname) > 0)",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{alertname}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{alertname}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3069,7 +3068,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(increase(vmalert_alerting_rules_errors_total{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}[$__rate_interval])) by(job, group, file, alertname) > 0",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{alertname}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{alertname}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3171,7 +3170,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(vmalert_alerts_pending{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}) by(job, group, file, alertname) > 0",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{alertname}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{alertname}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3271,7 +3270,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(rate(vmalert_alerts_send_errors_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(instance, addr) > 0",
                   "interval": "",
-                  "legendFormat": "{{instance}} => {{addr}}",
+                  "legendFormat": "{{`{{instance}}`}} => {{`{{addr}}`}}",
                   "refId": "A"
                 }
               ],
@@ -3371,7 +3370,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(rate(vmalert_alerts_sent_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(job, addr) > 0",
                   "interval": "",
-                  "legendFormat": "{{job}} => {{addr}}",
+                  "legendFormat": "{{`{{job}}`}} => {{`{{addr}}`}}",
                   "range": true,
                   "refId": "A"
                 }
@@ -3487,7 +3486,7 @@ spec:
                   "exemplar": false,
                   "expr": "topk($topk, \n  max(\n    sum(vmalert_recording_rules_last_evaluation_samples{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}) by(job, instance, group, file, recording) > 0\n  ) by(job, group, file, recording)\n)",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{recording}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{recording}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3589,7 +3588,7 @@ spec:
                   "exemplar": false,
                   "expr": "count(vmalert_recording_rules_last_evaluation_samples{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"} < 1) by(job, group, file, recording)",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{recording}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{recording}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -3688,7 +3687,7 @@ spec:
                   "exemplar": false,
                   "expr": "sum(increase(vmalert_recording_rules_errors_total{job=~\"$job\", instance=~\"$instance\", group=~\"$group\", file=~\"$file\"}[$__rate_interval])) by(job, group, file, recording) > 0",
                   "interval": "",
-                  "legendFormat": "({{job}}) {{group}}.{{recording}}({{file}})",
+                  "legendFormat": "({{`{{job}}`}}) {{`{{group}}`}}.{{`{{recording}}`}}({{`{{file}}`}})",
                   "range": true,
                   "refId": "A"
                 }
@@ -4269,5 +4268,4 @@ spec:
       "version": 1,
       "gnetId": 14950
     }
-    }}`
 {{- end }}
