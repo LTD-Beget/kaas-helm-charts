@@ -12,6 +12,7 @@ spec:
     matchLabels:
       dashboards: "grafana"
   json: |-
+    `{{
     {
       "annotations": {
         "list": [
@@ -2390,4 +2391,5 @@ spec:
       "version": 8,
       "gnetId": 17869
     }
+    }}`
 {{- end }}
