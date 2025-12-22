@@ -27,6 +27,12 @@ grafanaDashboards:
         enabled: true
       vmagent:
         enabled: true
+      vmalert:
+        enabled: true
+      vmcluster:
+        enabled: true
+      vmoperator:
+        enabled: true
       k8s:
         coredns:
           enabled: true
