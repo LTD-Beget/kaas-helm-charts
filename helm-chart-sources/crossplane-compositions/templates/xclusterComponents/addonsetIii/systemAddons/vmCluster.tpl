@@ -227,13 +227,13 @@ vmCluster:
           kind: ClusterIssuer
           name: selfsigned-cluster-issuer
         certificate:
-          name: {{ $clusterName }}-vminsert
-          secretName: {{ $clusterName }}-vminsert
-          commonName: vminsert
+          name: {{ $clusterName }}-vmselect
+          secretName: {{ $clusterName }}-vmselect
+          commonName: vmselect
           dnsNames:
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack"
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+            - "vmselect-vmcluster-victoria-metrics-k8s-stack"
+            - "vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
+            - "vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
   ` }}
