@@ -104,8 +104,8 @@ vmAlertmanager:
           commonName: alertmanager
           dnsNames:
             - "vmalertmanager-alertmanager"
-            - "vmalertmanager-alertmanager.beget-vmcluster"
-            - "vmalertmanager-alertmanager.beget-vmcluster.svc"
+            - "vmalertmanager-alertmanager.beget-alertmanager"
+            - "vmalertmanager-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
   ` }}
