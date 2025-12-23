@@ -26,11 +26,17 @@ vmAlertmanager:
                   serverName: alertmanager-monitoring
             jobLabel: alertmanager
           containers:
+            - name: alertmanager
+              volumeMounts:
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
               args:
                 - --secure-listen-address=0.0.0.0:11043
-                - --upstream=http://127.0.0.1:9093
+                - --upstream=https://127.0.0.1:9093
+                - --upstream-ca-file=/app/config/alertmanager/web/tls/ca.crt
                 - --tls-cert-file=/app/config/metrics/tls/tls.crt
                 - --tls-private-key-file=/app/config/metrics/tls/tls.key
                 - --v=2
@@ -54,6 +60,10 @@ vmAlertmanager:
               secret:
                 defaultMode: 420
                 secretName: alertmanager-monitoring-svc-tls
+            - name: alertmanager-tls
+              secret:
+                defaultMode: 420
+                secretName: {{ $clusterName }}-alertmanager
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
@@ -69,12 +79,8 @@ vmAlertmanager:
               effect: "NoSchedule"
           webConfig:
             tls_server_config:
-              cert_secret_ref:
-                name: "{{ $clusterName }}-alertmanager"
-                key: tls.crt
-              key_secret_ref:
-                name: "{{ $clusterName }}-alertmanager"
-                key: tls.key
+              cert_file: "/app/config/alertmanager/web/tls/tls.crt"
+              key_file: "/app/config/alertmanager/web/tls/tls.key"
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
