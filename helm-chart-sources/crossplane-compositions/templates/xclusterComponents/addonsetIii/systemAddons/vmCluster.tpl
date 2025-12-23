@@ -66,6 +66,9 @@ vmCluster:
               search.maxConcurrentRequests: "128"
               search.maxLabelsAPIDuration: 60s
               search.logSlowQueryDuration: 60s
+              tls: "true"
+              tlsCertFile: "/tls/tls.crt"
+              tlsKeyFile: "/tls/tls.key"
             cacheMountPath: "/select-cache"
             claimTemplates: []
             storage:
@@ -87,6 +90,14 @@ vmCluster:
               - key: "dedicated"
                 value: "vminsert"
                 effect: "NoSchedule"
+            volumes:
+              - name: vmselect-tls
+                secret:
+                  secretName: {{ $clusterName }}-vmselect
+            volumeMounts:
+              - name: vmselect-tls
+                mountPath: /tls
+                readOnly: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -139,6 +150,15 @@ vmCluster:
               - name: vminsert-tls
                 mountPath: /tls
                 readOnly: true
+            serviceSpec:
+              metadata:
+                annotations:
+                  lb.beget.com/algorithm: "round_robin"
+                  lb.beget.com/type: "internal"
+                  lb.beget.com/healthcheck-interval-seconds: "60"
+                  lb.beget.com/healthcheck-timeout-seconds: "5"
+              spec:
+                type: LoadBalancer
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -156,6 +176,7 @@ vmCluster:
                             - vminsert
                     topologyKey: kubernetes.io/hostname
     additionalService:
+      # TODO: Стоит переделать на spec.[vminsert|vmselect|vmstorage].serviceSpec
       vmcluster:
         enabled: true
         name: vminsert-lb
@@ -194,10 +215,26 @@ vmCluster:
           secretName: {{ $clusterName }}-vminsert
           commonName: vminsert
           dnsNames:
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack"
             - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
             - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
             - {{ $systemVmInsertVip }}
+      vmSelect:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: {{ $clusterName }}-vminsert
+          secretName: {{ $clusterName }}-vminsert
+          commonName: vminsert
+          dnsNames:
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack"
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
+            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+          ipAddresses:
+            - 127.0.0.1
   ` }}
 {{- end -}}

@@ -1,0 +1,37 @@
+{{ $vmselectTLS := .Values.tls.vmSelect }}
+
+{{- if $vmselectTLS.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ default "vmselect-tls" $vmselectTLS.certificate.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ default "vmselect-tls" $vmselectTLS.certificate.secretName }}
+  duration: {{ default "8760h" $vmselectTLS.certificate.duration }}
+  renewBefore: {{ default "720h" $vmselectTLS.certificate.renewBefore }}
+  commonName: {{ default "vmselect" $vmselectTLS.certificate.commonName }}
+  {{- with $vmselectTLS.certificate.dnsNames }}
+  dnsNames:
+    {{- range $domain := . }}
+    - {{ $domain | quote }}
+    {{- end }}
+  {{- end }}
+  {{- with $vmselectTLS.certificate.ipAddresses }}
+  ipAddresses:
+    {{- range $ip := . }}
+    - {{ $ip | quote }}
+    {{- end }}
+  {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ $vmselectTLS.issuer.kind }}
+    name: {{ $vmselectTLS.issuer.name }}
+{{- end }}

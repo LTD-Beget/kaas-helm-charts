@@ -43,3 +43,20 @@ tls:
         - vminsert.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
+
+  vmSelect:
+    enabled: false
+    issuer:
+      kind: ClusterIssuer
+      name: default-issuer-name
+    certificate:
+      name: vmselect-tls
+      secretName: vmselect-tls
+      duration: 8760h
+      renewBefore: 720h
+      commonName: vmselect
+      dnsNames:
+        - vmselect.default.svc
+        - vmselect.default.svc.cluster.local
+      ipAddresses:
+        - "127.0.0.1"
