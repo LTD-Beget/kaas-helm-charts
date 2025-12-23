@@ -33,14 +33,14 @@ vmCluster:
             #TODO change hostpath
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
+                value: "vm-data"
                 effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vm-data
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -85,10 +85,7 @@ vmCluster:
             priorityClassName: system-node-critical
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
-                effect: "NoSchedule"
-              - key: "dedicated"
-                value: "vminsert"
+                value: "vm-stream"
                 effect: "NoSchedule"
             volumes:
               - name: vmselect-tls
@@ -103,7 +100,7 @@ vmCluster:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vm-stream
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -137,10 +134,7 @@ vmCluster:
               tlsKeyFile: "/tls/tls.key"
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
-                effect: "NoSchedule"
-              - key: "dedicated"
-                value: "vminsert"
+                value: "vm-stream"
                 effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
@@ -164,7 +158,7 @@ vmCluster:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/vminsert
+                        - key: node-role.kubernetes.io/vm-stream
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
