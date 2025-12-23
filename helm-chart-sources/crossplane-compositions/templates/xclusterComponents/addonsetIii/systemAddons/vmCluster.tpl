@@ -204,7 +204,6 @@ vmCluster:
           jsonData:
             timeInterval: 5s
             # tlsSkipVerify: true
-            sslRootCertFile: /etc/ssl/certs/vmselect/ca.crt
     tls:
       vmInsert:
         enabled: true

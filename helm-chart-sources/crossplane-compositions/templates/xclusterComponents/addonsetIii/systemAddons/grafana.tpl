@@ -63,7 +63,7 @@ grafana:
                         cpu: "1"
                         memory: "2Gi"
                     volumeMounts:
-                      - mountPath: /etc/ssl/certs/vmselect
+                      - mountPath: /etc/ssl/certs
                         name: trusted-ca-certs
                         readOnly: true
                   - name: rbac-proxy
