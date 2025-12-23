@@ -98,9 +98,19 @@ vmAlert:
                   name: ca
                   key: ca.crt
           remoteRead:
-            url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
           datasource:
-            url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
           notifiers:
             - url: "http://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
     monitoring:
