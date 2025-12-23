@@ -200,10 +200,11 @@ vmCluster:
           selector: grafana
           type: prometheus
           isDefault: true
-          url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+          url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
           jsonData:
             timeInterval: 5s
-            tlsSkipVerify: true
+            # tlsSkipVerify: true
+            sslRootCertFile: /etc/ssl/certs/vmselect/ca.crt
     tls:
       vmInsert:
         enabled: true

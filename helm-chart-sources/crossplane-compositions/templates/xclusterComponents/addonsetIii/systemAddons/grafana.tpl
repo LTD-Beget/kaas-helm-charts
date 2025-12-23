@@ -62,6 +62,10 @@ grafana:
                       limits:
                         cpu: "1"
                         memory: "2Gi"
+                    volumeMounts:
+                      - mountPath: /etc/ssl/certs/vmselect
+                        name: trusted-ca-certs
+                        readOnly: true
                   - name: rbac-proxy
                     image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
                     args:
@@ -86,10 +90,13 @@ grafana:
                         mountPath: /app/config/metrics/tls
                         readOnly: true
                 volumes:
-                - name: rbac-proxy-tls
-                  secret:
-                    defaultMode: 420
-                    secretName: grafana-monitoring-svc-tls
+                  - name: trusted-ca-certs
+                    configMap:
+                      name: ca
+                  - name: rbac-proxy-tls
+                    secret:
+                      defaultMode: 420
+                      secretName: grafana-monitoring-svc-tls
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

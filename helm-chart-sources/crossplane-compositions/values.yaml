@@ -12,6 +12,9 @@ composite:
   addons:
     istiobase:
       targetRevision: 1.26.0
+
+    grafana:
+      targetRevision: vmcluster-tls
     victoriametricscluster:
       targetRevision: vmcluster-tls
 
