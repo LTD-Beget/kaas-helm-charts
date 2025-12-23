@@ -12,6 +12,8 @@ composite:
   addons:
     istiobase:
       targetRevision: 1.26.0
+    victoriametricscluster:
+      targetRevision: vmcluster-tls
 
 xclusterComponents:
   client:
