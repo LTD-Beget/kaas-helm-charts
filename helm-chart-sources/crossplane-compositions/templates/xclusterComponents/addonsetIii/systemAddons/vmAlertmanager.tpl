@@ -55,6 +55,9 @@ vmAlertmanager:
                 - name: rbac-proxy-tls
                   mountPath: /app/config/metrics/tls
                   readOnly: true
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
           volumes:
             - name: rbac-proxy-tls
               secret:
