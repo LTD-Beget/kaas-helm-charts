@@ -67,6 +67,14 @@ vmAlertmanager:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
+          webConfig:
+            tls_server_config:
+              cert_secret_ref:
+                name: "{{ $clusterName }}-alertmanager"
+                key: tls.crt
+              key_secret_ref:
+                name: "{{ $clusterName }}-alertmanager"
+                key: tls.key
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
@@ -75,5 +83,21 @@ vmAlertmanager:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+    tls:
+      alertmanager:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: {{ $clusterName }}-alertmanager
+          secretName: {{ $clusterName }}-alertmanager
+          commonName: alertmanager
+          dnsNames:
+            - "vmalertmanager-alertmanager"
+            - "vmalertmanager-alertmanager.beget-vmcluster"
+            - "vmalertmanager-alertmanager.beget-vmcluster.svc"
+          ipAddresses:
+            - 127.0.0.1
   ` }}
 {{- end -}}

@@ -1,21 +1,29 @@
-{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+{{ $alertmanagerTLS := .Values.tls.alertmanager }}
 
-{{- if and .Values.monitoring.secureService.enabled $vmstack.alertmanager.enabled }}
+{{- if $alertmanagerTLS.enabled }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: alertmanager-monitoring-svc-tls
+  name: {{ default "alertmanager-tls" $alertmanagerTLS.certificate.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: alertmanager-monitoring-svc-tls
-  duration: 8760h
-  renewBefore: 720h
-  commonName: alertmanager-monitoring
+  secretName: {{ default "alertmanager-tls" $alertmanagerTLS.certificate.secretName }}
+  duration: {{ default "8760h" $alertmanagerTLS.certificate.duration }}
+  renewBefore: {{ default "720h" $alertmanagerTLS.certificate.renewBefore }}
+  commonName: {{ default "alertmanager" $alertmanagerTLS.certificate.commonName }}
+  {{- with $alertmanagerTLS.certificate.dnsNames }}
   dnsNames:
-    - alertmanager-monitoring
-    - alertmanager-monitoring.{{ .Release.Namespace }}
-    - alertmanager-monitoring.{{ .Release.Namespace }}.svc
+    {{- range $domain := . }}
+    - {{ $domain | quote }}
+    {{- end }}
+  {{- end }}
+  {{- with $alertmanagerTLS.certificate.ipAddresses }}
+  ipAddresses:
+    {{- range $ip := . }}
+    - {{ $ip | quote }}
+    {{- end }}
+  {{- end }}
   privateKey:
     algorithm: RSA
     size: 2048
@@ -24,6 +32,6 @@ spec:
     - key encipherment
     - server auth
   issuerRef:
-    kind: {{ .Values.monitoring.secureService.issuer.kind }}
-    name: {{ .Values.monitoring.secureService.issuer.name }}
+    kind: {{ $alertmanagerTLS.issuer.kind }}
+    name: {{ $alertmanagerTLS.issuer.name }}
 {{- end }}
