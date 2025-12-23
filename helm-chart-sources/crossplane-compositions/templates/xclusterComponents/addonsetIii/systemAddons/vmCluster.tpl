@@ -203,7 +203,6 @@ vmCluster:
           url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
           jsonData:
             timeInterval: 5s
-            # tlsSkipVerify: true
     tls:
       vmInsert:
         enabled: true

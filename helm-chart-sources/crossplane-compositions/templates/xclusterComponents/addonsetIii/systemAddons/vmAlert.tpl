@@ -112,7 +112,12 @@ vmAlert:
                   name: ca
                   key: ca.crt
           notifiers:
-            - url: "http://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
