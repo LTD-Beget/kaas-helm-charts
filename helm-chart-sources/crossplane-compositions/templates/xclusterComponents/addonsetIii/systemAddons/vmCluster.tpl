@@ -95,6 +95,12 @@ vmCluster:
               - name: vmselect-tls
                 mountPath: /tls
                 readOnly: true
+            serviceSpec:
+              metadata:
+                name: vmselect
+              spec:
+                type: ClusterIP
+                useAsDefault: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -147,13 +153,14 @@ vmCluster:
             serviceSpec:
               metadata:
                 name: vminsert
-                annotations:
-                  lb.beget.com/algorithm: "round_robin"
-                  lb.beget.com/type: "internal"
-                  lb.beget.com/healthcheck-interval-seconds: "60"
-                  lb.beget.com/healthcheck-timeout-seconds: "5"
+                # annotations:
+                #   lb.beget.com/algorithm: "round_robin"
+                #   lb.beget.com/type: "internal"
+                #   lb.beget.com/healthcheck-interval-seconds: "60"
+                #   lb.beget.com/healthcheck-timeout-seconds: "5"
               spec:
-                type: LoadBalancer
+                type: ClusterIP # LoadBalancer
+                useAsDefault: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -195,7 +202,7 @@ vmCluster:
           selector: grafana
           type: prometheus
           isDefault: true
-          url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+          url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
           jsonData:
             timeInterval: 5s
     tls:
@@ -209,9 +216,9 @@ vmCluster:
           secretName: {{ $clusterName }}-vminsert
           commonName: vminsert
           dnsNames:
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack"
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+            - "vminsert"
+            - "vminsert.beget-vmcluster"
+            - "vminsert.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
             - {{ $systemVmInsertVip }}
@@ -225,9 +232,9 @@ vmCluster:
           secretName: {{ $clusterName }}-vmselect
           commonName: vmselect
           dnsNames:
-            - "vmselect-vmcluster-victoria-metrics-k8s-stack"
-            - "vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
-            - "vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+            - "vmselect"
+            - "vmselect.beget-vmcluster"
+            - "vmselect.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
   ` }}

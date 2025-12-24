@@ -90,7 +90,7 @@ vmAlert:
             - name: GOMAXPROCS
               value: "4"
           remoteWrite:
-            url: "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+            url: "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
             concurrency: 4
             tlsConfig:
               ca:
@@ -98,14 +98,14 @@ vmAlert:
                   name: ca
                   key: ca.crt
           remoteRead:
-            url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
             tlsConfig:
               ca:
                 configMap:
                   name: ca
                   key: ca.crt
           datasource:
-            url: "https://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+            url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
             tlsConfig:
               ca:
                 configMap:
