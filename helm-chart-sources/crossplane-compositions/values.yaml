@@ -13,15 +13,6 @@ composite:
     istiobase:
       targetRevision: 1.26.0
 
-    grafana:
-      targetRevision: vmcluster-tls
-    victoriametricsalert:
-      targetRevision: vmcluster-tls
-    victoriametricsalertmanager:
-      targetRevision: vmcluster-tls
-    victoriametricscluster:
-      targetRevision: vmcluster-tls
-
 xclusterComponents:
   client:
     enabled: false
