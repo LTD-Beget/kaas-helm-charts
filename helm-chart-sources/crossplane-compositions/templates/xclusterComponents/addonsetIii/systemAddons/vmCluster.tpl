@@ -146,6 +146,7 @@ vmCluster:
                 readOnly: true
             serviceSpec:
               metadata:
+                name: vminsert
                 annotations:
                   lb.beget.com/algorithm: "round_robin"
                   lb.beget.com/type: "internal"
