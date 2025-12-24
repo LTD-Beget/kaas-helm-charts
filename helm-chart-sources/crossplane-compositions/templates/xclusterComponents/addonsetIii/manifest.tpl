@@ -96,7 +96,7 @@ spec:
 
 {{- $remoteWriteUrlVmAgent  := printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
 {{- if $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = "https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus" }}
+  {{- $remoteWriteUrlVmAgent = "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus" }}
 {{- end }}
 ###
 ---

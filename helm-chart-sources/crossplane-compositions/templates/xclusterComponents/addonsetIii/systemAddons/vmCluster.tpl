@@ -33,14 +33,14 @@ vmCluster:
             #TODO change hostpath
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
+                value: "vm-data"
                 effect: "NoSchedule"
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vm-data
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -66,6 +66,9 @@ vmCluster:
               search.maxConcurrentRequests: "128"
               search.maxLabelsAPIDuration: 60s
               search.logSlowQueryDuration: 60s
+              tls: "true"
+              tlsCertFile: "/tls/tls.crt"
+              tlsKeyFile: "/tls/tls.key"
             cacheMountPath: "/select-cache"
             claimTemplates: []
             storage:
@@ -82,17 +85,28 @@ vmCluster:
             priorityClassName: system-node-critical
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
+                value: "vm-stream"
                 effect: "NoSchedule"
-              - key: "dedicated"
-                value: "vminsert"
-                effect: "NoSchedule"
+            volumes:
+              - name: vmselect-tls
+                secret:
+                  secretName: {{ $clusterName }}-vmselect
+            volumeMounts:
+              - name: vmselect-tls
+                mountPath: /tls
+                readOnly: true
+            serviceSpec:
+              metadata:
+                name: vmselect
+              spec:
+                type: ClusterIP
+                useAsDefault: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/monitoring
+                        - key: node-role.kubernetes.io/vm-stream
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -126,10 +140,7 @@ vmCluster:
               tlsKeyFile: "/tls/tls.key"
             tolerations:
               - key: "dedicated"
-                value: "monitoring"
-                effect: "NoSchedule"
-              - key: "dedicated"
-                value: "vminsert"
+                value: "vm-stream"
                 effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
@@ -139,12 +150,23 @@ vmCluster:
               - name: vminsert-tls
                 mountPath: /tls
                 readOnly: true
+            serviceSpec:
+              metadata:
+                name: vminsert
+                # annotations:
+                #   lb.beget.com/algorithm: "round_robin"
+                #   lb.beget.com/type: "internal"
+                #   lb.beget.com/healthcheck-interval-seconds: "60"
+                #   lb.beget.com/healthcheck-timeout-seconds: "5"
+              spec:
+                type: ClusterIP # LoadBalancer
+                useAsDefault: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
                   nodeSelectorTerms:
                     - matchExpressions:
-                        - key: node-role.kubernetes.io/vminsert
+                        - key: node-role.kubernetes.io/vm-stream
                           operator: Exists
               podAntiAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -156,6 +178,7 @@ vmCluster:
                             - vminsert
                     topologyKey: kubernetes.io/hostname
     additionalService:
+      # TODO: Стоит переделать на spec.[vminsert|vmselect|vmstorage].serviceSpec
       vmcluster:
         enabled: true
         name: vminsert-lb
@@ -179,10 +202,9 @@ vmCluster:
           selector: grafana
           type: prometheus
           isDefault: true
-          url: "http://vmselect-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8481/select/0/prometheus"
+          url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
           jsonData:
             timeInterval: 5s
-            tlsSkipVerify: true
     tls:
       vmInsert:
         enabled: true
@@ -194,10 +216,26 @@ vmCluster:
           secretName: {{ $clusterName }}-vminsert
           commonName: vminsert
           dnsNames:
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster"
-            - "vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc"
+            - "vminsert"
+            - "vminsert.beget-vmcluster"
+            - "vminsert.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
             - {{ $systemVmInsertVip }}
+      vmSelect:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: {{ $clusterName }}-vmselect
+          secretName: {{ $clusterName }}-vmselect
+          commonName: vmselect
+          dnsNames:
+            - "vmselect"
+            - "vmselect.beget-vmcluster"
+            - "vmselect.beget-vmcluster.svc"
+          ipAddresses:
+            - 127.0.0.1
   ` }}
 {{- end -}}
