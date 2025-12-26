@@ -15,11 +15,10 @@ default: |
           manager:
             image:
               pullPolicy: Always
-              tag: v1.0.1
+              tag: v1.0.2
             extraArgs:
               cluster-name: {{ "{{ .clusterName }}" }}
               cluster-namespace: {{ "{{ .argocdDestinationNamespace }}" }}
-              leader-elect: false
         volumes:
           secret-ccm-kubeconfig:
             volume:
