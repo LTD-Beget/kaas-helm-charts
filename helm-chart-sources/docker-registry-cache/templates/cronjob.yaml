@@ -1,0 +1,124 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- if and $proxyValue.enabled $proxyValue.garbageCollect $proxyValue.garbageCollect.enabled }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $storageType        := (include "docker-registry.storage-type" $proxyMergedValues.config.storage.type) -}}
+{{- $serviceAccountName := "default" -}}
+{{- if $proxyMergedValues.serviceAccount.create }}
+{{- $serviceAccountName = printf "%s-%s" (include "docker-registry.fullname" .) $proxyParsedName -}}
+{{- if $proxyMergedValues.serviceAccount.name }}
+{{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
+{{- end }}
+{{- end }}
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-gc
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $proxyMergedValues.garbageCollect.schedule | quote }}
+  jobTemplate:
+    metadata:
+      labels:
+        registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+        {{- include "docker-registry.labels" $ | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.secret.yaml") $ | sha256sum }}
+        {{- with $proxyMergedValues.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      template:
+        metadata:
+          labels:
+            registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+            {{- include "docker-registry.labels" $ | nindent 8 }}
+            {{- if or $proxyMergedValues.podLabels $proxyMergedValues.garbageCollect.podLabels }}
+            {{- toYaml (merge ($proxyMergedValues.garbageCollect.podLabels | default (dict)) ($proxyMergedValues.podLabels | default (dict))) | nindent 12 }}
+            {{- end }}
+          {{- if or $proxyMergedValues.podAnnotations $proxyMergedValues.garbageCollect.podAnnotations }}
+          annotations:
+            {{- toYaml (merge ($proxyMergedValues.garbageCollect.podAnnotations | default (dict)) ($proxyMergedValues.podAnnotations | default (dict))) | nindent 12 }}
+          {{- end}}
+        spec:
+          serviceAccountName: {{ $serviceAccountName }}
+          {{- with $proxyMergedValues.imagePullSecrets }}
+          imagePullSecrets:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $proxyMergedValues.priorityClassName }}
+          priorityClassName: "{{ $proxyMergedValues.priorityClassName }}"
+          {{- end }}
+          {{- if $proxyMergedValues.securityContext.enabled }}
+          securityContext: {{ omit $proxyMergedValues.securityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: {{ $.Chart.Name }}
+              image: "{{ $proxyMergedValues.image.repository }}:{{ $proxyMergedValues.image.tag }}"
+              imagePullPolicy: {{ $proxyMergedValues.image.pullPolicy }}
+              command:
+                - /bin/registry
+                - garbage-collect
+                - --delete-untagged={{ $proxyMergedValues.garbageCollect.deleteUntagged }}
+                - /etc/distribution/config.yml
+              {{- with $proxyMergedValues.extraEnvVars }}
+              env:
+                {{ . | toYaml | nindent 12 }}
+              {{- end }}
+              {{- if $proxyMergedValues.garbageCollect.resources }}
+              resources:
+              {{- toYaml $proxyMergedValues.garbageCollect.resources | nindent 16 }}
+              {{- end }}
+              {{- if $proxyMergedValues.containerSecurityContext.enabled }}
+              securityContext: {{ omit $proxyMergedValues.containerSecurityContext "enabled" | toYaml | nindent 16 }}
+              {{- end }}
+              volumeMounts:
+                - name: "{{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config"
+                  mountPath: /etc/distribution
+                {{- if eq $storageType "filesystem" }}
+                - name: data
+                  mountPath: "{{ $proxyMergedValues.config.storage.filesystem.rootdirectory }}"
+                {{- end }}
+                {{- with $proxyMergedValues.extraVolumeMounts }}
+                {{ toYaml . | nindent 16 }}
+                {{- end }}
+          restartPolicy: OnFailure
+          {{- with $proxyMergedValues.nodeSelector }}
+          nodeSelector:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $proxyMergedValues.affinity }}
+          affinity:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $proxyMergedValues.tolerations }}
+          tolerations:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          volumes:
+            - name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config
+              secret:
+                secretName: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config
+            {{- if eq $storageType "filesystem" }}
+            - name: data
+              {{- if $proxyMergedValues.persistence.enabled }}
+              persistentVolumeClaim:
+                {{ if $proxyMergedValues.persistence.existingClaim }}
+                claimName: {{ $proxyMergedValues.persistence.existingClaim }}
+                {{- else }}
+                claimName: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+                {{- end }}
+              {{- else }}
+              emptyDir: {}
+              {{- end -}}
+            {{- end }}
+            {{- with $proxyMergedValues.extraVolumes }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+{{- end }}
+{{ end }}

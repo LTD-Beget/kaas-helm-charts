@@ -1,0 +1,51 @@
+{{- $certmanager  := .Values.expose.tls.certmanager -}}
+{{- $commonName   := (concat $certmanager.dnsNames $certmanager.ipAddresses) | first -}}
+
+{{- if and .Values.expose.enabled (eq .Values.expose.tls.certSource "certmanager") $commonName }}
+{{- $extIssuer    := $certmanager.existingIssuer -}}
+{{- $issuerKind   := "Issuer" -}}
+{{- $issuerName   := printf "%s-selfsigned" .Release.Name -}}
+{{- if and $extIssuer.kind $extIssuer.name }}
+{{- $issuerKind   = $extIssuer.kind -}}
+{{- $issuerName   = $extIssuer.name -}}
+{{- else }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $issuerName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "docker-registry.selectorLabels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "docker-registry.selectorLabels" . | nindent 4 }}
+spec:
+  issuerRef:
+    group: cert-manager.io
+    kind: {{ $issuerKind }}
+    name: {{ $issuerName }}
+  {{- with $certmanager.dnsNames }}
+  dnsNames:
+    {{- range $domain := . }}
+    - {{ $domain | quote }}
+    {{- end }}
+  {{- end }}
+  {{- with $certmanager.ipAddresses }}
+  ipAddresses:
+    {{- range $ip := . }}
+    - {{ $ip | quote }}
+    {{- end }}
+  {{- end }}
+  commonName: "{{ $commonName }}"
+  secretName: {{ .Release.Name }}-cert-tls
+{{- end }}

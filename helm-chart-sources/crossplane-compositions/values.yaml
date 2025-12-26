@@ -27,6 +27,9 @@ composite:
     capiclusterclass:
       targetRevision: HEAD
 
+    capiclusterclass:
+      targetRevision: feature/registry-proxy
+
 xclusterComponents:
   client:
     enabled: false

@@ -1,0 +1,29 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- if and $proxyValue.enabled $proxyMergedValues.persistence.enabled (not $proxyMergedValues.persistence.existingClaim) }}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  accessModes:
+    - {{ $proxyMergedValues.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ $proxyMergedValues.persistence.size | quote }}
+{{- if $proxyMergedValues.persistence.storageClass }}
+{{- if (eq "-" $proxyMergedValues.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ $proxyMergedValues.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{ end }}

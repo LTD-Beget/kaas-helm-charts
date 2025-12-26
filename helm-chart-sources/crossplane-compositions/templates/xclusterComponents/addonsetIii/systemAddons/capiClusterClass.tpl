@@ -11,5 +11,60 @@ capiClusterClass:
     inCloud:
       serviceAccount:
         name: capi
+    capi:
+      k8s:
+        containerRuntime:
+          mirrors:
+            repos:
+              docker.io:
+                server: https://docker.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io"
+                  - "https://registry-1.docker.io"
+              registry-1.docker.io:
+                server: https://registry-1.docker.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io"
+                  - "https://registry-1.docker.io"
+              europe-docker.pkg.dev:
+                server: https://europe-docker.pkg.dev
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/europe-docker-pkg-dev"
+                  - "https://europe-docker.pkg.dev"
+              gcr.io:
+                server: https://gcr.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/gcr-io"
+                  - "https://gcr.io"
+              ghcr.io:
+                server: https://ghcr.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/ghcr-io"
+                  - "https://ghcr.io"
+              mirror.gcr.io:
+                server: https://mirror.gcr.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/mirror-gcr-io"
+                  - "https://mirror.gcr.io"
+              public.ecr.aws:
+                server: https://public.ecr.aws
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/public-ecr-aws"
+                  - "https://public.ecr.aws"
+              quay.io:
+                server: https://quay.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/quay-io"
+                  - "https://quay.io"
+              registry.k8s.io:
+                server: https://registry.k8s.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/registry-k8s-io"
+                  - "https://registry.k8s.io"
+              xpkg.crossplane.io:
+                server: https://xpkg.crossplane.io
+                mirrors:
+                  - "https://{{ $systemIstioGwVip }}/repository/xpkg-crossplane-io"
+                  - "https://xpkg.crossplane.io"
   ` }}
 {{- end -}}
