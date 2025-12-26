@@ -10,6 +10,8 @@ composition:
 
 composite:
   addons:
+    common:
+      targetRevision: feat/certset
     istiobase:
       targetRevision: 1.26.0
 
