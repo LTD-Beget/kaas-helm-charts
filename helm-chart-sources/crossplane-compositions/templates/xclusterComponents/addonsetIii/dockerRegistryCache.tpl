@@ -3,10 +3,8 @@
 dockerRegistryCache:
   apiVersion: in-cloud.io/v1alpha1
   kind: XAddonsDockerRegistryCache
-  namespace: bcloud-capi
+  namespace: beget-container-registry
   version: v1alpha1
-  dependsOn:
-    - istioGW
   values:
     expose:
       {{- if $istioBaseReady }}
