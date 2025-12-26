@@ -12,10 +12,6 @@ csrc:
     appSpec:
       applications:
         csrControllerManager:
-          containers:
-            manager:
-              image:
-                tag: rc1
           imagePullSecrets:
           - name: regcred
           tolerations:
