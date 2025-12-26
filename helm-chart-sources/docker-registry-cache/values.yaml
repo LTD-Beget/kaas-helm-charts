@@ -96,6 +96,9 @@ default:
   metrics:
     enabled: false                # Enable Prometheus metrics on registry port
     port: 5001                    # Port for metrics endpoint
+    scrape:
+      enabled: false
+      type: VictoriaMetrics
 
   containerSecurityContext:       # Defines container security options for pods
     enabled: true
