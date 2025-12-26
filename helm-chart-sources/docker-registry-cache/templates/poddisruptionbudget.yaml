@@ -1,0 +1,26 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- if and $proxyValue.enabled $proxyMergedValues.podDisruptionBudget }}
+
+---
+{{- if .Capabilities.APIVersions.Has "policy/v1" -}}
+apiVersion: policy/v1
+{{- else}}
+apiVersion: policy/v1beta1
+{{- end }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+      {{- include "docker-registry.selectorLabels" $ | nindent 6 }}
+{{ toYaml $proxyMergedValues.podDisruptionBudget | indent 2 }}
+{{- end }}
+{{ end }}

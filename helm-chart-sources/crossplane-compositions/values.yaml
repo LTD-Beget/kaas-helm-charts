@@ -13,6 +13,9 @@ composite:
     istiobase:
       targetRevision: 1.26.0
 
+    capiclusterclass:
+      targetRevision: feature/registry-proxy
+
 xclusterComponents:
   client:
     enabled: false

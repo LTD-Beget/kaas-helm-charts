@@ -1,0 +1,44 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- if and $proxyValue.enabled $proxyMergedValues.autoscaling $proxyMergedValues.autoscaling.enabled }}
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  minReplicas: {{ $proxyMergedValues.autoscaling.minReplicas }}
+  maxReplicas: {{ $proxyMergedValues.autoscaling.maxReplicas }}
+  metrics:
+{{- with $proxyMergedValues.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+{{- end }}
+{{- with $proxyMergedValues.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+{{- end }}
+{{- with $proxyMergedValues.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- end }}
+{{ end }}

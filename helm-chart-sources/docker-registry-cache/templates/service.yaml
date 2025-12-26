@@ -1,0 +1,62 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- if $proxyValue.enabled }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+    {{- with $proxyMergedValues.service.labels }}
+    {{ toYaml . | indent 4 }}
+    {{- end }}
+  {{- with $proxyMergedValues.service.annotations }}
+  annotations:
+    {{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  type: {{ $proxyMergedValues.service.type }}
+{{- if (and (eq $proxyMergedValues.service.type "ClusterIP") (not (empty $proxyMergedValues.service.clusterIP))) }}
+  clusterIP: {{ $proxyMergedValues.service.clusterIP }}
+{{- end }}
+{{- if (and (eq $proxyMergedValues.service.type "LoadBalancer") (not (empty $proxyMergedValues.service.loadBalancerIP))) }}
+  loadBalancerIP: {{ $proxyMergedValues.service.loadBalancerIP }}
+{{- end }}
+{{- if (and (eq $proxyMergedValues.service.type "LoadBalancer") (not (empty $proxyMergedValues.service.loadBalancerSourceRanges))) }}
+  loadBalancerSourceRanges: {{ $proxyMergedValues.service.loadBalancerSourceRanges }}
+{{- end }}
+{{- if $proxyMergedValues.service.sessionAffinity }}
+  sessionAffinity: {{ $proxyMergedValues.service.sessionAffinity }}
+  {{- if $proxyMergedValues.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+    {{ toYaml $proxyMergedValues.service.sessionAffinityConfig | nindent 4 }}
+  {{- end -}}
+{{- end }}
+  ports:
+    - port: {{ $proxyMergedValues.service.port }}
+      protocol: TCP
+    {{- if $proxyMergedValues.config.tls }}
+      name: https
+    {{ else }}
+      name: http
+    {{ end }}
+      targetPort: {{ $proxyMergedValues.service.port }}
+    {{- if (and (eq $proxyMergedValues.service.type "NodePort") (not (empty $proxyMergedValues.service.nodePort))) }}
+      nodePort: {{ $proxyMergedValues.service.nodePort }}
+    {{- end }}
+  {{- if $proxyMergedValues.metrics.enabled }}
+    - port: {{ $proxyMergedValues.metrics.port | default 5001 }}
+      protocol: TCP
+      name: metrics
+      targetPort: {{ $proxyMergedValues.metrics.port | default 5001 }}
+  {{- end }}
+  selector:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{ end }}
