@@ -10,10 +10,15 @@ composition:
 
 composite:
   addons:
+    ccm: HEAD
+    csrc: HEAD
     common:
       targetRevision: feat/certset
     istiobase:
       targetRevision: 1.26.0
+    begetcmprovider: HEAD
+    crossplanexcluster: HEAD
+    certcontrollermanager: HEAD
 
 xclusterComponents:
   client:
