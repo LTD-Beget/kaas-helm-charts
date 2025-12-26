@@ -376,8 +376,8 @@ default:
     #         os: linux
 
 proxies:
-  dockerhub:
-    enabled: true                 # Enable this proxy deployment
+  docker-io:
+    enabled: false                 # Enable this proxy deployment
     replicaCount: 1               # Number of pod replicas for this proxy
 
     updateStrategy: {}            # Deployment update strategy overrides
