@@ -13,7 +13,7 @@ default: |
     - --cluster-wide
     image:
       repository: prorobotech/certificate-set
-      tag: main-4f28d045
+      tag: main-5610f183
       pullPolicy: IfNotPresent
     tolerations:
     - effect: NoExecute
@@ -22,5 +22,5 @@ default: |
       key: node-role.kubernetes.io/control-plane
   metrics:
     enable: true
-    port: 8443 
+    port: 8443
 {{- end }}
