@@ -167,6 +167,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.capiKubeadmBootstrap" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.capiKubeadmControlPlane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneXcluster" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.dockerRegistryCache" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trivyOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}

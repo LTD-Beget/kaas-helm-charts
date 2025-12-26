@@ -5,7 +5,7 @@
 {{- $storageType        := (include "docker-registry.storage-type" $proxyMergedValues.config.storage.type) -}}
 {{- $serviceAccountName := "default" -}}
 {{- if $proxyMergedValues.serviceAccount.create }}
-{{- $serviceAccountName = printf "%s-%s" (include "docker-registry.fullname" .) $proxyParsedName -}}
+{{- $serviceAccountName = printf "%s-%s" (include "docker-registry.fullname" $) $proxyParsedName -}}
 {{- if $proxyMergedValues.serviceAccount.name }}
 {{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
 {{- end }}
