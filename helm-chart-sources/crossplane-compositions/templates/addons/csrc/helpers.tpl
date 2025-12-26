@@ -19,6 +19,7 @@ default: |
             extraArgs:
               cluster-name: {{ "{{ .clusterName }}" }}
               cluster-namespace: {{ "{{ .argocdDestinationNamespace }}" }}
+              leader-elect: false
         volumes:
           secret-ccm-kubeconfig:
             volume:
