@@ -29,10 +29,10 @@ dockerRegistryCache:
         create: true
 
       resources:
-        limits:
+        requests:
           cpu: 100m
           memory: 128Mi
-        requests:
+        limits:
           cpu: 250m
           memory: 256Mi
 
