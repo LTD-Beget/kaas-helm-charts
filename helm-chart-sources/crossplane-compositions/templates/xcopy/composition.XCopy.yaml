@@ -114,7 +114,7 @@ spec:
                     fieldPath: "status.atProvider.manifest.metadata.name"
                   toFieldPath: "metadata.annotations['xcopy.in-cloud.io/copied-resource-name']"
             patches:
-              - toFieldPath: spec.references[0].patchesFrom.mock
+              - toFieldPath: spec.references[0].patchesFrom.name
                 fromFieldPath: metadata.name
                 transforms:
                   - type: string
