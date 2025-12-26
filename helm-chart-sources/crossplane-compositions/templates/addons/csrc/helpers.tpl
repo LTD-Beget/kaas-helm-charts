@@ -16,9 +16,9 @@ default: |
             extraArgs:
               cluster-name: {{ "{{ .clusterName }}" }}
               cluster-namespace: {{ "{{ .argocdDestinationNamespace }}" }}
-            # image:
+              image:
+                pullPolicy: Always
             #   tag: rc1
-            #   pullPolicy: Always
         volumes:
           secret-ccm-kubeconfig:
             volume:

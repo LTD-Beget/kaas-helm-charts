@@ -16,9 +16,9 @@ default: |
             extraEnv:
               CLUSTER_NAME: {{ "{{ .clusterName }}" }}
               CLUSTER_NAMESPACE: {{ "{{ .argocdDestinationNamespace }}" }}
-            # image:
+              image:
+                pullPolicy: Always
             #   tag: latest
-            #   pullPolicy: Always
             extraArgs:
               v: 3
         volumes:
