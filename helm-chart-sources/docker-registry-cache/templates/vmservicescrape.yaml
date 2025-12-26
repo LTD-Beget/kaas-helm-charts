@@ -1,0 +1,30 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- if and $proxyValue.enabled
+            $proxyMergedValues.metrics
+            $proxyMergedValues.metrics.enabled
+            $proxyMergedValues.metrics.scrape
+            $proxyMergedValues.metrics.scrape.enabled
+            (eq $proxyMergedValues.metrics.scrape.type "VictoriaMetrics") }}
+
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      scheme: HTTP
+  jobLabel: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+{{- end }}
+{{ end }}

@@ -33,11 +33,15 @@ dockerRegistryCache:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 250m
-          memory: 256Mi
+          cpu: 400m
+          memory: 512Mi
 
       metrics:
         enabled: true
+        scrape:
+        {{- if $infraVMOperatorReady }}
+          enabled: true
+        {{- end }}
 
       config:
         log:
