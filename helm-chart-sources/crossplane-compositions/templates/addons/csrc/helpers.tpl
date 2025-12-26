@@ -15,7 +15,7 @@ default: |
           manager:
             image:
               pullPolicy: Always
-            #  tag: latest
+              tag: v1.0.1
             extraArgs:
               cluster-name: {{ "{{ .clusterName }}" }}
               cluster-namespace: {{ "{{ .argocdDestinationNamespace }}" }}
