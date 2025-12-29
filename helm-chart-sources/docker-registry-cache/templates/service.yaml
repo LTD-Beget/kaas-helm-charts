@@ -2,6 +2,10 @@
 {{- if $proxyValue.enabled }}
 {{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
 {{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
 
 ---
 apiVersion: v1
@@ -40,7 +44,7 @@ spec:
   ports:
     - port: {{ $proxyMergedValues.service.port }}
       protocol: TCP
-    {{- if $proxyMergedValues.config.tls }}
+    {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
       name: https
     {{ else }}
       name: http

@@ -1,12 +1,13 @@
 {{ range $proxyName, $proxyValue := .Values.proxies }}
 {{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
 {{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
-{{- if and $proxyValue.enabled
-            $proxyMergedValues.metrics
-            $proxyMergedValues.metrics.enabled
-            $proxyMergedValues.metrics.scrape
-            $proxyMergedValues.metrics.scrape.enabled
-            (eq $proxyMergedValues.metrics.scrape.type "VictoriaMetrics") }}
+{{- $metrics            := $proxyMergedValues.metrics | default dict -}}
+{{- $scrape             := $metrics.scrape | default dict -}}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- if and $proxyValue.enabled $metrics.enabled $scrape.enabled (eq $scrape.type "VictoriaMetrics") }}
 
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
@@ -24,7 +25,11 @@ spec:
   endpoints:
     - port: metrics
       path: /metrics
+    {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+      scheme: HTTPS
+    {{- else }}
       scheme: HTTP
+    {{- end }}
   jobLabel: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
 {{- end }}
 {{ end }}

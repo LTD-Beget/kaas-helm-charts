@@ -6,6 +6,15 @@ dockerRegistryCache:
   namespace: beget-container-registry
   version: v1alpha1
   values:
+    internalTLS:
+      {{- if $certManagerReady }}
+      certSource: certmanager
+      {{- end }}
+      certmanager:
+        existingIssuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+
     expose:
       {{- if $istioBaseReady }}
       enabled: true
