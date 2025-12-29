@@ -51,6 +51,40 @@ dockerRegistryCache:
         {{- if $infraVMOperatorReady }}
           enabled: true
         {{- end }}
+          endpoint:
+            scheme: HTTPS
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              serverName: docker-registry-cache
+
+      extraContainers:
+        - name: rbac-proxy
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+          args:
+            - --secure-listen-address=0.0.0.0:11043
+            - --upstream=http://127.0.0.1:5001
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11043
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - name: docker-registry-cache-certificate
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+
+
+
+
 
       config:
         log:

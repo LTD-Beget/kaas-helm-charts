@@ -23,13 +23,7 @@ spec:
     matchLabels:
       registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
   endpoints:
-    - port: metrics
-      path: /metrics
-    {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
-      scheme: HTTPS
-    {{- else }}
-      scheme: HTTP
-    {{- end }}
+    - {{ $scrape.endpoint | toYaml | nindent 6 }}
   jobLabel: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
 {{- end }}
 {{ end }}

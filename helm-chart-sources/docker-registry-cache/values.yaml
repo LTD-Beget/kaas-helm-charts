@@ -115,6 +115,10 @@ default:
     scrape:
       enabled: false
       type: VictoriaMetrics
+      endpoint:
+        port: metrics
+        path: /metrics
+        scheme: HTTP
 
   containerSecurityContext:       # Defines container security options for pods
     enabled: true
@@ -150,6 +154,38 @@ default:
   extraEnvVars:                   # Extra environment variables injected into registry pods
     - name: OTEL_TRACES_EXPORTER
       value: none                 # Tracing exporter, e.g. "none" disables exporting
+
+  extraContainers: []            # Optional extra containers
+  ## Extra containers to add to the Deployment
+  # - name: rbac-proxy
+  #   image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+  #   args:
+  #     - --secure-listen-address=0.0.0.0:11001
+  #     - --upstream=http://127.0.0.1:5001
+  #     - --tls-cert-file=/app/config/metrics/tls/tls.crt
+  #     - --tls-private-key-file=/app/config/metrics/tls/tls.key
+  #     - --v=2
+  #   ports:
+  #     - name: https-metrics
+  #       containerPort: 11043
+  #       protocol: TCP
+  #   resources:
+  #     requests:
+  #       memory: "32Mi"
+  #       cpu: "10m"
+  #     limits:
+  #       memory: "64Mi"
+  #       cpu: "50m"
+  #   volumeMounts:
+  #     - name: rbac-proxy-tls
+  #       mountPath: /app/config/metrics/tls
+  #       readOnly: true
+
+  initContainers: []            # Optional init containers before main pod start
+  ## Init containers to add to the Deployment
+  # - name: init
+  #   image: busybox
+  #   command: []
 
   persistence:
     enabled: false                # Enable persistent storage for registry data (filesystem)
@@ -526,6 +562,12 @@ proxies:
     ## Additional ENV variables to set
     # - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
     #   value: "/var/lib/example"
+
+    extraContainers: []            # Optional extra containers
+    ## Extra containers to add to the Deployment
+    # - name: init
+    #   image: busybox
+    #   command: []
 
     initContainers: []            # Optional init containers before main pod start
     ## Init containers to add to the Deployment
