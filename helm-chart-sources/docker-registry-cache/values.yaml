@@ -43,9 +43,25 @@ expose:
       # Optional: configure to use an existing CertManager Issuer or ClusterIssuer
       existingIssuer:
         kind: Issuer              # Either 'Issuer' or 'ClusterIssuer'
-        name: ""                  # Name of existing Issuer resource
+        name: ""                  # Name of existing Issuer resource. If name is not defined, a new Issuer will be created
       dnsNames: []                # DNS names to include in certificate
       ipAddresses: []             # IP addresses to include
+
+    secret:
+      secretName: ""              # Name of Kubernetes secret containing tls.crt and tls.key
+
+# TLS on internal components of registry
+internalTLS:
+  # There are three ways to provide tls
+  # 1) "certmanager" will generate cert automatically
+  # 2) "secret" internal certificates from secret
+  # 3) "none" no certificates
+  certSource: none
+  certmanager:
+    # Optional: configure to use an existing CertManager Issuer or ClusterIssuer
+    existingIssuer:
+      kind: Issuer              # Either 'Issuer' or 'ClusterIssuer'
+      name: ""                  # Name of existing Issuer resource. If name is not defined, a new Issuer will be created
 
     secret:
       secretName: ""              # Name of Kubernetes secret containing tls.crt and tls.key

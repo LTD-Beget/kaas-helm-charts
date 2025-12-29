@@ -10,6 +10,13 @@
 {{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
 {{- end }}
 {{- end }}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- $intSecretName      := printf "%s-internal-tls" (template "docker-registry.fullname" $) -}}
+{{- if eq $intTls.certSource "secret" }}
+{{- $intSecretName      = $intTls.secret.secretName -}}
+{{- end }}
 
 ---
 apiVersion: batch/v1
@@ -84,6 +91,10 @@ spec:
                 - name: data
                   mountPath: "{{ $proxyMergedValues.config.storage.filesystem.rootdirectory }}"
                 {{- end }}
+                {{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+                - name: "{{ template "docker-registry.fullname" $ }}-certificate"
+                  mountPath: /etc/distribution/tls
+                {{- end }}
                 {{- with $proxyMergedValues.extraVolumeMounts }}
                 {{ toYaml . | nindent 16 }}
                 {{- end }}
@@ -116,6 +127,11 @@ spec:
               {{- else }}
               emptyDir: {}
               {{- end -}}
+            {{- end }}
+            {{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+            - name: "{{ template "docker-registry.fullname" $ }}-certificate"
+              secret:
+                secretName: {{ $intSecretName }}
             {{- end }}
             {{- with $proxyMergedValues.extraVolumes }}
             {{ toYaml . | nindent 12 }}

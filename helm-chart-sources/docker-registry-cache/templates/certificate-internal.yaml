@@ -1,0 +1,45 @@
+{{- if (eq .Values.internalTLS.certSource "certmanager") }}
+{{- $extIssuer    := .Values.internalTLS.certmanager.existingIssuer -}}
+{{- $issuerKind   := "Issuer" -}}
+{{- $issuerName   := printf "%s-selfsigned-internal" .Release.Name -}}
+{{- if and $extIssuer.kind $extIssuer.name }}
+{{- $issuerKind   = $extIssuer.kind -}}
+{{- $issuerName   = $extIssuer.name -}}
+{{- else }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $issuerName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "docker-registry.selectorLabels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-internal-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "docker-registry.selectorLabels" . | nindent 4 }}
+spec:
+  issuerRef:
+    group: cert-manager.io
+    kind: {{ $issuerKind }}
+    name: {{ $issuerName }}
+  dnsNames:
+    {{ range $proxyName, $proxyValue := .Values.proxies }}
+    {{- if $proxyValue.enabled }}
+    {{- $proxyParsedName := (include "docker-registry.registryname" $proxyName) -}}
+    - "{{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}"
+    - "{{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}.{{ $.Release.Namespace }}"
+    - "{{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}.{{ $.Release.Namespace }}.svc"
+    {{- end }}
+    {{ end }}
+  commonName: {{ template "docker-registry.fullname" $ }}
+  secretName: {{ template "docker-registry.fullname" $ }}-internal-tls
+{{- end }}
