@@ -1,6 +1,6 @@
 {{ range $proxyName, $proxyValue := .Values.proxies }}
 {{- if $proxyValue.enabled }}
-{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
 {{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
 {{- $storageType        := (include "docker-registry.storage-type" $proxyMergedValues.config.storage.type) -}}
 {{- $serviceAccountName := "default" -}}

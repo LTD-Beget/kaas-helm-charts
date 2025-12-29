@@ -1,6 +1,6 @@
 {{ range $proxyName, $proxyValue := .Values.proxies }}
 {{- if $proxyValue.enabled }}
-{{- $proxyMergedValues  := (deepCopy $.Values.default | mergeOverwrite $proxyValue) -}}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
 {{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
 {{- $config             := $proxyMergedValues.config | default dict -}}
 {{- $http               := $config.http | default dict -}}
