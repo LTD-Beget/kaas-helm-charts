@@ -22,10 +22,11 @@ crossplaneFunctions:
                         - --poll=5s
                         - --enable-watches
                         - --poll-jitter-percentage=1
+                        - '--max-reconcile-rate=500'
             {{ if and $systemEnabled $crossplaneReady }}
                       resources:
-                        requests: { cpu: "2", memory: "768Mi" }
-                        limits:   { cpu: "8", memory: "8Gi" }
+                        requests: { cpu: "6", memory: "8Mi" }
+                        limits:   { cpu: "16", memory: "32Gi" }
             {{ end }}
                   tolerations:
                     - key: node-role.kubernetes.io/control-plane
@@ -38,8 +39,11 @@ crossplaneFunctions:
                     - effect: NoSchedule
                       key: node-role.kubernetes.io/crossplane	
                       operator: Exists
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane-prov
+                      operator: Exists
                   nodeSelector:
-                    node-role.kubernetes.io/crossplane: ''
+                    node-role.kubernetes.io/crossplane-prov: ''
             {{ end }}
         monitoring:
         {{ if $infraVMOperatorReady }}
