@@ -13,7 +13,7 @@
 {{- $config             := $proxyMergedValues.config | default dict -}}
 {{- $http               := $config.http | default dict -}}
 {{- $intTls             := $.Values.internalTLS -}}
-{{- $intSecretName      := printf "%s-internal-tls" (template "docker-registry.fullname" $) -}}
+{{- $intSecretName      := printf "%s-internal-tls" (include "docker-registry.fullname" $) -}}
 {{- if eq $intTls.certSource "secret" }}
 {{- $intSecretName      = $intTls.secret.secretName -}}
 {{- end }}
