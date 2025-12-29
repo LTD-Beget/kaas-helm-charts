@@ -23,7 +23,16 @@ spec:
     matchLabels:
       registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
   endpoints:
-    - {{ $scrape.endpoint | toYaml | nindent 6 }}
+    - port: metrics
+      path: /metrics
+    {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+      scheme: HTTPS
+    {{- else }}
+      scheme: HTTP
+    {{- end }}
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: docker-registry-cache
   jobLabel: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
 {{- end }}
 {{ end }}

@@ -59,9 +59,6 @@ spec:
       name: metrics
       targetPort: {{ $proxyMergedValues.metrics.port | default 5001 }}
   {{- end }}
-  {{- with $proxyMergedValues.service.extraPorts }}
-    {{ . | toYaml | nindent 4 }}
-  {{- end }}
   selector:
     registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
     {{- include "docker-registry.selectorLabels" $ | nindent 4 }}
