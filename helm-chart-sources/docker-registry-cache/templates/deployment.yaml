@@ -95,14 +95,14 @@ spec:
             {{- end }}
           livenessProbe:
             httpGet:
-              {{- if $proxyMergedValues.config.tls }}
+              {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
               scheme: HTTPS
               {{- end }}
               path: /
               port: 5000
           readinessProbe:
             httpGet:
-              {{- if $proxyMergedValues.config.tls }}
+              {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
               scheme: HTTPS
               {{- end }}
               path: /
