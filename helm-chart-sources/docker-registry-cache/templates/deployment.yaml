@@ -12,6 +12,7 @@
 {{- end }}
 {{- $config             := $proxyMergedValues.config | default dict -}}
 {{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
 {{- $intTls             := $.Values.internalTLS -}}
 {{- $intSecretName      := printf "%s-internal-tls" (include "docker-registry.fullname" $) -}}
 {{- if eq $intTls.certSource "secret" }}
@@ -82,7 +83,7 @@ spec:
           {{- end }}
           ports:
             - containerPort: {{ $proxyMergedValues.service.port }}
-            {{- if $proxyMergedValues.config.tls }}
+            {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
               name: https
             {{ else }}
               name: http
