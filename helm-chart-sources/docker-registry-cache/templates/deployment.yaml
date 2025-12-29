@@ -86,9 +86,9 @@ spec:
             - containerPort: {{ $proxyMergedValues.service.port }}
             {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
               name: https
-            {{ else }}
+            {{- else }}
               name: http
-            {{ end }}
+            {{- end }}
               protocol: TCP
             {{- if and $metrics.enabled (not $metrics.secureEndpoint) }}
             - containerPort: {{ $proxyMergedValues.metrics.port | default 5001 }}
