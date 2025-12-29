@@ -13,7 +13,7 @@ default: |
     - --cluster-wide
     image:
       repository: prorobotech/certificate-set
-      tag: main-5610f183
+      tag: main-3a388eb6
       pullPolicy: IfNotPresent
     tolerations:
     - effect: NoExecute
