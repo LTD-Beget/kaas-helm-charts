@@ -199,7 +199,7 @@ spec:
               "expr": "registry_storage_cache_total{instance=\"$instance\",type=\"Request\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "refId": "A"
             }
           ],
@@ -277,7 +277,7 @@ spec:
               "expr": "registry_storage_cache_total{instance=\"$instance\",type=\"Hit\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "refId": "A"
             }
           ],
@@ -356,7 +356,7 @@ spec:
               "expr": "registry_storage_cache_total{container=\"docker-registry\",job=\"$job\",type=\"Miss\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -985,7 +985,7 @@ spec:
               "expr": "registry_http_in_flight_requests{container=\"docker-registry\",job=\"$job\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ handler }}",
+              "legendFormat": "{{`{{ handler }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1086,7 +1086,7 @@ spec:
               "expr": "ceil(rate(registry_storage_cache_total{container=\"docker-registry\",job=\"$job\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{ type }}",
+              "legendFormat": "{{`{{ type }}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1187,7 +1187,7 @@ spec:
               "format": "time_series",
               "instant": false,
               "intervalFactor": 2,
-              "legendFormat": "{{ action }}",
+              "legendFormat": "{{`{{ action }}`}}",
               "refId": "A",
               "step": 10,
               "target": ""
