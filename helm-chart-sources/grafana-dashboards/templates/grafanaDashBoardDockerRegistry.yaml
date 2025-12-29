@@ -117,7 +117,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "process_start_time_seconds{container=\"docker-registry\",job=\"$job\"} * 1000",
+              "expr": "process_start_time_seconds{job=\"$job\"} * 1000",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -353,7 +353,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "registry_storage_cache_total{container=\"docker-registry\",job=\"$job\",type=\"Miss\"}",
+              "expr": "registry_storage_cache_total{job=\"$job\",type=\"Miss\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{`{{ type }}`}}",
@@ -437,7 +437,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "avg(process_resident_memory_bytes{container=\"docker-registry\",job=\"$job\"})",
+              "expr": "avg(process_resident_memory_bytes{job=\"$job\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -542,7 +542,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "avg(rate(process_cpu_seconds_total{container=\"docker-registry\",job=\"$job\"}[5m]))",
+              "expr": "avg(rate(process_cpu_seconds_total{job=\"$job\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "CPU Time",
@@ -647,7 +647,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "avg(rate(process_resident_memory_bytes{container=\"docker-registry\",job=\"$job\"}[5m]))",
+              "expr": "avg(rate(process_resident_memory_bytes{job=\"$job\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Resident Mem",
@@ -763,7 +763,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "process_open_fds{container=\"docker-registry\",job=\"$job\"}",
+              "expr": "process_open_fds{job=\"$job\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Open FD",
@@ -879,7 +879,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "ceil(rate(registry_http_requests_total{container=\"docker-registry\",job=\"$job\"}[5m]))",
+              "expr": "ceil(rate(registry_http_requests_total{job=\"$job\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "__auto",
@@ -982,7 +982,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "registry_http_in_flight_requests{container=\"docker-registry\",job=\"$job\"}",
+              "expr": "registry_http_in_flight_requests{job=\"$job\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{`{{ handler }}`}}",
@@ -1083,7 +1083,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "ceil(rate(registry_storage_cache_total{container=\"docker-registry\",job=\"$job\"}[5m]))",
+              "expr": "ceil(rate(registry_storage_cache_total{job=\"$job\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{`{{ type }}`}}",
@@ -1183,7 +1183,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "increase(registry_storage_action_seconds_sum{container=\"docker-registry\",job=\"$job\"}[2m]) * 1000",
+              "expr": "increase(registry_storage_action_seconds_sum{job=\"$job\"}[2m]) * 1000",
               "format": "time_series",
               "instant": false,
               "intervalFactor": 2,
@@ -1270,7 +1270,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "rate(registry_http_request_duration_seconds_bucket{container=\"docker-registry\",job=\"$job\",handler=\"blob\"}[10m])",
+              "expr": "rate(registry_http_request_duration_seconds_bucket{job=\"$job\",handler=\"blob\"}[10m])",
               "format": "heatmap",
               "intervalFactor": 1,
               "range": true,
@@ -1354,7 +1354,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "rate(registry_http_request_duration_seconds_bucket{container=\"docker-registry\",job=\"$job\",handler=\"base\"}[10m])",
+              "expr": "rate(registry_http_request_duration_seconds_bucket{job=\"$job\",handler=\"base\"}[10m])",
               "format": "heatmap",
               "intervalFactor": 1,
               "range": true,
@@ -1436,7 +1436,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "rate(registry_http_request_duration_seconds_bucket{container=\"docker-registry\",job=\"$job\",handler=\"blob_upload\"}[10m])",
+              "expr": "rate(registry_http_request_duration_seconds_bucket{job=\"$job\",handler=\"blob_upload\"}[10m])",
               "format": "heatmap",
               "intervalFactor": 1,
               "range": true,
@@ -1518,7 +1518,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "rate(registry_http_request_duration_seconds_bucket{container=\"docker-registry\",job=\"$job\",handler=\"manifest\"}[10m])",
+              "expr": "rate(registry_http_request_duration_seconds_bucket{job=\"$job\",handler=\"manifest\"}[10m])",
               "format": "heatmap",
               "intervalFactor": 1,
               "range": true,
@@ -1600,7 +1600,7 @@ spec:
                 "uid": "$datasource"
               },
               "editorMode": "code",
-              "expr": "rate(registry_http_request_duration_seconds_bucket{container=\"docker-registry\",job=\"$job\",handler=\"catalog\"}[10m])",
+              "expr": "rate(registry_http_request_duration_seconds_bucket{job=\"$job\",handler=\"catalog\"}[10m])",
               "format": "heatmap",
               "intervalFactor": 1,
               "range": true,
