@@ -19,62 +19,122 @@ capiClusterClass:
               docker.io:
                 server: https://docker.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io"
-                  # - "https://{{ $systemClusterVip }}/repository/registry-1-docker-io"
-                  - "https://registry-1.docker.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://registry-1.docker.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               registry-1.docker.io:
                 server: https://registry-1.docker.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io"
-                  # - "https://{{ $systemClusterVip }}/repository/registry-1-docker-io"
-                  - "https://registry-1.docker.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://registry-1.docker.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               europe-docker.pkg.dev:
                 server: https://europe-docker.pkg.dev
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/europe-docker-pkg-dev"
-                  # - "https://{{ $systemClusterVip }}/repository/europe-docker-pkg-dev"
-                  - "https://europe-docker.pkg.dev"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/europe-docker-pkg-dev" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://europe-docker.pkg.dev"
+                    args:
+                      skip_verify: false
+                      priority: 2
               gcr.io:
                 server: https://gcr.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/gcr-io"
-                  # - "https://{{ $systemClusterVip }}/repository/gcr-io"
-                  - "https://gcr.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/gcr-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://gcr.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               ghcr.io:
                 server: https://ghcr.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/ghcr-io"
-                  # - "https://{{ $systemClusterVip }}/repository/ghcr-io"
-                  - "https://ghcr.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/ghcr-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://ghcr.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               mirror.gcr.io:
                 server: https://mirror.gcr.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/mirror-gcr-io"
-                  # - "https://{{ $systemClusterVip }}/repository/mirror-gcr-io"
-                  - "https://mirror.gcr.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/mirror-gcr-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://mirror.gcr.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               public.ecr.aws:
                 server: https://public.ecr.aws
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/public-ecr-aws"
-                  # - "https://{{ $systemClusterVip }}/repository/public-ecr-aws"
-                  - "https://public.ecr.aws"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/public-ecr-aws" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://public.ecr.aws"
+                    args:
+                      skip_verify: false
+                      priority: 2
               quay.io:
                 server: https://quay.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/quay-io"
-                  # - "https://{{ $systemClusterVip }}/repository/quay-io"
-                  - "https://quay.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/quay-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://quay.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               registry.k8s.io:
                 server: https://registry.k8s.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/registry-k8s-io"
-                  # - "https://{{ $systemClusterVip }}/repository/registry-k8s-io"
-                  - "https://registry.k8s.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-k8s-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://registry.k8s.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
               xpkg.crossplane.io:
                 server: https://xpkg.crossplane.io
                 mirrors:
-                  - "https://{{ $systemIstioGwVip }}/repository/xpkg-crossplane-io"
-                  # - "https://{{ $systemClusterVip }}/repository/xpkg-crossplane-io"
-                  - "https://xpkg.crossplane.io"
+                  - mirror: "https://{{ $systemIstioGwVip }}/repository/xpkg-crossplane-io" # TODO: move to $systemClusterVip
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://xpkg.crossplane.io"
+                    args:
+                      skip_verify: false
+                      priority: 2
   ` }}
 {{- end -}}

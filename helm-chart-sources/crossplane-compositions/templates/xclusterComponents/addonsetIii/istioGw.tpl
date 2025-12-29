@@ -73,7 +73,7 @@ istioGW:
         {{ end }}
       issuer:
         kind: ClusterIssuer
-        name: selfsigned-cluster-issuer
+        name: oidc-ca
     extraGateway:
       enabled: true
       name: default
