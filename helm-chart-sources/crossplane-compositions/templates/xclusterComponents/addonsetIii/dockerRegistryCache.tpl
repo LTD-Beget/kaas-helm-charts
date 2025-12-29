@@ -37,6 +37,9 @@ dockerRegistryCache:
       serviceAccount:
         create: true
 
+      image:
+        repository: ghcr.io/distribution/distribution
+
       resources:
         requests:
           cpu: 100m
