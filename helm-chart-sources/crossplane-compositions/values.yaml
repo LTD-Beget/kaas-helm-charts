@@ -15,7 +15,7 @@ composite:
     csrc:
       targetRevision: HEAD
     common:
-      targetRevision: "feat/certset"
+      targetRevision: HEAD
     istiobase:
       targetRevision: 1.26.0
     begetcmprovider:
@@ -25,7 +25,7 @@ composite:
     certcontrollermanager:
       targetRevision: HEAD
     capiclusterclass:
-      targetRevision: feat/cm-and-sched-certs
+      targetRevision: HEAD
 
 xclusterComponents:
   client:
