@@ -13,12 +13,12 @@ default: |
         # imagePullSecrets: []
         containers:
           manager:
+            image:
+              pullPolicy: Always
+              tag: v1.0.2
             extraArgs:
               cluster-name: {{ "{{ .clusterName }}" }}
               cluster-namespace: {{ "{{ .argocdDestinationNamespace }}" }}
-            # image:
-            #   tag: rc1
-            #   pullPolicy: Always
         volumes:
           secret-ccm-kubeconfig:
             volume:

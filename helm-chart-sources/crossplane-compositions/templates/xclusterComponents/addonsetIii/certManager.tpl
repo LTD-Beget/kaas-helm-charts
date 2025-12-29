@@ -49,6 +49,14 @@ certManager:
           ca:
             secretName: selfsigned-cluster-ca
 
+      {{ if $systemEnabled }}
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
+      {{- end }}
+
     certificates:
       mainCA:
         name: selfsigned-cluster-ca

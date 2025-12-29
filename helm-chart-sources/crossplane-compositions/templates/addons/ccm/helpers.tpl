@@ -13,12 +13,12 @@ default: |
         imagePullSecrets: []
         containers:
           manager:
+            image:
+              pullPolicy: Always
+            #  tag: latest
             extraEnv:
               CLUSTER_NAME: {{ "{{ .clusterName }}" }}
               CLUSTER_NAMESPACE: {{ "{{ .argocdDestinationNamespace }}" }}
-            # image:
-            #   tag: latest
-            #   pullPolicy: Always
             extraArgs:
               v: 3
         volumes:

@@ -10,8 +10,22 @@ composition:
 
 composite:
   addons:
+    ccm:
+      targetRevision: HEAD
+    csrc:
+      targetRevision: HEAD
+    common:
+      targetRevision: "feat/certset"
     istiobase:
       targetRevision: 1.26.0
+    begetcmprovider:
+      targetRevision: HEAD
+    crossplanexcluster:
+      targetRevision: HEAD
+    certcontrollermanager:
+      targetRevision: HEAD
+    capiclusterclass:
+      targetRevision: feat/cm-and-sched-certs
 
 xclusterComponents:
   client:

@@ -106,7 +106,22 @@ spec:
                 - Create
                 - Observe
                 - Update
+                references:
+                - patchesFrom:
+                    apiVersion: kubernetes.crossplane.io/v1alpha2
+                    kind: Object
+                    name: mock
+                    fieldPath: "status.atProvider.manifest.metadata.name"
+                  toFieldPath: "metadata.annotations['xcopy.in-cloud.io/copied-resource-name']"
             patches:
+              - toFieldPath: spec.references[0].patchesFrom.name
+                fromFieldPath: metadata.name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-source"
+                type: FromCompositeFieldPath
               - toFieldPath: metadata.name
                 fromFieldPath: metadata.name
                 transforms:
