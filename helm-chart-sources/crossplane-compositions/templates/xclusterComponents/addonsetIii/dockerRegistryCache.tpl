@@ -47,7 +47,9 @@ dockerRegistryCache:
 
       metrics:
         enabled: true
+        {{- if $certManagerReady }}
         secureEndpoint: true
+        {{- end }}
         scrape:
         {{- if $infraVMOperatorReady }}
           enabled: true
