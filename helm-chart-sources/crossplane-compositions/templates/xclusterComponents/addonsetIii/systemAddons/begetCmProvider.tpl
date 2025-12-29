@@ -24,7 +24,7 @@ begetCmProvider:
             manager:
               image:
                 pullPolicy: Always
-                tag: fix-pause
+                tag: v1.2.5
           enabled: true
           tolerations:
           - effect: NoExecute
