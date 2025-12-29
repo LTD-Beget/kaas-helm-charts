@@ -32,6 +32,7 @@ spec:
     kind: {{ $issuerKind }}
     name: {{ $issuerName }}
   dnsNames:
+    - "{{ template "docker-registry.fullname" $ }}"
     {{ range $proxyName, $proxyValue := .Values.proxies }}
     {{- if $proxyValue.enabled }}
     {{- $proxyParsedName := (include "docker-registry.registryname" $proxyName) -}}
