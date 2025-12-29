@@ -22,9 +22,9 @@ spec:
   host: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
   trafficPolicy:
     tls:
-      # insecureSkipVerify: true
+      insecureSkipVerify: true
       mode: SIMPLE
-      credentialName: {{ $intSecretName }}
+      # credentialName: {{ $intSecretName }}
     {{- end }}
     {{ end }}
 {{- end }}
