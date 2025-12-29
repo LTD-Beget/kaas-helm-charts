@@ -46,9 +46,9 @@ spec:
       protocol: TCP
     {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
       name: https
-    {{ else }}
+    {{- else }}
       name: http
-    {{ end }}
+    {{- end }}
       targetPort: {{ $proxyMergedValues.service.port }}
     {{- if (and (eq $proxyMergedValues.service.type "NodePort") (not (empty $proxyMergedValues.service.nodePort))) }}
       nodePort: {{ $proxyMergedValues.service.nodePort }}
@@ -58,6 +58,9 @@ spec:
       protocol: TCP
       name: metrics
       targetPort: {{ $proxyMergedValues.metrics.port | default 5001 }}
+  {{- end }}
+  {{- with $proxyMergedValues.service.extraPorts }}
+    {{ . | toYaml | nindent 4 }}
   {{- end }}
   selector:
     registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}

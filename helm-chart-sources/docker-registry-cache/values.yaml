@@ -99,6 +99,7 @@ default:
     port: 5000                    # Service port exposed internally
     annotations: {}               # Additional annotations for the service
     labels: {}                    # Additional labels for the service
+    extraPorts: []
 
   resources: {}                   # Default resource requests & limits for containers (cpu, memory)
     # Example:

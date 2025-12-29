@@ -37,6 +37,13 @@ dockerRegistryCache:
       serviceAccount:
         create: true
 
+      service:
+        extraPorts:
+          - port: 11043
+            protocol: TCP
+            name: https-metrics
+            targetPort: 11043
+
       resources:
         requests:
           cpu: 100m
@@ -53,6 +60,7 @@ dockerRegistryCache:
         {{- end }}
           endpoint:
             scheme: HTTPS
+            port: https-metrics
             bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
             tlsConfig:
               serverName: docker-registry-cache
@@ -81,10 +89,6 @@ dockerRegistryCache:
             - name: docker-registry-cache-certificate
               mountPath: /app/config/metrics/tls
               readOnly: true
-
-
-
-
 
       config:
         log:
