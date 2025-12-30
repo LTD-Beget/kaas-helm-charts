@@ -61,7 +61,7 @@ metadata:
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: systemClusterObserve
     gotemplating.fn.crossplane.io/ready: "True"
-  name: {{ $clusterName }}-infra-cluster
+  name: {{ $clusterName }}-cluster
 spec:
   deletionPolicy: Orphan
   managementPolicies:
