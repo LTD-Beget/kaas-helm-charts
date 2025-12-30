@@ -19,7 +19,7 @@ capiClusterClass:
               docker.io:
                 server: https://docker.io
                 mirrors:
-                  - mirror: "{{` }} {{ printf ` .containerd_mirror_url }}/repository/registry-1-docker-io"
+                  - mirror: '{{ "{{` }} {{ printf ` .containerd_mirror_url }}" }}/repository/registry-1-docker-io'
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
