@@ -54,6 +54,27 @@ spec:
         name: 'vminsert-lb'
         namespace: 'beget-vmcluster'
   watch: true
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: systemKubeApiVip
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: 'system-kube-api-vip-observe'
+spec:
+  deletionPolicy: Orphan
+  managementPolicies:
+  - 'Observe'
+  forProvider:
+    manifest:
+      apiVersion: cluster.x-k8s.io/v1beta1
+      kind: Cluster
+      metadata:
+        name: {{ $clusterName }}
+        namespace: 'beget-system'
+  watch: true
 {{ end }}
 
 ### extra variables
@@ -75,10 +96,12 @@ spec:
 
 {{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "systemVmInsertSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}
-    {{- $systemVmInsertVip        =  .ip }}
+    {{- $systemVmInsertVip       =  .ip }}
     {{- break }}
   {{- end }}
 {{- end }}
+
+{{- $systemKubeApiVip            := (dig "resource" "status" "atProvider" "manifest" "spec" "controlPlaneEndpoint" "host" ("") (get $.observed.resources "systemKubeApiVip" | default (dict))) }}
 
 {{- $xRCreationTimestamp         := $.observed.composite.resource.metadata.creationTimestamp }}
 

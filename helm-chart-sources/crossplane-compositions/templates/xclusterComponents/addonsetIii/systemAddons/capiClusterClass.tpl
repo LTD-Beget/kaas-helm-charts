@@ -19,7 +19,7 @@ capiClusterClass:
               docker.io:
                 server: https://docker.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/registry-1-docker-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -31,7 +31,7 @@ capiClusterClass:
               registry-1.docker.io:
                 server: https://registry-1.docker.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-1-docker-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/registry-1-docker-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -43,7 +43,7 @@ capiClusterClass:
               europe-docker.pkg.dev:
                 server: https://europe-docker.pkg.dev
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/europe-docker-pkg-dev" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/europe-docker-pkg-dev"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -55,7 +55,7 @@ capiClusterClass:
               gcr.io:
                 server: https://gcr.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/gcr-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/gcr-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -67,7 +67,7 @@ capiClusterClass:
               ghcr.io:
                 server: https://ghcr.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/ghcr-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/ghcr-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -79,7 +79,7 @@ capiClusterClass:
               mirror.gcr.io:
                 server: https://mirror.gcr.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/mirror-gcr-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/mirror-gcr-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -91,7 +91,7 @@ capiClusterClass:
               public.ecr.aws:
                 server: https://public.ecr.aws
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/public-ecr-aws" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/public-ecr-aws"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -103,7 +103,7 @@ capiClusterClass:
               quay.io:
                 server: https://quay.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/quay-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/quay-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -115,7 +115,7 @@ capiClusterClass:
               registry.k8s.io:
                 server: https://registry.k8s.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/registry-k8s-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/registry-k8s-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
@@ -127,7 +127,7 @@ capiClusterClass:
               xpkg.crossplane.io:
                 server: https://xpkg.crossplane.io
                 mirrors:
-                  - mirror: "https://{{ $systemIstioGwVip }}/repository/xpkg-crossplane-io" # TODO: move to $systemClusterVip
+                  - mirror: "{{ `{{ .containerd_mirror_url }}` }}/repository/xpkg-crossplane-io"
                     args:
                       skip_verify: false
                       ca: "/etc/kubernetes/pki/ca-oidc.crt"
