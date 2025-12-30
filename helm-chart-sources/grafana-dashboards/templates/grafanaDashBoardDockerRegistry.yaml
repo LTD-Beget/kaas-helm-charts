@@ -1623,35 +1623,6 @@ spec:
         "list": [
           {
             "current": {
-              "text": [
-                "begetk8s-system-4-infra"
-              ],
-              "value": [
-                "begetk8s-system-4-infra"
-              ]
-            },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${datasource}"
-            },
-            "definition": "label_values(process_exporter_build_info,cluster_full_name)",
-            "includeAll": true,
-            "label": "Cluster",
-            "multi": true,
-            "name": "cluster_full_name",
-            "options": [],
-            "query": {
-              "qryType": 1,
-              "query": "label_values(process_exporter_build_info,cluster_full_name)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "refresh": 1,
-            "regex": "",
-            "sort": 1,
-            "type": "query"
-          },
-          {
-            "current": {
               "text": "victoriametrics-system-4-infra",
               "value": "$datasource"
             },
@@ -1664,19 +1635,46 @@ spec:
           },
           {
             "current": {
-              "text": "docker-registry-cache-public-ecr-aws",
-              "value": "docker-registry-cache-public-ecr-aws"
+              "text": [
+                "begetk8s-system-4-infra"
+              ],
+              "value": [
+                "begetk8s-system-4-infra"
+              ]
+            },
+            "datasource": {
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(process_exporter_build_info,cluster_full_name)",
+            "includeAll": true,
+            "label": "Cluster",
+            "multi": true,
+            "name": "cluster_full_name",
+            "options": [],
+            "query": {
+              "query": "label_values(process_exporter_build_info,cluster_full_name)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "docker-registry-cache-europe-docker-pkg-dev",
+              "value": "docker-registry-cache-europe-docker-pkg-dev"
             },
             "datasource": {
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", container=\"docker-registry\"},job)",
+            "definition": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", namespace=\"beget-container-registry\"},job)",
             "name": "job",
             "options": [],
             "query": {
               "qryType": 1,
-              "query": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", container=\"docker-registry\"},job)",
+              "query": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", namespace=\"beget-container-registry\"},job)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
