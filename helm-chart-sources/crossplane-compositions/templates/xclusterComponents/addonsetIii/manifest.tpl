@@ -59,7 +59,7 @@ apiVersion: kubernetes.crossplane.io/v1alpha2
 kind: Object
 metadata:
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: systemVmInsertSvc
+    gotemplating.fn.crossplane.io/composition-resource-name: systemClusterObserve
     gotemplating.fn.crossplane.io/ready: "True"
   name: {{ $clusterName }}-infra-cluster
 spec:
