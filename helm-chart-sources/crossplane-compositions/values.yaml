@@ -15,33 +15,17 @@ composite:
     csrc:
       targetRevision: HEAD
     common:
-      targetRevision: feature/registry-proxy
+      targetRevision: HEAD
     istiobase:
       targetRevision: 1.26.0
     begetcmprovider:
       targetRevision: HEAD
+    crossplanexcluster:
+      targetRevision: HEAD
     certcontrollermanager:
       targetRevision: HEAD
     capiclusterclass:
-      targetRevision: feature/registry-proxy
-    dockerregistrycache:
-      targetRevision: feature/registry-proxy
-    crossplanexcluster:
-      targetRevision: feature/registry-proxy
-    grafanadashboards:
-      targetRevision: feature/registry-proxy
-    commoncrds:
-      targetRevision: feature/registry-proxy
-    istiogw:
-      targetRevision: feature/registry-proxy
-    victoriametricscluster:
-      targetRevision: feature/registry-proxy
-    processexporter:
-      targetRevision: feature/registry-proxy
-    prometheusnodeexporter:
-      targetRevision: feature/registry-proxy
-    trivyoperator:
-      targetRevision: feature/registry-proxy
+      targetRevision: HEAD
 
 xclusterComponents:
   client:
