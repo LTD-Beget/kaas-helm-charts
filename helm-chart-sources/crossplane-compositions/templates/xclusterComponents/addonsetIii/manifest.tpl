@@ -71,7 +71,7 @@ spec:
       apiVersion: kubernetes.crossplane.io/v1alpha2
       kind: Object
       resourceRef:
-        name: {{ $clusterName }}-infra-cluster
+        name: {{ $clusterName }}-cluster
         namespace: {{ $systemNamespace }}
   watch: false
 {{ end }}
