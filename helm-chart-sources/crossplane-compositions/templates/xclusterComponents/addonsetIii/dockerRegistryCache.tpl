@@ -82,6 +82,7 @@ dockerRegistryCache:
         config:
           proxy:
             remoteurl: https://registry-1.docker.io
+            username: prorobotech
 
       europe-docker-pkg-dev:
         enabled: true
