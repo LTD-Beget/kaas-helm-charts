@@ -69,6 +69,7 @@ istioGW:
         ipAddresses:
           - 127.0.0.1
         {{ if $systemEnabled }}
+          - {{ $clusterHost }}
           - {{ $systemIstioGwVip }}
         {{ end }}
       issuer:
