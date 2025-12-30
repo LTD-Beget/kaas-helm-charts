@@ -8,6 +8,8 @@ targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: helm-with-values
 default: |
   cilium:
+    ciliumEndpointSlice:
+      enabled: true
     image:
       pullPolicy: IfNotPresent
     envoy:
