@@ -32,8 +32,8 @@ vmCluster:
                 memory: "64Mi"
             #TODO change hostpath
             tolerations:
-              - key: "dedicated"
-                value: "vm-data"
+              - key: "node-role.kubernetes.io/vm-data"
+                value: "Exists"
                 effect: "NoSchedule"
             affinity:
               nodeAffinity:
@@ -84,8 +84,8 @@ vmCluster:
                 memory: "64Mi"
             priorityClassName: system-node-critical
             tolerations:
-              - key: "dedicated"
-                value: "vm-stream"
+              - key: "node-role.kubernetes.io/vm-stream"
+                value: "Exists"
                 effect: "NoSchedule"
             volumes:
               - name: vmselect-tls
@@ -139,9 +139,9 @@ vmCluster:
               tlsCertFile: "/tls/tls.crt"
               tlsKeyFile: "/tls/tls.key"
             tolerations:
-              - key: "dedicated"
-                value: "vm-stream"
-                effect: "NoSchedule"
+              - key: "node-role.kubernetes.io/vm-stream"
+                value: "Exists"
+                effect: "NoSchedule"   
             volumes:
               - name: vminsert-tls
                 secret:

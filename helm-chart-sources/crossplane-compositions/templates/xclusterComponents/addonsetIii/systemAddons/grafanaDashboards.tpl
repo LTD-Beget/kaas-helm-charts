@@ -17,6 +17,8 @@ grafanaDashboards:
         enabled: true
       crossplaneCustom:
         enabled: true
+      dockerRegistry:
+        enabled: true
       processLA:
         enabled: true
       processExporter:

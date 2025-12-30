@@ -16,6 +16,7 @@
     "systemEnabled"                       (list "false"                 "system.enabled"                         "system.enabled"                       "boolean"          "%v"  )
     "systemIstioGwVip"                    (list "1"                     "system.istioGwVip"                      "system.istioGwVip"                    "integer"          "%s"  )
     "systemVmInsertVip"                   (list "1"                     "system.vmInsertVIP"                     "system.vmInsertVIP"                   "integer"          "%s"  )
+    "systemClusterVip"                    (list "1"                     "system.cluster.host"                    "system.cluster.host"                  "integer"          "%s"  )
     "systemNamespace"                     (list "\"mock\""              "systemNamespace"                        "systemNamespace"                      "string"           "%s"  )
     "trackingID"                          (list "\"mock\""              "trackingID"                             "trackingID"                           "string"           "%s"  )
     "xcluster"                            (list "\"mock\""              "xcluster"                               "xcluster"                             "string"           "%s"  )
@@ -51,6 +52,7 @@
     "systemNamespace"
     "systemIstioGwVip"
     "systemVmInsertVip"
+    "systemClusterVip"
     "trackingID"
     "xcluster"
     "argsArgocdServerAdminPassword"

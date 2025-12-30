@@ -1,0 +1,598 @@
+# Default values for docker-registry.
+# This file contains default configuration values for the Helm chart.
+# It defines both global (default) parameters and per-proxy overrides.
+# Per-proxy values merge with and overwrite the global defaults where set.
+
+# Global overrides for resource naming
+fullnameOverride: ""              # Override the full resource name for all deployed resources
+nameOverride: ""                  # Override the base name used for resources
+
+externalDomain: "*"               # External domain used for ingress or service exposure
+
+expose:
+  enabled: false                  # Enable external exposure of the registry service
+  # Method of exposure; valid options: 'istio' (Istio VirtualService) or 'ingress' (Kubernetes Ingress)
+  resourceType: ingress
+
+  ingress:
+    annotations: {}               # Annotations to add to generated Kubernetes Ingress resource
+    labels: {}                    # Labels to add to the Ingress resource
+    ingressClassName: ""          # Ingress class name to use for the Ingress controller
+
+  istio:
+    gateway:
+      enabled: true               # Enable creating or using Istio gateway for exposure
+      name: incloud-istio-gateway # Name of the Istio Gateway resource to bind VirtualService to
+      istioLabelsSelector: {}     # Label selector to identify the Istio ingress gateway pods (required)
+      annotations: {}             # Annotations to add to the Istio Gateway resource
+      labels: {}                  # Labels to add to the Gateway
+
+    virtualService:
+      annotations: {}             # Annotations to add to Istio VirtualService resource
+      labels: {}                  # Labels to add to VirtualService resource
+
+  repositoryPrefix: /repository/  # URL path prefix under which the registry is exposed; must end with "/"
+
+  tls:
+    # TLS certificate source options:
+    # 'certmanager' - generated automatically via CertManager
+    # 'secret' - read from a Kubernetes TLS secret
+    # 'none' - disable TLS (use HTTP or rely on ingress default cert)
+    certSource: none
+    certmanager:
+      # Optional: configure to use an existing CertManager Issuer or ClusterIssuer
+      existingIssuer:
+        kind: Issuer              # Either 'Issuer' or 'ClusterIssuer'
+        name: ""                  # Name of existing Issuer resource. If name is not defined, a new Issuer will be created
+      dnsNames: []                # DNS names to include in certificate
+      ipAddresses: []             # IP addresses to include
+
+    secret:
+      secretName: ""              # Name of Kubernetes secret containing tls.crt and tls.key
+
+# TLS on internal components of registry
+internalTLS:
+  # There are three ways to provide tls
+  # 1) "certmanager" will generate cert automatically
+  # 2) "secret" internal certificates from secret
+  # 3) "none" no certificates
+  certSource: none
+  certmanager:
+    # Optional: configure to use an existing CertManager Issuer or ClusterIssuer
+    existingIssuer:
+      kind: Issuer              # Either 'Issuer' or 'ClusterIssuer'
+      name: ""                  # Name of existing Issuer resource. If name is not defined, a new Issuer will be created
+
+    secret:
+      secretName: ""              # Name of Kubernetes secret containing tls.crt and tls.key
+
+default:
+  replicaCount: 1                 # Default number of registry pod replicas
+
+  updateStrategy: {}              # Kubernetes Deployment update strategy
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
+
+  podAnnotations: {}              # Annotations to add to all pods in the deployment
+  podLabels: {}                   # Labels to add to pods
+
+  serviceAccount:
+    create: false                 # Create a new service account or use an existing one
+    name: ""                      # Name of existing service account to use (if create=false)
+    annotations: {}               # Annotations for the service account
+
+  image:                          # Container image configuration
+    repository: registry          # Image repo (default: official Docker Registry image)
+    tag: 3.0.0                    # Image tag/version
+    pullPolicy: IfNotPresent      # Image pull policy
+
+  #imagePullSecrets:              # Secret(s) for private registry authentication, if needed
+  #  - name: docker
+
+  deployment: {}                  # Additional deployment-level options (e.g., annotations)
+
+  service:
+    name: registry                # Service name inside cluster used for registry pods
+    type: ClusterIP               # Kubernetes Service type: ClusterIP, NodePort, LoadBalancer
+    port: 5000                    # Service port exposed internally
+    annotations: {}               # Additional annotations for the service
+    labels: {}                    # Additional labels for the service
+
+  resources: {}                   # Default resource requests & limits for containers (cpu, memory)
+    # Example:
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  metrics:
+    enabled: false                # Enable Prometheus metrics on registry port
+    port: 5001                    # Port for metrics endpoint
+    secureEndpoint: false
+    # Your monitoing agent must have perms for get metrics
+    # apiVersion: rbac.authorization.k8s.io/v1
+    # kind: ClusterRole
+    # metadata:
+    #   name: example
+    # rules:
+    #   - nonResourceURLs:
+    #       - "/metrics"
+    #     verbs:
+    #       - get
+
+    scrape:
+      enabled: false
+      type: VictoriaMetrics
+
+  containerSecurityContext:       # Defines container security options for pods
+    enabled: true
+    seLinuxOptions: {}            # SELinux options, if applicable
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    privileged: false
+    readOnlyRootFilesystem: true
+    runAsUser: 1000               # Run container as user ID 1000
+    runAsGroup: 1000              # Run container as group ID 1000
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:                # Pod-level security context settings
+    enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []                   # List of sysctl names to set
+    supplementalGroups: []
+    runAsUser: 1000               # UID for pod's processes
+    fsGroup: 1000                 # Filesystem group ownership
+
+  priorityClassName: ""           # Priority class name for pod scheduling
+
+  nodeSelector: {}                # Node selector labels for pod scheduling
+
+  affinity: {}                    # Affinity and anti-affinity rules
+
+  tolerations: []                 # Pod tolerations for taints
+
+  extraEnvVars:                   # Extra environment variables injected into registry pods
+    - name: OTEL_TRACES_EXPORTER
+      value: none                 # Tracing exporter, e.g. "none" disables exporting
+
+  initContainers: []            # Optional init containers before main pod start
+  ## Init containers to add to the Deployment
+  # - name: init
+  #   image: busybox
+  #   command: []
+
+  persistence:
+    enabled: false                # Enable persistent storage for registry data (filesystem)
+    accessMode: 'ReadWriteOnce'
+    size: 10Gi                    # Persistent volume size
+    # storageClass: '-'           # Storage Class Name for PVC
+
+    garbageCollect:               # Garbage collection configuration for the registry storage
+      enabled: false              # Enable periodic GC
+      deleteUntagged: true        # Delete untagged blobs
+      schedule: "0 1 * * *"       # Cron schedule for GC runs
+      podAnnotations: {}          # Annotations for GC job pods
+      podLabels: {}               # Labels for GC job pods
+      resources: {}               # Resource requests and limits for GC pods
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+  # Official Docker Distribution storage configuration reference:
+  # https://distribution.github.io/distribution/about/configuration/#storage
+  config:
+    storage:
+      # Type of storage backend
+      type: filesystem                        # Supported options: filesystem, azure, gcs, s3, inmemory
+
+      filesystem:
+        rootdirectory: /var/lib/registry      # Directory on disk to store registry data
+        maxthreads: 100                       # Max threads for storage operations
+
+      azure:
+        accountname: accountname              # Azure Blob Storage account name
+        accountkey: base64encodedaccountkey   # Base64 encoded account key
+        container: containername              # Blob container name
+        rootdirectory: /az/object/name/prefix # Root directory prefix
+        credentials:                          # Azure credentials type and keys
+          type: client_secret
+          clientid: client_id_string
+          tenantid: tenant_id_string
+          secret: secret_string
+        max_retries: 10                       # Azure retry settings
+        retry_delay: 100ms
+
+      gcs:
+        bucket: bucketname                    # Google Cloud Storage bucket name
+        keyfile: /path/to/keyfile             # Path to JSON keyfile for GCS credentials
+        credentials:
+          type: service_account
+          project_id: project_id_string
+          private_key_id: private_key_id_string
+          private_key: private_key_string
+          client_email: client@example.com    # Client email from GCP account
+          client_id: client_id_string
+          auth_uri: http://example.com/auth_uri
+          token_uri: http://example.com/token_uri
+          auth_provider_x509_cert_url: http://example.com/provider_cert_url
+          client_x509_cert_url: http://example.com/client_cert_url
+        rootdirectory: /gcs/object/name/prefix
+        chunksize: 5242880                    # Chunk size for uploads
+
+      s3:
+        accesskey: awsaccesskey               # AWS S3 access key
+        secretkey: awssecretkey               # AWS secret key
+        region: us-west-1                     # S3 region
+        regionendpoint: http://myobjects.local # Optional custom S3 endpoint url
+        forcepathstyle: true                  # Use path-style addressing (true/false)
+        accelerate: false                     # Use S3 transfer acceleration
+        bucket: bucketname                    # S3 bucket name
+        encrypt: true                         # Use server-side encryption
+        keyid: mykeyid                        # KMS key id for encryption
+        secure: true                          # Use HTTPS for S3 connections
+        v4auth: true                          # Use AWS V4 authentication
+        chunksize: 5242880                    # Upload chunk size
+        multipartcopychunksize: 33554432
+        multipartcopymaxconcurrency: 100
+        multipartcopythresholdsize: 33554432
+        rootdirectory: /s3/object/name/prefix
+        usedualstack: false                   # Enable IPv6 dual stack
+        loglevel: debug                       # Logging level for S3 client
+
+      inmemory:                               # In-memory storage, used mainly for testing (stateless)
+        # No parameters required
+
+      tag:
+        concurrencylimit: 8       # Limit for tag concurrency operations
+
+      delete:
+        enabled: false            # Enable deletion API support
+
+      redirect:
+        disable: false            # Enable/disable redirect support
+
+      cache:
+        blobdescriptor: inmemory  # Cache storage for blob descriptors
+        blobdescriptorsize: 10000 # Cache size
+
+      maintenance:
+        uploadpurging:
+          enabled: true           # Enable purge of old uploads
+          age: 168h               # Age threshold for purging
+          interval: 24h           # Interval between purge runs
+          dryrun: false           # Dry run mode for testing purge
+        readonly:
+          enabled: false          # Enable readonly mode for maintenance
+
+    log:
+      accesslog: true             # Enable the access log
+      level: debug                # Log level (debug, info, warn, error)
+      formatter: json             # Log formatter: 'json' or 'text'
+
+    # auth:
+    #   silly:
+    #     realm: silly-realm
+    #     service: silly-service
+    #   token:
+    #     autoredirect: true
+    #     realm: token-realm
+    #     service: token-service
+    #     issuer: registry-token-issuer
+    #     rootcertbundle: /root/certs/bundle
+    #     jwks: /path/to/jwks
+    #     signingalgorithms:
+    #         - EdDSA
+    #         - HS256
+    #   htpasswd:
+    #     realm: basic-realm
+    #     path: /path/to/htpasswd
+
+    # middleware:
+    #   registry:
+    #     - name: ARegistryMiddleware
+    #       options:
+    #         foo: bar
+    #   repository:
+    #     - name: ARepositoryMiddleware
+    #       options:
+    #         foo: bar
+    #   storage:
+    #     - name: cloudfront
+    #       options:
+    #         baseurl: https://my.cloudfronted.domain.com/
+    #         privatekey: /path/to/pem
+    #         keypairid: cloudfrontkeypairid
+    #         duration: 3000s
+    #         ipfilteredby: awsregion
+    #         awsregion: us-east-1, use-east-2
+    #         updatefrequency: 12h
+    #         iprangesurl: https://ip-ranges.amazonaws.com/ip-ranges.json
+    #   storage:
+    #     - name: redirect
+    #       options:
+    #         baseurl: https://example.com/
+
+    http:
+      # addr: localhost:5000
+      # prefix: /my/nested/registry/ # string must end with "/"
+      # host: https://myregistryaddress.org:5000
+      # secret: asecretforlocaldevelopment
+      # relativeurls: false
+      # draintimeout: 60s
+      # tls:
+      #   certificate: /path/to/x509/public
+      #   key: /path/to/x509/private
+      #   clientcas:
+      #     - /path/to/ca.pem
+      #     - /path/to/another/ca.pem
+      #   clientauth: require-and-verify-client-cert
+      #   letsencrypt:
+      #     cachefile: /path/to/cache-file
+      #     email: emailused@letsencrypt.com
+      #     hosts: myregistryaddress.org
+      #     directoryurl: https://acme-v02.api.letsencrypt.org/directory
+      # headers:
+      #   X-Content-Type-Options: nosniff
+      http2:
+        disabled: false
+      h2c:
+        enabled: false
+
+    # redis:
+    #   tls:
+    #     certificate: /path/to/cert.crt
+    #     key: /path/to/key.pem
+    #     rootcas:
+    #       - /path/to/ca.pem
+    #   addrs: localhost:6379
+    #   password: asecret
+    #   db: 0
+    #   dialtimeout: 10ms
+    #   readtimeout: 10ms
+    #   writetimeout: 10ms
+    #   maxidleconns: 16
+    #   poolsize: 64
+    #   connmaxidletime: 300s
+    #   tls:
+    #     enabled: false
+
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+      # file:
+      #   - file: /path/to/checked/file
+      #     interval: 10s
+      # http:
+      #   - uri: http://server.to.check/must/return/200
+      #     headers:
+      #       Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+      #     statuscode: 200
+      #     timeout: 3s
+      #     interval: 10s
+      #     threshold: 3
+      # tcp:
+      #   - addr: redis-server.domain.com:6379
+      #     timeout: 3s
+      #     interval: 10s
+      #     threshold: 3
+
+    # https://docs.docker.com/registry/recipes/mirror/
+    # proxy:
+    #   remoteurl: https://registry-1.docker.io
+    #   username: ""
+    #   password: ""
+    #   exec:
+    #     command: docker-credential-helper
+    #     lifetime: 1h
+    #   ttl: 168h
+
+    # validation:
+    #   manifests:
+    #     urls:
+    #       allow:
+    #         - ^https?://([^/]+\.)*example\.com/
+    #       deny:
+    #         - ^https?://www\.example\.com/
+    #     indexes:
+    #       platforms: List
+    #       platformlist:
+    #       - architecture: amd64
+    #         os: linux
+
+proxies:
+  docker-io:
+    enabled: false                 # Enable this proxy deployment
+    replicaCount: 1               # Number of pod replicas for this proxy
+
+    updateStrategy: {}            # Deployment update strategy overrides
+      # type: RollingUpdate
+      # rollingUpdate:
+      #   maxSurge: 1
+      #   maxUnavailable: 0
+
+    podAnnotations: {}            # Annotations to apply on pods
+    podLabels: {}                 # Labels to apply on pods
+
+    serviceAccount:
+      create: false               # Whether to create a new serviceAccount for this proxy
+      name: ""                    # ServiceAccount name to use if not creating new
+      annotations: {}             # Annotations for serviceAccount
+
+    image:                        # Container image details
+      repository: registry
+      tag: 3.0.0
+      pullPolicy: IfNotPresent
+
+    #imagePullSecrets:            # Secrets for pulling private images
+    #  - name: docker
+
+    deployment: {}                # Additional deployment options
+
+    service:
+      name: registry              # Kubernetes service name exposing this instance
+      type: ClusterIP             # Service type
+      # sessionAffinity: None
+      # sessionAffinityConfig: {}
+      # clusterIP:
+      port: 5000                  # Service port
+      # nodePort:
+      # loadBalancerIP:
+      # loadBalancerSourceRanges:
+      annotations: {}             # Annotations on service
+      labels: {}                  # Labels on service
+
+    resources: {}                 # Resource requests/limits as needed
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+    metrics:
+      enabled: false
+      port: 5001
+
+    containerSecurityContext:
+      enabled: true
+      seLinuxOptions: {}
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      enabled: true
+      fsGroupChangePolicy: Always
+      sysctls: []
+      supplementalGroups: []
+      runAsUser: 1000
+      fsGroup: 1000
+
+    priorityClassName: ""
+
+    podDisruptionBudget: {}       # PodDisruptionBudget settings to control voluntary disruptions
+      # maxUnavailable: 1
+      # minAvailable: 2
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+      behavior: {}                # Scaling behaviors (scaleUp/scaleDown policies)
+    #   scaleDown:
+    #     stabilizationWindowSeconds: 300
+    #     policies:
+    #     - type: Percent
+    #       value: 100
+    #       periodSeconds: 15
+    #   scaleUp:
+    #     stabilizationWindowSeconds: 0
+    #     policies:
+    #     - type: Percent
+    #       value: 100
+    #       periodSeconds: 15
+    #     - type: Pods
+    #       value: 4
+    #       periodSeconds: 15
+    #     selectPolicy: Max
+
+    nodeSelector: {}
+
+    affinity: {}
+
+    tolerations: []
+
+    extraVolumeMounts: []         # Additional volume mounts passed to container
+    ## Additional volumeMounts to the registry container.
+    #  - mountPath: /secret-data
+    #    name: cloudfront-pem-secret
+    #    readOnly: true
+
+    extraVolumes: []              # Additional pod volumes
+    ## Additional volumes to the pod.
+    #  - name: cloudfront-pem-secret
+    #    secret:
+    #      secretName: cloudfront-credentials
+    #      items:
+    #        - key: cloudfront.pem
+    #          path: cloudfront.pem
+    #          mode: 511
+
+    extraEnvVars: []              # Additional environment variables injected
+    ## Additional ENV variables to set
+    # - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+    #   value: "/var/lib/example"
+
+    initContainers: []            # Optional init containers before main pod start
+    ## Init containers to add to the Deployment
+    # - name: init
+    #   image: busybox
+    #   command: []
+
+    persistence:
+      enabled: false
+      accessMode: 'ReadWriteOnce'
+      size: 10Gi
+      # storageClass: '-'
+      # existingClaim: ""
+
+    garbageCollect:
+      enabled: false
+      deleteUntagged: true
+      schedule: "0 1 * * *"
+      podAnnotations: {}
+      podLabels: {}
+      resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    config:                       # Proxy instance-specific configuration, same schema as global.
+      storage:
+        type: filesystem
+        filesystem:
+          rootdirectory: /var/lib/registry
+          maxthreads: 100
+        # Other storage backends (azure, gcs, s3, inmemory) follow same schema as global above
+      log:
+        accesslog: true
+        level: debug
+        formatter: json
+
+      # https://docs.docker.com/registry/recipes/mirror/
+      proxy:
+        remoteurl: https://registry-1.docker.io
+      #   username: ""
+      #   password: ""
+      #   exec:
+      #     command: docker-credential-helper
+      #     lifetime: 1h
+      #   ttl: 168h
+
+      # Additional commented advanced settings (auth, middleware, http, redis, health, validation)
+      # can be customized per proxy instance here.

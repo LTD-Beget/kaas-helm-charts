@@ -69,11 +69,12 @@ istioGW:
         ipAddresses:
           - 127.0.0.1
         {{ if $systemEnabled }}
+          - {{ $clusterHost }}
           - {{ $systemIstioGwVip }}
         {{ end }}
       issuer:
         kind: ClusterIssuer
-        name: selfsigned-cluster-issuer
+        name: oidc-ca
     extraGateway:
       enabled: true
       name: default

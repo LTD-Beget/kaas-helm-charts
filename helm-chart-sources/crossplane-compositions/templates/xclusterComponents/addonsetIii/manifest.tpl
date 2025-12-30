@@ -54,6 +54,26 @@ spec:
         name: 'vminsert-lb'
         namespace: 'beget-vmcluster'
   watch: true
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: systemClusterObserve
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: {{ $clusterName }}-cluster
+spec:
+  deletionPolicy: Orphan
+  managementPolicies:
+  - 'Observe'
+  forProvider:
+    manifest:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      resourceRef:
+        name: {{ $clusterName }}-infra-cluster
+        namespace: {{ $systemNamespace }}
+  watch: false
 {{ end }}
 
 ### extra variables
@@ -75,7 +95,7 @@ spec:
 
 {{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "systemVmInsertSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}
-    {{- $systemVmInsertVip        =  .ip }}
+    {{- $systemVmInsertVip       =  .ip }}
     {{- break }}
   {{- end }}
 {{- end }}
@@ -167,6 +187,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.capiKubeadmBootstrap" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.capiKubeadmControlPlane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneXcluster" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.dockerRegistryCache" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.dex" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.trivyOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vault" . | nindent 4 }}

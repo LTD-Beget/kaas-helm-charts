@@ -24,13 +24,16 @@ prometheusNodeExporter:
       {{ if $systemEnabled }}
         - key: "node-role.kubernetes.io/argocd"
           operator: "Exists"
-          effect: "NoSchedule" 
+          effect: "NoSchedule"
         - key: "node-role.kubernetes.io/crossplane"
           operator: "Exists"
-          effect: "NoSchedule" 
-        - key: "dedicated"
-          value: "vminsert"
-          effect: "NoSchedule" 
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          value: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          value: "Exists"
+          effect: "NoSchedule"
       {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}

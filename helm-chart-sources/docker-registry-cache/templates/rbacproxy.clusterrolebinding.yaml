@@ -1,0 +1,29 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- $metrics            := $proxyMergedValues.metrics | default dict -}}
+{{- if and $metrics.enabled $metrics.secureEndpoint (or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret")) }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-rbac-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "docker-registry.fullname" $ }}-rbac-proxy-tokenreview
+subjects:
+  - kind: ServiceAccount
+  {{- if $proxyMergedValues.serviceAccount.name }}
+    name: {{ $proxyMergedValues.serviceAccount.name }}
+  {{- else  }}
+    name: {{ include "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  {{- end }}
+    namespace: {{ $.Release.Namespace }}
+{{- end }}
+{{ end }}

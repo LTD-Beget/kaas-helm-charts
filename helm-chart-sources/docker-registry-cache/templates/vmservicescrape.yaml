@@ -1,0 +1,38 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $metrics            := $proxyMergedValues.metrics | default dict -}}
+{{- $scrape             := $metrics.scrape | default dict -}}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- if and $proxyValue.enabled $metrics.enabled $scrape.enabled (eq $scrape.type "VictoriaMetrics") }}
+
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+    {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+      scheme: HTTPS
+    {{- else }}
+      scheme: HTTP
+    {{- end }}
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: docker-registry-cache
+  jobLabel: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+{{- end }}
+{{ end }}

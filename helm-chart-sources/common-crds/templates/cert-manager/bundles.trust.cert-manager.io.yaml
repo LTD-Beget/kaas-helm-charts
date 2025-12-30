@@ -4,6 +4,8 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     helm.sh/resource-policy: keep
+  labels:
+    clusterctl.cluster.x-k8s.io: ""
   name: bundles.trust.cert-manager.io
 spec:
   conversion:

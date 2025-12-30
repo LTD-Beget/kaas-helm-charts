@@ -1,0 +1,200 @@
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- if $proxyValue.enabled }}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $storageType        := (include "docker-registry.storage-type" $proxyMergedValues.config.storage.type) -}}
+{{- $serviceAccountName := "default" -}}
+{{- if $proxyMergedValues.serviceAccount.create }}
+{{- $serviceAccountName = printf "%s-%s" (include "docker-registry.fullname" $) $proxyParsedName -}}
+{{- if $proxyMergedValues.serviceAccount.name }}
+{{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
+{{- end }}
+{{- end }}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $http               := $config.http | default dict -}}
+{{- $tls                := $http.tls | default dict -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- $intSecretName      := printf "%s-internal-tls" (include "docker-registry.fullname" $) -}}
+{{- if eq $intTls.certSource "secret" }}
+{{- $intSecretName      = $intTls.secret.secretName -}}
+{{- end }}
+{{- $metrics            := $proxyMergedValues.metrics | default dict -}}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+    {{- include "docker-registry.labels" $ | nindent 4 }}
+{{- with $proxyMergedValues.deployment.annotations }}
+  annotations:
+    {{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+      {{- include "docker-registry.selectorLabels" $ | nindent 6 }}
+  replicas: {{ $proxyMergedValues.replicaCount }}
+  {{- with $proxyMergedValues.updateStrategy }}
+  strategy:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        registry: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+        {{- include "docker-registry.labels" $ | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.secret.yaml") $ | sha256sum }}
+        {{- with $proxyMergedValues.podAnnotations }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ $serviceAccountName }}
+      {{- with $proxyMergedValues.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $proxyMergedValues.priorityClassName }}
+      priorityClassName: "{{ $proxyMergedValues.priorityClassName }}"
+      {{- end }}
+      {{- if $proxyMergedValues.securityContext.enabled }}
+      securityContext: {{ omit $proxyMergedValues.securityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $proxyMergedValues.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ $proxyMergedValues.image.repository }}:{{ $proxyMergedValues.image.tag }}"
+          imagePullPolicy: {{ $proxyMergedValues.image.pullPolicy }}
+          command:
+            - /bin/registry
+            - serve
+            - /etc/distribution/config.yml
+          {{- with $proxyMergedValues.extraEnvVars }}
+          env:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ $proxyMergedValues.service.port }}
+            {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+              name: https
+            {{- else }}
+              name: http
+            {{- end }}
+              protocol: TCP
+            {{- if and $metrics.enabled (not $metrics.secureEndpoint) }}
+            - containerPort: {{ $proxyMergedValues.metrics.port | default 5001 }}
+              name: metrics
+              protocol: TCP
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+              scheme: HTTPS
+              {{- end }}
+              path: /
+              port: 5000
+          readinessProbe:
+            httpGet:
+              {{- if or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+              scheme: HTTPS
+              {{- end }}
+              path: /
+              port: 5000
+          {{ with $proxyMergedValues.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{ end }}
+          {{- if $proxyMergedValues.containerSecurityContext.enabled }}
+          securityContext: {{ omit $proxyMergedValues.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: "{{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config"
+              mountPath: /etc/distribution
+            {{- if eq $storageType "filesystem" }}
+            - name: data
+              mountPath: "{{ $proxyMergedValues.config.storage.filesystem.rootdirectory }}"
+            {{- end }}
+            {{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+            - name: "{{ template "docker-registry.fullname" $ }}-certificate"
+              mountPath: /etc/distribution/tls
+            {{- end }}
+            {{- with $proxyMergedValues.extraVolumeMounts }}
+            {{ toYaml . | nindent 16 }}
+            {{- end }}
+        {{- if and $metrics.enabled $metrics.secureEndpoint (or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret")) }}
+        - name: rbac-proxy
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+          args:
+            - --secure-listen-address=0.0.0.0:{{ $metrics.port }}
+            - --upstream=http://127.0.0.1:21001
+            - --tls-cert-file=/etc/distribution/tls/tls.crt
+            - --tls-private-key-file=/etc/distribution/tls/tls.key
+            - --v=2
+          ports:
+            - name: metrics
+              containerPort: {{ $metrics.port }}
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            {{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+            - name: "{{ template "docker-registry.fullname" $ }}-certificate"
+              mountPath: /etc/distribution/tls
+            {{- end }}
+            {{- with $proxyMergedValues.extraVolumeMounts }}
+            {{ toYaml . | nindent 16 }}
+            {{- end }}
+        {{- end }}
+      {{- with $proxyMergedValues.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 12 }}
+      {{- end }}
+      {{- with $proxyMergedValues.affinity }}
+      affinity:
+        {{ toYaml . | nindent 12 }}
+      {{- end }}
+      {{- with $proxyMergedValues.tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 12 }}
+      {{- end }}
+      volumes:
+        - name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config
+          secret:
+            secretName: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}-config
+        {{- if eq $storageType "filesystem" }}
+        - name: data
+          {{- if $proxyMergedValues.persistence.enabled }}
+          persistentVolumeClaim:
+            {{ if $proxyMergedValues.persistence.existingClaim }}
+            claimName: {{ $proxyMergedValues.persistence.existingClaim }}
+            {{- else }}
+            claimName: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+            {{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end -}}
+        {{- end }}
+        {{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+        - name: "{{ template "docker-registry.fullname" $ }}-certificate"
+          secret:
+            secretName: {{ $intSecretName }}
+        {{- end }}
+        {{- with $proxyMergedValues.extraVolumes }}
+        {{ toYaml . | nindent 12 }}
+        {{- end }}
+{{- end }}
+{{ end }}
