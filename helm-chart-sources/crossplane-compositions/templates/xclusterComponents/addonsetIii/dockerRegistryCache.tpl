@@ -66,6 +66,8 @@ dockerRegistryCache:
       registry-1-docker-io:
         enabled: true
         extraEnvVars:
+          - name: OTEL_TRACES_EXPORTER
+            value: none
           - name: PROXY_USERNAME
             valueFrom:
               secretKeyRef:
