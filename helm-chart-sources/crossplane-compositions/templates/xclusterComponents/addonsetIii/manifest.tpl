@@ -70,7 +70,7 @@ spec:
     manifest:
       apiVersion: cluster.x-k8s.io/v1beta1
       kind: Cluster
-      resourceRef:
+      metadata:
         name: {{ $clusterName }}-cluster
         namespace: {{ $systemNamespace }}
   watch: false
