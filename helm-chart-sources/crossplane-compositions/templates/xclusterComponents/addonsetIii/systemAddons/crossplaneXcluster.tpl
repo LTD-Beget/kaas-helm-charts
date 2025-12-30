@@ -21,6 +21,6 @@ crossplaneXcluster:
         metadata:
           namespace: beget-argocd
       istioGwVip: {{ $systemIstioGwVip }}
-      systemKubeApiVip: {{ $systemKubeApiVip }}
+      systemKubeApiVip: {{ $clusterHost }}
   ` }}
 {{- end -}}
