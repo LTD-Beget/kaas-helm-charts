@@ -29,10 +29,10 @@ processExporter:
           operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/vm-stream"
-          value: "Exists"
+          operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/vm-data"
-          value: "Exists"
+          operator: "Exists"
           effect: "NoSchedule"
       {{ end }}
     monitoring:
