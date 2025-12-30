@@ -68,8 +68,8 @@ spec:
   - 'Observe'
   forProvider:
     manifest:
-      apiVersion: kubernetes.crossplane.io/v1alpha2
-      kind: Object
+      apiVersion: cluster.x-k8s.io/v1beta1
+      kind: Cluster
       resourceRef:
         name: {{ $clusterName }}-cluster
         namespace: {{ $systemNamespace }}
