@@ -65,6 +65,18 @@ dockerRegistryCache:
     proxies:
       registry-1-docker-io:
         enabled: true
+        extraEnvVars:
+          - name: PROXY_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: docker-io-creds
+                key: username
+          - name: PROXY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: docker-io-creds
+                key: password
+
         config:
           proxy:
             remoteurl: https://registry-1.docker.io
