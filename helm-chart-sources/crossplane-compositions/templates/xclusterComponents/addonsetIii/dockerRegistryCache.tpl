@@ -68,12 +68,12 @@ dockerRegistryCache:
         extraEnvVars:
           - name: OTEL_TRACES_EXPORTER
             value: none
-          - name: PROXY_USERNAME
+          - name: REGISTRY_PROXY_USERNAME
             valueFrom:
               secretKeyRef:
                 name: docker-io-creds
                 key: username
-          - name: PROXY_PASSWORD
+          - name: REGISTRY_PROXY_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: docker-io-creds
@@ -82,7 +82,6 @@ dockerRegistryCache:
         config:
           proxy:
             remoteurl: https://registry-1.docker.io
-            username: prorobotech
 
       europe-docker-pkg-dev:
         enabled: true
