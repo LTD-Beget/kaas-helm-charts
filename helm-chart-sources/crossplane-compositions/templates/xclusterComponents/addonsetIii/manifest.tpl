@@ -71,7 +71,7 @@ spec:
       apiVersion: cluster.x-k8s.io/v1beta1
       kind: Cluster
       metadata:
-        name: {{ $clusterName }}-cluster
+        name: {{ $clusterName }}
         namespace: {{ $systemNamespace }}
   watch: false
 {{ end }}
