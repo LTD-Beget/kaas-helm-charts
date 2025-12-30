@@ -54,6 +54,26 @@ spec:
         name: 'vminsert-lb'
         namespace: 'beget-vmcluster'
   watch: true
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: systemVmInsertSvc
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: {{ $clusterName }}-infra-cluster
+spec:
+  deletionPolicy: Orphan
+  managementPolicies:
+  - 'Observe'
+  forProvider:
+    manifest:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      resourceRef:
+        name: {{ $clusterName }}-infra-cluster
+        namespace: {{ $systemNamespace }}
+  watch: false
 {{ end }}
 
 ### extra variables
