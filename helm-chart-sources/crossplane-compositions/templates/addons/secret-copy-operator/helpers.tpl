@@ -11,7 +11,7 @@ default: |
   manager:
     image:
       repository: prorobotech/secret-copy-operator
-      tag: feature-CLOUD-409-3771440d
+      tag: feature-CLOUD-409-3ba098a4
       pullPolicy: IfNotPresent
     tolerations:
     - effect: NoExecute
