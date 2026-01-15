@@ -22,5 +22,11 @@ crossplaneXcluster:
           namespace: beget-argocd
       istioGwVip: {{ $systemIstioGwVip }}
       systemKubeApiVip: {{ $clusterHost }}
+      system:
+        services:
+          istioGw:
+            host: {{ $systemIstioGwVip }}
+          vmInserter:
+            host: {{ $systemVmInsertVip }}
   ` }}
 {{- end -}}
