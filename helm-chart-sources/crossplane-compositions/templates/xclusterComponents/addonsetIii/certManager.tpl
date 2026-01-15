@@ -5,12 +5,12 @@ certManager:
   kind: XAddonsCertManager
   namespace: beget-certmanager
   version: v1alpha1
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     cert-manager:
   {{ if $systemEnabled }}
       cainjector:

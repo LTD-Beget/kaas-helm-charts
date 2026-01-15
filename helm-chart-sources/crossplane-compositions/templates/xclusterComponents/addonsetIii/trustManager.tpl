@@ -7,12 +7,12 @@ trustManager:
   version: v1alpha1
   dependsOn:
     - vmOperator
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     trust-manager:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"

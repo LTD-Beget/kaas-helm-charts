@@ -207,31 +207,6 @@ default: |
                   fi
                   echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
                   helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .
-          kustomize-helm-with-values:
-            allowConcurrency: true
-            lockRepo: false
-            discover:
-              find:
-                command:
-                  - bash
-                  - '-c'
-                  - |
-                    if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
-                      find . -name 'Chart.yaml' &&
-                      find . -name 'values.yaml' &&
-                      find . -name 'patches/kustomization.yaml';
-                    fi
-            generate:
-              command:
-                - bash
-                - '-c'
-                - |
-                  if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                      ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
-                  fi
-                  echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
-                  helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml;
-                  kustomize build ./patches
       params:
         application.namespaces: '*'
         applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
@@ -362,7 +337,7 @@ default: |
       extraContainers:
         - name: helm-with-values
           command: [/var/run/argocd/argocd-cmp-server]
-          image: "quay.io/argoproj/argocd:v2.14.15"
+          image: "dmkolbin/argocd-with-utils:v2.14.10"
           securityContext:
             runAsNonRoot: true
             runAsUser: 999
@@ -373,20 +348,6 @@ default: |
               name: plugins
             - mountPath: /home/argocd/cmp-server/config/plugin.yaml
               subPath: helm-with-values.yaml
-              name: cmp-plugin
-        - name: kustomize-helm-with-values
-          command: [/var/run/argocd/argocd-cmp-server]
-          image: "quay.io/argoproj/argocd:v2.14.15"
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 999
-          volumeMounts:
-            - mountPath: /var/run/argocd
-              name: var-files
-            - mountPath: /home/argocd/cmp-server/plugins
-              name: plugins
-            - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-              subPath: kustomize-helm-with-values.yaml
               name: cmp-plugin
       volumes:
         - configMap:
