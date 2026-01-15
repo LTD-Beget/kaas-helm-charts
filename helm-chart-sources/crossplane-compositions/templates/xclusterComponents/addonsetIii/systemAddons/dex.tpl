@@ -7,12 +7,12 @@ dex:
   version: v1alpha1
   dependsOn:
     - certManager
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     dex:
       config:
         issuer: {{ printf "https://%%s" $systemIstioGwVip }}

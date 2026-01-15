@@ -8,12 +8,12 @@ argocd:
   version: v1alpha1
   dependsOn:
     - istioGW
-  {{ if and $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     argo-cd:
   {{ if and $systemEnabled $argocdReady }}
       controller:
@@ -82,62 +82,31 @@ argocd:
                   - bash
                   - '-c'
                   - |
-                    if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                        ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
-                    fi
-                    echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
-                    helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .
-            kustomize-helm-with-values:
-              allowConcurrency: true
-              lockRepo: false
-              discover:
-                find:
-                  command:
-                    - bash
-                    - '-c'
-                    - |
-                      if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
-                        find . -name 'Chart.yaml' &&
-                        find . -name 'values.yaml' &&
-                        find . -name 'patches/kustomization.yaml';
+                      #!/bin/bash
+                      set -e
+
+                      if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
+                          ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
                       fi
-              generate:
-                command:
-                  - bash
-                  - '-c'
-                  - |
-                    if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                        ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
-                    fi
-                    echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
-                    helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml;
-                    kustomize build ./patches
-  {{ if $systemEnabled }}
-            argocd-vault-plugin-helm-with-values:
-              allowConcurrency: true
-              lockRepo: false
-              discover:
-                find:
-                  command:
-                    - bash
-                    - '-c'
-                    - |
-                      if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
-                        find . -name 'Chart.yaml' &&
-                        find . -name 'values.yaml';
+
+                      echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
+
+                      KUSTOMIZE_ENABLED=$(yq e '.argocdPlugins.kustomize // false' ./additionalValues.yaml)
+                      VAULT_ENABLED=$(yq e '.argocdPlugins.vault // false' ./additionalValues.yaml)
+
+                      if [ "$KUSTOMIZE_ENABLED" = "true" ]; then
+                          helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml
+
+                          OUTPUT=$(kustomize build ./patches)
+                      else
+                          OUTPUT=$(helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .)
                       fi
-              generate:
-                command:
-                  - bash
-                  - '-c'
-                  - |
-                    if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                        ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
-                    fi
-                    echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
-                    helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . |
-                    argocd-vault-plugin generate -s beget-argocd:avp-config -
-  {{ end }}
+
+                      if [ "$VAULT_ENABLED" = "true" ]; then
+                          echo "$OUTPUT" | argocd-vault-plugin generate -s beget-argocd:avp-config -
+                      else
+                          echo "$OUTPUT"
+                      fi
         secret:
           argocdServerAdminPassword: {{ $argsArgocdServerAdminPassword }}
           argocdServerAdminPasswordMtime: {{ $xRCreationTimestamp }}
@@ -148,13 +117,11 @@ argocd:
           - configMap:
               name: argocd-cmp-cm
             name: cmp-plugin
-          - name: custom-tools
-            emptyDir: {}
         # dnsPolicy: "ClusterFirstWithHostNet"
         extraContainers:
           - name: helm-with-values
             command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.10"
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
@@ -166,56 +133,10 @@ argocd:
               - mountPath: /home/argocd/cmp-server/config/plugin.yaml
                 subPath: helm-with-values.yaml
                 name: cmp-plugin
-          - name: kustomize-helm-with-values
-            command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.10"
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 999
-            volumeMounts:
-              - mountPath: /var/run/argocd
-                name: var-files
-              - mountPath: /home/argocd/cmp-server/plugins
-                name: plugins
-              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                subPath: kustomize-helm-with-values.yaml
-                name: cmp-plugin
   {{ if $systemEnabled }}
-          - name: argocd-vault-plugin-helm-with-values
-            command: [/var/run/argocd/argocd-cmp-server]
-            image: "quay.io/argoproj/argocd:v2.14.10"
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 999
-            volumeMounts:
-              - mountPath: /var/run/argocd
-                name: var-files
-              - mountPath: /home/argocd/cmp-server/plugins
-                name: plugins
-              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                subPath: argocd-vault-plugin-helm-with-values.yaml
-                name: cmp-plugin
-              - name: custom-tools
-                subPath: argocd-vault-plugin
-                mountPath: /usr/local/bin/argocd-vault-plugin
         envFrom:
           - secretRef:
               name: avp-config
-        volumeMounts:
-          - name: custom-tools
-            subPath: argocd-vault-plugin
-            mountPath: /usr/local/bin/argocd-vault-plugin
-        initContainers:
-          - name: download-argocd-vault-plugin
-            image: "dmkolbin/dowloader"
-            command: [sh, -c]
-            args:
-              - >-
-                curl -Lk -o /custom-tools/argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v1.18.1/argocd-vault-plugin_1.18.1_linux_amd64 &&
-                chmod +x /custom-tools/argocd-vault-plugin
-            volumeMounts:
-              - mountPath: /custom-tools
-                name: custom-tools
         resources:
           limits:
             cpu: 8

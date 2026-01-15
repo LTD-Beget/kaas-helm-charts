@@ -7,12 +7,12 @@ vmOperator:
   version: v1alpha1
   dependsOn:
     - certManagerCsiDriver
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     victoria-metrics-operator:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"

@@ -10,12 +10,12 @@ incloudUi:
   {{ if $systemEnabled }}
     - dex
   {{ end }}
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     incloud-web-chart:
       oauth2-proxy:
         enabled: true

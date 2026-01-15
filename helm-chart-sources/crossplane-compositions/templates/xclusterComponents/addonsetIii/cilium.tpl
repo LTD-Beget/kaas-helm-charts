@@ -8,12 +8,12 @@ cilium:
   version: v1alpha1
   dependsOn:
     - istioGW
-  {{ if $certManagerReady }}
-  pluginName: kustomize-helm-with-values
-  {{ else }}
   pluginName: helm-with-values
-  {{ end }}
   values:
+  {{ if $certManagerReady }}
+    argocdPlugins:
+      kustomize: true
+  {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

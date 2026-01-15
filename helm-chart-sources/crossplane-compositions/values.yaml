@@ -10,24 +10,27 @@ composition:
 
 composite:
   addons:
-    ccm:
-      targetRevision: HEAD
-    csrc:
-      targetRevision: HEAD
     common:
-      targetRevision: HEAD
-    istiobase:
-      targetRevision: 1.26.0
-    begetcmprovider:
-      targetRevision: HEAD
-    crossplanexcluster:
-      targetRevision: HEAD
-    certcontrollermanager:
+      targetRevision: feature/plugin-enabled-over-values
+
+    # external repos
+    begetcmprovider: 
       targetRevision: HEAD
     capiclusterclass:
       targetRevision: HEAD
+    ccm:
+      targetRevision: HEAD
+    certcontrollermanager:
+      targetRevision: HEAD
+    crossplanexcluster:
+      targetRevision: HEAD
+    csrc:
+      targetRevision: HEAD
+    istiobase:
+      targetRevision: 1.26.0
     secretcopyoperator:
       targetRevision: feature/CLOUD-409
+
 xclusterComponents:
   client:
     enabled: false
