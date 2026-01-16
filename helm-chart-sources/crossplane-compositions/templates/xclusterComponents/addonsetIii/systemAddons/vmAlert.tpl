@@ -12,18 +12,18 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
-          serviceScrapeSpec:
-            selector:
-              matchLabels:
-                monitoring.in-cloud.io/service: vmalert
-            endpoints:
-              - port: https-metrics
-                path: /metrics
-                scheme: HTTPS
-                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                tlsConfig:
-                  serverName: vmalert-monitoring
-            jobLabel: vmalert
+          # serviceScrapeSpec:
+          #   selector:
+          #     matchLabels:
+          #       monitoring.in-cloud.io/service: vmalert
+          #   endpoints:
+          #     - port: https-metrics
+          #       path: /metrics
+          #       scheme: HTTPS
+          #       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          #       tlsConfig:
+          #         serverName: vmalert-monitoring
+          #   jobLabel: vmalert
           containers:
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4

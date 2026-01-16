@@ -13,18 +13,18 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
-          serviceScrapeSpec:
-            selector:
-              matchLabels:
-                monitoring.in-cloud.io/service: alertmanager
-            endpoints:
-              - port: https-metrics
-                path: /metrics
-                scheme: HTTPS
-                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                tlsConfig:
-                  serverName: alertmanager-monitoring
-            jobLabel: alertmanager
+          # serviceScrapeSpec:
+          #   selector:
+          #     matchLabels:
+          #       monitoring.in-cloud.io/service: alertmanager
+          #   endpoints:
+          #     - port: https-metrics
+          #       path: /metrics
+          #       scheme: HTTPS
+          #       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          #       tlsConfig:
+          #         serverName: alertmanager-monitoring
+          #   jobLabel: alertmanager
           containers:
             - name: alertmanager
               volumeMounts:

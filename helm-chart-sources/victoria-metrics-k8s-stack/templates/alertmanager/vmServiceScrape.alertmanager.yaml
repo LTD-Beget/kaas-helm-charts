@@ -1,22 +1,22 @@
-# {{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
 
-# {{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") $vmstack.alertmanager.enabled }}
-# ---
-# apiVersion: operator.victoriametrics.com/v1beta1
-# kind: VMServiceScrape
-# metadata:
-#   name: {{ .Release.Name }}-alertmanager
-#   namespace: {{ .Release.Namespace }}
-# spec:
-#   selector:
-#     matchLabels:
-#       monitoring.in-cloud.io/service: alertmanager
-#   endpoints:
-#     - port: https-metrics
-#       path: /metrics
-#       scheme: HTTPS
-#       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-#       tlsConfig:
-#         serverName: alertmanager-monitoring
-#   jobLabel: alertmanager
-# {{- end }}
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") $vmstack.alertmanager.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .Release.Name }}-alertmanager
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: alertmanager
+  endpoints:
+    - port: https-metrics
+      path: /metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: alertmanager-monitoring
+  jobLabel: alertmanager
+{{- end }}
