@@ -1,15 +1,17 @@
-{{- if and .Values.monitoring.enabled }}
+{{- $argocd := index .Values "argo-cd" -}}
+
+{{- if and (gt ($argocd.repoServer.replicas | int) 0) .Values.monitoring.enabled }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}-applicationset-controller-kube-rbac-proxy
+  name: {{ .Release.Name }}-repo-server-kube-rbac-proxy
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-applicationset-controller
+    name: {{ .Release.Name }}-repo-server
     namespace: {{ .Release.Namespace }}
 {{- end }}

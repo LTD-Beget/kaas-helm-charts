@@ -1,4 +1,6 @@
-{{- if .Values.istio.virtualService.enabled }}
+{{- $argocd := index .Values "argo-cd" -}}
+
+{{- if and (gt ($argocd.server.replicas | int) 0) .Values.istio.virtualService.enabled }}
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService

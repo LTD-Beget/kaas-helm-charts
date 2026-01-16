@@ -1,4 +1,6 @@
-{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+{{- $argocd := index .Values "argo-cd" -}}
+
+{{- if and (gt ($argocd.server.replicas | int) 0) .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape

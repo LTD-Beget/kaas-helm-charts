@@ -1,4 +1,6 @@
-{{- if .Values.monitoring.secureService.enabled }}
+{{- $argocd := index .Values "argo-cd" -}}
+
+{{- if and (gt ($argocd.repoServer.replicas | int) 0) .Values.monitoring.secureService.enabled }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
