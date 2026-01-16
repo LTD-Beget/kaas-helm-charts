@@ -479,7 +479,10 @@ victoria-metrics-k8s-stack:
       - name: jobs
         rules:
         - alert: VMAgentJobAbsent
-          expr: absent(up{job="vmagent-vmagent"})
+          expr: |
+            group by (cluster_full_name)(kube_node_info{cluster_type="system"})
+              unless on(cluster_full_name)
+                up{job="vmagent-monitoring",cluster_type="system"} == 1
           for: 2m
           annotations:
             description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
