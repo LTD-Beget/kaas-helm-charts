@@ -51,7 +51,7 @@ argocd:
           {{ if $systemEnabled }}
           url: {{ printf "https://%%s/argocd" $systemIstioGwVip }}
           {{ else }}
-          url: "https://localhost/argocd"
+          url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
           {{ end }}
           oidc.config: |
             name: Dex
