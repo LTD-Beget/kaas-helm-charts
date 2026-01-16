@@ -124,11 +124,13 @@ victoria-metrics-k8s-stack:
         rules:
         - alert: CoreDNSDown
           annotations:
-            description: CoreDNS has disappeared from Prometheus target discovery.
+            description: "CoreDNS Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}."
             runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
             summary: CoreDNS has disappeared from Prometheus target discovery.
           expr: |
-            absent(up{job="coredns-coredns-metrics"} == 1)
+            group by (cluster_full_name)(kube_node_info)
+              unless on(cluster_full_name)
+                up{job="coredns-coredns-metrics"} == 1
           for: 1m
           labels:
             severity: warning
@@ -241,12 +243,12 @@ victoria-metrics-k8s-stack:
         rules:
         - alert: CertManagerAbsent
           annotations:
-            description: New certificates will not be able to be minted, and existing ones
+            description: CertManager Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}. New certificates will not be able to be minted, and existing ones
               can't be renewed until cert-manager is back.
             runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
             summary: Cert Manager has disappeared from Prometheus service discovery.
-          expr: absent(up{job="cert-manager"})
-          for: 1m
+          expr: group by (cluster_full_name)(kube_node_info) unless on(cluster_full_name) up{job="cert-manager"} == 1
+          for: 3m
           labels:
             severity: warning
       - name: certificates
@@ -486,7 +488,10 @@ victoria-metrics-k8s-stack:
             severity: critical
 
         - alert: VMAlertJobAbsent
-          expr: absent(up{job="vmalert-vmalert"})
+          expr: |
+            group by (cluster_full_name)(kube_node_info{cluster_type="system"})
+              unless on(cluster_full_name)
+                up{job="vmalert-monitoring",cluster_type="system"} == 1
           for: 2m
           annotations:
             description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -495,7 +500,10 @@ victoria-metrics-k8s-stack:
             severity: critical
 
         - alert: VMAlertmanagerJobAbsent
-          expr: absent(up{job="vmalertmanager-alertmanager"})
+          expr: |
+            group by (cluster_full_name)(kube_node_info{cluster_type="system"})
+              unless on(cluster_full_name)
+                up{job="alertmanager-monitoring",cluster_type="system"} == 1
           for: 2m
           annotations:
             description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.

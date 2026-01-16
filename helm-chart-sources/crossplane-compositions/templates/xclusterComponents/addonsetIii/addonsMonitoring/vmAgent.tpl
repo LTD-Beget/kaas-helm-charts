@@ -132,6 +132,11 @@ vmAgent:
           externalLabels:
             cluster_full_name: {{ printf "%%s-%%s" $customer $clusterName }}
             remotewrite_cluster: {{ printf "%%s-%%s" $customer $clusterName }}
+          {{ if $systemEnabled }}
+            cluster_type: "system"
+          {{ else }}
+            cluster_type: "infra"
+          {{ end }}
           extraArgs:
             remoteWrite.label: remotewrite_cluster={{ printf "%%s-%%s" $customer $clusterName }}
             remoteWrite.tlsInsecureSkipVerify: "false"
