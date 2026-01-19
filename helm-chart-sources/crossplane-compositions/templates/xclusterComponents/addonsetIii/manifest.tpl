@@ -198,6 +198,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaDashboards" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaOperator" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.secretCopyOperator" . | nindent 4 }}
   {{- printf `
     {{ end }}
   ` }}

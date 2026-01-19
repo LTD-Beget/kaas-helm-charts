@@ -1,4 +1,4 @@
-{{- define "xclusterComponents.addonsetIii.certControllerManager" -}}
+{{- define "xclusterComponents.addonsetIii.secretCopyOperator" -}}
   {{- printf `
 secretCopyOperator:
   apiVersion: in-cloud.io/v1alpha1
