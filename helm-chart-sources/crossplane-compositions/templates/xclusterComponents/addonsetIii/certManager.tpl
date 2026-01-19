@@ -47,7 +47,7 @@ certManager:
         name: selfsigned-cluster-issuer
         spec:
           ca:
-            secretName: selfsigned-cluster-ca
+            secretName: selfsigned-infra-cluster-ca
 
       {{ if $systemEnabled }}
       selfsigned:
@@ -59,7 +59,7 @@ certManager:
 
     certificates:
       mainCA:
-        name: selfsigned-cluster-ca
+        name: selfsigned-infra-cluster-ca
         namespace: beget-system
         spec:
           issuerRef:
