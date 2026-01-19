@@ -74,7 +74,7 @@ certManager:
           renewBefore: 720h
           isCA: true
           commonName: root-ca
-          secretName: selfsigned-cluster-ca
+          secretName: selfsigned-infra-cluster-ca
   ` }}
 {{- end -}}
  
