@@ -42,20 +42,25 @@ certManager:
         spec:
           selfSigned: {}
 
+      {{- if $systemEnabled }}
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: {{ $clusterName }}-ca-oidc
+      {{- else }}
       selfsignedClusterIssuer:
         kind: ClusterIssuer
         name: selfsigned-cluster-issuer
         spec:
           ca:
             secretName: selfsigned-infra-cluster-ca
-
-      {{ if $systemEnabled }}
-      selfsigned:
-        kind: ClusterIssuer
-        name: selfsigned
-        spec:
-          selfSigned: {}
-      {{- end }}
 
     certificates:
       mainCA:
@@ -75,6 +80,7 @@ certManager:
           isCA: true
           commonName: root-ca
           secretName: selfsigned-infra-cluster-ca
+      {{- end }}
   ` }}
 {{- end -}}
  
