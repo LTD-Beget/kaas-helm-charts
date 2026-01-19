@@ -47,7 +47,7 @@ certManager:
         name: selfsigned-cluster-issuer
         spec:
           ca:
-            secretName: selfsigned-cluster-ca
+            secretName: {{ $clusterName }}-ca-oidc
 
       {{ if $systemEnabled }}
       selfsigned:
@@ -57,23 +57,5 @@ certManager:
           selfSigned: {}
       {{- end }}
 
-    certificates:
-      mainCA:
-        name: selfsigned-cluster-ca
-        namespace: beget-system
-        spec:
-          issuerRef:
-            group: cert-manager.io
-            kind: Issuer
-            name: selfsigned-issuer
-          privateKey:
-            algorithm: RSA
-            encoding: PKCS1
-            size: 4096
-          duration: 175200h
-          renewBefore: 720h
-          isCA: true
-          commonName: root-ca
-          secretName: selfsigned-cluster-ca
   ` }}
 {{- end -}}

@@ -156,6 +156,7 @@ spec:
   ` -}}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.certControllerManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
@@ -177,7 +178,6 @@ spec:
     {{ end }}
     {{ if $systemEnabled }}
   ` }}
-    {{- include "xclusterComponents.addonsetIii.certControllerManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.ccm" . | nindent 4 }}

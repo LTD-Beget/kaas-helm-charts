@@ -19,4 +19,3 @@ default: |
     - effect: NoSchedule
       key: node-role.kubernetes.io/control-plane
 {{- end }}
-

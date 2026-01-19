@@ -30,10 +30,12 @@ trustManager:
       sources:
         - secret:
             name: {{ $clusterName }}-ca-oidc
-            key: tls.crt
+            key: ca.crt
+        {{ if $systemEnabled }}
         - secret:
             name: selfsigned-cluster-ca
             key: tls.crt
+        {{ end }}
       target:
         namespaceSelector:
           matchLabels:
