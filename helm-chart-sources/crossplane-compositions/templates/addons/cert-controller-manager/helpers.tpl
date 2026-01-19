@@ -13,7 +13,7 @@ default: |
     - --cluster-wide
     image:
       repository: prorobotech/certificate-set
-      tag: main-3a388eb6
+      tag: feature-CLOUD-414-0ae102ac
       pullPolicy: IfNotPresent
     tolerations:
     - effect: NoExecute
