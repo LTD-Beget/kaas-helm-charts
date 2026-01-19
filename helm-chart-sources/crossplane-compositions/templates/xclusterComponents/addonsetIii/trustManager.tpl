@@ -31,7 +31,7 @@ trustManager:
         - secret:
             name: {{ $clusterName }}-ca-oidc
             key: ca.crt
-        {{ if $systemEnabled }}
+        {{ if not $systemEnabled }}
         - secret:
             name: selfsigned-cluster-ca
             key: tls.crt
