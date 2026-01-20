@@ -9,6 +9,8 @@ pluginName: helm-with-values
 default: |
   argocd:
     enabled: true
+  cilium:
+    enabled: true
 manifest:
   spec:
     syncPolicy:
