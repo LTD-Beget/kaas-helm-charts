@@ -10,7 +10,7 @@ default: |
   argocd:
     enabled: true
   cilium:
-    enabled: true
+    enabled: false
 manifest:
   spec:
     syncPolicy:
