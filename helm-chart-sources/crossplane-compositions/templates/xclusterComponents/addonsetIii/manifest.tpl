@@ -112,7 +112,7 @@ spec:
         issuerRefOidc:
           apiVersion: cert-manager.io/v1
           kind: ClusterIssuer
-          name: selfsigned
+          name: selfsigned-cluster-issuer
         kubeconfig: false
         kubeconfigEndpoint: {{ $infraClusterEndpoint }}
 
