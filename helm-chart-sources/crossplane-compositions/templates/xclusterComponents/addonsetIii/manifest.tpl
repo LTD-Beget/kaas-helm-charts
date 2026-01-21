@@ -149,6 +149,15 @@ spec:
         kubeconfig: false
         kubeconfigEndpoint: {{ $clientClusterEndpoint }}
 
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: etcd-ca
+spec:
+  ca:
+    secretName: {{ $xcluster }}-infra-etcd
+
 ### extra variables
 {{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
 {{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
