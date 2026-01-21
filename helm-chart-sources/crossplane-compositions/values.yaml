@@ -13,6 +13,19 @@ composite:
     common:
       targetRevision: v0.0.4
 
+    # feature/alerting
+    crossplanecompositions:
+      targetRevision: feature/alerting
+    victoriametricsalertmanager:
+      targetRevision: feature/alerting
+
+    # external repos
+    addonsoperator:
+      targetRevision: HEAD
+    begetcmprovider: 
+      targetRevision: feat/new-api-version
+    capiclusterclass:
+      targetRevision: HEAD
     ccm:
       targetRevision: HEAD
     certcontrollermanager:

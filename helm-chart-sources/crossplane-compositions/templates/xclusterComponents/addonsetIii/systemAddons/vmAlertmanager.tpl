@@ -12,6 +12,46 @@ vmAlertmanager:
     victoria-metrics-k8s-stack:
       fullnameOverride: "alertmanager"
       alertmanager:
+        useManagedConfig: false
+        config:
+          global:
+            resolve_timeout: 5m
+            http_config:
+              follow_redirects: true
+              enable_http2: true
+          route:
+            receiver: signalilo
+            group_by: ["alertname", "namespace", "severity"]
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 1h
+
+            routes:
+              - matchers:
+                  - severity="critical"
+                receiver: signalilo
+              - matchers:
+                  - severity=~"warning|info"
+                receiver: signalilo
+              - receiver: blackhole
+                matchers:
+                  - alertname="Watchdog"
+                continue: false
+
+          receivers:
+            - name: signalilo
+              webhook_configs:
+                - url: "http://signalilo.beget-signalilo.svc/webhook"
+                  send_resolved: true
+                  # http_config:
+                  #   bearer_token_file: /etc/alertmanager/secrets/signalilo-webhook-token/token
+                  #   bearer_token: "..."
+            - name: blackhole
+
+          templates:
+            - /etc/vm/configs/**/*.tmpl
+            - /etc/vm/templates/vmalertmanager-alertmanager-monzo-tpl/monzo.tmpl
+
         spec:
           # serviceScrapeSpec:
           #   selector:
