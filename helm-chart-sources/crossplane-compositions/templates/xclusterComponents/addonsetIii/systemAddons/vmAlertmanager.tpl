@@ -41,11 +41,8 @@ vmAlertmanager:
           receivers:
             - name: signalilo
               webhook_configs:
-                - url: "http://signalilo.beget-signalilo.svc/webhook"
+                - url: "http://signalilo.beget-signalilo.svc/webhook?token=HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
                   send_resolved: true
-                  # http_config:
-                  #   bearer_token_file: /etc/alertmanager/secrets/signalilo-webhook-token/token
-                  #   bearer_token: "..."
             - name: blackhole
 
           templates:
