@@ -29,7 +29,7 @@ trustManager:
       name: "ca"
       sources:
         - secret:
-            name: selfsigned-cluster-ca
+            name: selfsigned-infra-cluster-ca
             key: tls.crt
         {{ if not $systemEnabled }}
         - secret:
