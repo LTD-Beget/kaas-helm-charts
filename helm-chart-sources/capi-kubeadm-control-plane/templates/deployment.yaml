@@ -59,7 +59,7 @@ spec:
             - --diagnostics-address=:8443
             - --insecure-diagnostics=false
             # - --use-deprecated-infra-machine-naming=false
-            - --feature-gates=MachinePool=true,ClusterTopology=true,KubeadmBootstrapFormatIgnition=true
+            - --feature-gates=MachinePool=true,ClusterTopology=true,KubeadmBootstrapFormatIgnition=false,PriorityQueue=false,ReconcilerRateLimiting=false,InPlaceUpdates=false
           env:
             - name: POD_NAMESPACE
               valueFrom:

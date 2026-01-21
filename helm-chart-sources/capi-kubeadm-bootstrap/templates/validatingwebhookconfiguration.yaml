@@ -15,7 +15,7 @@ webhooks:
     service:
       name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-bootstrap-cluster-x-k8s-io-v1beta1-kubeadmconfig
+      path: /validate-bootstrap-cluster-x-k8s-io-v1beta2-kubeadmconfig
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -24,7 +24,7 @@ webhooks:
   - apiGroups:
     - bootstrap.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -38,7 +38,7 @@ webhooks:
     service:
       name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-bootstrap-cluster-x-k8s-io-v1beta1-kubeadmconfigtemplate
+      path: /validate-bootstrap-cluster-x-k8s-io-v1beta2-kubeadmconfigtemplate
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -47,7 +47,7 @@ webhooks:
   - apiGroups:
     - bootstrap.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE

@@ -6,7 +6,34 @@ metadata:
   labels:
     {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
     kubeadm.controlplane.cluster.x-k8s.io/aggregate-to-manager: "true"
-rules:
+ules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
 - apiGroups:
   - apiextensions.k8s.io
   resources:
@@ -15,6 +42,17 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - apiextensions.k8s.io
+  resourceNames:
+  - kubeadmcontrolplanes.controlplane.cluster.x-k8s.io
+  - kubeadmcontrolplanetemplates.controlplane.cluster.x-k8s.io
+  resources:
+  - customresourcedefinitions
+  - customresourcedefinitions/status
+  verbs:
+  - patch
+  - update
 - apiGroups:
   - authentication.k8s.io
   resources:
@@ -65,20 +103,10 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ""
+  - runtime.cluster.x-k8s.io
   resources:
-  - events
+  - extensionconfigs
   verbs:
-  - create
-  - patch
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - create
   - get
   - list
-  - patch
-  - update
   - watch
