@@ -22,7 +22,6 @@ crossplane:
         - '--enable-realtime-compositions'
         - '--enable-composition-webhook-schema-validation'
         - '--enable-composition-functions'
-        - '--enable-function-response-cache'
         - '--enable-usages'
         - '--leader-election'
         - '--max-reconcile-rate=200'
