@@ -19,11 +19,20 @@ signalilo:
         icinga_password: icinga_user_pw
         icinga_password_secret: "Hash#Web44GoInterface"
         alertmanager_port: 80
-        # alertmanager_bearer_token: aaaaaa
-        # alertmanager_bearer_token_secret:
+        alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
 
       extraEnvVars:
         - name: SIGNALILO_LOG_LEVEL
           value: "2"
+        # - name: SIGNALILO_ICINGA_INSECURE_TLS
+        #   value: "false"
+
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
   ` }}
 {{- end -}}
