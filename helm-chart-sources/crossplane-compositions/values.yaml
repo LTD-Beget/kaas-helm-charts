@@ -30,6 +30,12 @@ composite:
       targetRevision: 1.26.0
     secretcopyoperator:
       targetRevision: feature/CLOUD-409
+    capi:
+      targetRevision: feat/newcapi
+    capikubeadmbootstrap:
+      targetRevision: feat/newcapi
+    capikubeadmcontrolplane:
+      targetRevision: feat/newcapi
 
 xclusterComponents:
   client:
