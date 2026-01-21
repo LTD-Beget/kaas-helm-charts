@@ -17,7 +17,7 @@ signalilo:
         icinga_url: https://192.168.88.204:25665
         icinga_username: admin
         icinga_password: "Hash#Web44GoInterface"
-        alertmanager_port: 80
+        alertmanager_port: 8888
         alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
 
       extraEnvVars:
