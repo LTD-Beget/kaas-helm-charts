@@ -24,7 +24,7 @@ signalilo:
         - name: SIGNALILO_LOG_LEVEL
           value: "2"
         - name: SIGNALILO_ICINGA_INSECURE_TLS
-          value: "false"
+          value: "true"
 
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
