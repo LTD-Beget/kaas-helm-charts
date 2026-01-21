@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "capi-kubeadm-control-plane.labels" . | nindent 4 }}
     kubeadm.controlplane.cluster.x-k8s.io/aggregate-to-manager: "true"
-ules:
+rules:
 - apiGroups:
   - ""
   resources:
