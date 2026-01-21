@@ -58,7 +58,7 @@ spec:
             - --leader-elect
             - --diagnostics-address=:8443
             - --insecure-diagnostics=false
-            - --feature-gates=MachinePool=true,ClusterResourceSet=true,ClusterTopology=true,RuntimeSDK=false,MachineSetPreflightChecks=true,MachineWaitForVolumeDetachConsiderVolumeAttachments=true    
+            - --feature-gates=MachinePool=true,ClusterTopology=true,RuntimeSDK=false,MachineSetPreflightChecks=true,MachineWaitForVolumeDetachConsiderVolumeAttachments=true,PriorityQueue=false,ReconcilerRateLimiting=false,InPlaceUpdates=false,MachineTaintPropagation=false   
           env:
             - name: POD_NAMESPACE
               valueFrom:
