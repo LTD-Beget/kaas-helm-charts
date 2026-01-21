@@ -153,6 +153,9 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: ClusterIssuerEtcd
+    gotemplating.fn.crossplane.io/ready: "True"
   name: etcd-ca
 spec:
   ca:
