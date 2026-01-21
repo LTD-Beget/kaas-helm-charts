@@ -42,6 +42,11 @@ certManager:
         spec:
           selfSigned: {}
 
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
       {{- if $systemEnabled }}
       selfsignedClusterIssuer:
         kind: ClusterIssuer
