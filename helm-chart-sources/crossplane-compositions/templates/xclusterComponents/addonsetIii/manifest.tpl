@@ -96,8 +96,6 @@ spec:
       apiVersion: in-cloud.io/v1alpha1
       kind: CertificateSet
       metadata:
-        annotations:
-          cert-manager.io/disable-auto-renew: "true"
         labels:
           cluster.x-k8s.io/cluster-name: {{ $xcluster }}-infra
           clusterctl.cluster.x-k8s.io/move: "true"
@@ -135,8 +133,6 @@ spec:
       apiVersion: in-cloud.io/v1alpha1
       kind: CertificateSet
       metadata:
-        annotations:
-          cert-manager.io/disable-auto-renew: "true"
         labels:
           cluster.x-k8s.io/cluster-name: {{ $xcluster }}-client
           clusterctl.cluster.x-k8s.io/move: "true"
