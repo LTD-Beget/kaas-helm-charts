@@ -16,8 +16,7 @@ signalilo:
         icinga_hostname: "{{ $clusterName }}"
         icinga_url: http://192.168.88.204:5665
         icinga_username: admin
-        icinga_password: icinga_user_pw
-        icinga_password_secret: "Hash#Web44GoInterface"
+        icinga_password: "Hash#Web44GoInterface"
         alertmanager_port: 80
         alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
 
