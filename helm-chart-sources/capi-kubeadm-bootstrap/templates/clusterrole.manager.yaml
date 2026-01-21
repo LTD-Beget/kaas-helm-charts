@@ -4,7 +4,7 @@ metadata:
   name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-manager-role
   labels:
     {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
-rrules:
+rules:
 - apiGroups:
   - ""
   resources:
