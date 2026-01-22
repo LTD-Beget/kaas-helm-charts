@@ -1,0 +1,95 @@
+{{- if .Values.clickhouse.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: click-clickhouse-extra-configd
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "clickhouse-vmstorage.labels" . | nindent 4 }}
+data:
+  01-listen.xml: |
+    <yandex>
+        <listen_host>::</listen_host>
+        <listen_host>0.0.0.0</listen_host>
+        <listen_try>1</listen_try>
+    </yandex>
+  02-logger.xml: |
+    <yandex>
+        <logger>
+            <level>information</level>
+        </logger>
+    </yandex>
+  03-macros.xml: |
+    <yandex>
+        <macros>
+            <shard from_env="CLICKHOUSE_SHARD_ID"></shard>
+            <replica from_env="CLICKHOUSE_REPLICA_ID"></replica>
+            <layer>click-clickhouse</layer>
+        </macros>
+    </yandex>
+  05-zookeeper.xml: |
+    <yandex>
+        <zookeeper>
+            <node>
+                <host>click-clickhouse-keeper</host>
+                <port>9181</port>
+            </node>
+        </zookeeper>    
+    </yandex>
+
+  06-remote_servers.xml: |
+    <yandex>
+        <remote_servers>
+            <distributed_cluster>
+                <shard>
+                    <internal_replication>false</internal_replication>
+                    <replica>
+                        <host from_env="CLICKHOUSE_REPLICA_ID"></host>
+                        <port>9000</port>
+                    </replica>
+                </shard>
+            </distributed_cluster>
+        </remote_servers>
+    </yandex>
+
+  07-graphite_rollup.xml: |
+    <yandex>
+        <graphite_rollup>
+            <path_column_name>Path</path_column_name>
+            <time_column_name>Time</time_column_name>
+            <value_column_name>Value</value_column_name>
+            <version_column_name>Timestamp</version_column_name>
+            <default>
+                <function>avg</function>
+                <retention>
+                    <age>0</age>
+                    <precision>60</precision>
+                </retention>
+                <retention>
+                    <age>86400</age>
+                    <precision>300</precision>
+                </retention>
+            </default>
+        </graphite_rollup>
+    </yandex>
+
+  08-sampling.xml: |
+    <yandex>
+        <asynchronous_insert_log remove="1"/>
+        <asynchronous_metric_log remove="1"/>
+        <error_log remove="1"/>
+        <event_log remove="1"/>
+        <latency_log remove="1"/>
+        <metric_log remove="1"/>
+        <query_log remove="1"/>
+        <query_metric_log remove="1"/>
+        <query_thread_log remove="1"/>
+        <query_views_log remove="1"/>
+        <part_log remove="1"/>
+        <text_log remove="1"/>
+        <trace_log remove="1"/>
+        <opentelemetry_span_log remove="1"/>
+        <processors_profile_log remove="1"/>
+    </yandex>
+{{- end }}
