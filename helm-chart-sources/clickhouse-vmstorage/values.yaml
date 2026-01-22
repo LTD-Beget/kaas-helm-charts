@@ -126,7 +126,7 @@ appSpec:
                 date = ""
                 zero-timestamp = false
                 threads = 1
-                url = "http://default:dbpswd@click-clickhouse:8123"
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
                 compress-data = false
                 hash = ""
                 disable-daily-index = false
@@ -136,7 +136,7 @@ appSpec:
                 type = "index"
                 table = "swarm.graphite_index"
                 threads = 1
-                url = "http://default:dbpswd@click-clickhouse:8123"
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
                 timeout = "1m0s"
                 cache-ttl = "12h0m0s"
                 hash = ""
@@ -146,7 +146,7 @@ appSpec:
                 type = "tagged"
                 table = "swarm.graphite_tagged"
                 threads = 1
-                url = "http://default:dbpswd@click-clickhouse:8123"
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
                 timeout = "1m0s"
                 cache-ttl = "12h0m0s"
 
@@ -236,7 +236,7 @@ appSpec:
 
           extraEnv:
             GOOSE_DRIVER: clickhouse
-            GOOSE_DBSTRING: tcp://default:dbpswd@click-clickhouse:9000/swarm
+            GOOSE_DBSTRING: tcp://default:dbpswd@clickhouse-vmstorage:9000/swarm
             GOOSE_EXTRA_ARGS: "-dir=/migrations"
             GOOSE_VERBOSE: true
 
@@ -295,7 +295,7 @@ appSpec:
                 rollup-conf = "/etc/graphite-clickhouse/rollup.xml"
 
                 [clickhouse]
-                url = "http://default:dbpswd@click-clickhouse:8123/"
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123/"
 
                 extra-prefix = ""
 
@@ -429,7 +429,7 @@ clickhouse:
       image:
         repository: bitnamilegacy/os-shell
 
-  existingConfigdConfigmap: click-clickhouse-extra-configd
+  existingConfigdConfigmap: clickhouse-vmstorage-extra-configd
 
   shards: 1
   replicaCount: 1
