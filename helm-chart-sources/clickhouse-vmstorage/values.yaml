@@ -9,7 +9,10 @@ appSpec:
       name: carbon
       replicas: 1
 
-      tolerations: []
+      tolerations:
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
 
       service:
         enabled: true
@@ -247,7 +250,10 @@ appSpec:
       name: graphite
       replicas: 1
 
-      tolerations: []
+      tolerations:
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
 
       service:
         enabled: true
@@ -433,11 +439,24 @@ clickhouse:
       cpu: 1
       memory: 2Gi
 
+  service:
+    type: LoadBalancer
+    annotations:
+      lb.beget.com/algorithm: "round_robin"
+      lb.beget.com/type: "internal"
+      lb.beget.com/healthcheck-interval-seconds: "60"
+      lb.beget.com/healthcheck-timeout-seconds: "5"
+
   containerSecurityContext:
     capabilities:
       add:
         - SYS_NICE
         - IPC_LOCK 
+
+  tolerations:
+    - key: "node-role.kubernetes.io/vm-data"
+      operator: "Exists"
+      effect: "NoSchedule"
 
   keeper:
     replicaCount: 1
@@ -455,10 +474,7 @@ clickhouse:
         cpu: 300m
         memory: 256Mi
 
-  service:
-    type: LoadBalancer
-    annotations:
-      lb.beget.com/algorithm: "round_robin"
-      lb.beget.com/type: "internal"
-      lb.beget.com/healthcheck-interval-seconds: "60"
-      lb.beget.com/healthcheck-timeout-seconds: "5"
+    tolerations:
+      - key: "node-role.kubernetes.io/vm-data"
+        operator: "Exists"
+        effect: "NoSchedule"
