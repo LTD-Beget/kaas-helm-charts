@@ -13,7 +13,12 @@ appSpec:
 
       service:
         enabled: true
-        # type: LoadBalancer
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/algorithm: "round_robin"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
 
       ingress:
         enabled: false
@@ -449,3 +454,11 @@ clickhouse:
       limits:
         cpu: 300m
         memory: 256Mi
+
+  service:
+    type: LoadBalancer
+    annotations:
+      lb.beget.com/algorithm: "round_robin"
+      lb.beget.com/type: "internal"
+      lb.beget.com/healthcheck-interval-seconds: "60"
+      lb.beget.com/healthcheck-timeout-seconds: "5"
