@@ -13,6 +13,9 @@ appSpec:
         - key: "node-role.kubernetes.io/vm-stream"
           operator: "Exists"
           effect: "NoSchedule"
+        - effect: NoSchedule
+          key: dedicated
+          value: vm-stream
 
       service:
         enabled: true
@@ -254,6 +257,9 @@ appSpec:
         - key: "node-role.kubernetes.io/vm-stream"
           operator: "Exists"
           effect: "NoSchedule"
+        - effect: NoSchedule
+          key: dedicated
+          value: vm-stream
 
       service:
         enabled: true
