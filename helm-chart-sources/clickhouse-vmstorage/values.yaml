@@ -26,8 +26,8 @@ appSpec:
       ingress:
         enabled: false
 
-      affinity:
-        mode: soft
+      # affinity:
+      #   mode: soft
 
       strategy:
         type: RollingUpdate
@@ -261,8 +261,8 @@ appSpec:
       ingress:
         enabled: false
 
-      affinity:
-        mode: soft
+      # affinity:
+      #   mode: soft
 
       strategy:
         type: RollingUpdate
