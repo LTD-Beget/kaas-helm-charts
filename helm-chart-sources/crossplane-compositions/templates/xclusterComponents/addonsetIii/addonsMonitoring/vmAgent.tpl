@@ -82,6 +82,11 @@ vmAgent:
             {{ else }}
                 caFile: /tls/cabundle/ca.crt
             {{ end }}
+            # TODO: Добавить поддержку клиентских кластеров через VIP
+            # TODO: Добавить поддержку https
+            {{- if $systemEnabled }}
+            - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
+            {{- end }}
           volumeMounts:
             {{ if not $systemEnabled }}
             - name: trusted-ca-certs
