@@ -29,11 +29,13 @@ trustManager:
       name: "ca"
       sources:
         - secret:
-            name: {{ $clusterName }}-ca-oidc
+            name: selfsigned-infra-cluster-ca
             key: tls.crt
+        {{ if not $systemEnabled }}
         - secret:
-            name: selfsigned-cluster-ca
-            key: tls.crt
+            name: {{ $clusterName }}-ca-oidc
+            key: ca.crt
+        {{ end }}
       target:
         namespaceSelector:
           matchLabels:

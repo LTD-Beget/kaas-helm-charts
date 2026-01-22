@@ -8,6 +8,7 @@ targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: helm-with-values
 default: |
   cert-manager:
+    installCRDs: true
     global:
       priorityClassName: system-cluster-critical
     cainjector:
@@ -72,7 +73,6 @@ default: |
           effect: "NoSchedule"
 immutable: |
   cert-manager:
-    installCRDs: true
     enableCertificateOwnerRef: true
 
 {{- end }}

@@ -78,7 +78,7 @@ dex:
       enabled: true
       issuer:
         name: oidc-ca
-        secretName: {{ $clusterName }}-ca-oidc
+        secretName: selfsigned-infra-cluster-ca
       certificate:
         name: {{ $clusterName }}-dex-tls
         secretName: {{ $clusterName }}-dex-tls

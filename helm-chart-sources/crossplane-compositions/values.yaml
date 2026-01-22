@@ -11,7 +11,7 @@ composition:
 composite:
   addons:
     common:
-      targetRevision: HEAD
+      targetRevision: v0.0.3
 
     # external repos
     begetcmprovider: 
@@ -24,6 +24,8 @@ composite:
       targetRevision: HEAD
     crossplanexcluster:
       targetRevision: HEAD
+    crossplanecompositions:
+      targetRevision: v0.0.3
     csrc:
       targetRevision: HEAD
     istiobase:

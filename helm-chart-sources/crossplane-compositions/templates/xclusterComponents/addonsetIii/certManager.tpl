@@ -42,24 +42,21 @@ certManager:
         spec:
           selfSigned: {}
 
-      selfsignedClusterIssuer:
-        kind: ClusterIssuer
-        name: selfsigned-cluster-issuer
-        spec:
-          ca:
-            secretName: selfsigned-cluster-ca
-
-      {{ if $systemEnabled }}
       selfsigned:
         kind: ClusterIssuer
         name: selfsigned
         spec:
           selfSigned: {}
-      {{- end }}
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: selfsigned-infra-cluster-ca
 
     certificates:
       mainCA:
-        name: selfsigned-cluster-ca
+        name: selfsigned-infra-cluster-ca
         namespace: beget-system
         spec:
           issuerRef:
@@ -74,6 +71,7 @@ certManager:
           renewBefore: 720h
           isCA: true
           commonName: root-ca
-          secretName: selfsigned-cluster-ca
+          secretName: selfsigned-infra-cluster-ca
   ` }}
 {{- end -}}
+ 
