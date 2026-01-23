@@ -191,6 +191,7 @@ alertRules:
       groups:
         jobs:
           enabled: true
+          rules:
             VMAlertJobAbsent:
               enabled: true
             VMAlertmanagerJobAbsent:
