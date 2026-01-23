@@ -23,6 +23,10 @@ composite:
     victoriametricsalertrules:
       targetRevision: feature/alerting
 
+    # pin to specific versions
+    # crossplanecompositions:
+    #   targetRevision: v0.0.3
+
     # external repos
     begetcmprovider: 
       targetRevision: HEAD
@@ -34,8 +38,6 @@ composite:
       targetRevision: HEAD
     crossplanexcluster:
       targetRevision: HEAD
-    crossplanecompositions:
-      targetRevision: v0.0.3
     csrc:
       targetRevision: HEAD
     istiobase:
