@@ -23,21 +23,21 @@ composite:
     certcontrollermanager:
       targetRevision: HEAD
     crossplanexcluster:
-      targetRevision: HEAD
-    crossplanecompositions:
       targetRevision: v0.0.3
+    crossplanecompositions:
+      targetRevision: feat/copy-operator
     csrc:
       targetRevision: HEAD
     istiobase:
       targetRevision: 1.26.0
     secretcopyoperator:
-      targetRevision: feature/CLOUD-409
+      targetRevision: v0.0.3
     capi:
-      targetRevision: feat/newcapi
+      targetRevision: feat/copy-operator
     capikubeadmbootstrap:
-      targetRevision: feat/newcapi
+      targetRevision: feat/copy-operator
     capikubeadmcontrolplane:
-      targetRevision: feat/newcapi
+      targetRevision: feat/copy-operator
 
 xclusterComponents:
   client:
