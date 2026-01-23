@@ -1,7 +1,5 @@
 {{- range $VMRuleName, $VMRule := .Values.alertRules.vmrules }}
 {{- if $VMRule.enabled -}}
-
-{{- $groups := default dict $VMRule.groups -}}
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMRule
@@ -18,15 +16,13 @@ metadata:
     {{- end }}
 spec:
   groups:
-  {{- with $VMRule.groups }}
-    {{- range $groupName, $group := . }}
+    {{- range $groupName, $group := $VMRule.groups }}
     {{- if $group.enabled -}}
     - name: {{ $groupName | kebabcase }}
       rules:
-      {{- with $group.rules }}
-        {{- range $ruleName, $rule := . }}
+      {{- range $ruleName, $rule := $group.rules }}
         {{- if $group.enabled -}}
-        - alert: {{ $rule.spec.alert | default (printf "%s_%s" $VMRuleName $ruleName | upper | replace "-" "_" ) }}
+        - alert: {{ $rule.spec.alert | default (printf "%s_%s" $VMRuleName $ruleName | camelcase ) }}
           {{- with $group.annotations }}
           annotations:
             {{ . | toYaml | nindent 12 }}
@@ -53,8 +49,6 @@ spec:
           update_entries_limit: {{ . }}
           {{- end }}
         {{- end }}
-        {{- end }}
-      {{- end }}
       {{- end }}
       {{- with $group.concurrency }}
       concurrency: {{ . }}
@@ -102,6 +96,5 @@ spec:
       {{- end }}
     {{- end }}
     {{- end }}
-  {{- end }}
 {{- end }}
 {{- end }}
