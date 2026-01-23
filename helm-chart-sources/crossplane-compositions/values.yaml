@@ -23,6 +23,10 @@ composite:
     victoriametricsalertrules:
       targetRevision: feature/alerting
 
+    # pin to specific versions
+    # crossplanecompositions:
+    #   targetRevision: v0.0.3
+
     # external repos
     addonsoperator:
       targetRevision: HEAD

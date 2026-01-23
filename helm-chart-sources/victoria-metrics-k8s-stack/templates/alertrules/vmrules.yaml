@@ -23,7 +23,13 @@ spec:
       {{- range $ruleName, $rule := $group.rules }}
         {{- if $rule.enabled }}
         {{- $ruleSpec := $rule.spec }}
-        - alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+        - expr: |
+            {{ $ruleSpec.expr | nindent 12 }}
+          {{- if $ruleSpec.record }}
+          record: {{ $ruleSpec.record }}
+          {{- else }}
+          alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+          {{- end }}
           {{- with $ruleSpec.annotations }}
           annotations:
           {{ toYaml . | nindent 12 }}
@@ -31,8 +37,6 @@ spec:
           {{- with $ruleSpec.debug }}
           debug: {{ . }}
           {{- end }}
-          expr: |
-            {{ $ruleSpec.expr | nindent 12 }}
           {{- with $ruleSpec.for }}
           for: {{ . }}
           {{- end }}
@@ -42,9 +46,6 @@ spec:
           {{- with $ruleSpec.labels }}
           labels:
           {{ toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with $ruleSpec.record }}
-          record: {{ . }}
           {{- end }}
           {{- with $ruleSpec.update_entries_limit }}
           update_entries_limit: {{ . }}

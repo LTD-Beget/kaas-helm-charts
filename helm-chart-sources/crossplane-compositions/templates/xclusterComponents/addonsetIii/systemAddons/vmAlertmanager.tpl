@@ -28,10 +28,7 @@ vmAlertmanager:
 
             routes:
               - matchers:
-                  - severity="critical"
-                receiver: signalilo
-              - matchers:
-                  - severity=~"warning|info"
+                  - severity=~"info|warning|critical"
                 receiver: signalilo
               - receiver: blackhole
                 matchers:
