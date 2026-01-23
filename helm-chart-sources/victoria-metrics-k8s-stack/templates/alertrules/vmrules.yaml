@@ -1,51 +1,52 @@
-{{- range $VMRuleName, $VMRule := .Values.alertRules.vmrules }}
-{{- if $VMRule.enabled -}}
+{{- $vmrules := .Values.alertRules }}
+{{- range $VMRuleName, $VMRule := $vmrules.vmrules }}
+{{- if $VMRule.enabled }}
+{{- $additionsLabels := deepCopy ($vmrules.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
+
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMRule
 metadata:
-  name: {{ include "victoria-metrics-k8s-stack.fullname" $ }}-{{ $VMRuleName | kebabcase}}
+  name: {{ include "victoria-metrics-k8s-stack.fullname" $ }}-{{ $VMRuleName | kebabcase }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "victoria-metrics-k8s-stack.labels" $ | nindent 4 }}
-    {{- with $.Values.alertRules.additionalLabels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- with $VMRule.additionalLabels }}
-    {{- toYaml . | nindent 4 }}
+    {{- with $additionsLabels }}
+    {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
   groups:
     {{- range $groupName, $group := $VMRule.groups }}
-    {{- if $group.enabled -}}
+    {{- if $group.enabled }}
     - name: {{ $groupName | kebabcase }}
       rules:
       {{- range $ruleName, $rule := $group.rules }}
-        {{- if $group.enabled -}}
-        - alert: {{ $rule.spec.alert | default (printf "%s_%s" $VMRuleName $ruleName | camelcase ) }}
-          {{- with $group.annotations }}
+        {{- if $rule.enabled }}
+        {{- $ruleSpec := $rule.spec }}
+        - alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+          {{- with $ruleSpec.annotations }}
           annotations:
-            {{ . | toYaml | nindent 12 }}
+          {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with $group.debug }}
+          {{- with $ruleSpec.debug }}
           debug: {{ . }}
           {{- end }}
           expr: |
-            {{ $rule.spec.expr }}
-          {{- with $group.for }}
+            {{ $ruleSpec.expr | nindent 12 }}
+          {{- with $ruleSpec.for }}
           for: {{ . }}
           {{- end }}
-          {{- with $group.keep_firing_for }}
+          {{- with $ruleSpec.keep_firing_for }}
           keep_firing_for: {{ . }}
           {{- end }}
-          {{- with $group.labels }}
+          {{- with $ruleSpec.labels }}
           labels:
-            {{ . | toYaml | nindent 12 }}
+          {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with $group.record }}
+          {{- with $ruleSpec.record }}
           record: {{ . }}
           {{- end }}
-          {{- with $group.update_entries_limit }}
+          {{- with $ruleSpec.update_entries_limit }}
           update_entries_limit: {{ . }}
           {{- end }}
         {{- end }}
@@ -64,29 +65,29 @@ spec:
       {{- end }}
       {{- with $group.extra_filter_labels }}
       extra_filter_labels:
-        {{ . | toYaml | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with $group.headers }}
       headers:
-        {{ . | toYaml | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with $group.interval }}
       interval: {{ . }}
       {{- end }}
       {{- with $group.labels }}
       labels:
-        {{ . | toYaml | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with $group.limit }}
       limit: {{ . }}
       {{- end }}
       {{- with $group.notifier_headers }}
       notifier_headers:
-        {{ . | toYaml | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with $group.params }}
       params:
-        {{ . | toYaml | nindent 8 }}
+      {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with $group.tenant }}
       tenant: {{ . }}
