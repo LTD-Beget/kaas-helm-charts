@@ -11,7 +11,7 @@ default: |
   manager:
     image:
       repository: prorobotech/secret-copy-operator
-      tag: feature-CLOUD-409-3ba098a4
+      tag: feature-CLOUD-409-be1cb5b3
       pullPolicy: IfNotPresent
     tolerations:
     - effect: NoExecute
@@ -19,4 +19,3 @@ default: |
     - effect: NoSchedule
       key: node-role.kubernetes.io/control-plane
 {{- end }}
-

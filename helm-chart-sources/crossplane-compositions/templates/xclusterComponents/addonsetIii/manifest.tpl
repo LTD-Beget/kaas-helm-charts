@@ -76,6 +76,91 @@ spec:
   watch: false
 {{ end }}
 
+{{- $infraClusterEndpoint := printf "https://%%s:%%v" $clusterHost $clusterPort }}
+{{- $clientClusterEndpoint := printf "https://%%s:2%%v" $clusterHost $clusterPort }}
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: {{ $xcluster }}-infra-certificateset
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: InfraCertificateSet
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  deletionPolicy: Orphan
+  providerConfigRef:
+    name: default
+  forProvider:
+    manifest:
+      apiVersion: in-cloud.io/v1alpha1
+      kind: CertificateSet
+      metadata:
+        labels:
+          cluster.x-k8s.io/cluster-name: {{ $xcluster }}-infra
+          clusterctl.cluster.x-k8s.io/move: "true"
+          xcluster.in-cloud.io/name: {{ $xcluster }}
+        name: {{ $xcluster }}-infra
+        namespace: beget-system
+      spec:
+        environment: infra
+        argocdCluster: true
+        issuerRef:
+          apiVersion: cert-manager.io/v1
+          kind: ClusterIssuer
+          name: selfsigned
+        issuerRefOidc:
+          apiVersion: cert-manager.io/v1
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        kubeconfig: false
+        kubeconfigEndpoint: {{ $infraClusterEndpoint }}
+
+---
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: {{ $xcluster }}-client-certificateset
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: ClientCertificateSet
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  deletionPolicy: Orphan
+  providerConfigRef:
+    name: default
+  forProvider:
+    manifest:
+      apiVersion: in-cloud.io/v1alpha1
+      kind: CertificateSet
+      metadata:
+        labels:
+          cluster.x-k8s.io/cluster-name: {{ $xcluster }}-client
+          clusterctl.cluster.x-k8s.io/move: "true"
+          xcluster.in-cloud.io/name: {{ $xcluster }}
+        name: {{ $xcluster }}-client
+        namespace: beget-system
+      spec:
+        environment: client
+        argocdCluster: true
+        issuerRef:
+          apiVersion: cert-manager.io/v1
+          kind: ClusterIssuer
+          name: selfsigned
+        kubeconfig: false
+        kubeconfigEndpoint: {{ $clientClusterEndpoint }}
+
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: ClusterIssuerEtcd
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: etcd-ca
+spec:
+  ca:
+    secretName: {{ $xcluster }}-infra-etcd
+
 ### extra variables
 {{- $xAddonSetObserve            := dig "resource" "spec" "addonStatus" (dict) (get $.observed.resources "xAddonSet" | default (dict)) }}
 {{- $infraVMOperatorReady        := dig "vmOperator" "deployed" false ($xAddonSetObserve) }}
@@ -156,6 +241,7 @@ spec:
   ` -}}
     {{- include "xclusterComponents.addonsetIii.argocd" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.cilium" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.certControllerManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.coredns" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplane" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneFunctions" . | nindent 4 }}
@@ -177,7 +263,6 @@ spec:
     {{ end }}
     {{ if $systemEnabled }}
   ` }}
-    {{- include "xclusterComponents.addonsetIii.certControllerManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.helmInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.begetCmProvider" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.ccm" . | nindent 4 }}
@@ -199,6 +284,7 @@ spec:
     {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaDashboards" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafanaOperator" . | nindent 4 }}
+    {{- include "xclusterComponents.addonsetIii.secretCopyOperator" . | nindent 4 }}
   {{- printf `
     {{ end }}
   ` }}

@@ -89,7 +89,7 @@ vmAgent:
             {{- end }}
           volumeMounts:
             {{ if not $systemEnabled }}
-            - name: ca-bundle
+            - name: trusted-ca-certs
               mountPath: /tls/cabundle
               readOnly: true
             {{ end }}
@@ -104,11 +104,6 @@ vmAgent:
               secret:
                 defaultMode: 420
                 secretName: vmagent-monitoring-svc-tls
-            {{ if not $systemEnabled }}
-            - name: ca-bundle
-              configMap:
-                name: system-ca-bundle
-            {{ end }}
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
