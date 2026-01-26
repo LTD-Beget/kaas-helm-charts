@@ -1,8 +1,8 @@
-{{- define "xclusterComponents.addonsetIii.addonsOperator" -}}
+{{- define "newaddons.certControllerManager" -}}
   {{- printf `
-addonsOperator:
+certControllerManager:
   apiVersion: in-cloud.io/v1alpha1
-  kind: XAddonsAddonsOperator
+  kind: XAddonsCertControllerManager
   namespace: beget-system
   version: v1alpha1
   ` }}
