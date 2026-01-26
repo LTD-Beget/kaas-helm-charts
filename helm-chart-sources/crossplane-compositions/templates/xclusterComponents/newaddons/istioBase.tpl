@@ -18,7 +18,7 @@ spec:
   variables:
     cluster_name: {{ $clusterName }}
   valuesSources: []
-  initDependenceOn: []
+  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

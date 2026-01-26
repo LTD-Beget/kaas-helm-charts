@@ -19,7 +19,7 @@ spec:
     cluster_name: {{ $clusterName }}
   valuesSources: []
   initDependencies:
-    - addon: {{ $clusterName }}-istio-base
+    - name: {{ $clusterName }}-istio-base
       criteria:
         - jsonPath: /status/phase
           operator: Equal
