@@ -5,6 +5,9 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: {{ $clusterName }}-istio-base
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: ClientCertificateSet
+    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: "base"
   # path: "helm-chart-sources/istio-base"
@@ -48,6 +51,9 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: istio-base-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: ClientCertificateSet
+    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: istio-base
