@@ -205,7 +205,6 @@ spec:
 {{- end }}
 ###
 ` }}
----
 {{- include "newaddons.istioBase" . | nindent 4 }}
 
 
