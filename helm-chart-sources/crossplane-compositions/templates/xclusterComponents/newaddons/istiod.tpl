@@ -5,6 +5,9 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: {{ $clusterName }}-istiod
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstiod
+    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: ""
   path: "helm-chart-sources/istiod" ## path вместо chart
@@ -53,6 +56,9 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: istiod-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiod
+    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: istiod

@@ -6,7 +6,7 @@ kind: Addon
 metadata:
   name: {{ $clusterName }}-istio-base
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: ClientCertificateSet
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioBase
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: "base"
@@ -52,7 +52,7 @@ kind: AddonValue
 metadata:
   name: istio-base-default
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: ClientCertificateSet
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioBase
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
