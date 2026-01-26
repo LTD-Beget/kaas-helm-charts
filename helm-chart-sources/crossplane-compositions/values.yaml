@@ -15,7 +15,7 @@ composite:
 
     # external repos
     begetcmprovider: 
-      targetRevision: HEAD
+      targetRevision: feat/new-api-version
     capiclusterclass:
       targetRevision: HEAD
     ccm:
@@ -23,15 +23,21 @@ composite:
     certcontrollermanager:
       targetRevision: HEAD
     crossplanexcluster:
-      targetRevision: HEAD
+      targetRevision: feat/newcapi-backup
     crossplanecompositions:
-      targetRevision: v0.0.3
+      targetRevision: feat/copy-operator
     csrc:
       targetRevision: HEAD
     istiobase:
       targetRevision: 1.26.0
     secretcopyoperator:
       targetRevision: feature/CLOUD-409
+    capi:
+      targetRevision: feat/copy-operator
+    capikubeadmbootstrap:
+      targetRevision: feat/copy-operator
+    capikubeadmcontrolplane:
+      targetRevision: feat/copy-operator
 
 xclusterComponents:
   client:
