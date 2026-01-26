@@ -233,6 +233,7 @@ spec:
     {{ end }}
     xcluster: {{ $xcluster }}
   addons:` -}}
+    {{- include "xclusterComponents.addonsetIii.addonsOperator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManager" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.certManagerCsiDriver" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.crossplaneCompositions" . | nindent 4 }}
