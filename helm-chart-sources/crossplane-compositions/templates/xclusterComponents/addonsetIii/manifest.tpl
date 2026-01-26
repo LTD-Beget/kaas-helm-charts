@@ -205,6 +205,6 @@ spec:
 {{- end }}
 ` }}
 {{- include "newaddons.istioBase" . }}
-
+{{- include "newaddons.istiod" . }}
 
 {{- end }}
