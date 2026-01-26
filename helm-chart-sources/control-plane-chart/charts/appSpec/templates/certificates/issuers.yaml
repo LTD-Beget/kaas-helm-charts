@@ -11,7 +11,8 @@
       {{- $needsSelfsigned = true }}
     {{- end }}
 
-    {{- if $needsSelfsigned }}
+    #TODO проверить, нужен ли вообще этот issuer
+    {{- if and $needsSelfsigned false }}
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
