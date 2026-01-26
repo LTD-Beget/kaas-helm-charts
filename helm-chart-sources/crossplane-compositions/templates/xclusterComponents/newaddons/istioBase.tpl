@@ -11,7 +11,7 @@ metadata:
 spec:
   chart: "base"
   # path: "helm-chart-sources/istio-base"
-  repo: "https://istio-release.storage.googleapis.com/charts"
+  repoURL: "https://istio-release.storage.googleapis.com/charts"
   version: "1.26.0"
   targetCluster: {{ $clusterName }}
   targetNamespace: "beget-istio"
