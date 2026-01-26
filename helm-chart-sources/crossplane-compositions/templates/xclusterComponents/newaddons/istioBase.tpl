@@ -33,11 +33,11 @@ spec:
           in-cloud.io/clusterName: {{ $clusterName }}
       syncOptions:
         - CreateNamespace=true
-      ignoreDifferences:
-      - group: admissionregistration.k8s.io
-        kind: ValidatingWebhookConfiguration
-        jsonPointers:
-        - /webhooks/0/failurePolicy
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
   valuesSelectors:
     - name: default
       priority: 0
