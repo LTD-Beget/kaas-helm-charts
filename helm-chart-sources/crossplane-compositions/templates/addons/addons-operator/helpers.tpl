@@ -9,8 +9,6 @@ targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 pluginName: helm-with-values
 default: |
   manager:
-    args:
-    - --cluster-wide
     image:
       repository: prorobotech/addons-operator
       tag: v0.1.0-a90bf6c5
