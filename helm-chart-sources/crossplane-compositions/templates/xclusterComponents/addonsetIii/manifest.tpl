@@ -203,9 +203,8 @@ spec:
 {{- if $systemEnabled }}
   {{- $remoteWriteUrlVmAgent = "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus" }}
 {{- end }}
-###
 ` }}
-{{- include "newaddons.istioBase" . | nindent 4 }}
+{{- include "newaddons.istioBase" . }}
 
 
 {{- end }}
