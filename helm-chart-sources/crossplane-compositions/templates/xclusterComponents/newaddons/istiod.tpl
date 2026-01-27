@@ -21,9 +21,12 @@ spec:
   initDependencies:
     - name: {{ $clusterName }}-istio-base
       criteria:
-        - jsonPath: /status/phase
+        - jsonPath: /status/conditions/0/type
           operator: Equal
           value: Ready
+        - jsonPath: /status/conditions/0/status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
