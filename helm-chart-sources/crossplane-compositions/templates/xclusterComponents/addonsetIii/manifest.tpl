@@ -206,5 +206,6 @@ spec:
 ` }}
 {{- include "newaddons.istioBase" . }}
 {{- include "newaddons.istiod" . }}
+{{- include "newaddons.crossplaneCompositions" . }}
 
 {{- end }}
