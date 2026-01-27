@@ -207,5 +207,6 @@ spec:
 {{- include "newaddons.istioBase" . }}
 {{- include "newaddons.istiod" . }}
 {{- include "newaddons.crossplaneCompositions" . }}
+{{- include "newaddons.certControllerManager" . }}
 
 {{- end }}

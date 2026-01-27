@@ -1,10 +1,74 @@
 {{- define "newaddons.certControllerManager" -}}
   {{- printf `
-certControllerManager:
-  apiVersion: in-cloud.io/v1alpha1
-  kind: XAddonsCertControllerManager
-  namespace: beget-system
-  version: v1alpha1
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: {{ $clusterName }}-certcontrollermanager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCertControllerManager
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  chart: ""
+  path: "dist/chart"
+  repoURL: "https://github.com/PRO-Robotech/certificate-set"
+  version: "HEAD"
+  targetCluster: {{ $clusterName }}
+  targetNamespace: "beget-system"
+  variables:
+    cluster_name: {{ $clusterName }}
+  valuesSources: []
+  initDependencies: []
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: {{ $clusterName }}
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: certcontrollermanager
+status: {}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certcontrollermanager-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertControllerManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: certcontrollermanager
+spec:
+  values:
+    manager:
+      args:
+      - --cluster-wide
+      image:
+        repository: prorobotech/certificate-set
+        tag: feature-CLOUD-420-bd7d1a5e
+        pullPolicy: IfNotPresent
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    metrics:
+      enable: true
+      port: 8443
   ` }}
 {{- end -}}
 
