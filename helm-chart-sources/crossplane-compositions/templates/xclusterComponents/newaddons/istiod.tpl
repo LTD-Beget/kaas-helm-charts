@@ -78,7 +78,7 @@ spec:
             memory: 128Mi
       global:
         priorityClassName: system-cluster-critical
-        istioNamespace: beget-istio-test
+        istioNamespace: beget-istio
         proxy:
           tracer: zipkin
 
