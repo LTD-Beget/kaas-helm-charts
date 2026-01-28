@@ -12,13 +12,9 @@ vmAlertmanager:
     victoria-metrics-k8s-stack:
       fullnameOverride: "alertmanager"
       alertmanager:
-        useManagedConfig: false
         config:
           global:
             resolve_timeout: 5m
-            http_config:
-              follow_redirects: true
-              enable_http2: true
           route:
             receiver: signalilo
             group_by: ["alertname", "namespace", "severity"]
@@ -28,12 +24,12 @@ vmAlertmanager:
 
             routes:
               - matchers:
+                  - alertname="Watchdog"
+                receiver: blackhole
+
+              - matchers:
                   - severity=~"info|warning|critical"
                 receiver: signalilo
-              - receiver: blackhole
-                matchers:
-                  - alertname="Watchdog"
-                continue: false
 
           receivers:
             - name: signalilo
