@@ -20,6 +20,9 @@ istiod:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+  {{- if gt $controlPlaneReplicas 1 }}
+      pilot:
+        autoscaleMin: 2
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -28,6 +31,10 @@ istiod:
                   app.kubernetes.io/name: istiod
                   app.kubernetes.io/instance: istiod
               topologyKey: kubernetes.io/hostname
+  {{- else }}
+      pilot:
+        autoscaleMin: 1
+  {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

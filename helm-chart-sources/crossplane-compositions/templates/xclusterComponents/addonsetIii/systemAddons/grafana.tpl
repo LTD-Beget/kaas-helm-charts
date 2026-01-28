@@ -32,6 +32,9 @@ grafana:
             client_id: ${GRAFANA_OIDC_CLIENT_ID}
             client_secret: ${GRAFANA_OIDC_CLIENT_SECRET}
             scopes: "openid email profile groups"
+            role_attribute_path: |
+              contains(email, 'admin@beget.ru') && 'Admin' || 'Viewer'
+            role_attribute_strict: 'true'
             tls_skip_verify_insecure: "true"
             auth_url: {{ printf "https://%%s/auth" $systemIstioGwVip }}
             token_url: {{ printf "https://%%s/token" $systemIstioGwVip }}
