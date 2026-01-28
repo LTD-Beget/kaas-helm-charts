@@ -52,21 +52,21 @@ spec:
           template: |-
             {{- include "xclusterComponents.addonsetIii" . | nindent 12 }}
 
-    - step: xaddonset-status
-      functionRef:
-        name: function-patch-and-transform
-      input:
-        apiVersion: pt.fn.crossplane.io/v1beta1
-        kind: Resources
-        resources:
-        - name: xAddonSet
-          patches:
-            - toFieldPath: status.addonStatus
-              fromFieldPath: spec.addonStatus
-              type: ToCompositeFieldPath
-              policy:
-                fromFieldPath: Optional
-                toFieldPath:   MergeObjects
+    # - step: xaddonset-status
+    #   functionRef:
+    #     name: function-patch-and-transform
+    #   input:
+    #     apiVersion: pt.fn.crossplane.io/v1beta1
+    #     kind: Resources
+    #     resources:
+    #     - name: xAddonSet
+    #       patches:
+    #         - toFieldPath: status.addonStatus
+    #           fromFieldPath: spec.addonStatus
+    #           type: ToCompositeFieldPath
+    #           policy:
+    #             fromFieldPath: Optional
+    #             toFieldPath:   MergeObjects
 
 {{ if .Values.xclusterComponents.client.enabled }}
     - step: xaddonsetclient
