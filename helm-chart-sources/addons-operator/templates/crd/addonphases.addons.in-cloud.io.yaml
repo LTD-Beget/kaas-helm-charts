@@ -1,0 +1,318 @@
+{{- if .Values.crd.enable }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+    annotations:
+        controller-gen.kubebuilder.io/version: v0.19.0
+    name: addonphases.addons.in-cloud.io
+spec:
+    group: addons.in-cloud.io
+    names:
+        kind: AddonPhase
+        listKind: AddonPhaseList
+        plural: addonphases
+        singular: addonphase
+    scope: Cluster
+    versions:
+        - additionalPrinterColumns:
+            - jsonPath: .status.conditions[?(@.type=="Ready")].status
+              name: Ready
+              type: string
+            - jsonPath: .metadata.creationTimestamp
+              name: Age
+              type: date
+          name: v1alpha1
+          schema:
+            openAPIV3Schema:
+                description: |-
+                    AddonPhase is a rule engine for conditional value selector activation.
+                    It evaluates criteria against cluster state and injects matching selectors
+                    into the associated Addon's status.phaseValuesSelector.
+
+                    Relationship: AddonPhase has a 1:1 relationship with Addon by name.
+                    The AddonPhase named "foo" manages selectors for the Addon named "foo".
+
+                    Workflow:
+                     1. AddonPhase evaluates each rule's criteria against cluster resources
+                     2. For matched rules, the selector is added to Addon.status.phaseValuesSelector
+                     3. Addon controller merges phaseValuesSelector with spec.valuesSelectors
+                     4. Final values are aggregated and applied to the Argo CD Application
+                properties:
+                    apiVersion:
+                        description: |-
+                            APIVersion defines the versioned schema of this representation of an object.
+                            Servers should convert recognized schemas to the latest internal value, and
+                            may reject unrecognized values.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                        type: string
+                    kind:
+                        description: |-
+                            Kind is a string value representing the REST resource this object represents.
+                            Servers may infer this from the endpoint the client submits requests to.
+                            Cannot be updated.
+                            In CamelCase.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                        type: string
+                    metadata:
+                        type: object
+                    spec:
+                        description: Spec defines the rules for selector activation.
+                        properties:
+                            rules:
+                                description: |-
+                                    Rules defines conditions for activating additional value selectors.
+                                    Each rule independently evaluates criteria and injects its selector
+                                    into Addon.status.phaseValuesSelector when all criteria match.
+                                items:
+                                    description: |-
+                                        PhaseRule defines a single rule for conditional selector activation.
+                                        When all criteria match, the selector is added to the target Addon's status.
+                                    properties:
+                                        criteria:
+                                            description: |-
+                                                Criteria defines conditions that must ALL be satisfied (AND logic).
+                                                If empty, the rule always matches (useful for unconditional activation).
+                                            items:
+                                                description: |-
+                                                    Criterion defines a condition to evaluate against a resource.
+                                                    Used in both AddonPhase rules and Addon dependencies.
+                                                properties:
+                                                    jsonPath:
+                                                        description: |-
+                                                            JSONPath specifies the path to the value in the resource.
+                                                            Uses RFC 6901 JSON Pointer syntax (e.g., "/status/phase").
+                                                        type: string
+                                                    operator:
+                                                        description: Operator specifies the comparison operation.
+                                                        enum:
+                                                            - Equal
+                                                            - NotEqual
+                                                            - In
+                                                            - NotIn
+                                                            - Exists
+                                                            - NotExists
+                                                            - GreaterThan
+                                                            - GreaterOrEqual
+                                                            - LessThan
+                                                            - LessOrEqual
+                                                            - Matches
+                                                        type: string
+                                                    source:
+                                                        description: |-
+                                                            Source specifies which resource to evaluate.
+                                                            If omitted, evaluates against the dependency Addon.
+                                                        properties:
+                                                            apiVersion:
+                                                                description: APIVersion of the resource (e.g., "addons.in-cloud.io/v1alpha1").
+                                                                type: string
+                                                            kind:
+                                                                description: Kind of the resource (e.g., "Addon", "Secret").
+                                                                type: string
+                                                            labelSelector:
+                                                                description: |-
+                                                                    LabelSelector for selecting multiple resources.
+                                                                    When set, all matching resources must satisfy the criterion.
+                                                                properties:
+                                                                    matchExpressions:
+                                                                        description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                                                                        items:
+                                                                            description: |-
+                                                                                A label selector requirement is a selector that contains values, a key, and an operator that
+                                                                                relates the key and values.
+                                                                            properties:
+                                                                                key:
+                                                                                    description: key is the label key that the selector applies to.
+                                                                                    type: string
+                                                                                operator:
+                                                                                    description: |-
+                                                                                        operator represents a key's relationship to a set of values.
+                                                                                        Valid operators are In, NotIn, Exists and DoesNotExist.
+                                                                                    type: string
+                                                                                values:
+                                                                                    description: |-
+                                                                                        values is an array of string values. If the operator is In or NotIn,
+                                                                                        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                                                                        the values array must be empty. This array is replaced during a strategic
+                                                                                        merge patch.
+                                                                                    items:
+                                                                                        type: string
+                                                                                    type: array
+                                                                                    x-kubernetes-list-type: atomic
+                                                                            required:
+                                                                                - key
+                                                                                - operator
+                                                                            type: object
+                                                                        type: array
+                                                                        x-kubernetes-list-type: atomic
+                                                                    matchLabels:
+                                                                        additionalProperties:
+                                                                            type: string
+                                                                        description: |-
+                                                                            matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                                                                            map is equivalent to an element of matchExpressions, whose key field is "key", the
+                                                                            operator is "In", and the values array contains only "value". The requirements are ANDed.
+                                                                        type: object
+                                                                type: object
+                                                                x-kubernetes-map-type: atomic
+                                                            name:
+                                                                description: Name of the resource.
+                                                                type: string
+                                                            namespace:
+                                                                description: |-
+                                                                    Namespace of the resource.
+                                                                    If empty, uses cluster-scoped lookup or same namespace as evaluating resource.
+                                                                type: string
+                                                        required:
+                                                            - apiVersion
+                                                            - kind
+                                                            - name
+                                                        type: object
+                                                    value:
+                                                        description: |-
+                                                            Value to compare against. Required for comparison operators.
+                                                            Use JSON encoding for non-string values.
+                                                        x-kubernetes-preserve-unknown-fields: true
+                                                required:
+                                                    - jsonPath
+                                                    - operator
+                                                type: object
+                                            type: array
+                                        name:
+                                            description: Name identifies this rule for debugging and status reporting.
+                                            minLength: 1
+                                            type: string
+                                        selector:
+                                            description: |-
+                                                Selector defines the ValuesSelector to inject when criteria match.
+                                                This selector is added to Addon.status.phaseValuesSelector.
+                                            properties:
+                                                matchLabels:
+                                                    additionalProperties:
+                                                        type: string
+                                                    description: |-
+                                                        MatchLabels selects AddonValue resources with matching labels.
+                                                        All specified labels must match for selection.
+                                                    type: object
+                                                name:
+                                                    description: Name identifies this selector for debugging and traceability.
+                                                    type: string
+                                                priority:
+                                                    default: 0
+                                                    description: |-
+                                                        Priority determines merge order. Lower values are applied first,
+                                                        higher values override. Typical values: 0 (default), 50 (custom), 99 (immutable).
+                                                    maximum: 100
+                                                    minimum: 0
+                                                    type: integer
+                                            required:
+                                                - matchLabels
+                                                - name
+                                                - priority
+                                            type: object
+                                    required:
+                                        - name
+                                        - selector
+                                    type: object
+                                minItems: 1
+                                type: array
+                        required:
+                            - rules
+                        type: object
+                    status:
+                        description: Status defines the observed state.
+                        properties:
+                            conditions:
+                                description: Conditions represent the current state of the AddonPhase.
+                                items:
+                                    description: Condition contains details for one aspect of the current state of this API Resource.
+                                    properties:
+                                        lastTransitionTime:
+                                            description: |-
+                                                lastTransitionTime is the last time the condition transitioned from one status to another.
+                                                This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                                            format: date-time
+                                            type: string
+                                        message:
+                                            description: |-
+                                                message is a human readable message indicating details about the transition.
+                                                This may be an empty string.
+                                            maxLength: 32768
+                                            type: string
+                                        observedGeneration:
+                                            description: |-
+                                                observedGeneration represents the .metadata.generation that the condition was set based upon.
+                                                For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                                                with respect to the current state of the instance.
+                                            format: int64
+                                            minimum: 0
+                                            type: integer
+                                        reason:
+                                            description: |-
+                                                reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                                                Producers of specific condition types may define expected values and meanings for this field,
+                                                and whether the values are considered a guaranteed API.
+                                                The value should be a CamelCase string.
+                                                This field may not be empty.
+                                            maxLength: 1024
+                                            minLength: 1
+                                            pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                                            type: string
+                                        status:
+                                            description: status of the condition, one of True, False, Unknown.
+                                            enum:
+                                                - "True"
+                                                - "False"
+                                                - Unknown
+                                            type: string
+                                        type:
+                                            description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                                            maxLength: 316
+                                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                                            type: string
+                                    required:
+                                        - lastTransitionTime
+                                        - message
+                                        - reason
+                                        - status
+                                        - type
+                                    type: object
+                                type: array
+                                x-kubernetes-list-map-keys:
+                                    - type
+                                x-kubernetes-list-type: map
+                            observedGeneration:
+                                description: ObservedGeneration is the last spec.generation processed by the controller.
+                                format: int64
+                                type: integer
+                            ruleStatuses:
+                                description: RuleStatuses reports the evaluation state of each rule.
+                                items:
+                                    description: RuleStatus reports the evaluation state of a single rule.
+                                    properties:
+                                        lastEvaluated:
+                                            description: LastEvaluated is the timestamp of the last evaluation.
+                                            format: date-time
+                                            type: string
+                                        matched:
+                                            description: Matched indicates whether all criteria are currently satisfied.
+                                            type: boolean
+                                        message:
+                                            description: Message provides additional context about the evaluation.
+                                            type: string
+                                        name:
+                                            description: Name matches the rule name from spec.rules[].name.
+                                            type: string
+                                    required:
+                                        - matched
+                                        - name
+                                    type: object
+                                type: array
+                        type: object
+                required:
+                    - spec
+                type: object
+          served: true
+          storage: true
+          subresources:
+            status: {}
+{{- end }}

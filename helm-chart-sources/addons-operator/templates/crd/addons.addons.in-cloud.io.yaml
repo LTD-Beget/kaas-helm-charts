@@ -1,0 +1,570 @@
+{{- if .Values.crd.enable }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+    annotations:
+        controller-gen.kubebuilder.io/version: v0.19.0
+    name: addons.addons.in-cloud.io
+spec:
+    group: addons.in-cloud.io
+    names:
+        kind: Addon
+        listKind: AddonList
+        plural: addons
+        singular: addon
+    scope: Cluster
+    versions:
+        - additionalPrinterColumns:
+            - jsonPath: .spec.chart
+              name: Chart
+              type: string
+            - jsonPath: .spec.version
+              name: Version
+              type: string
+            - jsonPath: .status.conditions[?(@.type=="Ready")].status
+              name: Ready
+              type: string
+            - jsonPath: .metadata.creationTimestamp
+              name: Age
+              type: date
+          name: v1alpha1
+          schema:
+            openAPIV3Schema:
+                description: |-
+                    Addon is the primary resource for managing Helm-based deployments.
+                    It aggregates values from AddonValue resources, generates an Argo CD Application,
+                    and tracks deployment status. AddonPhase can dynamically inject additional
+                    value selectors based on cluster conditions.
+                properties:
+                    apiVersion:
+                        description: |-
+                            APIVersion defines the versioned schema of this representation of an object.
+                            Servers should convert recognized schemas to the latest internal value, and
+                            may reject unrecognized values.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                        type: string
+                    kind:
+                        description: |-
+                            Kind is a string value representing the REST resource this object represents.
+                            Servers may infer this from the endpoint the client submits requests to.
+                            Cannot be updated.
+                            In CamelCase.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                        type: string
+                    metadata:
+                        type: object
+                    spec:
+                        description: Spec defines the desired state of the Addon.
+                        properties:
+                            backend:
+                                description: Backend configures the deployment backend (Argo CD).
+                                properties:
+                                    ignoreDifferences:
+                                        description: |-
+                                            IgnoreDifferences defines rules for ignoring differences during sync.
+                                            This is useful for fields that are managed by external controllers or mutating webhooks.
+                                        items:
+                                            description: ResourceIgnoreDifferences defines rules for ignoring differences for specific resources.
+                                            properties:
+                                                group:
+                                                    description: |-
+                                                        Group is the API group of the resource (e.g., "apps", "admissionregistration.k8s.io").
+                                                        Empty string indicates the core API group.
+                                                    type: string
+                                                jqPathExpressions:
+                                                    description: JQPathExpressions is a list of JQ path expressions to fields that should be ignored.
+                                                    items:
+                                                        type: string
+                                                    type: array
+                                                jsonPointers:
+                                                    description: |-
+                                                        JSONPointers is a list of JSON pointers to fields that should be ignored.
+                                                        Uses RFC 6901 syntax (e.g., "/spec/replicas", "/metadata/annotations").
+                                                    items:
+                                                        type: string
+                                                    type: array
+                                                kind:
+                                                    description: Kind is the resource kind (e.g., "Deployment", "ValidatingWebhookConfiguration").
+                                                    type: string
+                                                managedFieldsManagers:
+                                                    description: ManagedFieldsManagers is a list of managers that should be ignored when comparing fields.
+                                                    items:
+                                                        type: string
+                                                    type: array
+                                                name:
+                                                    description: Name is the resource name. If empty, applies to all resources of this kind.
+                                                    type: string
+                                                namespace:
+                                                    description: Namespace is the resource namespace. If empty, applies to all namespaces.
+                                                    type: string
+                                            required:
+                                                - kind
+                                            type: object
+                                        type: array
+                                    namespace:
+                                        description: Namespace where the backend operates (e.g., "argocd").
+                                        type: string
+                                    project:
+                                        default: default
+                                        description: Project specifies the Argo CD project name.
+                                        type: string
+                                    syncPolicy:
+                                        description: SyncPolicy configures automatic sync behavior.
+                                        properties:
+                                            automated:
+                                                description: Automated enables automatic sync when changes are detected.
+                                                properties:
+                                                    allowEmpty:
+                                                        description: AllowEmpty allows syncing when there are no resources.
+                                                        type: boolean
+                                                    prune:
+                                                        description: Prune enables automatic pruning of resources no longer in Git.
+                                                        type: boolean
+                                                    selfHeal:
+                                                        description: SelfHeal enables automatic healing of out-of-sync resources.
+                                                        type: boolean
+                                                type: object
+                                            managedNamespaceMetadata:
+                                                description: |-
+                                                    ManagedNamespaceMetadata controls metadata for the target namespace.
+                                                    Labels and annotations specified here will be applied to the namespace
+                                                    when CreateNamespace=true sync option is used.
+                                                properties:
+                                                    annotations:
+                                                        additionalProperties:
+                                                            type: string
+                                                        description: Annotations to apply to the target namespace.
+                                                        type: object
+                                                    labels:
+                                                        additionalProperties:
+                                                            type: string
+                                                        description: Labels to apply to the target namespace.
+                                                        type: object
+                                                type: object
+                                            syncOptions:
+                                                description: SyncOptions provides additional sync options.
+                                                items:
+                                                    type: string
+                                                type: array
+                                        type: object
+                                    type:
+                                        default: argocd
+                                        description: Type specifies the backend type. Currently only "argocd" is supported.
+                                        enum:
+                                            - argocd
+                                        type: string
+                                required:
+                                    - namespace
+                                    - type
+                                type: object
+                            chart:
+                                description: |-
+                                    Chart specifies the Helm chart name for Helm repository sources.
+                                    Either Chart or Path must be specified, but not both.
+                                maxLength: 253
+                                type: string
+                            initDependencies:
+                                description: |-
+                                    InitDependencies specifies dependencies that must be ready
+                                    before the Argo CD Application is created.
+                                    Useful for ordered deployment (e.g., cert-manager before its consumers).
+                                items:
+                                    description: |-
+                                        Dependency specifies a blocking dependency that must be satisfied
+                                        before the Addon can proceed with deployment.
+                                    properties:
+                                        criteria:
+                                            description: |-
+                                                Criteria specifies conditions that must be met.
+                                                All criteria must match for the dependency to be satisfied.
+                                            items:
+                                                description: |-
+                                                    Criterion defines a condition to evaluate against a resource.
+                                                    Used in both AddonPhase rules and Addon dependencies.
+                                                properties:
+                                                    jsonPath:
+                                                        description: |-
+                                                            JSONPath specifies the path to the value in the resource.
+                                                            Uses RFC 6901 JSON Pointer syntax (e.g., "/status/phase").
+                                                        type: string
+                                                    operator:
+                                                        description: Operator specifies the comparison operation.
+                                                        enum:
+                                                            - Equal
+                                                            - NotEqual
+                                                            - In
+                                                            - NotIn
+                                                            - Exists
+                                                            - NotExists
+                                                            - GreaterThan
+                                                            - GreaterOrEqual
+                                                            - LessThan
+                                                            - LessOrEqual
+                                                            - Matches
+                                                        type: string
+                                                    source:
+                                                        description: |-
+                                                            Source specifies which resource to evaluate.
+                                                            If omitted, evaluates against the dependency Addon.
+                                                        properties:
+                                                            apiVersion:
+                                                                description: APIVersion of the resource (e.g., "addons.in-cloud.io/v1alpha1").
+                                                                type: string
+                                                            kind:
+                                                                description: Kind of the resource (e.g., "Addon", "Secret").
+                                                                type: string
+                                                            labelSelector:
+                                                                description: |-
+                                                                    LabelSelector for selecting multiple resources.
+                                                                    When set, all matching resources must satisfy the criterion.
+                                                                properties:
+                                                                    matchExpressions:
+                                                                        description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
+                                                                        items:
+                                                                            description: |-
+                                                                                A label selector requirement is a selector that contains values, a key, and an operator that
+                                                                                relates the key and values.
+                                                                            properties:
+                                                                                key:
+                                                                                    description: key is the label key that the selector applies to.
+                                                                                    type: string
+                                                                                operator:
+                                                                                    description: |-
+                                                                                        operator represents a key's relationship to a set of values.
+                                                                                        Valid operators are In, NotIn, Exists and DoesNotExist.
+                                                                                    type: string
+                                                                                values:
+                                                                                    description: |-
+                                                                                        values is an array of string values. If the operator is In or NotIn,
+                                                                                        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                                                                        the values array must be empty. This array is replaced during a strategic
+                                                                                        merge patch.
+                                                                                    items:
+                                                                                        type: string
+                                                                                    type: array
+                                                                                    x-kubernetes-list-type: atomic
+                                                                            required:
+                                                                                - key
+                                                                                - operator
+                                                                            type: object
+                                                                        type: array
+                                                                        x-kubernetes-list-type: atomic
+                                                                    matchLabels:
+                                                                        additionalProperties:
+                                                                            type: string
+                                                                        description: |-
+                                                                            matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                                                                            map is equivalent to an element of matchExpressions, whose key field is "key", the
+                                                                            operator is "In", and the values array contains only "value". The requirements are ANDed.
+                                                                        type: object
+                                                                type: object
+                                                                x-kubernetes-map-type: atomic
+                                                            name:
+                                                                description: Name of the resource.
+                                                                type: string
+                                                            namespace:
+                                                                description: |-
+                                                                    Namespace of the resource.
+                                                                    If empty, uses cluster-scoped lookup or same namespace as evaluating resource.
+                                                                type: string
+                                                        required:
+                                                            - apiVersion
+                                                            - kind
+                                                            - name
+                                                        type: object
+                                                    value:
+                                                        description: |-
+                                                            Value to compare against. Required for comparison operators.
+                                                            Use JSON encoding for non-string values.
+                                                        x-kubernetes-preserve-unknown-fields: true
+                                                required:
+                                                    - jsonPath
+                                                    - operator
+                                                type: object
+                                            minItems: 1
+                                            type: array
+                                        name:
+                                            description: Name of the Addon to depend on.
+                                            type: string
+                                    required:
+                                        - criteria
+                                        - name
+                                    type: object
+                                type: array
+                            path:
+                                description: |-
+                                    Path specifies the directory path within a Git repository containing the Helm chart.
+                                    Used when deploying from Git instead of a Helm repository.
+                                    Either Chart or Path must be specified, but not both.
+                                maxLength: 253
+                                type: string
+                            repoURL:
+                                description: RepoURL specifies the Helm repository URL.
+                                maxLength: 2048
+                                pattern: ^https?://.*
+                                type: string
+                            targetCluster:
+                                description: |-
+                                    TargetCluster specifies where to deploy the chart.
+                                    Use "in-cluster" for the local cluster or a cluster URL for remote.
+                                maxLength: 253
+                                minLength: 1
+                                type: string
+                            targetNamespace:
+                                description: TargetNamespace specifies the namespace for chart resources.
+                                maxLength: 63
+                                minLength: 1
+                                type: string
+                            valuesSelectors:
+                                description: |-
+                                    ValuesSelectors defines static selectors for AddonValue resources.
+                                    Selected values are merged according to priority (lower first, higher overrides).
+                                items:
+                                    description: |-
+                                        ValuesSelector defines how to select AddonValue resources.
+                                        Values are selected by matching labels and merged according to priority.
+                                        Lower priority values are applied first, higher priority values override.
+                                    properties:
+                                        matchLabels:
+                                            additionalProperties:
+                                                type: string
+                                            description: |-
+                                                MatchLabels selects AddonValue resources with matching labels.
+                                                All specified labels must match for selection.
+                                            type: object
+                                        name:
+                                            description: Name identifies this selector for debugging and traceability.
+                                            type: string
+                                        priority:
+                                            default: 0
+                                            description: |-
+                                                Priority determines merge order. Lower values are applied first,
+                                                higher values override. Typical values: 0 (default), 50 (custom), 99 (immutable).
+                                            maximum: 100
+                                            minimum: 0
+                                            type: integer
+                                    required:
+                                        - matchLabels
+                                        - name
+                                        - priority
+                                    type: object
+                                type: array
+                            valuesSources:
+                                description: |-
+                                    ValuesSources defines external sources for dynamic value extraction.
+                                    Values extracted from sources can be used in AddonValue templates.
+                                items:
+                                    description: |-
+                                        ValueSource defines an external source for extracting values.
+                                        Values can be extracted from Kubernetes resources like Secrets or ConfigMaps.
+                                    properties:
+                                        extract:
+                                            description: Extract defines which values to extract and how.
+                                            items:
+                                                description: ExtractRule defines how to extract a value from a source resource.
+                                                properties:
+                                                    as:
+                                                        description: |-
+                                                            As specifies the target path in the merged values.
+                                                            Uses dot notation (e.g., "tls.ca", "config.endpoint").
+                                                        type: string
+                                                    decode:
+                                                        description: |-
+                                                            Decode specifies optional decoding to apply.
+                                                            Supported: "base64" (for Secret data).
+                                                        enum:
+                                                            - base64
+                                                            - ""
+                                                        type: string
+                                                    jsonPath:
+                                                        description: |-
+                                                            JSONPath specifies the path to extract from the resource.
+                                                            Uses kubectl JSONPath syntax (e.g., ".data.key", ".data[\"ca.crt\"]").
+                                                        type: string
+                                                required:
+                                                    - as
+                                                    - jsonPath
+                                                type: object
+                                            minItems: 1
+                                            type: array
+                                        name:
+                                            description: Name identifies this source for debugging.
+                                            type: string
+                                        sourceRef:
+                                            description: SourceRef references the Kubernetes resource to extract from.
+                                            properties:
+                                                apiVersion:
+                                                    description: APIVersion of the referenced resource (e.g., "v1").
+                                                    type: string
+                                                kind:
+                                                    description: Kind of the referenced resource (e.g., "Secret", "ConfigMap").
+                                                    type: string
+                                                name:
+                                                    description: Name of the referenced resource.
+                                                    type: string
+                                                namespace:
+                                                    description: |-
+                                                        Namespace of the referenced resource.
+                                                        Required for namespaced resources, empty for cluster-scoped.
+                                                    type: string
+                                            required:
+                                                - apiVersion
+                                                - kind
+                                                - name
+                                            type: object
+                                    required:
+                                        - extract
+                                        - name
+                                        - sourceRef
+                                    type: object
+                                type: array
+                            variables:
+                                additionalProperties:
+                                    type: string
+                                description: |-
+                                    Variables provides values for Go template rendering in AddonValue.
+                                    Accessible as .Variables.key in value templates.
+                                type: object
+                            version:
+                                description: Version specifies the chart version to deploy.
+                                maxLength: 64
+                                minLength: 1
+                                type: string
+                        required:
+                            - backend
+                            - repoURL
+                            - targetCluster
+                            - targetNamespace
+                            - version
+                        type: object
+                    status:
+                        description: Status defines the observed state of the Addon.
+                        properties:
+                            applicationRef:
+                                description: ApplicationRef references the created Argo CD Application.
+                                properties:
+                                    name:
+                                        description: Name of the Application resource.
+                                        type: string
+                                    namespace:
+                                        description: Namespace where the Application is created.
+                                        type: string
+                                required:
+                                    - name
+                                    - namespace
+                                type: object
+                            conditions:
+                                description: |-
+                                    Conditions represent the current state of the Addon.
+                                    Primary conditions: Ready, Progressing, Degraded.
+                                    Operational conditions: DependenciesMet, ValuesResolved, ApplicationCreated, Synced, Healthy.
+                                items:
+                                    description: Condition contains details for one aspect of the current state of this API Resource.
+                                    properties:
+                                        lastTransitionTime:
+                                            description: |-
+                                                lastTransitionTime is the last time the condition transitioned from one status to another.
+                                                This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                                            format: date-time
+                                            type: string
+                                        message:
+                                            description: |-
+                                                message is a human readable message indicating details about the transition.
+                                                This may be an empty string.
+                                            maxLength: 32768
+                                            type: string
+                                        observedGeneration:
+                                            description: |-
+                                                observedGeneration represents the .metadata.generation that the condition was set based upon.
+                                                For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                                                with respect to the current state of the instance.
+                                            format: int64
+                                            minimum: 0
+                                            type: integer
+                                        reason:
+                                            description: |-
+                                                reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                                                Producers of specific condition types may define expected values and meanings for this field,
+                                                and whether the values are considered a guaranteed API.
+                                                The value should be a CamelCase string.
+                                                This field may not be empty.
+                                            maxLength: 1024
+                                            minLength: 1
+                                            pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                                            type: string
+                                        status:
+                                            description: status of the condition, one of True, False, Unknown.
+                                            enum:
+                                                - "True"
+                                                - "False"
+                                                - Unknown
+                                            type: string
+                                        type:
+                                            description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                                            maxLength: 316
+                                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                                            type: string
+                                    required:
+                                        - lastTransitionTime
+                                        - message
+                                        - reason
+                                        - status
+                                        - type
+                                    type: object
+                                type: array
+                                x-kubernetes-list-map-keys:
+                                    - type
+                                x-kubernetes-list-type: map
+                            observedGeneration:
+                                description: ObservedGeneration is the last spec.generation processed by the controller.
+                                format: int64
+                                type: integer
+                            phaseValuesSelector:
+                                description: |-
+                                    PhaseValuesSelector contains dynamic selectors injected by AddonPhase.
+                                    These are merged with spec.valuesSelectors according to priority.
+                                    Managed by AddonPhase controller, not user-editable.
+                                items:
+                                    description: |-
+                                        ValuesSelector defines how to select AddonValue resources.
+                                        Values are selected by matching labels and merged according to priority.
+                                        Lower priority values are applied first, higher priority values override.
+                                    properties:
+                                        matchLabels:
+                                            additionalProperties:
+                                                type: string
+                                            description: |-
+                                                MatchLabels selects AddonValue resources with matching labels.
+                                                All specified labels must match for selection.
+                                            type: object
+                                        name:
+                                            description: Name identifies this selector for debugging and traceability.
+                                            type: string
+                                        priority:
+                                            default: 0
+                                            description: |-
+                                                Priority determines merge order. Lower values are applied first,
+                                                higher values override. Typical values: 0 (default), 50 (custom), 99 (immutable).
+                                            maximum: 100
+                                            minimum: 0
+                                            type: integer
+                                    required:
+                                        - matchLabels
+                                        - name
+                                        - priority
+                                    type: object
+                                type: array
+                            valuesHash:
+                                description: |-
+                                    ValuesHash is the hash of the final merged values.
+                                    Used to detect value changes for reconciliation.
+                                type: string
+                        type: object
+                required:
+                    - spec
+                type: object
+          served: true
+          storage: true
+          subresources:
+            status: {}
+{{- end }}
