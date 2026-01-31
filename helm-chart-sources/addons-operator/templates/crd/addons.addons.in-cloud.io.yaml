@@ -163,6 +163,11 @@ spec:
                                     Either Chart or Path must be specified, but not both.
                                 maxLength: 253
                                 type: string
+                            finalizer:
+                                description: |-
+                                    Finalizer controls whether Argo CD resource finalizer is set on the Application.
+                                    When true, deleting the Application will also delete all resources created by it.
+                                type: boolean
                             initDependencies:
                                 description: |-
                                     InitDependencies specifies dependencies that must be ready
@@ -260,7 +265,9 @@ spec:
                                                                 type: object
                                                                 x-kubernetes-map-type: atomic
                                                             name:
-                                                                description: Name of the resource.
+                                                                description: |-
+                                                                    Name of the resource.
+                                                                    Mutually exclusive with LabelSelector: exactly one must be specified.
                                                                 type: string
                                                             namespace:
                                                                 description: |-
@@ -270,7 +277,6 @@ spec:
                                                         required:
                                                             - apiVersion
                                                             - kind
-                                                            - name
                                                         type: object
                                                     value:
                                                         description: |-
@@ -296,6 +302,20 @@ spec:
                                     Path specifies the directory path within a Git repository containing the Helm chart.
                                     Used when deploying from Git instead of a Helm repository.
                                     Either Chart or Path must be specified, but not both.
+                                maxLength: 253
+                                type: string
+                            pluginName:
+                                description: |-
+                                    PluginName specifies an ArgoCD Config Management Plugin to use instead of
+                                    the built-in Helm source. When set, values are passed via HELM_VALUES
+                                    environment variable (base64-encoded) instead of source.helm.values.
+                                maxLength: 253
+                                type: string
+                            releaseName:
+                                description: |-
+                                    ReleaseName overrides the Helm release name. In Helm mode, it maps to
+                                    source.helm.releaseName. In Plugin mode, it is passed as a RELEASE_NAME
+                                    environment variable.
                                 maxLength: 253
                                 type: string
                             repoURL:
@@ -374,7 +394,6 @@ spec:
                                                             Supported: "base64" (for Secret data).
                                                         enum:
                                                             - base64
-                                                            - ""
                                                         type: string
                                                     jsonPath:
                                                         description: |-
