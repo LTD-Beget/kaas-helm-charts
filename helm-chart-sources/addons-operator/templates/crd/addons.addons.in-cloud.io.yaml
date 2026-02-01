@@ -190,8 +190,16 @@ spec:
                                                     jsonPath:
                                                         description: |-
                                                             JSONPath specifies the path to the value in the resource.
-                                                            Uses RFC 6901 JSON Pointer syntax (e.g., "/status/phase").
+                                                            Uses RFC 9535 JSONPath syntax (e.g., "$.status.phase",
+                                                            "$.status.conditions[?@.type=='Ready'].status").
+                                                            For keys with dots, use bracket notation: "$.metadata.labels['app.kubernetes.io/name']".
                                                         type: string
+                                                    keep:
+                                                        description: |-
+                                                            Keep controls whether this criterion participates in rule latching.
+                                                            When true (default), once the rule matches, it stays matched permanently.
+                                                            When false, the rule is re-evaluated every reconcile cycle.
+                                                        type: boolean
                                                     operator:
                                                         description: Operator specifies the comparison operation.
                                                         enum:

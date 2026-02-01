@@ -53,11 +53,11 @@ spec:
                         properties:
                             values:
                                 description: |-
-                                    Values contains the Helm values fragment as arbitrary YAML/JSON.
+                                    Values contains the Helm values fragment as raw YAML string.
+                                    Use block scalar syntax (values: |) to write multi-line YAML.
                                     Values can include Go template expressions (e.g. .Variables.key)
-                                    which are rendered during value aggregation.
-                                type: object
-                                x-kubernetes-preserve-unknown-fields: true
+                                    which are rendered before YAML parsing during value aggregation.
+                                type: string
                         required:
                             - values
                         type: object
