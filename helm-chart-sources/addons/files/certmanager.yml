@@ -202,11 +202,6 @@ spec:
           isCA: true
           commonName: root-ca
           secretName: selfsigned-infra-cluster-ca
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

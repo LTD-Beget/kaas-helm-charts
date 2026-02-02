@@ -1,0 +1,99 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonHelmInsVmagentAdditionalRbac
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  chart: ""
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-vmagent"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: []
+  initDependencies: []
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: |
+    resources:
+      tokenreviewClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: kube-rbac-proxy-tokenreview
+        rules:
+          - apiGroups:
+              - authentication.k8s.io
+            resources:
+              - tokenreviews
+            verbs:
+              - create
+          - apiGroups:
+              - authorization.k8s.io
+            resources:
+              - subjectaccessreviews
+            verbs:
+              - create
+
+      metricsClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: non-resource-metrics-url
+        rules:
+          - nonResourceURLs:
+              - "/metrics"
+              - "/grafana/metrics"
+            verbs:
+              - get
+
+      metricsClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: metrics
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: non-resource-metrics-url
+        subjects:
+          - kind: ServiceAccount
+            name: vmagent-vmagent
+            namespace: beget-vmagent
+
