@@ -55,6 +55,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-agent
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-agent
 
 ---
 
