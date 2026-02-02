@@ -8,5 +8,17 @@ clickhouseVmstorage:
   dependsOn:
     - vmOperator
     - grafanaOperator
+  values:
+    clickhouse:
+      resources:
+        limits:
+          cpu: 4
+          memory: 8Gi
+
+      keeper:
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
   ` }}
 {{- end -}}
