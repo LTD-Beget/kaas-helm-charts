@@ -93,7 +93,7 @@ spec:
       target:
         namespaceSelector:
           matchLabels:
-            in-cloud.io/clusterName: {{ .Values.cluster.name }}
+            in-cloud.io/clusterName: infra
     monitoring:
       secureService:
         enabled: true

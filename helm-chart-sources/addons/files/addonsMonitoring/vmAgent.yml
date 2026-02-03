@@ -46,7 +46,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
@@ -55,6 +55,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-agent
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: vm-agent
     - name: immutable
       priority: 99
       matchLabels:
@@ -62,7 +67,6 @@ spec:
         addons.in-cloud.io/addon: vm-agent
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -76,22 +80,10 @@ metadata:
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: "vmagent"
       vmagent:
         ingress:
           enabled: false
         spec:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          podMetadata:
-            labels:
-              app: vmagent
-              incloud-metrics: "infra"
           resources:
             requests:
               cpu: "100m"
@@ -108,8 +100,8 @@ spec:
             - name: GOMAXPROCS
               value: '1'
           extraArgs:
-            remoteWrite.tlsInsecureSkipVerify: "false"
-            remoteWrite.label: remotewrite_cluster={{ .Values.customer.name }}-{{ .Values.cluster.name }} #namespace-cluster_name
+            remoteWrite.tlsInsecureSkipVerify: "true"
+            remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
             promscrape.streamParse: "true"
             promscrape.maxScrapeSize: "33554432"
             remoteWrite.maxDiskUsagePerURL: "67108864"
@@ -126,52 +118,27 @@ spec:
             queues: 24
           statefulMode: false
           serviceScrapeSelector: {}
-          serviceScrapeNamespaceSelector:
-            matchExpressions:
-              - operator: In
-                key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+          serviceScrapeNamespaceSelector: {}
           podScrapeSelector: {}
-          podScrapeNamespaceSelector:
-            matchExpressions:
-              - operator: In
-                key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
-          nodeScrapeSelector:
-            matchExpressions:
-              - operator: In
-                key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+          podScrapeNamespaceSelector: {}
+          nodeScrapeSelector: {}
           nodeScrapeNamespaceSelector: {}
           staticScrapeSelector: {}
-          staticScrapeNamespaceSelector:
-            matchExpressions:
-              - operator: In
-                key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+          staticScrapeNamespaceSelector: {}
           podMetadata: {}
           scrapeInterval: 30s
           minScrapeInterval: 15s
           maxScrapeInterval: 60s
           remoteWrite:
-            - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
+            - url: https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus
               tlsConfig:
-                caFile: /tls/cabundle/ca.crt
-          volumeMounts:
-            - name: trusted-ca-certs
-              mountPath: /tls/cabundle
-              readOnly: true
-            - name: trusted-ca-certs
-              mountPath: /etc/ssl/certs
-              readOnly: true
-          volumes:
-            - name: trusted-ca-certs
-              configMap:
-                name: ca
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
           externalLabels:
-            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
-            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
-            cluster_type: "infra"
+            cluster_full_name: "cluster" #namespace-cluster_name
+            remotewrite_cluster: cluster #namespace-cluster_name
           affinity:
             podAntiAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
@@ -188,13 +155,8 @@ spec:
                             - vmagent
                     topologyKey: failure-domain.beta.kubernetes.io/region
                   weight: 100
-          probeNamespaceSelector:
-            matchExpressions:
-              - operator: In
-                key: "incloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+          probeNamespaceSelector: {}
           priorityClassName: system-cluster-critical
-
       kubeApiServer:
         enabled: true
         vmScrape:
@@ -224,7 +186,7 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-controller-manager
+                  serverName: "localhost"
       kubeEtcd:
         enabled: true
         service:
@@ -252,10 +214,108 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-scheduler
             jobLabel: "jobLabel"
       kubelet:
         enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vmagent"
+      vmagent:
+        spec:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          podMetadata:
+            labels:
+              app: vmagent
+              incloud-metrics: "infra"
+          extraArgs:
+            remoteWrite.tlsInsecureSkipVerify: "false"
+            remoteWrite.label: remotewrite_cluster={{ .Values.customer.name }}-{{ .Values.cluster.name }} #namespace-cluster_name
+          serviceScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          podScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          nodeScrapeSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          staticScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          probeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "incloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          remoteWrite:
+            - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /tls/cabundle/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /tls/cabundle
+              readOnly: true
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+          externalLabels:
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "infra"
+      kubeControllerManager:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: {{ .Values.cluster.name }}-controller-manager
+      kubeScheduler:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: {{ .Values.cluster.name }}-scheduler
+            jobLabel: "jobLabel"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

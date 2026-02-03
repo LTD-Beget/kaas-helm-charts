@@ -43,6 +43,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cert-manager
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: cert-manager
     - name: immutable
       priority: 99
       matchLabels:
@@ -50,7 +55,6 @@ spec:
         addons.in-cloud.io/addon: cert-manager
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -77,22 +81,8 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
-        tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
-            effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
       containerSecurityContext:
         runAsNonRoot: true
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
       resources:
         limits:
           cpu: 200m
@@ -103,13 +93,6 @@ spec:
       startupapicheck:
         containerSecurityContext:
           runAsNonRoot: true
-        tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
-            effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
       webhook:
         containerSecurityContext:
           runAsNonRoot: true
@@ -120,6 +103,46 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      clusterResourceNamespace: beget-system
+      cainjector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      startupapicheck:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      webhook:
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"
@@ -159,8 +182,6 @@ spec:
   values: |
     argocdPlugins:
       kustomize: true
-    cert-manager:
-      clusterResourceNamespace: beget-system
     monitoring:
       secureService:
         enabled: true

@@ -33,7 +33,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
@@ -42,9 +42,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: kube-state-metrics
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: kube-state-metrics
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -66,13 +70,6 @@ spec:
           enabled: false
       customLabels:
         in-cloud.io/clusterName: ""
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
       resources:
         limits:
           cpu: 500m
@@ -81,6 +78,28 @@ spec:
           cpu: 50m
           memory: 128Mi
       priorityClassName: system-cluster-critical
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

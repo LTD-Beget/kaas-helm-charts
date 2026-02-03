@@ -28,26 +28,26 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
-    - name: default
+    - name: infra
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: default
+        addons.in-cloud.io/values: infra
         addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac-default
+  name: helm-inserter-vm-agent-additional-rbac-infra
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacDefault
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacInfra
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
-    addons.in-cloud.io/values: default
+    addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
 spec:
   values: |
