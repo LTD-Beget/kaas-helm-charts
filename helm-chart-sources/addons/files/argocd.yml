@@ -539,10 +539,6 @@ spec:
                   matchLabels:
                     app.kubernetes.io/name: argocd-redis
                 topologyKey: kubernetes.io/hostname
-    monitoring:
-      secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -662,6 +658,8 @@ spec:
     monitoring:
       secureService:
         enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
