@@ -55,6 +55,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: argocd
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: argocd
 
 ---
 
@@ -544,21 +549,19 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: argocd-initialized
+  name: argocd-infra
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdInitialized
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdInfra
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
-    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
     argo-cd:
-      crds:
-        install: true
       configs:
         cm:
-          url: "https://localhost/argocd"
+          url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
           oidc.config: |
             name: Dex
             issuer: {{ printf "https://%%s" .Values.istioGwVip }}
@@ -802,21 +805,6 @@ metadata:
   name: argocd
 spec:
   rules:
-    - name: initialized
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: argocd
     - name: cert-manager
       criteria:
         - source:
