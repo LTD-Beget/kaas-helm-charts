@@ -24,7 +24,7 @@ spec:
         namespace: beget-system
       extract:
         - as: client.enabled
-          jsonPath: .spec.clusterClient.enabled
+          jsonPath: .data.clusterClientEnabled
   initDependencies:
     - name: crossplane
       criteria:
