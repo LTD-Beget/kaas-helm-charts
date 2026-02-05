@@ -77,25 +77,21 @@ vmAgent:
           remoteWrite:
             - url: {{ $remoteWriteUrlVmAgent }}
               tlsConfig:
-            {{ if $systemEnabled }}
-                caFile: /etc/ssl/certs/ca.crt
-            {{ else }}
-                caFile: /tls/cabundle/ca.crt
-            {{ end }}
-            # TODO: Добавить поддержку клиентских кластеров через VIP
-            # TODO: Добавить поддержку https
             {{- if $systemEnabled }}
-            - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
+                caFile: /etc/ssl/certs/ca.crt
+            {{- else }}
+                caFile: /tls/cabundle/ca.crt
             {{- end }}
           volumeMounts:
-            {{ if not $systemEnabled }}
-            - name: trusted-ca-certs
-              mountPath: /tls/cabundle
-              readOnly: true
-            {{ end }}
+            {{- if $systemEnabled }}
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
               readOnly: true
+            {{- else }}
+            - name: trusted-ca-certs
+              mountPath: /tls/cabundle
+              readOnly: true
+            {{- end }}
           volumes:
             - name: trusted-ca-certs
               configMap:
