@@ -218,7 +218,7 @@ vmCluster:
                 lb.beget.com/healthcheck-interval-seconds: "60"
                 lb.beget.com/healthcheck-timeout-seconds: "5"
             spec:
-              type: ClusterIP # LoadBalancer
+              type: LoadBalancer
               useAsDefault: true
           remoteWrite:
             # Отправка сырых данных в vmcluster
@@ -314,9 +314,9 @@ vmCluster:
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
         labels:
-          app: "vmagent-gateway"
+          app: vminsert
         selector:
-          app: vmagent-gateway
+          app.kubernetes.io/name: vminsert
     monitoring:
       enabled: false
       namespace: beget-prometheus
