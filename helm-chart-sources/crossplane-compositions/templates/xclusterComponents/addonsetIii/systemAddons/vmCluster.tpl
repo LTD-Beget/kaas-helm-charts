@@ -181,6 +181,7 @@ vmCluster:
       vmagent:
         enabled: true
         spec:
+          replicaCount: 2
           selectAllByDefault: false
           containers:
             - name: config-reloader
