@@ -290,10 +290,6 @@ vmCluster:
             - name: trusted-ca-certs
               configMap:
                 name: ca
-      kubeControllerManager:
-        enabled: false
-      kubeScheduler:
-        enabled: false
 
     additionalService:
       # TODO: Стоит переделать на spec.[vminsert|vmselect|vmstorage].serviceSpec
