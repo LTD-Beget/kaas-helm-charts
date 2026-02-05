@@ -13,7 +13,9 @@ composite:
     common:
       targetRevision: v0.0.3
 
-   # feature/clickhouse-vmstorage
+    # feature/clickhouse-vmstorage
+    clickhousevmagentagregator:
+      targetRevision: feature/clickhouse
     clickhousevmstorage:
       targetRevision: feature/clickhouse
     victoriametricsagent:
