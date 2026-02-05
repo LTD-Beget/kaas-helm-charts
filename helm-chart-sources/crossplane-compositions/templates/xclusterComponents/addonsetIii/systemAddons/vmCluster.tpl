@@ -253,15 +253,15 @@ vmCluster:
               mountPath: /etc/ssl/certs
               readOnly: true
             - name: vminsert-tls
-              secret:
-                secretName: vminsert-tls
+              mountPath: /tls
+              readOnly: true
           volumes:
             - name: trusted-ca-certs
               configMap:
                 name: ca
             - name: vminsert-tls
-              mountPath: /tls
-              readOnly: true
+              secret:
+                secretName: vminsert-tls
             # - name: rbac-proxy-tls
             #   secret:
             #     defaultMode: 420
