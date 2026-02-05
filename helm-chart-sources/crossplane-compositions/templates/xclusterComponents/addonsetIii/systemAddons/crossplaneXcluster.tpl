@@ -27,6 +27,6 @@ crossplaneXcluster:
           istioGw:
             host: {{ $systemIstioGwVip }}
           vmInserter:
-            host: {{ $systemVmInsertVip }}
+            host: {{ $systemVmGatewayVip }}
   ` }}
 {{- end -}}
