@@ -35,3 +35,4 @@ spec:
     kind: {{ $cert.issuer.kind }}
     name: {{ $cert.issuer.name }}
 {{- end }}
+{{- end }}
