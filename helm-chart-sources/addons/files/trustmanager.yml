@@ -51,9 +51,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: trust-manager
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: trust-manager
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -66,13 +70,27 @@ metadata:
     addons.in-cloud.io/addon: trust-manager
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     trust-manager:
       resources:
         requests:
           cpu: 50m
           memory: 128Mi
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTrustManagerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    trust-manager:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

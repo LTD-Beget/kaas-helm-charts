@@ -42,9 +42,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: crossplane
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: crossplane
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -164,6 +168,25 @@ spec:
       metrics:
         enabled: true
         port: 8080
+      resourcesCrossplane:
+        limits:
+          cpu: 750m
+          memory: 2048Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    crossplane:
       rbacManager:
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
@@ -172,10 +195,6 @@ spec:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-      resourcesCrossplane:
-        limits:
-          cpu: 750m
-          memory: 2048Mi
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -183,10 +202,6 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-    monitoring:
-      secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -206,6 +221,8 @@ spec:
     monitoring:
       secureService:
         enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

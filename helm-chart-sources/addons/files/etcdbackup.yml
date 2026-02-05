@@ -59,9 +59,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: etcd-backups
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: etcd-backups
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -110,6 +114,20 @@ spec:
         limits:
           cpu: 1000m
           memory: 2048Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backups-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueEtcdBackupsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: etcd-backups
+spec:
+  values: |
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

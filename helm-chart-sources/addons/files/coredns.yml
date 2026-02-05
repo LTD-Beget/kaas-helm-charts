@@ -51,6 +51,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: coredns
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: coredns
 
 ---
 
@@ -170,6 +175,26 @@ spec:
             - name: health
               configBlock: |-
                 lameduck 5s
+    monitoring:
+      secureService:
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -177,10 +202,17 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: coredns
+                  app.kubernetes.io/instance: coredns
+              topologyKey: kubernetes.io/hostname
     monitoring:
       secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -197,17 +229,6 @@ spec:
   values: |
     coredns:
       replicaCount: {{ .Values.controlPlaneReplicas }}
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: coredns
-                  app.kubernetes.io/instance: coredns
-              topologyKey: kubernetes.io/hostname
-    monitoring:
-      secureService:
-        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

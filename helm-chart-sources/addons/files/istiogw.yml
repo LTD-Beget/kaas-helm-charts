@@ -61,9 +61,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-gw
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: istio-gw
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -76,14 +80,31 @@ metadata:
     addons.in-cloud.io/addon: istio-gw
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     gateway:
       priorityClassName: system-cluster-critical
+      service:
+        type: NodePort
       resources:
         requests:
           cpu: 100m
           memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    gateway:
       service:
         type: LoadBalancer
         annotations:

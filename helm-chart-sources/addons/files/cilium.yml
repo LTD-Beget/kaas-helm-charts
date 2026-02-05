@@ -27,7 +27,7 @@ spec:
         - as: cluster.name
           jsonPath: .data.clusterName
         - as: cluster.port
-          jsonPath: .data.clusterPort
+          jsonPath: .data.clusterClientPort #tmp need change -> clusterPort for prod-ready (infra)
   initDependencies: []
   backend: 
     type: "argocd"
@@ -108,10 +108,6 @@ spec:
         secretsNamespace:
           create: false
           name: ~
-    monitoring:
-      secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -148,6 +144,8 @@ spec:
     monitoring:
       secureService:
         enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

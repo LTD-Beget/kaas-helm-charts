@@ -42,9 +42,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cert-manager-csi-driver
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: cert-manager-csi-driver
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -60,13 +64,6 @@ spec:
     argocdPlugins:
       kustomize: true
     cert-manager-csi-driver:
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
       resources:
         limits:
           cpu: 200m
@@ -74,6 +71,28 @@ spec:
         requests:
           cpu: 100m
           memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerCsiDriverInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    cert-manager-csi-driver:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
     monitoring:
       secureService:
         enabled: true

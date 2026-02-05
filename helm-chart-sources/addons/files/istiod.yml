@@ -57,9 +57,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istiod
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: istiod
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -86,6 +90,21 @@ spec:
         istioNamespace: beget-istio
         proxy:
           tracer: zipkin
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
       replicaCount: {{ .Values.controlPlaneReplicas }}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
@@ -94,10 +113,6 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-    monitoring:
-      secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -117,6 +132,8 @@ spec:
     monitoring:
       secureService:
         enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -207,7 +224,7 @@ spec:
             kind: ConfigMap
             name: parameters
             namespace: beget-system
-          jsonPath: $.data.systemEnabled
+          jsonPath: $.data.controlPlaneReplicas
           operator: GreaterThan
           value: 1
       selector:

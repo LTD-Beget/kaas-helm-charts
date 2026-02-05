@@ -42,9 +42,13 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-operator
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: vm-operator
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -57,15 +61,11 @@ metadata:
     addons.in-cloud.io/addon: vm-operator
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     victoria-metrics-operator:
       operator:
         disable_prometheus_converter: false
         useCustomConfigReloader: false
-
       logLevel: "info"
-
       env:
         - name: GOMAXPROCS
           value: '1'
@@ -75,7 +75,6 @@ spec:
           value: '100Mi'
         - name: VM_VMALERTDEFAULT_CONFIGRELOADERMEMORY
           value: '100Mi'
-
       resources:
         requests:
           cpu: 50m
@@ -83,10 +82,8 @@ spec:
         limits:
           cpu: 250m
           memory: 320Mi
-
       admissionWebhooks:
         enabled: false
-
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -103,6 +100,22 @@ spec:
                   - vmoperator-infra
               topologyKey: failure-domain.beta.kubernetes.io/region
             weight: 100
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    victoria-metrics-operator:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
