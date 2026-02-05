@@ -244,7 +244,6 @@ vmCluster:
               type: LoadBalancer
               useAsDefault: true
           extraArgs:
-            remoteWrite.tlsInsecureSkipVerify: "false"
             tls: "true"
             tlsCertFile: "/tls/tls.crt"
             tlsKeyFile: "/tls/tls.key"
