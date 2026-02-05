@@ -141,7 +141,7 @@ vmCluster:
             tolerations:
               - key: "node-role.kubernetes.io/vm-stream"
                 operator: "Exists"
-                effect: "NoSchedule"   
+                effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
                 secret:
@@ -205,10 +205,21 @@ vmCluster:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
-          podMetadata:
+          managedMetadata:
             labels:
               app: vmagent-gateway
               incloud-metrics: "infra"
+          serviceSpec:
+            metadata:
+              name: vmagent-gateway
+              annotations:
+                lb.beget.com/algorithm: "round_robin"
+                lb.beget.com/type: "internal"
+                lb.beget.com/healthcheck-interval-seconds: "60"
+                lb.beget.com/healthcheck-timeout-seconds: "5"
+            spec:
+              type: ClusterIP # LoadBalancer
+              useAsDefault: true
           remoteWrite:
             # Отправка сырых данных в vmcluster
             - url: https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus
@@ -305,7 +316,7 @@ vmCluster:
         labels:
           app: "vmagent-gateway"
         selector:
-          app.kubernetes.io/name: "vmagent-gateway"
+          app: vmagent-gateway
     monitoring:
       enabled: false
       namespace: beget-prometheus
@@ -336,7 +347,7 @@ vmCluster:
             - "vminsert.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
-            - {{ $systemVmInsertVip }}
+            - {{ $systemVmGatewayVip }}
       vmSelect:
         enabled: true
         issuer:
