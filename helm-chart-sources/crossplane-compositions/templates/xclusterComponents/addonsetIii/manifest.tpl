@@ -199,9 +199,9 @@ spec:
 
 {{- $xAddonSetClientReady        := and $konnectivityAgentReady $kubeadmResourcesReady }}
 
-{{- $remoteWriteUrlVmAgent  := printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
+{{- $remoteWriteUrlVmAgent  := printf "https://%%s:8429/api/v1/write" $systemVmInsertVip }}
 {{- if $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus" }}
+  {{- $remoteWriteUrlVmAgent = "https://vminsert.beget-vmcluster.svc:8429/api/v1/write" }}
 {{- end }}
 ###
 ---
