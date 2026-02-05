@@ -17,8 +17,8 @@ immutable: |
       create: false
     victoria-metrics-operator:
       enabled: false
-    vmagent:
-      enabled: false
+    # vmagent:
+    #   enabled: false
     vmalert:
       enabled: false
     vmcluster:
