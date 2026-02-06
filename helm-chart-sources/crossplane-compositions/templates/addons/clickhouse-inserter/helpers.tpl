@@ -1,5 +1,5 @@
 {{- define "addons.clickhouseinserter" }}
-name: clickhouseinserter
+name: ClickhouseInserter
 debug: false
 path: helm-chart-sources/victoria-metrics-k8s-stack
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
