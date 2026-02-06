@@ -60,6 +60,8 @@ grafana:
                         value: {{ $argsGrafanaDeploymentEnvOidcSecret }}
                       - name: GF_INSTALL_PLUGINS
                         value: "grafana-clickhouse-datasource:4.13.0"
+                      - name: GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS
+                        value: "grafana-clickhouse-datasource:4.13.0"
                     resources:
                       requests:
                         cpu: "100m"
