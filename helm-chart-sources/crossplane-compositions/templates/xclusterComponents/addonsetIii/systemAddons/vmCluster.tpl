@@ -270,9 +270,11 @@ vmCluster:
               tlsConfig:
                 caFile: /etc/ssl/certs/ca.crt
             # Отправка сырых данных в vmAgent Agregator
-            - url: "https://vmagent-agregator.beget-clickhouse-vmstorage.svc:8429/api/v1/write"
-              tlsConfig:
-                caFile: /etc/ssl/certs/ca.crt
+            # - url: "https://vmagent-agregator.beget-clickhouse-vmstorage.svc:8429/api/v1/write"
+            #   tlsConfig:
+            #     caFile: /etc/ssl/certs/ca.crt
+            # Отправка сырых данных в carbon-clickhouse
+            - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
     additionalService:
       # TODO: Стоит переделать на spec.[vminsert|vmselect|vmstorage].serviceSpec
       # TODO: Удалить сервис после того, как перейдем на сервис vmAgentGateway

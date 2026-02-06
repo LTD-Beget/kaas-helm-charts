@@ -14,7 +14,9 @@ composite:
       targetRevision: v0.0.3
 
     # feature/clickhouse-vmstorage
-    clickhousevmagentagregator:
+    # clickhousevmagentagregator:
+    #   targetRevision: feature/clickhouse
+    clickhouseinserter:
       targetRevision: feature/clickhouse
     clickhousevmstorage:
       targetRevision: feature/clickhouse

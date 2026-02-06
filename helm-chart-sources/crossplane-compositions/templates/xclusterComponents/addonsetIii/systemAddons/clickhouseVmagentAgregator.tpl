@@ -12,6 +12,7 @@ clickhouseVmagentAgregator:
     victoria-metrics-k8s-stack:
       fullnameOverride: "vmagent-agregator"
       vmagent:
+        enabled: false
         spec:
           replicaCount: 1
           selectAllByDefault: false
@@ -97,78 +98,78 @@ clickhouseVmagentAgregator:
             # Отправка агрегированных данных в clickhouse
             # TODO: Добавить поддержку https
             - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
-            - url: http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/promrw
-              basicAuth:
-                username:
-                  name: clickhouse-credentials
-                  key: username
-                password:
-                  name: clickhouse-credentials
-                  key: password
+            # - url: http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/promrw
+            #   basicAuth:
+            #     username:
+            #       name: clickhouse-credentials
+            #       key: username
+            #     password:
+            #       name: clickhouse-credentials
+            #       key: password
 
-              streamAggrConfig:
-                keepInput: false
-                dropInput: true
+            #   streamAggrConfig:
+            #     keepInput: false
+            #     dropInput: true
 
-                # Исключение лишних лейблов
-                dropInputLabels: ["pod_uid", "container_id", "id", "image_id"]
+            #     # Исключение лишних лейблов
+            #     dropInputLabels: ["pod_uid", "container_id", "id", "image_id"]
 
-                rules:
-                  # Nodes: CPU
-                  - match: 'node_cpu_seconds_total{mode="idle"}' # нет лейблов
-                    interval: 1m
-                    by: ["cluster", "node"] # add nodegroup label
-                    outputs: ["rate_avg"]   # streaming aggregation outputs https://docs.victoriametrics.com/victoriametrics/stream-aggregation/configuration/
+            #     rules:
+            #       # Nodes: CPU
+            #       - match: 'node_cpu_seconds_total{mode="idle"}' # нет лейблов
+            #         interval: 1m
+            #         by: ["cluster", "node"] # add nodegroup label
+            #         outputs: ["rate_avg"]   # streaming aggregation outputs https://docs.victoriametrics.com/victoriametrics/stream-aggregation/configuration/
 
-                  # Nodes: RAM (достаточно MemAvailable и MemTotal)
-                  - match: 'node_memory_MemAvailable_bytes'
-                    interval: 1m
-                    by: ["cluster", "node"]
-                    outputs: ["avg"]
+            #       # Nodes: RAM (достаточно MemAvailable и MemTotal)
+            #       - match: 'node_memory_MemAvailable_bytes'
+            #         interval: 1m
+            #         by: ["cluster", "node"]
+            #         outputs: ["avg"]
 
-                  - match: 'node_memory_MemTotal_bytes'
-                    interval: 1m
-                    by: ["cluster", "node"]
-                    outputs: ["last"]
+            #       - match: 'node_memory_MemTotal_bytes'
+            #         interval: 1m
+            #         by: ["cluster", "node"]
+            #         outputs: ["last"]
 
-                  # Nodes: Disk (size/available)
-                  - match: 'node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}'
-                    interval: 1m
-                    by: ["cluster", "node"]
-                    outputs: ["avg"]
+            #       # Nodes: Disk (size/available)
+            #       - match: 'node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}'
+            #         interval: 1m
+            #         by: ["cluster", "node"]
+            #         outputs: ["avg"]
 
-                  - match: 'node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}'
-                    interval: 1m
-                    by: ["cluster", "node"]
-                    outputs: ["last"]
+            #       - match: 'node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}'
+            #         interval: 1m
+            #         by: ["cluster", "node"]
+            #         outputs: ["last"]
 
-                  # Pods: CPU/RAM per pod
-                  - match: 'container_cpu_usage_seconds_total{container!="",image!=""}'
-                    interval: 1m
-                    by: ["cluster", "namespace", "pod", "node"]
-                    outputs: ["rate_sum"]
+            #       # Pods: CPU/RAM per pod
+            #       - match: 'container_cpu_usage_seconds_total{container!="",image!=""}'
+            #         interval: 1m
+            #         by: ["cluster", "namespace", "pod", "node"]
+            #         outputs: ["rate_sum"]
 
-                  - match: 'container_memory_working_set_bytes{container!="",image!=""}'
-                    interval: 1m
-                    by: ["cluster", "namespace", "pod", "node"]
-                    outputs: ["avg"]
+            #       - match: 'container_memory_working_set_bytes{container!="",image!=""}'
+            #         interval: 1m
+            #         by: ["cluster", "namespace", "pod", "node"]
+            #         outputs: ["avg"]
 
-                  # Pods: restarts/status (kube-state-metrics)
-                  - match: 'kube_pod_container_status_restarts_total'
-                    interval: 1m
-                    by: ["cluster", "namespace", "pod", "container"]
-                    outputs: ["last"]
+            #       # Pods: restarts/status (kube-state-metrics)
+            #       - match: 'kube_pod_container_status_restarts_total'
+            #         interval: 1m
+            #         by: ["cluster", "namespace", "pod", "container"]
+            #         outputs: ["last"]
 
-                  # статус по фазам (Running/Pending/Failed/...)
-                  - match: 'kube_pod_status_phase'
-                    interval: 1m
-                    by: ["cluster", "namespace", "pod", "phase"]
-                    outputs: ["last"]
+            #       # статус по фазам (Running/Pending/Failed/...)
+            #       - match: 'kube_pod_status_phase'
+            #         interval: 1m
+            #         by: ["cluster", "namespace", "pod", "phase"]
+            #         outputs: ["last"]
 
-                  - match: 'kube_pod_info'
-                    interval: 1m
-                    by: ["cluster", "namespace", "pod", "node"]
-                    outputs: ["last"]
+            #       - match: 'kube_pod_info'
+            #         interval: 1m
+            #         by: ["cluster", "namespace", "pod", "node"]
+            #         outputs: ["last"]
 
     monitoring:
       enabled: false
