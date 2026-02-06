@@ -84,9 +84,13 @@ appSpec:
 
                 -- +goose StatementBegin
                 CREATE DATABASE IF NOT EXISTS metrics;
+                -- +goose StatementEnd
 
+                -- +goose StatementBegin
                 SET allow_experimental_time_series_table = 1;
+                -- +goose StatementEnd
 
+                -- +goose StatementBegin
                 CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;
                 -- +goose StatementEnd
 
