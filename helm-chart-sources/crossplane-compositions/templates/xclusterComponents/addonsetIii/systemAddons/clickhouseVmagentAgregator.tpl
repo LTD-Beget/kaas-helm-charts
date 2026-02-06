@@ -96,7 +96,7 @@ clickhouseVmagentAgregator:
             # Отправка агрегированных данных в clickhouse
             # TODO: Добавить поддержку https
             - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
-            - url: http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/write
+            - url: http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/promrw
               basicAuth:
                 username:
                   name: clickhouse-credentials
