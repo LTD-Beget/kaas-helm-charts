@@ -55,8 +55,8 @@ spec:
                     {{- if .Values.manager.env }}
                   env:
                     {{- range key,value := .Values.manager.env }}
-                    - name: {{ .key }}
-                      value: {{ .value }}
+                    - name: {{ $key }}
+                      value: {{ $value }}
                     {{- end }}
                     {{- end }}
                   image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
