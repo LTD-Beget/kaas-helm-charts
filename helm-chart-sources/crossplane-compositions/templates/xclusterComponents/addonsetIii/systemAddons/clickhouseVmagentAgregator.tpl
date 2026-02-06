@@ -97,6 +97,14 @@ clickhouseVmagentAgregator:
             # TODO: Добавить поддержку https
             - url: http://clickhouse-vmstorage-carbon.beget-clickhouse-vmstorage.svc:2006/api/v1/write
             - url: http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/write
+              basicAuth:
+                username:
+                  name: clickhouse-credentials
+                  key: username
+                password:
+                  name: clickhouse-credentials
+                  key: password
+
               streamAggrConfig:
                 keepInput: false
                 dropInput: true

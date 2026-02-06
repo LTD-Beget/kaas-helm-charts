@@ -82,18 +82,6 @@ appSpec:
                 ORDER BY (Tag1, Path, Date);
                 -- +goose StatementEnd
 
-                -- +goose StatementBegin
-                CREATE DATABASE IF NOT EXISTS metrics;
-                -- +goose StatementEnd
-
-                -- +goose StatementBegin
-                SET allow_experimental_time_series_table = 1;
-                -- +goose StatementEnd
-
-                -- +goose StatementBegin
-                CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;
-                -- +goose StatementEnd
-
                 -- +goose Down
                 -- +goose StatementBegin
                 DROP TABLE graphite;
@@ -105,10 +93,6 @@ appSpec:
 
                 -- +goose StatementBegin
                 DROP TABLE graphite_tagged;
-                -- +goose StatementEnd
-
-                -- +goose StatementBegin
-                DROP DATABASE metrics;
                 -- +goose StatementEnd
 
         configCarbonFile:
@@ -439,6 +423,7 @@ clickhouse:
       #!/bin/bash
       echo "Creating database swarm"
       clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS swarm"
+      clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS metrics; SET allow_experimental_time_series_table = 1; CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;"
 
   defaultInitContainers:
     volumePermissions:
