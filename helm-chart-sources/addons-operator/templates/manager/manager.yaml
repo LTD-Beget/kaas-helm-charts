@@ -54,7 +54,7 @@ spec:
                     - /manager
                     {{- if .Values.manager.env }}
                   env:
-                    {{- range key,value := .Values.manager.env }}
+                    {{- range $key, $value := .Values.manager.env }}
                     - name: {{ $key }}
                       value: {{ $value }}
                     {{- end }}
