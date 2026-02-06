@@ -74,6 +74,7 @@ clickhouseVmagentAgregator:
             tls: "true"
             tlsCertFile: "/tls/tls.crt"
             tlsKeyFile: "/tls/tls.key"
+            remoteWrite.forcePromProto: "true"
           volumeMounts:
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
@@ -104,8 +105,6 @@ clickhouseVmagentAgregator:
                 password:
                   name: clickhouse-credentials
                   key: password
-
-              forceVMProto: true
 
               streamAggrConfig:
                 keepInput: false
