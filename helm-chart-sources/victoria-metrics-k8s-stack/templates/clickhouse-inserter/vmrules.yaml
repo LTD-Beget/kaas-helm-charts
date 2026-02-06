@@ -20,14 +20,14 @@ spec:
             (
               avg by (cluster, instance) (
                 label_replace(
-                  avg_over_time(node_memory_MemAvailable_bytes[1m]),
+                  (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes),
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             )/1024/1024
           labels:
             in-cloud-metrics: clickhouse
-          record: 'node_memory_available_mb'
+          record: 'node_memory_used_mb'
 
         - annotations: {}
           expr: |-
@@ -57,21 +57,35 @@ spec:
             )
           labels:
             in-cloud-metrics: clickhouse
-          record: 'node_cpu_total'
+          record: 'node_cpu_used_cores'
+
+        - annotations: {}
+          expr: |-
+            count by (cluster, nodename) (
+              label_replace(
+                node_cpu_seconds_total{mode="idle"},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+              * on(instance) group_left(nodename)
+              node_uname_info
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_cpu_total_cores'
 
         - annotations: {}
           expr: |-
             (
               avg by (cluster, instance, device, fstype) (
                 label_replace(
-                  avg_over_time(node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}[1m]),
+                  (node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}),
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             )/1024/1024
           labels:
             in-cloud-metrics: clickhouse
-          record: 'node_filesystem_available_mb'
+          record: 'node_filesystem_used_mb'
 
         - annotations: {}
           expr: |-
