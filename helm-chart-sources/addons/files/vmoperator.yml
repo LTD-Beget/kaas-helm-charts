@@ -33,7 +33,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
@@ -62,10 +62,6 @@ metadata:
 spec:
   values: |
     victoria-metrics-operator:
-      operator:
-        disable_prometheus_converter: false
-        useCustomConfigReloader: false
-      logLevel: "info"
       env:
         - name: GOMAXPROCS
           value: '1'

@@ -42,7 +42,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
@@ -72,13 +72,10 @@ metadata:
 spec:
   values: |
     coredns:
-      isClusterService: true
-      serviceType: ClusterIP
       priorityClassName: system-cluster-critical
       prometheus:
         service:
           enabled: true
-      replicaCount: 1
       resources:
         limits:
           cpu: 200m
