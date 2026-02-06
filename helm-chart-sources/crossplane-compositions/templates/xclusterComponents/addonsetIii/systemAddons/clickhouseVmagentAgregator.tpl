@@ -115,7 +115,7 @@ clickhouseVmagentAgregator:
 
                 rules:
                   # Nodes: CPU
-                  - match: 'node_cpu_seconds_total{mode="idle"}'
+                  - match: 'node_cpu_seconds_total{mode="idle"}' # нет лейблов
                     interval: 1m
                     by: ["cluster", "node"] # add nodegroup label
                     outputs: ["rate_avg"]   # streaming aggregation outputs https://docs.victoriametrics.com/victoriametrics/stream-aggregation/configuration/
