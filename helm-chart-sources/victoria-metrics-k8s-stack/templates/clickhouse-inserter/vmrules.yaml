@@ -1,0 +1,155 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if $vmstack.clickhouseIserter.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: clickhouse-rules
+  namespace: {{ .Release.Namespace }}
+  labels:
+    in-cloud-metrics: clickhouse
+spec:
+  groups:
+    # NODES
+    - name: clickhouse-rules.node
+      params: {}
+      rules:
+        - annotations: {}
+          expr: |-
+            (
+              avg by (cluster, instance) (
+                label_replace(
+                  avg_over_time(node_memory_MemAvailable_bytes[1m]),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename) node_uname_info
+            )/1024/1024
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_memory_available_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              avg by (cluster, instance) (
+                label_replace(
+                  node_memory_MemTotal_bytes{},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename) node_uname_info
+            )/1024/1024
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_memory_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              rate(
+                label_replace(
+                  node_cpu_seconds_total{mode!~"idle|iowait|steal"},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )[5m]
+              )
+              * on(instance) group_left(nodename)
+              node_uname_info
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_cpu_total'
+
+        - annotations: {}
+          expr: |-
+            (
+              avg by (cluster, instance, device, fstype) (
+                label_replace(
+                  avg_over_time(node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}[1m]),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename) node_uname_info
+            )/1024/1024
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_filesystem_available_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              avg by (cluster, instance, device, fstype) (
+                label_replace(
+                  node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename) node_uname_info
+            )/1024/1024
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'node_filesystem_total_mb'
+
+    # PODS
+    - name: clickhouse-rules.pods
+      params: {}
+      rules:
+        - annotations: {}
+          expr: |-
+            group by (cluster, namespace, phase, pod, container) (
+              label_replace(
+                kube_pod_status_phase{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'pod_status_phase'
+
+        - annotations: {}
+          expr: |-
+            max by (cluster, namespace, phase, pod, container) (
+              label_replace(
+                kube_pod_container_status_restarts_total{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'pod_restarts_total'
+
+        - annotations: {}
+          expr: |-
+            max by (cluster, namespace, phase, pod, container, created_by_kind, created_by_name, host_ip, host_network, node, pod_ip, priority_class) (
+              label_replace(
+                kube_pod_info{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'pod_info'
+
+        - annotations: {}
+          expr: |-
+            avg by (cluster, node, namespace, pod, container) (
+              label_replace(
+                container_memory_working_set_bytes{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            ) /1024/1024
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'pod_memory_usage_mb'
+
+        - annotations: {}
+          expr: |-
+            avg by (cluster, node, namespace, pod, container) (
+              rate(
+                label_replace(
+                  container_cpu_usage_seconds_total{pod!="", namespace!=""},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              )
+            )
+          labels:
+            in-cloud-metrics: clickhouse
+          record: 'pod_cpu_usage'
+{{- end }}
