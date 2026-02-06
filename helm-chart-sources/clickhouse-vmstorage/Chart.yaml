@@ -25,9 +25,9 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: appSpec
+    repository: ""
     version: "0.1.1"
-    repository: "file://charts/appSpec"
   - name: clickhouse
-    repository: oci://registry-1.docker.io/bitnamicharts
+    repository: ""
     version: 9.3.x
     condition: clickhouse.enabled

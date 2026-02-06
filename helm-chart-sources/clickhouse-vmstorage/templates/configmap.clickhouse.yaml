@@ -14,12 +14,14 @@ data:
         <listen_host>0.0.0.0</listen_host>
         <listen_try>1</listen_try>
     </yandex>
+
   02-logger.xml: |
     <yandex>
         <logger>
             <level>information</level>
         </logger>
     </yandex>
+
   03-macros.xml: |
     <yandex>
         <macros>
@@ -28,6 +30,7 @@ data:
             <layer>clickhouse-vmstorage</layer>
         </macros>
     </yandex>
+
   05-zookeeper.xml: |
     <yandex>
         <zookeeper>
@@ -74,7 +77,33 @@ data:
         </graphite_rollup>
     </yandex>
 
-  08-sampling.xml: |
+  08-prometheus.xml: |
+    <yandex>
+    <prometheus>
+        <port>9363</port>
+
+        <handlers>
+        <remote_write>
+            <url>/write</url>
+            <handler>
+            <type>remote_write</type>
+            <database>metrics</database>
+            <table>ts</table>
+            </handler>
+        </remote_write>
+
+        <metrics>
+            <url>/metrics</url>
+            <handler>
+            <type>expose_metrics</type>
+            </handler>
+        </metrics>
+
+        </handlers>
+    </prometheus>
+    </yandex>
+
+  09-sampling.xml: |
     <yandex>
         <asynchronous_insert_log remove="1"/>
         <asynchronous_metric_log remove="1"/>
