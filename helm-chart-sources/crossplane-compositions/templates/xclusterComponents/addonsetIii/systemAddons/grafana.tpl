@@ -58,10 +58,8 @@ grafana:
                         value: "grafana"
                       - name: GRAFANA_OIDC_CLIENT_SECRET
                         value: {{ $argsGrafanaDeploymentEnvOidcSecret }}
-                      - name: GF_INSTALL_PLUGINS
-                        value: "grafana-clickhouse-datasource:4.13.0"
-                      - name: GF_INSTALL_PLUGINS_FORCE
-                        value: "true"
+                      - name: GF_PLUGINS_PREINSTALL_SYNC
+                        value: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
                     resources:
                       requests:
                         cpu: "100m"
@@ -70,7 +68,8 @@ grafana:
                         cpu: "1"
                         memory: "2Gi"
                     volumeMounts:
-                      - mountPath: /etc/ssl/certs
+                      - mountPath: /etc/ssl/certs/ca.crt
+                        subPath: ca.crt
                         name: trusted-ca-certs
                         readOnly: true
                   - name: rbac-proxy
