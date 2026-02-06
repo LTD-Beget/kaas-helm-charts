@@ -16,7 +16,7 @@ grafana:
       spec:
         config:
           auth:
-              disable_login_form: "true"
+            disable_login_form: "true"
           security:
             admin_user: {{ $argsGrafanaConfigAdminUser }}
             admin_password: {{ $argsGrafanaConfigAdminPassword }}
@@ -60,8 +60,8 @@ grafana:
                         value: {{ $argsGrafanaDeploymentEnvOidcSecret }}
                       - name: GF_INSTALL_PLUGINS
                         value: "grafana-clickhouse-datasource:4.13.0"
-                      - name: GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS
-                        value: "grafana-clickhouse-datasource"
+                      - name: GF_INSTALL_PLUGINS_FORCE
+                        value: "true"
                     resources:
                       requests:
                         cpu: "100m"
