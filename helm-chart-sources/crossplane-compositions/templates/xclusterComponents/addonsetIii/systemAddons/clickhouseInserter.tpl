@@ -16,7 +16,6 @@ clickhouseInserter:
       vmalert:
         spec:
           extraArgs:
-            remoteWrite.forcePromProto: "true"
             'notifier.blackhole': "true"
           containers:
             - name: rbac-proxy
