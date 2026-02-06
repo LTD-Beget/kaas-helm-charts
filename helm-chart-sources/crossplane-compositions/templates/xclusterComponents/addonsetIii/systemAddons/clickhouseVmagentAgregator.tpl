@@ -10,6 +10,7 @@ clickhouseVmagentAgregator:
     - vmOperator
   values:
     victoria-metrics-k8s-stack:
+      fullnameOverride: "vmagent-agregator"
       vmagent:
         spec:
           replicaCount: 1
