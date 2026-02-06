@@ -84,7 +84,6 @@ spec:
           cpu: 100m
       hostNetwork: true
       rbac:
-        create: true
         pspEnabled: false
       templates:
         config.yml: |

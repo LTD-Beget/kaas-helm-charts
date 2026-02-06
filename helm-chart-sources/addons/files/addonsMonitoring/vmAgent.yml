@@ -81,8 +81,6 @@ spec:
   values: |
     victoria-metrics-k8s-stack:
       vmagent:
-        ingress:
-          enabled: false
         spec:
           resources:
             requests:
@@ -102,7 +100,6 @@ spec:
           extraArgs:
             remoteWrite.tlsInsecureSkipVerify: "true"
             remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
-            promscrape.streamParse: "true"
             promscrape.maxScrapeSize: "33554432"
             remoteWrite.maxDiskUsagePerURL: "67108864"
             remoteWrite.queues: "24"
@@ -157,25 +154,6 @@ spec:
                   weight: 100
           probeNamespaceSelector: {}
           priorityClassName: system-cluster-critical
-      kubeApiServer:
-        enabled: true
-        vmScrape:
-          spec:
-            endpoints:
-              - port: https
-                scheme: https
-                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                tlsConfig:
-                  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                  serverName: kubernetes
-            namespaceSelector:
-              matchNames:
-                - default
-            selector:
-              matchLabels:
-                component: apiserver
-                provider: kubernetes
-            jobLabel: component
       kubeControllerManager:
         enabled: true
         vmScrape:
@@ -202,21 +180,6 @@ spec:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   serverName: "localhost"
                   insecureSkipVerify: true
-      kubeProxy:
-        enabled: false
-      kubeScheduler:
-        enabled: true
-        vmScrape:
-          spec:
-            endpoints:
-              - port: "http-metrics"
-                scheme: "https"
-                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                tlsConfig:
-                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-            jobLabel: "jobLabel"
-      kubelet:
-        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -347,8 +310,6 @@ spec:
         enabled: false
       prometheus-node-exporter:
         enabled: false
-      serviceAccount:
-        create: false
       victoria-metrics-operator:
         enabled: false
       vmagent:
