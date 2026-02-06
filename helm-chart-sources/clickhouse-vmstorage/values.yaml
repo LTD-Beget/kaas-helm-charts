@@ -48,7 +48,7 @@ appSpec:
               content: |-
                 -- +goose Up
                 -- +goose StatementBegin
-                CREATE TABLE graphite (
+                CREATE TABLE IF NOT EXISTS graphite (
                   Path String,
                   Value Float64,
                   Time UInt32,
@@ -60,7 +60,7 @@ appSpec:
                 -- +goose StatementEnd
 
                 -- +goose StatementBegin
-                CREATE TABLE graphite_index (
+                CREATE TABLE IF NOT EXISTS graphite_index (
                   Date Date,
                   Level UInt32,
                   Path String,
@@ -71,7 +71,7 @@ appSpec:
                 -- +goose StatementEnd
 
                 -- +goose StatementBegin
-                CREATE TABLE graphite_tagged (
+                CREATE TABLE IF NOT EXISTS graphite_tagged (
                   Date Date,
                   Tag1 String,
                   Path String,
