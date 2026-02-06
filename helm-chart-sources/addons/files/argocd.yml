@@ -76,18 +76,9 @@ metadata:
 spec:
   values: |
     argo-cd:
-      crds:
-        install: true
       global:
         deploymentStrategy:
           type: RollingUpdate
-        tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
-            effect: "NoSchedule"
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
-            effect: "NoSchedule"
       configs:
         cm:
           application.resourceTrackingMethod: annotation
@@ -249,32 +240,6 @@ spec:
           timeout.reconciliation: 10s
           timeout.reconciliation.jitter: 10s
           kustomize.buildOptions: --enable-helm
-        cmp:
-          create: true
-          plugins:
-            helm-with-values:
-              allowConcurrency: true
-              lockRepo: false
-              discover:
-                find:
-                  command:
-                    - bash
-                    - '-c'
-                    - |
-                      if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
-                        find . -name 'Chart.yaml' &&
-                        find . -name 'values.yaml'
-                      fi
-              generate:
-                command:
-                  - bash
-                  - '-c'
-                  - |
-                    if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
-                        ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
-                    fi
-                    echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
-                    helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .
         params:
           application.namespaces: '*'
           applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
@@ -288,7 +253,6 @@ spec:
         secret:
           argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
         rbac:
-          create: true
           policy.default: role:readonly
           policy.csv: |
             g, admin@beget.ru, role:admin
@@ -296,10 +260,7 @@ spec:
         enabled: false
       notifications:
         enabled: false
-      redis-ha:
-        enabled: false
       redis:
-        enabled: true
         image:
           imagePullPolicy: IfNotPresent
         replicas: 1
@@ -328,39 +289,6 @@ spec:
             memory: 128Mi
       redisSecretInit:
         enabled: false
-        image:
-          imagePullPolicy: IfNotPresent
-        # hostNetwork: true
-        extraArgs:
-          - --kubeconfig
-          - /etc/kubernetes/admin.conf
-        volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: admin-conf
-        volumeMounts:
-          - mountPath: /etc/kubernetes/admin.conf
-            name: admin-conf
-        containerSecurityContext:
-          runAsNonRoot: false
-          runAsUser: 0
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        resources:
-          limits:
-            cpu: 20m
-            ephemeral-storage: 10Mi
-            memory: 64Mi
-          requests:
-            cpu: 10m
-            ephemeral-storage: 10Mi
-            memory: 32Mi
       repoServer:
         image:
           imagePullPolicy: IfNotPresent
@@ -402,25 +330,6 @@ spec:
                   matchLabels:
                     app.kubernetes.io/name: argocd-redis
                 topologyKey: kubernetes.io/hostname
-        extraContainers:
-          - name: helm-with-values
-            command: [/var/run/argocd/argocd-cmp-server]
-            image: "dmkolbin/argocd-with-utils:v2.14.10"
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 999
-            volumeMounts:
-              - mountPath: /var/run/argocd
-                name: var-files
-              - mountPath: /home/argocd/cmp-server/plugins
-                name: plugins
-              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                subPath: helm-with-values.yaml
-                name: cmp-plugin
-        volumes:
-          - configMap:
-              name: argocd-cmp-cm
-            name: cmp-plugin
       server:
         image:
           imagePullPolicy: IfNotPresent
@@ -452,11 +361,8 @@ spec:
             name: admin-conf
         emptyDir:
           sizeLimit: 500Mi
-        ingress:
-          enabled: false
         metrics:
           enabled: true
-        replicas: 1
         resources:
           limits:
             ephemeral-storage: 100Mi
@@ -504,7 +410,6 @@ spec:
           sizeLimit: 500Mi
         metrics:
           enabled: true
-        replicas: 1
         resources:
           limits:
             ephemeral-storage: 500Mi
@@ -559,6 +464,14 @@ metadata:
 spec:
   values: |
     argo-cd:
+      global:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
       configs:
         cm:
           url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
@@ -619,8 +532,6 @@ spec:
         secret:
           argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
           argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
-      redisSecretInit:
-        enabled: false
       repoServer:
         volumes:
           - configMap:
