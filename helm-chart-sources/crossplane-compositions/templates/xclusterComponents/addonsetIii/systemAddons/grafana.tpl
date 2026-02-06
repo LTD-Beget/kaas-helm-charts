@@ -27,7 +27,7 @@ grafana:
             http_port: "3000"
           plugins:
             plugin_admin_enabled: "true"
-            preinstall_sync: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
+            preinstall: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
             preinstall_disabled: "false"
           auth.generic_oauth:
             enabled: "true"
