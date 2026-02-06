@@ -105,6 +105,8 @@ clickhouseVmagentAgregator:
                   name: clickhouse-credentials
                   key: password
 
+              forceVMProto: true
+
               streamAggrConfig:
                 keepInput: false
                 dropInput: true
