@@ -58,8 +58,10 @@ grafana:
                         value: "grafana"
                       - name: GRAFANA_OIDC_CLIENT_SECRET
                         value: {{ $argsGrafanaDeploymentEnvOidcSecret }}
-                      - name: GF_PLUGINS_PREINSTALL_SYNC
-                        value: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
+                      # - name: GF_PLUGINS_PREINSTALL_SYNC
+                      #   value: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
+                      - name: GF_PLUGINS_INSTALL
+                        value: "grafana-clickhouse-datasource:4.13.0"
                     resources:
                       requests:
                         cpu: "100m"
