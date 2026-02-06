@@ -165,5 +165,5 @@ spec:
             )
           labels:
             in-cloud-metrics: clickhouse
-          record: 'pod_cpu_usage'
+          record: 'pod_cpu_usage_cores'
 {{- end }}
