@@ -27,7 +27,7 @@ spec:
         - as: cluster.name
           jsonPath: .data.clusterName
         - as: cluster.port
-          jsonPath: .data.clusterClientPort #tmp need change -> clusterPort for prod-ready (infra)
+          jsonPath: .data.clusterPort #tmp need change -> clusterPort for prod-ready (infra) or clusterClientPort
   initDependencies: []
   backend: 
     type: "argocd"

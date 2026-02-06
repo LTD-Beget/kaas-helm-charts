@@ -379,6 +379,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       controller:
         dynamicClusterDistribution: true
+        replicas: 1
         image:
           imagePullPolicy: IfNotPresent
         # hostNetwork: true
