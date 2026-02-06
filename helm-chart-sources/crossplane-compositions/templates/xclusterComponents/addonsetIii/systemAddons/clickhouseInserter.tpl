@@ -17,7 +17,7 @@ clickhouseInserter:
         spec:
           extraArgs:
             remoteWrite.forcePromProto: "true"
-            'notifier.blackhole': true
+            'notifier.blackhole': "true"
           containers:
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
