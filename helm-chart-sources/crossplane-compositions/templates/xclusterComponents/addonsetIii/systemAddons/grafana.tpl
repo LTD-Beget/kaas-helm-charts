@@ -59,7 +59,7 @@ grafana:
                       - name: GRAFANA_OIDC_CLIENT_SECRET
                         value: {{ $argsGrafanaDeploymentEnvOidcSecret }}
                       - name: GF_INSTALL_PLUGINS
-                        value: "grafana-clickhouse-datasource"
+                        value: "grafana-clickhouse-datasource:4.13.0"
                     resources:
                       requests:
                         cpu: "100m"
