@@ -105,6 +105,44 @@ grafana:
                     secret:
                       defaultMode: 420
                       secretName: grafana-monitoring-svc-tls
+
+    grafanaDataSources:
+      victoriametrics:
+        enabled: true
+        spec:
+          allowCrossNamespaceImport: false
+          datasource:
+            access: proxy
+            isDefault: true
+            jsonData:
+              timeInterval: 5s
+            name: victoriametrics
+            type: prometheus
+            url: https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+          resyncPeriod: 10m0s
+
+      grafana-clickhouse-datasource:
+        enabled: true
+        spec:
+          allowCrossNamespaceImport: false
+          datasource:
+            jsonData:
+              timeInterval: 5s
+              host: clickhouse-vmstorage.beget-clickhouse-vmstorage.svc
+              port: 9000
+              username: default
+            secureJsonData:
+              password: dbpswd
+            name: clickhouse-tsdb
+            type: grafana-clickhouse-datasource
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+          resyncPeriod: 10m0s
+
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

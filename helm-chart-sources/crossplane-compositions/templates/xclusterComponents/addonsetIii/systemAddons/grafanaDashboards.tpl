@@ -35,6 +35,10 @@ grafanaDashboards:
         enabled: true
       vmoperator:
         enabled: true
+      clickhouseTSDBNodes:
+        enabled: true
+      clickhouseTSDBPods:
+        enabled: true
       k8s:
         coredns:
           enabled: true

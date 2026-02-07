@@ -1,0 +1,511 @@
+{{- if .Values.grafanaDashboards.clickhouseTSDBNodes.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-clickhouse-tsdb-nodes
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  resyncPeriod: 30s
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 27,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_memory_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "hide": false,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_memory_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "B"
+            }
+          ],
+          "title": "Node Memory in megabytes",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 9
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_cpu_used_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "hide": false,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "B"
+            }
+          ],
+          "title": "Node CPU in cores",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_filesystem_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "hide": false,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'node_filesystem_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "B"
+            }
+          ],
+          "title": "Node Disk in megabytes",
+          "type": "timeseries"
+        }
+      ],
+      "preload": false,
+      "schemaVersion": 40,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "text": "grafana-clickhouse-datasource",
+              "value": "${datasource}"
+            },
+            "label": "datasource",
+            "name": "datasource",
+            "options": [],
+            "query": "grafana-clickhouse-datasource",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "current": {
+              "text": "dlputim6-apmistcs-system-2-infra",
+              "value": "dlputim6-apmistcs-system-2-infra"
+            },
+            "datasource": {
+              "type": "grafana-clickhouse-datasource",
+              "uid": "${datasource}"
+            },
+            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "description": "",
+            "label": "cluster",
+            "name": "cluster",
+            "options": [],
+            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": [
+                "apmistcs-system-2-infra-bdwxn-2djm2"
+              ],
+              "value": [
+                "apmistcs-system-2-infra-bdwxn-2djm2"
+              ]
+            },
+            "datasource": {
+              "type": "grafana-clickhouse-datasource",
+              "uid": "${datasource}"
+            },
+            "definition": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "includeAll": true,
+            "label": "nodename",
+            "multi": true,
+            "name": "nodename",
+            "options": [],
+            "query": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "ClickhouseTSDB / Node",
+      "uid": "clickhouse-tsdb-nodes",
+      "version": 1,
+      "weekStart": ""
+    }

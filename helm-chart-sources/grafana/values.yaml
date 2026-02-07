@@ -1,6 +1,7 @@
 grafana:
   name: grafana
   labels:
+    dashboards: "grafana"
     app.kubernetes.io/name: grafana
   spec:
     config:
@@ -32,6 +33,25 @@ grafana:
                   limits:
                     cpu: 1
                     memory: 2Gi
+
+grafanaDataSources:
+  victoriametrics:
+    enabled: false
+    spec:
+      allowCrossNamespaceImport: false
+      datasource:
+        access: proxy
+        isDefault: true
+        jsonData:
+          timeInterval: 5s
+        name: victoriametrics
+        type: prometheus
+        url: https://vmselect:8481/select/0/prometheus
+      instanceSelector:
+        matchLabels:
+          dashboards: grafana
+      resyncPeriod: 10m0s
+
 monitoring:
   enabled: false
   type: VictoriaMetrics
