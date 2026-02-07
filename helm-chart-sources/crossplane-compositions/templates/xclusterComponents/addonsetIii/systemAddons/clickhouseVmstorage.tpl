@@ -9,6 +9,19 @@ clickhouseVmstorage:
     - vmOperator
     - grafanaOperator
   values:
+    appSpec:
+      applications:
+        carbon:
+          enabled: false
+          containers:
+            carbon:
+              enabled: false
+        graphite:
+          enabled: false
+          containers:
+            graphite:
+              enabled: false
+
     clickhouse:
       resources:
         limits:
