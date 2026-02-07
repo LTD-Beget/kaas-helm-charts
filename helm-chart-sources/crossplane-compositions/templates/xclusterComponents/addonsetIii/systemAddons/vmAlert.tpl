@@ -90,7 +90,7 @@ vmAlert:
             - name: GOMAXPROCS
               value: "4"
           remoteWrite:
-            url: "https://vmagent-gateway.beget-vmcluster.svc:8429/api/v1/write"
+            url: "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
             concurrency: 4
             tlsConfig:
               ca:

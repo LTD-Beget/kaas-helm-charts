@@ -39,9 +39,9 @@ apiVersion: kubernetes.crossplane.io/v1alpha2
 kind: Object
 metadata:
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: systemVmGatewayVip
+    gotemplating.fn.crossplane.io/composition-resource-name: systemVmInsertSvc
     gotemplating.fn.crossplane.io/ready: "True"
-  name: 'vm-gateway-svc-observe'
+  name: 'vm-insert-svc-observe'
 spec:
   deletionPolicy: Orphan
   managementPolicies:
@@ -51,8 +51,8 @@ spec:
       apiVersion: v1
       kind: Service
       metadata:
-        name: vmagent-gateway
-        namespace: beget-vmcluster
+        name: 'vminsert-lb'
+        namespace: 'beget-vmcluster'
   watch: true
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha2
@@ -178,9 +178,9 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "systemVmGatewayVip" | default (dict))) }}
+{{- range (dig "resource" "status" "atProvider" "manifest" "status" "loadBalancer" "ingress" (list) (get $.observed.resources "systemVmInsertSvc" | default (dict))) }}
   {{- if eq .ipMode "VIP" }}
-    {{- $systemVmGatewayVip       =  .ip }}
+    {{- $systemVmInsertVip       =  .ip }}
     {{- break }}
   {{- end }}
 {{- end }}
@@ -199,9 +199,9 @@ spec:
 
 {{- $xAddonSetClientReady        := and $konnectivityAgentReady $kubeadmResourcesReady }}
 
-{{- $remoteWriteUrlVmAgent  := printf "https://%%s:8429/api/v1/write" $systemVmGatewayVip }}
+{{- $remoteWriteUrlVmAgent  := printf "https://%%s:8480/insert/0/prometheus" $systemVmInsertVip }}
 {{- if $systemEnabled }}
-  {{- $remoteWriteUrlVmAgent = "https://vmagent-gateway.beget-vmcluster.svc:8429/api/v1/write" }}
+  {{- $remoteWriteUrlVmAgent = "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus" }}
 {{- end }}
 ###
 ---
