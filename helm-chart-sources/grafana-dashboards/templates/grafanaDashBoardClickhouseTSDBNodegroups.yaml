@@ -3,7 +3,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: grafana-dashboard-clickhouse-tsdb-nodes
+  name: grafana-dashboard-clickhouse-tsdb-nodegroups
   annotations:
     argocd.argoproj.io/sync-options: ServerSideApply=true
 spec:
@@ -32,7 +32,7 @@ spec:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 27,
+      "id": 31,
       "links": [],
       "panels": [
         {
@@ -138,7 +138,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_memory_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_memory_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "A"
             },
             {
@@ -161,7 +161,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_memory_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_memory_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "B"
             }
           ],
@@ -271,7 +271,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_used_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_cpu_used_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "A"
             },
             {
@@ -294,7 +294,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "B"
             }
           ],
@@ -404,7 +404,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_filesystem_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_filesystem_used_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "A"
             },
             {
@@ -427,7 +427,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodename'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_filesystem_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodename'] IN (${nodename:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS TOTAL\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_filesystem_total_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "B"
             }
           ],
@@ -443,7 +443,7 @@ spec:
           {
             "current": {
               "text": "grafana-clickhouse-datasource",
-              "value": "${datasource}"
+              "value": "cfcf7js4av75sa"
             },
             "label": "datasource",
             "name": "datasource",
@@ -475,23 +475,23 @@ spec:
           {
             "current": {
               "text": [
-                "All"
+                "linux"
               ],
               "value": [
-                "$__all"
+                "linux"
               ]
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_node_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['nodegroup']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodegroup'] != ''\nORDER BY 1;",
             "includeAll": true,
-            "label": "nodename",
+            "label": "nodegroup",
             "multi": true,
-            "name": "nodename",
+            "name": "nodegroup",
             "options": [],
-            "query": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_node_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['nodegroup']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodegroup'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -499,14 +499,14 @@ spec:
         ]
       },
       "time": {
-        "from": "now-6h",
+        "from": "now-5m",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "browser",
-      "title": "ClickhouseTSDB / Nodes",
-      "uid": "clickhouse-tsdb-nodes",
-      "version": 1,
+      "title": "ClickhouseTSDB / Nodegroups",
+      "uid": "clickhouse-tsdb-nodegroups",
+      "version": 7,
       "weekStart": ""
     }
 {{- end }}
