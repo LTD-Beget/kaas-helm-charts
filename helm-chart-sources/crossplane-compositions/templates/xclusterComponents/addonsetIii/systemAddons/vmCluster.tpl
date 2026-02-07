@@ -179,7 +179,6 @@ vmCluster:
                     topologyKey: kubernetes.io/hostname
     additionalService:
       # TODO: Стоит переделать на spec.[vminsert|vmselect|vmstorage].serviceSpec
-      # TODO: Удалить сервис после того, как перейдем на сервис vmAgentGateway
       vmcluster:
         enabled: true
         name: vminsert-lb
