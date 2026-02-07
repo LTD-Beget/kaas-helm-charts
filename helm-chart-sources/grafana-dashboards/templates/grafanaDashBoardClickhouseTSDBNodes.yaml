@@ -462,12 +462,12 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_cpu_total_cores'\n  AND tags['cluster'] != ''\nORDER BY 1;",
             "description": "",
             "label": "cluster",
             "name": "cluster",
             "options": [],
-            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_cpu_total_cores'\n  AND tags['cluster'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -475,23 +475,23 @@ spec:
           {
             "current": {
               "text": [
-                "apmistcs-system-2-infra-bdwxn-2djm2"
+                "All"
               ],
               "value": [
-                "apmistcs-system-2-infra-bdwxn-2djm2"
+                "$__all"
               ]
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
             "includeAll": true,
             "label": "nodename",
             "multi": true,
             "name": "nodename",
             "options": [],
-            "query": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_memory_available_mb'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['nodename']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'node_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodename'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
