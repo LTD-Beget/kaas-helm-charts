@@ -280,7 +280,6 @@ spec:
     {{- include "xclusterComponents.addonsetIii.vmAlert" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmAlertRules" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.vmCluster" . | nindent 4 }}
-    # {{- include "xclusterComponents.addonsetIii.clickhouseVmagentAgregator" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.clickhouseInserter" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.clickhouseVmstorage" . | nindent 4 }}
     {{- include "xclusterComponents.addonsetIii.grafana" . | nindent 4 }}
