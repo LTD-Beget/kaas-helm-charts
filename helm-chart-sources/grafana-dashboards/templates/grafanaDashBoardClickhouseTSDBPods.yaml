@@ -135,7 +135,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'pod_cpu_usage_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_cpu_usage_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "A"
             }
           ],
@@ -242,7 +242,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'pod_memory_usage_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_memory_usage_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
               "refId": "A"
             }
           ],
@@ -323,7 +323,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "table",
-              "rawSql": "WITH last AS (\n  SELECT\n    t.tags['cluster']   AS cluster,\n    t.tags['namespace'] AS namespace,\n    t.tags['pod']       AS pod,\n    t.tags['phase']     AS phase,\n    argMax(d.value, d.timestamp) AS v,\n    max(d.timestamp) AS ts\n  FROM timeSeriesData(metrics.ts) AS d\n  INNER JOIN timeSeriesTags(metrics.ts) AS t\n    ON t.id = d.id\n  WHERE\n    t.metric_name = 'pod_status_phase'\n    AND $__timeFilter(d.timestamp)\n    AND t.tags['cluster']   IN (${cluster:singlequote})\n    AND t.tags['namespace'] IN (${namespace:singlequote})\n    AND t.tags['pod']       IN (${pod:singlequote})\n  GROUP BY cluster, namespace, pod, phase\n)\nSELECT\n  cluster,\n  namespace,\n  pod,\n  phase,\n  ts\nFROM last\nWHERE v = 1\nORDER BY cluster, namespace, pod, phase;",
+              "rawSql": "WITH last AS (\n  SELECT\n    t.tags['cluster']   AS cluster,\n    t.tags['namespace'] AS namespace,\n    t.tags['pod']       AS pod,\n    t.tags['phase']     AS phase,\n    argMax(d.value, d.timestamp) AS v,\n    max(d.timestamp) AS ts\n  FROM timeSeriesData(metrics.ts) AS d\n  INNER JOIN timeSeriesTags(metrics.ts) AS t\n    ON t.id = d.id\n  WHERE\n    t.metric_name = 'beget_pod_status_phase'\n    AND $__timeFilter(d.timestamp)\n    AND t.tags['cluster']   IN (${cluster:singlequote})\n    AND t.tags['namespace'] IN (${namespace:singlequote})\n    AND t.tags['pod']       IN (${pod:singlequote})\n  GROUP BY cluster, namespace, pod, phase\n)\nSELECT\n  cluster,\n  namespace,\n  pod,\n  phase,\n  ts\nFROM last\nWHERE v = 1\nORDER BY cluster, namespace, pod, phase;",
               "refId": "A"
             }
           ],
@@ -456,7 +456,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "timeseries",
-              "rawSql": "SELECT\n  t.tags['cluster']   AS cluster,\n  t.tags['namespace'] AS namespace,\n  t.tags['pod']       AS pod,\n  t.tags['phase']     AS phase,\n  argMax(d.value, d.timestamp) AS restarts_total,\n  max(d.timestamp) AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'pod_restarts_total'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY cluster, namespace, pod, phase\nORDER BY restarts_total DESC;",
+              "rawSql": "SELECT\n  t.tags['cluster']   AS cluster,\n  t.tags['namespace'] AS namespace,\n  t.tags['pod']       AS pod,\n  t.tags['phase']     AS phase,\n  argMax(d.value, d.timestamp) AS restarts_total,\n  max(d.timestamp) AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_restarts_total'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY cluster, namespace, pod, phase\nORDER BY restarts_total DESC;",
               "refId": "A"
             }
           ],
@@ -537,7 +537,7 @@ spec:
               },
               "pluginVersion": "4.13.0",
               "queryType": "table",
-              "rawSql": "SELECT\n  t.tags['cluster']          AS cluster,\n  t.tags['namespace']        AS namespace,\n  t.tags['pod']              AS pod,\n  t.tags['container']        AS container,\n  t.tags['phase']            AS phase,\n\n  t.tags['created_by_kind']  AS created_by_kind,\n  t.tags['created_by_name']  AS created_by_name,\n\n  t.tags['node']             AS node,\n  t.tags['host_ip']          AS host_ip,\n  t.tags['pod_ip']           AS pod_ip,\n  t.tags['host_network']     AS host_network,\n  t.tags['priority_class']   AS priority_class,\n\n  argMax(d.value, d.timestamp) AS value,\n  max(d.timestamp)             AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY\n  cluster, namespace, pod, container, phase,\n  created_by_kind, created_by_name,\n  node, host_ip, pod_ip, host_network, priority_class\nORDER BY ts DESC;",
+              "rawSql": "SELECT\n  t.tags['cluster']          AS cluster,\n  t.tags['namespace']        AS namespace,\n  t.tags['pod']              AS pod,\n  t.tags['container']        AS container,\n  t.tags['phase']            AS phase,\n\n  t.tags['created_by_kind']  AS created_by_kind,\n  t.tags['created_by_name']  AS created_by_name,\n\n  t.tags['node']             AS node,\n  t.tags['host_ip']          AS host_ip,\n  t.tags['beget_pod_ip']           AS beget_pod_ip,\n  t.tags['host_network']     AS host_network,\n  t.tags['priority_class']   AS priority_class,\n\n  argMax(d.value, d.timestamp) AS value,\n  max(d.timestamp)             AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY\n  cluster, namespace, pod, container, phase,\n  created_by_kind, created_by_name,\n  node, host_ip, beget_pod_ip, host_network, priority_class\nORDER BY ts DESC;",
               "refId": "A"
             }
           ],
@@ -573,11 +573,11 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
             "label": "cluster",
             "name": "cluster",
             "options": [],
-            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -591,11 +591,11 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
             "label": "namespace",
             "name": "namespace",
             "options": [],
-            "query": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -613,13 +613,13 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
             "includeAll": true,
             "label": "pod",
             "multi": true,
             "name": "pod",
             "options": [],
-            "query": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
