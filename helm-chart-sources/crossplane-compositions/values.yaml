@@ -13,35 +13,11 @@ composite:
     common:
       targetRevision: v0.0.3
 
-    # feature/clickhouse-vmstorage
-    clickhouseinserter:
-      targetRevision: feature/clickhouse
-    clickhousevmstorage:
-      targetRevision: feature/clickhouse
-    grafana:
-      targetRevision: feature/clickhouse
-    grafanadashboards:
-      targetRevision: feature/clickhouse
-    victoriametricsagent:
-      targetRevision: feature/clickhouse
-    victoriametricsalert:
-      targetRevision: feature/clickhouse
-    victoriametricscluster:
-      targetRevision: feature/clickhouse
-
     # external repos
-    begetcmprovider:
-      targetRevision: HEAD
-    capiclusterclass:
-      targetRevision: HEAD
     ccm:
       targetRevision: HEAD
     certcontrollermanager:
       targetRevision: HEAD
-    crossplanexcluster:
-      targetRevision: HEAD
-    crossplanecompositions:
-      targetRevision: v0.0.3
     csrc:
       targetRevision: HEAD
     istiobase:
