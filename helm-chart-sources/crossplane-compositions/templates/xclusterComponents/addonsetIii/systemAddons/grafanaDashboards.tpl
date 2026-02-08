@@ -35,6 +35,8 @@ grafanaDashboards:
         enabled: true
       vmoperator:
         enabled: true
+      clickhouseTSDBNodegroups:
+        enabled: true
       clickhouseTSDBNodes:
         enabled: true
       clickhouseTSDBPods:

@@ -1,4 +1,4 @@
-{{- if .Values.grafanaDashboards.clickhouseTSDBNodes.enabled }}
+{{- if .Values.grafanaDashboards.clickhouseTSDBNodegroups.enabled }}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard

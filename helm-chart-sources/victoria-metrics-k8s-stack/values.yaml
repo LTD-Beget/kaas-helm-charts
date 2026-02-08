@@ -47,23 +47,6 @@ tls:
       ipAddresses:
         - "127.0.0.1"
 
-  vmAgentGateway:
-    enabled: false
-    issuer:
-      kind: ClusterIssuer
-      name: default-issuer-name
-    certificate:
-      name: vminsert-tls
-      secretName: vminsert-tls
-      duration: 8760h
-      renewBefore: 720h
-      commonName: vminsert
-      dnsNames:
-        - vminsert.default.svc
-        - vminsert.default.svc.cluster.local
-      ipAddresses:
-        - "127.0.0.1"
-
   vmSelect:
     enabled: false
     issuer:

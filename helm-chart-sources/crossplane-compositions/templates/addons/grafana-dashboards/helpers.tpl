@@ -6,7 +6,7 @@ repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "grafanadashboards" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
-  grafana-dashboards:
+  grafanaDashboards:
     argocd:
       enabled: false
     ciliumAgent:
@@ -14,6 +14,8 @@ default: |
     cpu:
       enabled: false
     crossplaneCustom:
+      enabled: false
+    dockerRegistry:
       enabled: false
     processLA:
       enabled: false
@@ -25,7 +27,23 @@ default: |
       enabled: false
     vmagent:
       enabled: false
+    vmalert:
+      enabled: false
+    vmcluster:
+      enabled: false
+    vmoperator:
+      enabled: false
+    clickhouseTSDBNodegroups:
+      enabled: false
+    clickhouseTSDBNodes:
+      enabled: false
+    clickhouseTSDBPods:
+      enabled: false
     k8s:
+      apiserver:
+        enabled: true
+      controlplane:
+        enabled: true
       coredns:
         enabled: false
       etcd:
@@ -41,7 +59,7 @@ default: |
       viewsPods:
         enabled: false
 immutable: |
-  grafana-dashboards:
+  grafanaDashboards:
     k8s:
       apiserver:
         enabled: true
