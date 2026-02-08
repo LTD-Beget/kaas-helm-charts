@@ -8,6 +8,9 @@ victoria-metrics-k8s-stack:
   vmalert:
     enabled: false
 
+  clickhouseIserter:
+    enabled: false
+
 monitoring:
   enabled: false
   type: VictoriaMetrics

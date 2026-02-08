@@ -141,11 +141,11 @@ vmCluster:
             tolerations:
               - key: "node-role.kubernetes.io/vm-stream"
                 operator: "Exists"
-                effect: "NoSchedule"   
+                effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
                 secret:
-                  secretName: {{ $clusterName }}-vminsert
+                  secretName: vminsert-tls
             volumeMounts:
               - name: vminsert-tls
                 mountPath: /tls
@@ -188,9 +188,9 @@ vmCluster:
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
         labels:
-          app: "vminsert"
+          app: vminsert
         selector:
-          app.kubernetes.io/name: "vminsert"
+          app.kubernetes.io/name: vminsert
     monitoring:
       enabled: false
       namespace: beget-prometheus
@@ -212,8 +212,8 @@ vmCluster:
           kind: ClusterIssuer
           name: selfsigned-cluster-issuer
         certificate:
-          name: {{ $clusterName }}-vminsert
-          secretName: {{ $clusterName }}-vminsert
+          name: vminsert-tls
+          secretName: vminsert-tls
           commonName: vminsert
           dnsNames:
             - "vminsert"
@@ -235,7 +235,5 @@ vmCluster:
             - "vmselect"
             - "vmselect.beget-vmcluster"
             - "vmselect.beget-vmcluster.svc"
-          ipAddresses:
-            - 127.0.0.1
   ` }}
 {{- end -}}
