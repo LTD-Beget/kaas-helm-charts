@@ -1,0 +1,640 @@
+{{- if .Values.grafanaDashboards.clickhouseTSDBPods.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-clickhouse-tsdb-pods
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  resyncPeriod: 30s
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 28,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_cpu_usage_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            }
+          ],
+          "title": "Pod CPU Usage in cores",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "id": 4,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,\n  avg(d.value) AS USAGES\nFROM timeSeriesData(metrics.ts) d\nJOIN timeSeriesTags(metrics.ts) t ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_memory_usage_mb'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            }
+          ],
+          "title": "Pod Memory Usage in megabytes",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 17,
+            "x": 0,
+            "y": 8
+          },
+          "id": 1,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 1,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "table",
+              "rawSql": "WITH last AS (\n  SELECT\n    t.tags['cluster']   AS cluster,\n    t.tags['namespace'] AS namespace,\n    t.tags['pod']       AS pod,\n    t.tags['phase']     AS phase,\n    argMax(d.value, d.timestamp) AS v,\n    max(d.timestamp) AS ts\n  FROM timeSeriesData(metrics.ts) AS d\n  INNER JOIN timeSeriesTags(metrics.ts) AS t\n    ON t.id = d.id\n  WHERE\n    t.metric_name = 'beget_pod_status_phase'\n    AND $__timeFilter(d.timestamp)\n    AND t.tags['cluster']   IN (${cluster:singlequote})\n    AND t.tags['namespace'] IN (${namespace:singlequote})\n    AND t.tags['pod']       IN (${pod:singlequote})\n  GROUP BY cluster, namespace, pod, phase\n)\nSELECT\n  cluster,\n  namespace,\n  pod,\n  phase,\n  ts\nFROM last\nWHERE v = 1\nORDER BY cluster, namespace, pod, phase;",
+              "refId": "A"
+            }
+          ],
+          "title": "Pod status phase",
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "$namespace/$pod",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "restarts_total"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 7,
+            "x": 17,
+            "y": 8
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  t.tags['cluster']   AS cluster,\n  t.tags['namespace'] AS namespace,\n  t.tags['pod']       AS pod,\n  t.tags['phase']     AS phase,\n  argMax(d.value, d.timestamp) AS restarts_total,\n  max(d.timestamp) AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_restarts_total'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY cluster, namespace, pod, phase\nORDER BY restarts_total DESC;",
+              "refId": "A"
+            }
+          ],
+          "title": "Pod Restart Total",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 3,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 1,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "table",
+              "rawSql": "SELECT\n  t.tags['cluster']          AS cluster,\n  t.tags['namespace']        AS namespace,\n  t.tags['pod']              AS pod,\n  t.tags['container']        AS container,\n  t.tags['phase']            AS phase,\n\n  t.tags['created_by_kind']  AS created_by_kind,\n  t.tags['created_by_name']  AS created_by_name,\n\n  t.tags['node']             AS node,\n  t.tags['host_ip']          AS host_ip,\n  t.tags['pod_ip']           AS pod_ip,\n  t.tags['host_network']     AS host_network,\n  t.tags['priority_class']   AS priority_class,\n\n  argMax(d.value, d.timestamp) AS value,\n  max(d.timestamp)             AS ts\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod']       IN (${pod:singlequote})\nGROUP BY\n  cluster, namespace, pod, container, phase,\n  created_by_kind, created_by_name,\n  node, host_ip, pod_ip, host_network, priority_class\nORDER BY ts DESC;",
+              "refId": "A"
+            }
+          ],
+          "title": "Pod status phase",
+          "type": "table"
+        }
+      ],
+      "preload": false,
+      "refresh": "30s",
+      "schemaVersion": 40,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "text": "grafana-clickhouse-datasource",
+              "value": "${datasource}"
+            },
+            "label": "datasource",
+            "name": "datasource",
+            "options": [],
+            "query": "grafana-clickhouse-datasource",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "current": {
+              "text": "dlputim6-apmistcs-system-2-infra",
+              "value": "dlputim6-apmistcs-system-2-infra"
+            },
+            "datasource": {
+              "type": "grafana-clickhouse-datasource",
+              "uid": "${datasource}"
+            },
+            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "label": "cluster",
+            "name": "cluster",
+            "options": [],
+            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "apmistcs",
+              "value": "apmistcs"
+            },
+            "datasource": {
+              "type": "grafana-clickhouse-datasource",
+              "uid": "${datasource}"
+            },
+            "definition": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "label": "namespace",
+            "name": "namespace",
+            "options": [],
+            "query": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": [
+                "apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc"
+              ],
+              "value": [
+                "apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc"
+              ]
+            },
+            "datasource": {
+              "type": "grafana-clickhouse-datasource",
+              "uid": "${datasource}"
+            },
+            "definition": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "includeAll": true,
+            "label": "pod",
+            "multi": true,
+            "name": "pod",
+            "options": [],
+            "query": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-12h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "ClickhouseTSDB / Pods",
+      "uid": "clickhouse-tsdb-pods",
+      "version": 1,
+      "weekStart": ""
+    }
+{{- end }}
