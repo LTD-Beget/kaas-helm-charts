@@ -640,35 +640,257 @@ GROUP BY time, metric
 ORDER BY time;
 ```
 
+## Метрики Pod'ов
+Метрики и примеры графиков можно посмотреть в графане на дашборде beget-grafana -> ClickhouseTSDB / Pods (по пути https://GRAFANA_ADDR/grafana/d/clickhouse-tsdb-pods)
 
 
-
-
-
-
-
-
-
-
-
-
-### beget_nodegroup_cpu_total_cores
+### beget_pod_status_phase
 #### Описание
-Общее количество CPU на группу нод
+Информация о статусе Pod'ы
 #### Лейблы
 - cluster
-- nodegroup
+- container
+- namespace
+- phase
+- pod
+#### Значения
+cluster:    string
+container:  string
+namespace:  string
+phase:      Enum(Failed,Pending,Running,Succeeded,Unknown)
+pod:        string
+#### Как вычисляется в vmAlert
+```
+group by (cluster, namespace, phase, pod, container) (
+  label_replace(
+    kube_pod_status_phase{pod!="", namespace!=""},
+    "cluster", "$1", "cluster_full_name", "(.*)"
+  )
+)
+```
+#### Пример запроса в Clikhouse
+```
+WITH last AS (
+  SELECT
+    t.tags['cluster']   AS cluster,
+    t.tags['namespace'] AS namespace,
+    t.tags['pod']       AS pod,
+    t.tags['phase']     AS phase,
+    argMax(d.value, d.timestamp) AS v,
+    max(d.timestamp) AS ts
+  FROM timeSeriesData(metrics.ts) AS d
+  INNER JOIN timeSeriesTags(metrics.ts) AS t
+    ON t.id = d.id
+  WHERE
+    t.metric_name = 'beget_pod_status_phase'
+    AND d.timestamp >= toDateTime(1770506450) AND d.timestamp <= toDateTime(1770549650)
+    AND t.tags['cluster']   IN ('dlputim6-apmistcs-system-2-infra')
+    AND t.tags['namespace'] IN ('apmistcs')
+    AND t.tags['pod']       IN ('apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc')
+  GROUP BY cluster, namespace, pod, phase
+)
+SELECT
+  cluster,
+  namespace,
+  pod,
+  phase,
+  ts
+FROM last
+WHERE v = 1
+ORDER BY cluster, namespace, pod, phase;
+```
+
+### beget_pod_restarts_total
+#### Описание
+Общее количество рестартов на pod
+#### Лейблы
+- cluster
+- container
+- namespace
+- pod
+#### Значения
+Счетчик
+#### Как вычисляется в vmAlert
+```
+max by (cluster, namespace, phase, pod, container) (
+  label_replace(
+    kube_pod_container_status_restarts_total{pod!="", namespace!=""},
+    "cluster", "$1", "cluster_full_name", "(.*)"
+  )
+)
+```
+#### Пример запроса в Clikhouse
+```
+SELECT
+  t.tags['cluster']   AS cluster,
+  t.tags['namespace'] AS namespace,
+  t.tags['pod']       AS pod,
+  t.tags['phase']     AS phase,
+  argMax(d.value, d.timestamp) AS restarts_total,
+  max(d.timestamp) AS ts
+FROM timeSeriesData(metrics.ts) AS d
+INNER JOIN timeSeriesTags(metrics.ts) AS t
+  ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_pod_restarts_total'
+  AND d.timestamp >= toDateTime(1770506541) AND d.timestamp <= toDateTime(1770549741)
+  AND t.tags['cluster']   IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['namespace'] IN ('apmistcs')
+  AND t.tags['pod']       IN ('apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc')
+GROUP BY cluster, namespace, pod, phase
+ORDER BY restarts_total DESC;
+```
+
+### beget_pod_info
+#### Описание
+Информация о Pod'е
+#### Лейблы
+- cluster
+- container
+- created_by_kind
+- created_by_name
+- host_ip
+- host_network
+- namespace
+- node
+- pod
+- pod_ip
+- priority_class
+#### Значения
+cluster:          string
+container:        string
+created_by_kind:  Enum(ReplicaSet,StatefulSet,DaemonSet,CronJob,Job)
+created_by_name:  string
+host_ip:          string
+host_network:     Enum(true/false)
+namespace:        string
+pod:              string
+pod_ip:           string
+phase:            Enum(Failed,Pending,Running,Succeeded,Unknown)
+node:             string
+priority_class:   string
+#### Как вычисляется в vmAlert
+```
+(
+  label_replace(
+    kube_pod_info{pod!="", namespace!=""},
+    "cluster", "$1", "cluster_full_name", "(.*)"
+  )
+)
+```
+#### Пример запроса в Clikhouse
+```
+SELECT
+  t.tags['cluster']          AS cluster,
+  t.tags['namespace']        AS namespace,
+  t.tags['pod']              AS pod,
+  t.tags['container']        AS container,
+  t.tags['phase']            AS phase,
+
+  t.tags['created_by_kind']  AS created_by_kind,
+  t.tags['created_by_name']  AS created_by_name,
+
+  t.tags['node']             AS node,
+  t.tags['host_ip']          AS host_ip,
+  t.tags['pod_ip']           AS pod_ip,
+  t.tags['host_network']     AS host_network,
+  t.tags['priority_class']   AS priority_class,
+
+  argMax(d.value, d.timestamp) AS value,
+  max(d.timestamp)             AS ts
+FROM timeSeriesData(metrics.ts) AS d
+INNER JOIN timeSeriesTags(metrics.ts) AS t
+  ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_pod_info'
+  AND d.timestamp >= toDateTime(1770506576) AND d.timestamp <= toDateTime(1770549776)
+  AND t.tags['cluster']   IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['namespace'] IN ('apmistcs')
+  AND t.tags['pod']       IN ('apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc')
+GROUP BY
+  cluster, namespace, pod, container, phase,
+  created_by_kind, created_by_name,
+  node, host_ip, pod_ip, host_network, priority_class
+ORDER BY ts DESC;
+```
+
+### beget_pod_memory_usage_mb
+#### Описание
+Потребление RAM pod'ом
+#### Лейблы
+- cluster
+- container
+- namespace
+- node
+- pod
 #### Значения
 В ядрах
 #### Как вычисляется в vmAlert
 ```
-
+avg by (cluster, node, namespace, pod, container) (
+  label_replace(
+    container_memory_working_set_bytes{pod!="", namespace!=""},
+    "cluster", "$1", "cluster_full_name", "(.*)"
+  )
+)  / 1024 / 1024
 ```
 #### Пример запроса в Clikhouse
 ```
-
+SELECT
+  toStartOfInterval(d.timestamp, INTERVAL 60 SECOND) AS time,
+  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,
+  avg(d.value) AS USAGES
+FROM timeSeriesData(metrics.ts) d
+JOIN timeSeriesTags(metrics.ts) t ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_pod_memory_usage_mb'
+  AND d.timestamp >= toDateTime(1770505465) AND d.timestamp <= toDateTime(1770548665)
+  AND t.tags['cluster']   IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['namespace'] IN ('apmistcs')
+  AND t.tags['pod']       IN ('apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc')
+GROUP BY time, metric
+ORDER BY time;
 ```
 
+### beget_pod_cpu_usage_cores
+#### Описание
+Потребление CPU pod'ом
+#### Лейблы
+- cluster
+- container
+- namespace
+- node
+- pod
+#### Значения
+В ядрах
+#### Как вычисляется в vmAlert
+```
+avg by (cluster, node, namespace, pod, container) (
+  rate(
+    label_replace(
+      container_cpu_usage_seconds_total{pod!="", namespace!=""},
+      "cluster", "$1", "cluster_full_name", "(.*)"
+    )
+  )
+)
+```
+#### Пример запроса в Clikhouse
+```
+SELECT
+  toStartOfInterval(d.timestamp, INTERVAL 30 SECOND) AS time,
+  concat(t.tags['namespace'], '/', t.tags['pod']) AS metric,
+  avg(d.value) AS USAGES
+FROM timeSeriesData(metrics.ts) d
+JOIN timeSeriesTags(metrics.ts) t ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_pod_cpu_usage_cores'
+  AND d.timestamp >= toDateTime(1770505402) AND d.timestamp <= toDateTime(1770548602)
+  AND t.tags['cluster']   IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['namespace'] IN ('apmistcs')
+  AND t.tags['pod']       IN ('apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc')
+GROUP BY time, metric
+ORDER BY time;
+```
 
 ## Рекомендации
 1. В запросах требуется указывать временные промежутки и интервалы.

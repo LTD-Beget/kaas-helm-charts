@@ -422,7 +422,7 @@ clickhouse:
     create-db.sh: |
       #!/bin/bash
       echo "Creating database swarm"
-      clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS swarm"
+      # clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS swarm"
       clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS metrics; SET allow_experimental_time_series_table = 1; CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;"
 
   defaultInitContainers:
