@@ -41,8 +41,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_memory_used_mb'
 
         - annotations: {}
@@ -71,8 +70,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_memory_total_mb'
 
         - annotations: {}
@@ -101,8 +99,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_cpu_used_cores'
 
         - annotations: {}
@@ -129,8 +126,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_cpu_total_cores'
 
         - annotations: {}
@@ -163,8 +159,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_filesystem_used_mb'
 
         - annotations: {}
@@ -193,8 +188,7 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_nodegroup_filesystem_total_mb'
 
     # NODES
@@ -211,8 +205,7 @@ spec:
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             ) / 1024 / 1024
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_memory_used_mb'
 
         - annotations: {}
@@ -225,8 +218,7 @@ spec:
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             ) / 1024 / 1024
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_memory_total_mb'
 
         - annotations: {}
@@ -241,8 +233,7 @@ spec:
               * on(instance) group_left(nodename)
               node_uname_info
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_cpu_used_cores'
 
         - annotations: {}
@@ -255,8 +246,7 @@ spec:
               * on(instance) group_left(nodename)
               node_uname_info
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_cpu_total_cores'
 
         - annotations: {}
@@ -269,8 +259,7 @@ spec:
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             ) / 1024 / 1024
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_filesystem_used_mb'
 
         - annotations: {}
@@ -283,8 +272,7 @@ spec:
                 )
               ) * on(instance) group_left(nodename) node_uname_info
             ) / 1024 / 1024
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_node_filesystem_total_mb'
 
     # PODS
@@ -299,8 +287,7 @@ spec:
                 "cluster", "$1", "cluster_full_name", "(.*)"
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_pod_status_phase'
 
         - annotations: {}
@@ -311,8 +298,7 @@ spec:
                 "cluster", "$1", "cluster_full_name", "(.*)"
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_pod_restarts_total'
 
         - annotations: {}
@@ -323,8 +309,7 @@ spec:
                 "cluster", "$1", "cluster_full_name", "(.*)"
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_pod_info'
 
         - annotations: {}
@@ -335,8 +320,7 @@ spec:
                 "cluster", "$1", "cluster_full_name", "(.*)"
               )
             )  / 1024 / 1024
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_pod_memory_usage_mb'
 
         - annotations: {}
@@ -349,7 +333,6 @@ spec:
                 )
               )
             )
-          labels:
-            in-cloud-metrics: clickhouse
+          labels: {}
           record: 'beget_pod_cpu_usage_cores'
 {{- end }}
