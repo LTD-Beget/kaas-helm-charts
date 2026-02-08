@@ -11,35 +11,18 @@ composition:
 composite:
   addons:
     common:
-      targetRevision: v0.0.3
+      targetRevision: v0.0.4
 
-    # external repos
-    addonsoperator:
-      targetRevision: HEAD
-    begetcmprovider: 
-      targetRevision: feat/new-api-version
-    capiclusterclass:
-      targetRevision: HEAD
     ccm:
       targetRevision: HEAD
     certcontrollermanager:
       targetRevision: HEAD
-    crossplanexcluster:
-      targetRevision: feat/newcapi-backup
-    crossplanecompositions:
-      targetRevision: feat/copy-operator
     csrc:
       targetRevision: HEAD
     istiobase:
       targetRevision: 1.26.0
     secretcopyoperator:
       targetRevision: feature/CLOUD-409
-    capi:
-      targetRevision: feat/copy-operator
-    capikubeadmbootstrap:
-      targetRevision: feat/copy-operator
-    capikubeadmcontrolplane:
-      targetRevision: feat/copy-operator
 
 xclusterComponents:
   client:
