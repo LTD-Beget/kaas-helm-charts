@@ -15,7 +15,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-cluster
+      path: /validate-cluster-x-k8s-io-v1beta2-cluster
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -24,7 +24,7 @@ webhooks:
   - apiGroups:
     - cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -39,7 +39,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-clusterclass
+      path: /validate-cluster-x-k8s-io-v1beta2-clusterclass
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -48,7 +48,7 @@ webhooks:
   - apiGroups:
     - cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -63,167 +63,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-machine
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machine.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machines
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-machinedeployment
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machinedeployment.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinedeployments
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-machinedrainrule
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machinedrainrule.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinedrainrules
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: capi-webhook-service
-      namespace: capi-system
-      path: /validate-cluster-x-k8s-io-v1beta1-machinehealthcheck
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machinehealthcheck.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinehealthchecks
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-machineset
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machineset.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinesets
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-runtime-cluster-x-k8s-io-v1alpha1-extensionconfig
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.extensionconfig.runtime.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - runtime.cluster.x-k8s.io
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - extensionconfigs
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-cluster-x-k8s-io-v1beta1-machinepool
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: validation.machinepool.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinepools
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /validate-addons-cluster-x-k8s-io-v1beta1-clusterresourceset
+      path: /validate-addons-cluster-x-k8s-io-v1beta2-clusterresourceset
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -232,7 +72,7 @@ webhooks:
   - apiGroups:
     - addons.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -246,7 +86,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-addons-cluster-x-k8s-io-v1beta1-clusterresourcesetbinding
+      path: /validate-addons-cluster-x-k8s-io-v1beta2-clusterresourcesetbinding
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -255,7 +95,7 @@ webhooks:
   - apiGroups:
     - addons.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -269,7 +109,30 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-ipam-cluster-x-k8s-io-v1beta1-ipaddress
+      path: /validate-runtime-cluster-x-k8s-io-v1beta2-extensionconfig
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.extensionconfig.runtime.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - runtime.cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - extensionconfigs
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-ipam-cluster-x-k8s-io-v1beta2-ipaddress
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -278,7 +141,7 @@ webhooks:
   - apiGroups:
     - ipam.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -293,7 +156,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /validate-ipam-cluster-x-k8s-io-v1beta1-ipaddressclaim
+      path: /validate-ipam-cluster-x-k8s-io-v1beta2-ipaddressclaim
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -302,7 +165,7 @@ webhooks:
   - apiGroups:
     - ipam.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -310,11 +173,141 @@ webhooks:
     resources:
     - ipaddressclaims
   sideEffects: None
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    cluster.x-k8s.io/provider: bootstrap-kubeadm
-    control-plane: controller-manager
-  name: capi-kubeadm-bootstrap-system
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machine
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machine.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machines
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machinedeployment
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machinedeployment.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinedeployments
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machinedrainrule
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machinedrainrule.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinedrainrules
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machinehealthcheck
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machinehealthcheck.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinehealthchecks
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machinepool
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machinepool.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinepools
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-cluster-x-k8s-io-v1beta2-machineset
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validation.machineset.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinesets
+  sideEffects: None

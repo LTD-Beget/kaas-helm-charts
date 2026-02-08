@@ -11,9 +11,8 @@ composition:
 composite:
   addons:
     common:
-      targetRevision: v0.0.3
+      targetRevision: v0.0.4
 
-    # external repos
     ccm:
       targetRevision: HEAD
     certcontrollermanager:
@@ -23,7 +22,7 @@ composite:
     istiobase:
       targetRevision: 1.26.0
     secretcopyoperator:
-      targetRevision: feature/CLOUD-409
+      targetRevision: HEAD
 
 xclusterComponents:
   client:

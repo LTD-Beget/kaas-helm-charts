@@ -24,7 +24,7 @@ begetCmProvider:
             manager:
               image:
                 pullPolicy: Always
-                tag: v1.2.5
+                tag: capi-migrate
           enabled: true
           tolerations:
           - effect: NoExecute

@@ -15,7 +15,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-cluster
+      path: /mutate-cluster-x-k8s-io-v1beta2-cluster
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -24,7 +24,7 @@ webhooks:
   - apiGroups:
     - cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -38,21 +38,21 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-clusterclass
+      path: /mutate-addons-cluster-x-k8s-io-v1beta2-clusterresourceset
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
-  name: default.clusterclass.cluster.x-k8s.io
+  name: default.clusterresourceset.addons.cluster.x-k8s.io
   rules:
   - apiGroups:
-    - cluster.x-k8s.io
+    - addons.cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
     resources:
-    - clusterclasses
+    - clusterresourcesets
   sideEffects: None
 - admissionReviewVersions:
   - v1
@@ -61,99 +61,7 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-machine
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: default.machine.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machines
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-machinedeployment
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: default.machinedeployment.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinedeployments
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-machinehealthcheck
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: default.machinehealthcheck.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinehealthchecks
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-machineset
-      port: {{ .Values.webhookService.port }}
-  failurePolicy: Fail
-  matchPolicy: Equivalent
-  name: default.machineset.cluster.x-k8s.io
-  rules:
-  - apiGroups:
-    - cluster.x-k8s.io
-    apiVersions:
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - machinesets
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: {{ include "capi.fullname" . }}-webhook-service
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-runtime-cluster-x-k8s-io-v1alpha1-extensionconfig
+      path: /mutate-runtime-cluster-x-k8s-io-v1beta2-extensionconfig
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -162,7 +70,7 @@ webhooks:
   - apiGroups:
     - runtime.cluster.x-k8s.io
     apiVersions:
-    - v1alpha1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -176,7 +84,76 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /mutate-cluster-x-k8s-io-v1beta1-machinepool
+      path: /mutate-cluster-x-k8s-io-v1beta2-machine
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: default.machine.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machines
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-cluster-x-k8s-io-v1beta2-machinedeployment
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: default.machinedeployment.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinedeployments
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-cluster-x-k8s-io-v1beta2-machinehealthcheck
+      port: {{ .Values.webhookService.port }}
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: default.machinehealthcheck.cluster.x-k8s.io
+  rules:
+  - apiGroups:
+    - cluster.x-k8s.io
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinehealthchecks
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "capi.fullname" . }}-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-cluster-x-k8s-io-v1beta2-machinepool
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
@@ -185,7 +162,7 @@ webhooks:
   - apiGroups:
     - cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
@@ -199,19 +176,19 @@ webhooks:
     service:
       name: {{ include "capi.fullname" . }}-webhook-service
       namespace: {{ .Release.Namespace }}
-      path: /mutate-addons-cluster-x-k8s-io-v1beta1-clusterresourceset
+      path: /mutate-cluster-x-k8s-io-v1beta2-machineset
       port: {{ .Values.webhookService.port }}
   failurePolicy: Fail
   matchPolicy: Equivalent
-  name: default.clusterresourceset.addons.cluster.x-k8s.io
+  name: default.machineset.cluster.x-k8s.io
   rules:
   - apiGroups:
-    - addons.cluster.x-k8s.io
+    - cluster.x-k8s.io
     apiVersions:
-    - v1beta1
+    - v1beta2
     operations:
     - CREATE
     - UPDATE
     resources:
-    - clusterresourcesets
+    - machinesets
   sideEffects: None
