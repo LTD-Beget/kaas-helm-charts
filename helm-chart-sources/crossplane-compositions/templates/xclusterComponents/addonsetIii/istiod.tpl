@@ -34,6 +34,7 @@ istiod:
   {{- else }}
       pilot:
         autoscaleMin: 1
+      rollingMaxUnavailable: 1
   {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
