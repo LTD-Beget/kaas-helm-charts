@@ -34,6 +34,8 @@ istiod:
   {{- else }}
       pilot:
         autoscaleMin: 1
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
   {{- end }}
     monitoring:
     {{ if $infraVMOperatorReady }}
