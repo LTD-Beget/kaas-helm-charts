@@ -123,7 +123,7 @@ sum by (cluster, nodegroup) (
         kube_node_labels,
         "nodename", "$1", "node", "(.*)"
       ),
-      "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+      "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
     )
   )
 )
@@ -176,7 +176,7 @@ sum by (cluster, nodegroup) (
         kube_node_labels,
         "nodename", "$1", "node", "(.*)"
       ),
-      "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+      "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
     )
   )
 )
@@ -229,7 +229,7 @@ sum by (cluster, nodegroup) (
         kube_node_labels,
         "nodename", "$1", "node", "(.*)"
       ),
-      "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+      "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
     )
   )
 )
@@ -279,7 +279,7 @@ sum by (cluster, nodegroup) (
           kube_node_labels,
           "nodename", "$1", "node", "(.*)"
         ),
-        "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+        "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
       )
     )
   )
@@ -337,7 +337,7 @@ sum by (cluster, nodegroup) (
         kube_node_labels,
         "nodename", "$1", "node", "(.*)"
       ),
-      "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+      "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
     )
   )
 )
@@ -390,7 +390,7 @@ sum by (cluster, nodegroup) (
         kube_node_labels,
         "nodename", "$1", "node", "(.*)"
       ),
-      "nodegroup", "$1", "label_kubernetes_io_os", "(.*)"
+      "nodegroup", "$1", "label_worker_group_beget_com_name", "(.*)"
     )
   )
 )
