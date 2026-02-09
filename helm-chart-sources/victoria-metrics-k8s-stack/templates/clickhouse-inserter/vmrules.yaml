@@ -203,7 +203,8 @@ spec:
                   (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes),
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
-              ) * on(instance) group_left(nodename) node_uname_info
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
             ) / 1024 / 1024
           labels: {}
           record: 'beget_node_memory_used_mb'
@@ -216,7 +217,8 @@ spec:
                   node_memory_MemTotal_bytes{},
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
-              ) * on(instance) group_left(nodename) node_uname_info
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
             ) / 1024 / 1024
           labels: {}
           record: 'beget_node_memory_total_mb'
@@ -231,7 +233,7 @@ spec:
                 )[5m]
               )
               * on(instance) group_left(nodename)
-              node_uname_info
+                max by (instance, nodename) (node_uname_info)
             )
           labels: {}
           record: 'beget_node_cpu_used_cores'
@@ -244,7 +246,7 @@ spec:
                 "cluster", "$1", "cluster_full_name", "(.*)"
               )
               * on(instance) group_left(nodename)
-              node_uname_info
+                max by (instance, nodename) (node_uname_info)
             )
           labels: {}
           record: 'beget_node_cpu_total_cores'
@@ -257,7 +259,8 @@ spec:
                   (node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}),
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
-              ) * on(instance) group_left(nodename) node_uname_info
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
             ) / 1024 / 1024
           labels: {}
           record: 'beget_node_filesystem_used_mb'
@@ -270,7 +273,8 @@ spec:
                   node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"},
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 )
-              ) * on(instance) group_left(nodename) node_uname_info
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
             ) / 1024 / 1024
           labels: {}
           record: 'beget_node_filesystem_total_mb'
@@ -281,11 +285,15 @@ spec:
       rules:
         - annotations: {}
           expr: |-
-            group by (cluster, namespace, phase, pod, container) (
-              label_replace(
-                kube_pod_status_phase{pod!="", namespace!=""},
-                "cluster", "$1", "cluster_full_name", "(.*)"
-              )
+            max by (cluster, namespace, pod, container, phase) (
+              (
+                max by (cluster, namespace, pod, container, phase) (
+                  label_replace(
+                    kube_pod_status_phase{pod!="", namespace!=""},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  )
+                )
+              ) == 1
             )
           labels: {}
           record: 'beget_pod_status_phase'
