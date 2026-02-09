@@ -113,7 +113,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
@@ -165,7 +165,7 @@ sum by (cluster, nodegroup) (
           "cluster", "$1", "cluster_full_name", "(.*)"
         )
         * on(instance) group_left(nodename)
-        node_uname_info
+        max by (instance, nodename) (node_uname_info)
       )
     ) / 1024 / 1024
   )
@@ -219,7 +219,7 @@ sum by (cluster, nodegroup) (
         )[5m]
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     )
   )
   * on(nodename) group_left(nodegroup)
@@ -270,7 +270,7 @@ sum by (cluster, nodegroup) (
         "cluster", "$1", "cluster_full_name", "(.*)"
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     )
     * on(nodename) group_left(nodegroup)
     max by (nodename, nodegroup) (
@@ -327,7 +327,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
@@ -380,7 +380,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
