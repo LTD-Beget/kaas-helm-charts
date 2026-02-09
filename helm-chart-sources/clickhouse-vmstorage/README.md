@@ -113,7 +113,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
@@ -165,7 +165,7 @@ sum by (cluster, nodegroup) (
           "cluster", "$1", "cluster_full_name", "(.*)"
         )
         * on(instance) group_left(nodename)
-        node_uname_info
+        max by (instance, nodename) (node_uname_info)
       )
     ) / 1024 / 1024
   )
@@ -219,7 +219,7 @@ sum by (cluster, nodegroup) (
         )[5m]
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     )
   )
   * on(nodename) group_left(nodegroup)
@@ -270,7 +270,7 @@ sum by (cluster, nodegroup) (
         "cluster", "$1", "cluster_full_name", "(.*)"
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     )
     * on(nodename) group_left(nodegroup)
     max by (nodename, nodegroup) (
@@ -327,7 +327,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
@@ -380,7 +380,7 @@ sum by (cluster, nodegroup) (
         )
       )
       * on(instance) group_left(nodename)
-      node_uname_info
+      max by (instance, nodename) (node_uname_info)
     ) / 1024 / 1024
   )
   * on(nodename) group_left(nodegroup)
@@ -432,7 +432,8 @@ ORDER BY time;
       (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes),
       "cluster", "$1", "cluster_full_name", "(.*)"
     )
-  ) * on(instance) group_left(nodename) node_uname_info
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
 ) / 1024 / 1024
 ```
 #### Пример запроса в Clikhouse
@@ -469,7 +470,8 @@ ORDER BY time;
       node_memory_MemTotal_bytes{},
       "cluster", "$1", "cluster_full_name", "(.*)"
     )
-  ) * on(instance) group_left(nodename) node_uname_info
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
 ) / 1024 / 1024
 ```
 #### Пример запроса в Clikhouse
@@ -508,7 +510,7 @@ sum by (cluster, nodename) (
     )[5m]
   )
   * on(instance) group_left(nodename)
-  node_uname_info
+    max by (instance, nodename) (node_uname_info)
 )
 ```
 #### Пример запроса в Clikhouse
@@ -545,7 +547,7 @@ count by (cluster, nodename) (
     "cluster", "$1", "cluster_full_name", "(.*)"
   )
   * on(instance) group_left(nodename)
-  node_uname_info
+    max by (instance, nodename) (node_uname_info)
 )
 ```
 #### Пример запроса в Clikhouse
@@ -582,7 +584,8 @@ ORDER BY time;
       (node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}),
       "cluster", "$1", "cluster_full_name", "(.*)"
     )
-  ) * on(instance) group_left(nodename) node_uname_info
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
 ) / 1024 / 1024
 ```
 #### Пример запроса в Clikhouse
@@ -619,7 +622,8 @@ ORDER BY time;
       node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"},
       "cluster", "$1", "cluster_full_name", "(.*)"
     )
-  ) * on(instance) group_left(nodename) node_uname_info
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
 ) / 1024 / 1024
 ```
 #### Пример запроса в Clikhouse
@@ -661,11 +665,15 @@ phase:      Enum(Failed,Pending,Running,Succeeded,Unknown)
 pod:        string
 #### Как вычисляется в vmAlert
 ```
-group by (cluster, namespace, phase, pod, container) (
-  label_replace(
-    kube_pod_status_phase{pod!="", namespace!=""},
-    "cluster", "$1", "cluster_full_name", "(.*)"
-  )
+max by (cluster, namespace, pod, container, phase) (
+  (
+    max by (cluster, namespace, pod, container, phase) (
+      label_replace(
+        kube_pod_status_phase{pod!="", namespace!=""},
+        "cluster", "$1", "cluster_full_name", "(.*)"
+      )
+    )
+  ) == 1
 )
 ```
 #### Пример запроса в Clikhouse
