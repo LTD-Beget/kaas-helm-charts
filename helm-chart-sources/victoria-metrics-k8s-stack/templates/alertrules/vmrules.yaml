@@ -1,0 +1,102 @@
+{{- $vmrules := .Values.alertRules }}
+{{- range $VMRuleName, $VMRule := $vmrules.vmrules }}
+{{- if $VMRule.enabled }}
+{{- $additionsLabels := deepCopy ($vmrules.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
+
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: {{ include "victoria-metrics-k8s-stack.fullname" $ }}-{{ $VMRuleName | kebabcase }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "victoria-metrics-k8s-stack.labels" $ | nindent 4 }}
+    {{- with $additionsLabels }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    {{- range $groupName, $group := $VMRule.groups }}
+    {{- if $group.enabled }}
+    - name: {{ $groupName | kebabcase }}
+      rules:
+      {{- range $ruleName, $rule := $group.rules }}
+        {{- if $rule.enabled }}
+        {{- $ruleSpec := $rule.spec }}
+        - expr: |
+            {{ $ruleSpec.expr | nindent 12 }}
+          {{- if $ruleSpec.record }}
+          record: {{ $ruleSpec.record }}
+          {{- else }}
+          alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+          {{- end }}
+          {{- with $ruleSpec.annotations }}
+          annotations:
+          {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $ruleSpec.debug }}
+          debug: {{ . }}
+          {{- end }}
+          {{- with $ruleSpec.for }}
+          for: {{ . }}
+          {{- end }}
+          {{- with $ruleSpec.keep_firing_for }}
+          keep_firing_for: {{ . }}
+          {{- end }}
+          {{- with $ruleSpec.labels }}
+          labels:
+          {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $ruleSpec.update_entries_limit }}
+          update_entries_limit: {{ . }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- with $group.concurrency }}
+      concurrency: {{ . }}
+      {{- end }}
+      {{- with $group.eval_alignment }}
+      eval_alignment: {{ . }}
+      {{- end }}
+      {{- with $group.eval_delay }}
+      eval_delay: {{ . }}
+      {{- end }}
+      {{- with $group.eval_offset }}
+      eval_offset: {{ . }}
+      {{- end }}
+      {{- with $group.extra_filter_labels }}
+      extra_filter_labels:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $group.headers }}
+      headers:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $group.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with $group.labels }}
+      labels:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $group.limit }}
+      limit: {{ . }}
+      {{- end }}
+      {{- with $group.notifier_headers }}
+      notifier_headers:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $group.params }}
+      params:
+      {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $group.tenant }}
+      tenant: {{ . }}
+      {{- end }}
+      {{- with $group.type }}
+      type: {{ . }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
