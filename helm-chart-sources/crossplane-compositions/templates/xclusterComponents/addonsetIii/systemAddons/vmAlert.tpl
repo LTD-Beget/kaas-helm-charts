@@ -39,7 +39,6 @@ vmAlert:
                   port: 11043
                   protocol: TCP
                   targetPort: https-metrics
-              useAsDefault: true
           containers:
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
