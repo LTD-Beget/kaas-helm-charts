@@ -15,6 +15,21 @@ clickhouseInserter:
         enabled: true
       vmalert:
         spec:
+          serviceSpec:
+            metadata:
+              name: clickhouse-inserter
+              labels:
+                monitoring.in-cloud.io/service: clickhouse-inserter
+            spec:
+              ports:
+                - name: http
+                  port: 8080
+                  protocol: TCP
+                  targetPort: 8080
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
           extraArgs:
             'notifier.blackhole': "true"
           containers:
