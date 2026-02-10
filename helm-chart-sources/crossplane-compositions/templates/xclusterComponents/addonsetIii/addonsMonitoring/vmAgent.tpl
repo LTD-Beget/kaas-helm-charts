@@ -105,32 +105,52 @@ vmAgent:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
-              - key: "service-scrape.in-cloud.io/exclude"
+              - key: "scrape.in-cloud.io/exclude"
                 operator: DoesNotExist
           serviceScrapeSelector:
             matchExpressions:
-              - key: "service-scrape.in-cloud.io/exclude"
+              - key: "scrape.in-cloud.io/exclude"
                 operator: DoesNotExist
           podScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
+          podScrapeSelector:
+            matchExpressions:
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
+          probeSelector:
+            matchExpressions:
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
           nodeScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
+          staticScrapeSelector:
+            matchExpressions:
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
           staticScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
           probeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "incloud.io/clusterName"
                 values: [{{ $clusterName }}]
+              - key: "scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
           externalLabels:
             cluster_full_name: {{ printf "%%s-%%s" $customer $clusterName }}
             remotewrite_cluster: {{ printf "%%s-%%s" $customer $clusterName }}
