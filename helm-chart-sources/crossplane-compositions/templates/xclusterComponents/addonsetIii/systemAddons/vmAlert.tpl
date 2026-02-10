@@ -12,21 +12,7 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
-          serviceScrapeSpec:
-            metadata:
-              labels:
-                scrape.in-cloud.io/exclude: true
-            selector:
-              matchLabels:
-                monitoring.in-cloud.io/service: vmalert
-            endpoints:
-              - port: https-metrics
-                path: /metrics
-                scheme: HTTPS
-                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                tlsConfig:
-                  serverName: vmalert
-            jobLabel: vmalert
+          serviceScrapeSpec: {}
           serviceSpec:
             metadata:
               name: vmalert
