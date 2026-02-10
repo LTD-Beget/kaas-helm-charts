@@ -16,13 +16,14 @@ vmAlert:
             selector:
               matchLabels:
                 monitoring.in-cloud.io/service: vmalert
+                service-scrape.in-cloud.io/exclude: true
             endpoints:
               - port: https-metrics
                 path: /metrics
                 scheme: HTTPS
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
-                  serverName: vmalert-monitoring
+                  serverName: vmalert
             jobLabel: vmalert
           serviceSpec:
             metadata:
