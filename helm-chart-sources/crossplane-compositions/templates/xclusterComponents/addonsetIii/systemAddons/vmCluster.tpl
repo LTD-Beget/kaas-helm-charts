@@ -44,6 +44,7 @@ vmCluster:
                     readOnly: true
                   - mountPath: /etc/ssl/certs
                     name: trusted-ca-certs
+                    subPath: ca.crt
                     readOnly: true
             storageDataPath: /vm-data
             claimTemplates: []
@@ -67,6 +68,9 @@ vmCluster:
                 secret:
                   defaultMode: 420
                   secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
             serviceSpec:
               metadata:
                 name: vmstorage
@@ -129,6 +133,7 @@ vmCluster:
                     readOnly: true
                   - mountPath: /etc/ssl/certs
                     name: trusted-ca-certs
+                    subPath: ca.crt
                     readOnly: true
             extraArgs:
               dedup.minScrapeInterval: 30s
@@ -171,6 +176,9 @@ vmCluster:
                 secret:
                   defaultMode: 420
                   secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
             volumeMounts:
               - name: vmselect-tls
                 mountPath: /tls
@@ -237,6 +245,7 @@ vmCluster:
                     readOnly: true
                   - mountPath: /etc/ssl/certs
                     name: trusted-ca-certs
+                    subPath: ca.crt
                     readOnly: true
             rollingUpdate:
               maxSurge: 0
@@ -268,6 +277,9 @@ vmCluster:
                 secret:
                   defaultMode: 420
                   secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
             volumeMounts:
               - name: vminsert-tls
                 mountPath: /tls
