@@ -13,18 +13,6 @@ vmAgent:
       fullnameOverride: "vmagent"
       vmagent:
         spec:
-          # serviceScrapeSpec:
-          #   selector:
-          #     matchLabels:
-          #       monitoring.in-cloud.io/service: vmagent
-          #   endpoints:
-          #     - port: https-metrics
-          #       path: /metrics
-          #       scheme: HTTPS
-          #       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-          #       tlsConfig:
-          #         serverName: vmagent-monitoring
-          #   jobLabel: vmagent
           containers:
             - name: config-reloader
               requests:
@@ -100,6 +88,23 @@ vmAgent:
               secret:
                 defaultMode: 420
                 secretName: vmagent-monitoring-svc-tls
+          serviceSpec:
+            metadata:
+              name: vmagent
+              labels:
+                monitoring.in-cloud.io/service: vmagent
+            spec:
+              type: ClusterIP
+              ports:
+                - name: http
+                  port: 8429
+                  protocol: TCP
+                  targetPort: 8429
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+              useAsDefault: true
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In

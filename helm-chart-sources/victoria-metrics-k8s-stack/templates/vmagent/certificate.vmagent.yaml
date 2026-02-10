@@ -11,11 +11,11 @@ spec:
   secretName: vmagent-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: vmagent-monitoring
+  commonName: vmagent
   dnsNames:
-    - vmagent-monitoring
-    - vmagent-monitoring.{{ .Release.Namespace }}
-    - vmagent-monitoring.{{ .Release.Namespace }}.svc
+    - vmagent
+    - vmagent.{{ .Release.Namespace }}
+    - vmagent.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
