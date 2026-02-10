@@ -42,9 +42,9 @@ vmCluster:
                   - name: rbac-proxy-tls
                     mountPath: /app/config/metrics/tls
                     readOnly: true
-                  - mountPath: /etc/ssl/certs
-                    name: trusted-ca-certs
+                  - mountPath: /etc/ssl/certs/ca.crt
                     subPath: ca.crt
+                    name: trusted-ca-certs
                     readOnly: true
             storageDataPath: /vm-data
             claimTemplates: []
@@ -131,9 +131,9 @@ vmCluster:
                   - name: rbac-proxy-tls
                     mountPath: /app/config/metrics/tls
                     readOnly: true
-                  - mountPath: /etc/ssl/certs
-                    name: trusted-ca-certs
+                  - mountPath: /etc/ssl/certs/ca.crt
                     subPath: ca.crt
+                    name: trusted-ca-certs
                     readOnly: true
             extraArgs:
               dedup.minScrapeInterval: 30s
@@ -243,9 +243,9 @@ vmCluster:
                   - name: rbac-proxy-tls
                     mountPath: /app/config/metrics/tls
                     readOnly: true
-                  - mountPath: /etc/ssl/certs
-                    name: trusted-ca-certs
+                  - mountPath: /etc/ssl/certs/ca.crt
                     subPath: ca.crt
+                    name: trusted-ca-certs
                     readOnly: true
             rollingUpdate:
               maxSurge: 0
