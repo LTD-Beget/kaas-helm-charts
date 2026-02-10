@@ -105,6 +105,8 @@ vmAgent:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
+              - key: "service-scrape.in-cloud.io/exclude"
+                operator: DoesNotExist
           serviceScrapeSelector:
             matchExpressions:
               - key: "service-scrape.in-cloud.io/exclude"
