@@ -5,13 +5,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}-vmagent-kube-rbac-proxy
+  name: vmagent-{{ .Release.Name }}-kube-rbac-proxy
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-vmagent
+    name: vmagent-{{ .Release.Name }}
     namespace: {{ .Release.Namespace }}
 {{- end }}

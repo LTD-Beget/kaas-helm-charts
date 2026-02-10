@@ -5,17 +5,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vmagent-monitoring-svc-tls
+  name: {{ .Release.Name }}-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: vmagent-monitoring-svc-tls
+  secretName: {{ .Release.Name }}-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: vmagent
+  commonName: {{ .Release.Name }}
   dnsNames:
-    - vmagent
-    - vmagent.{{ .Release.Namespace }}
-    - vmagent.{{ .Release.Namespace }}.svc
+    - {{ .Release.Name }}
+    - {{ .Release.Name }}.{{ .Release.Namespace }}
+    - {{ .Release.Name }}.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
