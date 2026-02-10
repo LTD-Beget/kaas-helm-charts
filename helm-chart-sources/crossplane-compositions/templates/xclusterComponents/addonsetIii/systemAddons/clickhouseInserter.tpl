@@ -63,7 +63,7 @@ clickhouseInserter:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmalert-monitoring-svc-tls
+                secretName: clickhouse-inserter-monitoring-svc-tls
             - name: trusted-ca-certs
               configMap:
                 name: ca
