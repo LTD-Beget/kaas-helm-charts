@@ -12,7 +12,6 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
-          serviceScrapeSpec: {}
           serviceSpec:
             metadata:
               name: vmalert
