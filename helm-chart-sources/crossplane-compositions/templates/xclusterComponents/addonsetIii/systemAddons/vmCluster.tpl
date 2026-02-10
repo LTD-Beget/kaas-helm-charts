@@ -112,7 +112,8 @@ vmCluster:
                 image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
                 args:
                   - --secure-listen-address=0.0.0.0:11043
-                  - --upstream=http://127.0.0.1:8481
+                  - --upstream=https://127.0.0.1:8481
+                  - --upstream-ca-file=/app/config/vmselect/tls/ca.crt
                   - --tls-cert-file=/app/config/metrics/tls/tls.crt
                   - --tls-private-key-file=/app/config/metrics/tls/tls.key
                   - --v=2
@@ -134,6 +135,9 @@ vmCluster:
                   - mountPath: /etc/ssl/certs/ca.crt
                     subPath: ca.crt
                     name: trusted-ca-certs
+                    readOnly: true
+                  - name: vmselect-tls
+                    mountPath: /app/config/vmselect/tls
                     readOnly: true
             extraArgs:
               dedup.minScrapeInterval: 30s
@@ -224,7 +228,8 @@ vmCluster:
                 image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
                 args:
                   - --secure-listen-address=0.0.0.0:11043
-                  - --upstream=http://127.0.0.1:8480
+                  - --upstream=https://127.0.0.1:8480
+                  - --upstream-ca-file=/app/config/vminsert/tls/ca.crt
                   - --tls-cert-file=/app/config/metrics/tls/tls.crt
                   - --tls-private-key-file=/app/config/metrics/tls/tls.key
                   - --v=2
@@ -246,6 +251,9 @@ vmCluster:
                   - mountPath: /etc/ssl/certs/ca.crt
                     subPath: ca.crt
                     name: trusted-ca-certs
+                    readOnly: true
+                  - name: vmselect-tls
+                    mountPath: /app/config/vminsert/tls
                     readOnly: true
             rollingUpdate:
               maxSurge: 0
