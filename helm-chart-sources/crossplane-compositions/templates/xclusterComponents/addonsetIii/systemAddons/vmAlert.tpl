@@ -13,10 +13,12 @@ vmAlert:
       vmalert:
         spec:
           serviceScrapeSpec:
+            metadata:
+              labels:
+                scrape.in-cloud.io/exclude: true
             selector:
               matchLabels:
                 monitoring.in-cloud.io/service: vmalert
-                scrape.in-cloud.io/exclude: true
             endpoints:
               - port: https-metrics
                 path: /metrics
