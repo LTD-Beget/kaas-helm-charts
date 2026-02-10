@@ -512,7 +512,7 @@ alertRules:
                 expr: |
                   group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                     unless on(cluster_full_name)
-                      up{job="vmagent-monitoring",cluster_type="system"} == 1
+                      up{job="vmagent",cluster_type="system"} == 1
                 for: 2m
                 annotations:
                   description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -527,7 +527,7 @@ alertRules:
                 expr: |
                   group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                     unless on(cluster_full_name)
-                      up{job="vmalert-monitoring",cluster_type="system"} == 1
+                      up{job="vmalert",cluster_type="system"} == 1
                 for: 2m
                 annotations:
                   description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -542,7 +542,7 @@ alertRules:
                 expr: |
                   group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                     unless on(cluster_full_name)
-                      up{job="alertmanager-monitoring",cluster_type="system"} == 1
+                      up{job="alertmanager",cluster_type="system"} == 1
                 for: 2m
                 annotations:
                   description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
