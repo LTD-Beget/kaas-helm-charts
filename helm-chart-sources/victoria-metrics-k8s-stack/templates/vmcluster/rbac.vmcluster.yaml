@@ -1,6 +1,6 @@
 {{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
 
-{{- if and .Values.monitoring.enabled $vmstack.vmalert.enabled }}
+{{- if and .Values.monitoring.enabled $vmstack.vmcluster.enabled }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
