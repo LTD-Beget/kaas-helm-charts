@@ -13,6 +13,21 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
+          serviceSpec:
+            metadata:
+              name: vmalertmanager
+              labels:
+                monitoring.in-cloud.io/service: vmalertmanager
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
           containers:
             - name: alertmanager
               volumeMounts:

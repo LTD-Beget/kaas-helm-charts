@@ -12,6 +12,6 @@ roleRef:
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: vmalertmanager-alertmanager
+    name: vmalertmanager-{{ .Release.Name }}
     namespace: {{ .Release.Namespace }}
 {{- end }}

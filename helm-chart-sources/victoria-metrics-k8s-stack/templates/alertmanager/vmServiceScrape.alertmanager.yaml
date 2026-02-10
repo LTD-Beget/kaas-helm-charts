@@ -10,13 +10,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: alertmanager
+      monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
     - port: https-metrics
       path: /metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: alertmanager-monitoring
-  jobLabel: alertmanager
+        serverName: {{ .Release.Name }}
+  jobLabel: {{ .Release.Name }}
 {{- end }}
