@@ -12,7 +12,7 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
-          serviceScrapeSpec: {}
+          serviceScrapeSpec: null
           containers:
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
