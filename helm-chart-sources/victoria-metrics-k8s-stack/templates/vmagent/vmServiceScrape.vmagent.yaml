@@ -17,6 +17,6 @@ spec:
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: vmagent-monitoring
+        serverName: vmagent
   jobLabel: vmagent
 {{- end }}
