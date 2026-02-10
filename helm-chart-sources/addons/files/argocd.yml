@@ -317,11 +317,11 @@ spec:
         replicas: 1
         resources:
           limits:
-            ephemeral-storage: 1Gi
+            ephemeral-storage: 10Gi
             memory: 1Gi
           requests:
             cpu: 100m
-            ephemeral-storage: 1Gi
+            ephemeral-storage: 10Gi
             memory: 150Mi
         affinity:
           podAffinity:
