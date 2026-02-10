@@ -252,7 +252,7 @@ vmCluster:
                     subPath: ca.crt
                     name: trusted-ca-certs
                     readOnly: true
-                  - name: vmselect-tls
+                  - name: vminsert-tls
                     mountPath: /app/config/vminsert/tls
                     readOnly: true
             rollingUpdate:
