@@ -542,7 +542,7 @@ alertRules:
                 expr: |
                   group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                     unless on(cluster_full_name)
-                      up{job="alertmanager",cluster_type="system"} == 1
+                      up{job="vmalertmanager",cluster_type="system"} == 1
                 for: 2m
                 annotations:
                   description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
