@@ -65,7 +65,7 @@ vmAlertmanager:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: alertmanager-monitoring-svc-tls
+                secretName: vmalertmanager-monitoring-svc-tls
             - name: alertmanager-tls
               secret:
                 defaultMode: 420
