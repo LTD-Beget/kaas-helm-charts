@@ -11,11 +11,11 @@ spec:
   secretName: vmalert-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: vmalert-monitoring
+  commonName: vmalert
   dnsNames:
-    - vmalert-monitoring
-    - vmalert-monitoring.{{ .Release.Namespace }}
-    - vmalert-monitoring.{{ .Release.Namespace }}.svc
+    - vmalert
+    - vmalert.{{ .Release.Namespace }}
+    - vmalert.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
