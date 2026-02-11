@@ -113,7 +113,7 @@ spec:
             kind: ClusterIssuer
             name: selfsigned-cluster-issuer
           kubeconfig: false
-          kubeconfigEndpoint: {{ printf "https://%%s:%%v" .Values.cluster.host .Values.cluster.port }}
+          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
       issuer:
         apiVersion: cert-manager.io/v1
         kind: ClusterIssuer
