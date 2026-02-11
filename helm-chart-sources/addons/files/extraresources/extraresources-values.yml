@@ -36,3 +36,14 @@ spec:
             name: selfsigned-cluster-issuer
           kubeconfig: false
           kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
+      issuer:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          annotations:
+            gotemplating.fn.crossplane.io/composition-resource-name: ClusterIssuerEtcd
+            gotemplating.fn.crossplane.io/ready: "True"
+          name: etcd-ca{{ if eq .Values.environment "client" }}-client{{ end }}
+        spec:
+          ca:
+            secretName: {{ .Values.cluster.name }}-etcd
