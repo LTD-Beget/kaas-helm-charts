@@ -172,10 +172,6 @@ spec:
             - name: health
               configBlock: |-
                 lameduck 5s
-    monitoring:
-      secureService:
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -199,17 +195,10 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: coredns
-                  app.kubernetes.io/instance: coredns
-              topologyKey: kubernetes.io/hostname
     monitoring:
       secureService:
-        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -332,6 +321,29 @@ spec:
             - name: health
               configBlock: |-
                 lameduck 5s
+          
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-multi-control-plane
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsMultiControlPlane
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: coredns
+                  app.kubernetes.io/instance: coredns
+              topologyKey: kubernetes.io/hostname
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -403,4 +415,20 @@ spec:
         priority: 40
         matchLabels:
           addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: coredns
+    - name: multi-control-plane
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.controlPlaneReplicas
+          operator: GreaterThan
+          value: 1
+      selector:
+        name: multi-control-plane
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: coredns
