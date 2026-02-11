@@ -3462,7 +3462,7 @@ spec:
                                         template is the Go template to be used to calculate the value.
                                         A template can reference variables defined in .spec.variables and builtin variables.
                                         Note: The template must evaluate to a valid YAML or JSON value.
-                                      maxLength: 50240
+                                      maxLength: 100240
                                       minLength: 1
                                       type: string
                                     variable:
