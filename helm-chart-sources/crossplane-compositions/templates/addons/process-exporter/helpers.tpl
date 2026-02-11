@@ -36,7 +36,7 @@ default: |
     resources:
       limits:
         memory: 512Mi
-        cpu: 250m
+        cpu: 400m
       requests:
         memory: 128Mi
         cpu: 100m
