@@ -1,0 +1,77 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: extra-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonExtraResources
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  chart: ""
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-extra-resources"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+        namespace: beget-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: environment
+          jsonPath: .data.environment
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: xcluster
+          jsonPath: .data.xcluster
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: certificateset
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: certificateset
+        addons.in-cloud.io/addon: extra-resources

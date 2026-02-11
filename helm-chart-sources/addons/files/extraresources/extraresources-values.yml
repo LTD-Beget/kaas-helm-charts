@@ -1,0 +1,38 @@
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-certificateset
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueExtraResourcesCertificateset
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: certificateset
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      certificate:
+        apiVersion: in-cloud.io/v1alpha1
+        kind: CertificateSet
+        metadata:
+          labels:
+            cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
+            clusterctl.cluster.x-k8s.io/move: "true"
+            xcluster.in-cloud.io/name: {{ .Values.cluster.name }}
+          name: {{ .Values.cluster.name }}
+          namespace: beget-system
+        spec:
+          environment: infra
+          argocdCluster: true
+          issuerRef:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned
+          issuerRefOidc:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
+          kubeconfig: false
+          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
