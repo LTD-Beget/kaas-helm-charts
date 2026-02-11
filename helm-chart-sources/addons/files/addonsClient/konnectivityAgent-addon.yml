@@ -12,12 +12,11 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   releaseName: konnectivity-agent
-  targetCluster: client-cluster
+  targetCluster: {{ .Values.clientName }}
   targetNamespace: "beget-konnectivity-agent"
   variables:
-    cluster_name: in-cluster
-  valuesSources: []
-  initDependencies:
+    cluster_name: {{ .Values.clientName }}
+  valuesSources:
     - name: xclustercomponent
       sourceRef:
         apiVersion: v1
@@ -29,6 +28,7 @@ spec:
           jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
+  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -48,22 +48,3 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: client
         addons.in-cloud.io/addon: konnectivity-agent
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: konnectivity-agent-client
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKonnectivityAgentClient
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: konnectivity-agent
-spec:
-  values: |
-    hostNetwork: true
-    agent:
-      extraArgs:
-        proxy-server-host: {{ .Values.cluster.host }}
-        proxy-server-port: 8132

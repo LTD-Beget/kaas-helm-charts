@@ -1,18 +1,18 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: addon-set
+  name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonAddonSet
+    gotemplating.fn.crossplane.io/composition-resource-name: addonArgocd
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: ""
-  path: "helm-chart-sources/addons"
+  path: "helm-chart-sources/argocd"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-addon-set"
+  targetNamespace: "beget-argocd"
   variables:
     cluster_name: in-cluster
   valuesSources:
@@ -23,8 +23,18 @@ spec:
         name: parameters
         namespace: beget-system
       extract:
-        - as: cluster.client.name
-          jsonPath: .data.clusterClientName
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -36,7 +46,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
+          in-cloud.io/clusterName: infra
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
@@ -44,20 +54,9 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addon-set
-
----
-
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: addon-set-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonSetDefault
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: addon-set
-spec:
-  values: |
-    clientName: {{ .Values.cluster.client.name }}
+        addons.in-cloud.io/addon: argocd
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: argocd

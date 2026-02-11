@@ -1,1 +1,8 @@
-{{ .Files.Get "files/argocd.yml" }}
+{{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+{{ tpl (.Files.Get "files/argocd/addon.yml") . }}
+{{ .Files.Get "files/argocd/values.yml" }}
+
+{{ tpl (.Files.Get "files/argocd/phase.yml") . }}
+
+{{ tpl (.Files.Get "files/argocd/phase.yml") $clientContext }}
