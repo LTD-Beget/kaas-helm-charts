@@ -1,7 +1,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: extra-resources
+  name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
   annotations:
     gotemplating.fn.crossplane.io/composition-resource-name: addonExtraResources
     gotemplating.fn.crossplane.io/ready: "True"
