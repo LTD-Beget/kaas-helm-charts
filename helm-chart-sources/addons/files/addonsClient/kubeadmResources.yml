@@ -1,0 +1,86 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: kubeadm-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  chart: ""
+  path: "helm-chart-sources/kubeadm-resources-client-cp"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: kubeadm-resources
+  targetCluster: clientName-cluster
+  targetNamespace: "beget-kubeadm-resources"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: []
+  initDependencies:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: cluster.name
+          jsonPath: .data.clusterName
+    - name: clientca
+      sourceRef:
+        apiVersion: v1
+        kind: Secret
+        name: clientName-client-ca
+        namespace: beget-system
+      extract:
+        - as: cluster.kubeCaCrtBase64
+          jsonPath: .data["tls.crt"]
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/clusterName: client
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: client
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: client
+        addons.in-cloud.io/addon: kubeadm-resources
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kubeadm-resources-client
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKonnectivityAgentClient
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: kubeadm-resources
+spec:
+  values: |
+    clusterInfo:
+      clusterApiUrl: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+      clusterName: "{{ .Values.cluster.name }}"
+      kubeCaCrtBase64: "{{ .Values.cluster.kubeCaCrtBase64 }}"
+    kubeadmConfig:
+      namespace: kube-system
+      clusterConfiguration:
+        clusterName: "{{ .Values.cluster.name }}"
+        controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+    rbac:
+      authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"
