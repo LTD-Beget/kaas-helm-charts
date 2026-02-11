@@ -30,9 +30,9 @@ spec:
     namespace: "beget-argocd"
     project: "default"
     syncPolicy:
-      #automated:
-      #  prune: true
-      #  selfHeal: true
+      automated:
+        prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
