@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCoredns
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/coredns"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"

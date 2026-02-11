@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCrossplaneCompositions
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/crossplane-compositions"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"

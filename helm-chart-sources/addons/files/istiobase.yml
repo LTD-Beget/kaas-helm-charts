@@ -13,8 +13,6 @@ spec:
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
-  initDependencies: []
   backend: 
     type: "argocd"
     ignoreDifferences:

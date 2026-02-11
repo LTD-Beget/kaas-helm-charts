@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonVmOperator
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/victoria-metrics-operator"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -15,7 +14,6 @@ spec:
   targetNamespace: "beget-vm-operator"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: cert-manager-csi-driver
       criteria:

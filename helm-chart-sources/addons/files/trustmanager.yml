@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonTrustManager
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/trustmanager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"

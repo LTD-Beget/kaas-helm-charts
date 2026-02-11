@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonKubeStateMetrics
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/kube-state-metrics"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -15,7 +14,6 @@ spec:
   targetNamespace: "beget-kube-state-metrics"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: vm-operator
       criteria:

@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCertControllerManager
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "dist/chart"
   pluginName: helm-with-values
   repoURL: "https://github.com/PRO-Robotech/certificate-set"
@@ -15,7 +14,6 @@ spec:
   targetNamespace: "beget-cert-controller-manager"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: cilium
       criteria:

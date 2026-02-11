@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonPrometheusNodeExporter
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/prometheus-node-exporter"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -15,7 +14,6 @@ spec:
   targetNamespace: "beget-prometheus-node-exporter"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: vm-operator
       criteria:

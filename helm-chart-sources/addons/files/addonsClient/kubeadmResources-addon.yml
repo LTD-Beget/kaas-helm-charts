@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/kubeadm-resources-client-cp"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -39,7 +38,6 @@ spec:
       extract:
         - as: cluster.kubeCaCrtBase64
           jsonPath: .data["tls.crt"]
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

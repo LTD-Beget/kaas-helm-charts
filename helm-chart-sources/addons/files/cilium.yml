@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCilium
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   finalizer: false
   path: "helm-chart-sources/cilium"
   pluginName: helm-with-values
@@ -28,7 +27,6 @@ spec:
           jsonPath: .data.clusterName
         - as: cluster.port
           jsonPath: .data.clusterPort #tmp need change -> clusterPort for prod-ready (infra) or clusterClientPort
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

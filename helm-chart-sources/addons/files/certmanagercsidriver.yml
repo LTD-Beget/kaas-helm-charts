@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCertManagerCsiDriver
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/certmanager-csi-driver"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -15,7 +14,6 @@ spec:
   targetNamespace: "beget-certmanager-csi-driver"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: cert-manager
       criteria:

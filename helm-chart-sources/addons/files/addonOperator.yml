@@ -6,14 +6,11 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonAddonOperator
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/addons-operator"
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
   targetCluster: in-cluster
   targetNamespace: "beget-addonsoperators"
-  valuesSources: []
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

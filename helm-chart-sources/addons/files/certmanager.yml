@@ -6,7 +6,6 @@ metadata:
     gotemplating.fn.crossplane.io/composition-resource-name: addonCertManager
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  chart: ""
   path: "helm-chart-sources/certmanager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
@@ -16,7 +15,6 @@ spec:
   targetNamespace: "beget-certmanager"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies:
     - name: cilium
       criteria:
