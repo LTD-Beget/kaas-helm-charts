@@ -80,8 +80,10 @@ vmAlertRules:
           kubernetesApps:
             create: true
             targetNamespace: "beget.*|kube.*|default"
+          # kubernetesResources выключен так как часть правил было
+          # необходимо изменить, поэтому они мигрировали в кастомные
           kubernetesResources:
-            create: true
+            create: false
           kubernetesStorage:
             create: true
             targetNamespace: ".*"
@@ -284,6 +286,28 @@ vmAlertRules:
                 PrometheusScrapeSampleLimitHit:
                   enabled: true
                 PrometheusTargetSyncFailure:
+                  enabled: true
+        kubernetesResources:
+          enabled: true
+          groups:
+            kubernetesResources:
+              enabled: true
+              rules:
+                KubeCPUOvercommit:
+                  enabled: true
+                KubeMemoryOvercommit:
+                  enabled: true
+                KubeCPUQuotaOvercommit:
+                  enabled: true
+                KubeMemoryQuotaOvercommit:
+                  enabled: true
+                KubeQuotaAlmostFull:
+                  enabled: true
+                KubeQuotaFullyUsed:
+                  enabled: true
+                KubeQuotaExceeded:
+                  enabled: true
+                CPUThrottlingHigh:
                   enabled: true
   ` }}
 {{- end -}}
