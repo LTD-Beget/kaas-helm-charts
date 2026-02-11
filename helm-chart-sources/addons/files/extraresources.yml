@@ -70,10 +70,10 @@ spec:
       syncOptions:
         - CreateNamespace=true
   valuesSelectors:
-    - name: default
+    - name: certificateset
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: default
+        addons.in-cloud.io/values: certificateset
         addons.in-cloud.io/addon: extra-resources
 
 ---
