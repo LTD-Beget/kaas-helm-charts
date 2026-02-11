@@ -61,6 +61,8 @@ spec:
   values: |
     kube-state-metrics:
       prometheusScrape: false
+      metricLabelsAllowlist:
+        - nodes=[node-group.beget.com/name]
       customLabels:
         in-cloud.io/clusterName: ""
       resources:

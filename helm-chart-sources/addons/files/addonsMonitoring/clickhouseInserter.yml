@@ -1,43 +1,29 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: istiod
+  name: clickhouse-inserter
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonIstiod
+    gotemplating.fn.crossplane.io/composition-resource-name: addonClickhouseInserter
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  path: "helm-chart-sources/istiod"
+  chart: ""
+  path: "helm-chart-sources/victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
-  releaseName: istiod
   targetCluster: in-cluster
-  targetNamespace: "beget-istio"
+  targetNamespace: "beget-process-exporter"
   variables:
     cluster_name: in-cluster
-  valuesSources:
-    - name: xclustercomponent
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
+  valuesSources: []
   initDependencies:
-    - name: istio-base
+    - name: vm-operator
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
   backend: 
     type: "argocd"
-    ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      jsonPointers:
-      - /webhooks/0/failurePolicy
     namespace: "beget-argocd"
     project: "default"
     syncPolicy:
@@ -55,58 +41,88 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: istiod
+        addons.in-cloud.io/addon: process-exporter
     - name: infra
       priority: 10
       matchLabels:
         addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: istiod
+        addons.in-cloud.io/addon: process-exporter
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-default
+  name: process-exporter-default
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodDefault
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterDefault
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: istiod
+    addons.in-cloud.io/addon: process-exporter
 spec:
   values: |
-    istiod:
-      base:
-        validationCABundle: ""
-      podAnnotations:
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-      pilot:
-        autoscaleMin: 1
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-      global:
-        priorityClassName: system-cluster-critical
-        istioNamespace: beget-istio
-        proxy:
-          tracer: zipkin
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: false
+      defaultRules:
+        create: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: true
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
+
+
+
+
+
+
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-infra
+  name: process-exporter-infra
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodInfra
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterInfra
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: istiod
+    addons.in-cloud.io/addon: process-exporter
 spec:
   values: |
-    istiod:
-      replicaCount: {{ .Values.controlPlaneReplicas }}
+    prometheus-process-exporter:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -119,13 +135,13 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-cert-manager
+  name: process-exporter-cert-manager
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodCertManager
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterCertManager
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: istiod
+    addons.in-cloud.io/addon: process-exporter
 spec:
   values: |
     argocdPlugins:
@@ -140,54 +156,60 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-vm-operator
+  name: process-exporter-vm-operator
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodVmOperator
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterVmOperator
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istiod
+    addons.in-cloud.io/addon: process-exporter
 spec:
   values: |
     monitoring:
       enabled: true
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-multi-control-plane
+  name: process-exporter-system
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodMultiControlPlane
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterSystem
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
-    addons.in-cloud.io/values: multi-control-plane
-    addons.in-cloud.io/addon: istiod
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: process-exporter
 spec:
   values: |
-    istiod:
-      pilot:
-        autoscaleMin: 2
-      podAnnotations:
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: istiod
-                  app.kubernetes.io/instance: istiod
-              topologyKey: kubernetes.io/hostname
+    prometheus-process-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          operator: "Exists"
+          effect: "NoSchedule"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIstiod
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseProcessExporter
     gotemplating.fn.crossplane.io/ready: "True"
-  name: istiod
+  name: process-exporter
 spec:
   rules:
     - name: cert-manager
@@ -201,10 +223,10 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: istiod
+          addons.in-cloud.io/addon: process-exporter
     - name: vm-operator
       criteria:
         - source:
@@ -216,23 +238,24 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 20
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: istiod
-    - name: multi-control-plane
+          addons.in-cloud.io/addon: process-exporter
+    - name: system
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
             name: parameters
             namespace: beget-system
-          jsonPath: $.data.controlPlaneReplicas
-          operator: GreaterThan
-          value: 1
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
       selector:
-        name: multi-control-plane
-        priority: 30
+        name: system
+        priority: 50
         matchLabels:
-          addons.in-cloud.io/values: multi-control-plane
-          addons.in-cloud.io/addon: istiod
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: process-exporter
+
