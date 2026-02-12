@@ -10,7 +10,7 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
   targetCluster: in-cluster
-  targetNamespace: "beget-addonsoperators"
+  targetNamespace: "beget-addonoperators"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
