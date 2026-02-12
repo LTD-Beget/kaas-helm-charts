@@ -1,0 +1,170 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: metrics-server
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonMetricsServer
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/metrics-server"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-metrics-server"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: metrics-server
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: metrics-server
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      metrics:
+        enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseMetricsServer
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: metrics-server
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: metrics-server
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: metrics-server
+

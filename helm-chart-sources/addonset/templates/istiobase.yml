@@ -1,0 +1,3 @@
+{{- if .Values.addons.istiobase.enabled }}
+{{ .Files.Get "files/istiobase.yml" }}
+{{- end }}

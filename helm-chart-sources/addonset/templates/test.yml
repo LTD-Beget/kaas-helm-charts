@@ -1,0 +1,3 @@
+{{- if .Values.addons.test.enabled }}
+{{- .Files.Get "files/test.yml" }}
+{{- end }}

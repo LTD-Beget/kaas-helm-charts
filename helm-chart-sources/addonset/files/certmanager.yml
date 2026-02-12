@@ -1,0 +1,323 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/certmanager"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: cert-manager
+  targetCluster: in-cluster
+  targetNamespace: "beget-certmanager"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cert-manager
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: cert-manager
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: cert-manager
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      installCRDs: true
+      global:
+        priorityClassName: system-cluster-critical
+      cainjector:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      containerSecurityContext:
+        runAsNonRoot: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      startupapicheck:
+        containerSecurityContext:
+          runAsNonRoot: true
+      webhook:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      clusterResourceNamespace: beget-system
+      cainjector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      startupapicheck:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      webhook:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      enableCertificateOwnerRef: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    issuers:
+      selfsignedIssuer:
+        kind: Issuer
+        name: selfsigned-issuer
+        namespace: beget-system
+        spec:
+          selfSigned: {}
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: selfsigned-infra-cluster-ca
+    certificates:
+      mainCA:
+        name: selfsigned-infra-cluster-ca
+        namespace: beget-system
+        spec:
+          issuerRef:
+            group: cert-manager.io
+            kind: Issuer
+            name: selfsigned-issuer
+          privateKey:
+            algorithm: RSA
+            encoding: PKCS1
+            size: 4096
+          duration: 175200h
+          renewBefore: 720h
+          isCA: true
+          commonName: root-ca
+          secretName: selfsigned-infra-cluster-ca
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      cainjector:
+        resources:
+          limits:
+            cpu: 1
+      resources:
+        limits:
+          cpu: 1
+      webhook:
+        resources:
+          limits:
+            cpu: 1
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: cert-manager
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: cert-manager
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: cert-manager
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: cert-manager

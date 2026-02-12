@@ -1,0 +1,125 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/victoria-metrics-operator"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-vm-operator"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cert-manager-csi-driver
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: vm-operator
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: vm-operator
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      env:
+        - name: GOMAXPROCS
+          value: '1'
+        - name: VM_VMAGENTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTMANAGER_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 320Mi
+      admissionWebhooks:
+        enabled: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - victoria-metrics-operator
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - vmoperator-infra
+              topologyKey: failure-domain.beta.kubernetes.io/region
+            weight: 100
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    victoria-metrics-operator:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

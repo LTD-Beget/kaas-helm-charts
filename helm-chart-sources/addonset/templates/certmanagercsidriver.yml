@@ -1,0 +1,3 @@
+{{- if .Values.addons.certmanagercsidriver.enabled }}
+{{ .Files.Get "files/certmanagercsidriver.yml" }}
+{{- end }}

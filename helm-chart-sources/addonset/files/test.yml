@@ -1,19 +1,18 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: addon-set
+  name: test
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonAddonSet
+    gotemplating.fn.crossplane.io/composition-resource-name: addonTest
     gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  path: "helm-chart-sources/addonset"
-  pluginName: helm-with-values
+  path: "helm-chart-sources/helm-inserter"
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
+  pluginName: helm-with-values
+  releaseName: mytest
   targetCluster: in-cluster
-  targetNamespace: "beget-addon-set"
-  variables:
-    cluster_name: in-cluster
+  targetNamespace: "beget-test"
   valuesSources:
     - name: xclustercomponent
       sourceRef:
@@ -22,8 +21,12 @@ spec:
         name: parameters
         namespace: beget-system
       extract:
-        - as: cluster.client.name
-          jsonPath: .data.clusterClientName
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -43,20 +46,29 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addon-set
+        addons.in-cloud.io/addon: addon-test
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: addon-set-default
+  name: test-default
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonSetDefault
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTestDefault
     gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: addon-set
+    addons.in-cloud.io/addon: addon-test
 spec:
   values: |
-    clientName: {{ .Values.cluster.client.name }}
+    resources:
+      configMap:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: mytest
+          namespace: beget-test
+        data:
+          host: "{{ .Values.cluster.host }}"
+          port: "{{ .Values.cluster.port }}"
+          name: "{{ .Values.cluster.name }}"

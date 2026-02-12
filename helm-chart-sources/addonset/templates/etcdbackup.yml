@@ -1,0 +1,3 @@
+{{- if .Values.addons.etcdbackup.enabled }}
+{{ .Files.Get "files/etcdbackup.yml" }}
+{{- end }}

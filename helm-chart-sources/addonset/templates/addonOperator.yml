@@ -1,0 +1,3 @@
+{{- if .Values.addons.addonOperator.enabled }}
+{{ .Files.Get "files/addonOperator.yml" }}
+{{- end }}
