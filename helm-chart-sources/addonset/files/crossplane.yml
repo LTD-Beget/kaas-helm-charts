@@ -1,0 +1,350 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: crossplane
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCrossplane
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/crossplane"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-crossplane"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: coredns
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: crossplane
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: crossplane
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    crossplane:
+      args:
+        - '--enable-realtime-compositions'
+        - '--enable-composition-webhook-schema-validation'
+        - '--enable-composition-functions'
+        - '--enable-usages'
+        - '--poll-interval=5s'
+        - '--sync-interval=1m'
+        - '--max-reconcile-rate=20'
+      extraObjects:
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: crossplane-namespace-admin
+          rules:
+            - apiGroups:
+                - ''
+              resources:
+                - namespaces
+              verbs:
+                - '*'
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: crossplane-namespace-admin
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: crossplane-namespace-admin
+          subjects:
+            - kind: ServiceAccount
+              name: crossplane
+              namespace: beget-crossplane
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: crossplane-xclusters-admin
+          rules:
+            - apiGroups:
+                - cluster.x-k8s.io
+              resources:
+                - xclusters
+                - clusterclaims
+              verbs:
+                - '*'
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: crossplane-xclusters-admin
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: crossplane-xclusters-admin
+          subjects:
+            - kind: ServiceAccount
+              name: crossplane
+              namespace: beget-crossplane
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: crossplane-clusters-admin
+          rules:
+            - apiGroups:
+                - cluster.x-k8s.io
+              resources:
+                - clusters
+              verbs:
+                - '*'
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: crossplane-argocd-admin
+          rules:
+            - apiGroups:
+                - argoproj.io
+              resources:
+                - '*'
+              verbs:
+                - '*'
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: crossplane-argocd-admin
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: crossplane-argocd-admin
+          subjects:
+            - kind: ServiceAccount
+              name: crossplane
+              namespace: beget-crossplane
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: crossplane-cluster-admin
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: cluster-admin
+          subjects:
+            - kind: ServiceAccount
+              name: crossplane
+              namespace: beget-crossplane
+      metrics:
+        enabled: true
+        port: 8080
+      resourcesCrossplane:
+        limits:
+          cpu: 750m
+          memory: 2048Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    crossplane:
+      rbacManager:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-system-and-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneSystemAndInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system-and-initialized
+    addons.in-cloud.io/addon: crossplane
+spec:
+  values: |
+    crossplane:
+      args:
+        - '--enable-realtime-compositions'
+        - '--enable-composition-webhook-schema-validation'
+        - '--enable-composition-functions'
+        - '--enable-usages'
+        - '--leader-election'
+        - '--max-reconcile-rate=200'
+        - '--poll-interval=5s'
+        - '--sync-interval=1m'
+      resourcesCrossplane:
+        requests: { cpu: "4",  memory: "4Gi" }
+        limits:   { cpu: "16", memory: "32Gi" }
+      nodeSelector:
+          node-role.kubernetes.io/crossplane-core: ''
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/crossplane
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/crossplane-core
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/crossplane-prov
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+      functionCache:
+        sizeLimit: 10Gi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCrossplane
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: crossplane
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: crossplane
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: crossplane
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: crossplane
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-and-initialized
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: crossplane

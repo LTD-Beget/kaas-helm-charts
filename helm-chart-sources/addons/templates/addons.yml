@@ -1,1 +1,3 @@
+{{- if .Values.addons.addons.enabled }}
 {{ .Files.Get "files/addons.yml" }}
+{{- end }}

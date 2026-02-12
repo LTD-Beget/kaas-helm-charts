@@ -1,0 +1,211 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: istio-gw
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioGw
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/istio-gw"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-istio-gw"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+    - name: istio-base
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: istio-gw
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: istio-gw
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      priorityClassName: system-cluster-critical
+      service:
+        type: NodePort
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    gateway:
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/type: "external"
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+        ports:
+          - name: status-port
+            port: 15021
+            protocol: TCP
+            targetPort: 15021
+            nodePort: 32021
+          - name: http2
+            port: 80
+            protocol: TCP
+            targetPort: 80
+            nodePort: 32080
+          - name: https
+            port: 443
+            protocol: TCP
+            targetPort: 443
+            nodePort: 32443
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      enabled: true
+      certificate:
+        name: {{ .Values.cluster.name }}-gateway
+        secretName: {{ .Values.cluster.name }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+    extraGateway:
+      enabled: true
+      name: default
+      servers:
+        - hosts: ["*"]
+          port:
+            protocol: HTTPS
+          tls:
+            mode: SIMPLE
+            credentialName: {{ .Values.cluster.name }}-gateway
+        - hosts: ["*"]
+          port:
+            protocol: HTTP 
+    telemetry:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIstioGw
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: istio-gw
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw

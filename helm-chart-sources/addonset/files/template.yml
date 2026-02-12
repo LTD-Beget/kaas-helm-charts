@@ -1,0 +1,342 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: must-replace
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonMustReplace
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/must-replace"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-must-replace"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: must-replace
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: must-replace
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    mustreplace: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    mustreplace: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    monitoring:
+      secureService:
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-istio-base
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceIstioBase
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          name: must-replace
+          route:
+            host: must-replace-server
+            port: 443
+      destinationRule:
+        enabled: true
+        host: must-replace-server
+        trafficPolicy:
+          tls:
+            mode: SIMPLE
+            insecureSkipVerify: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    must-replace:
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: must-replace-system-and-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceSystemAndInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system-and-initialized
+    addons.in-cloud.io/addon: must-replace
+spec:
+  values: |
+    must-replace:
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseMustReplace
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: must-replace
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: must-replace
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: must-replace
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: must-replace
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: must-replace
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: must-replace
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: must-replace
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: must-replace
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: must-replace
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-and-initialized
+        priority: 60
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: must-replace

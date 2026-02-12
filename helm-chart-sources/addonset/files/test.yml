@@ -1,0 +1,74 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: test
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonTest
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "feat/addon"
+  pluginName: helm-with-values
+  releaseName: mytest
+  targetCluster: in-cluster
+  targetNamespace: "beget-test"
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-test
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: test-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTestDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-test
+spec:
+  values: |
+    resources:
+      configMap:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: mytest
+          namespace: beget-test
+        data:
+          host: "{{ .Values.cluster.host }}"
+          port: "{{ .Values.cluster.port }}"
+          name: "{{ .Values.cluster.name }}"

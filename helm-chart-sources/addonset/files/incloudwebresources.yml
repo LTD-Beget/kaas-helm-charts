@@ -1,0 +1,115 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: incloud-web-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIncloudWebResources
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/incloud-web-resources"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-incloud-ui"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:  []
+  initDependencies:
+    - name: incloud-ui
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: incloud-web-resources
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudWebResourcesInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      enabled: true
+      addons:
+        argocd:
+          enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-system-trivy
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudWebResourcesSystemTrivy
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system-trivy
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      addons:
+        trivy:
+          enabled: true
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIncloudWebResources
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-resources
+spec:
+  rules:
+    - name: system-trivy
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-trivy
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system-trivy
+          addons.in-cloud.io/addon: incloud-web-resources
