@@ -45,6 +45,7 @@ addons:
     enabled: true
   system:
     enabled: false
-    clickhouseInserter: false
+    clickhouseInserter: 
+      enabled: false
 environment: infra
 clientName: client-cluster
