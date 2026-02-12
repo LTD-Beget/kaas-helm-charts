@@ -45,7 +45,12 @@ metadata:
     addons.in-cloud.io/addon: addon-operator
 spec:
   values: |
+    certManager:
+      enable: false
     manager:
+      env:
+      - name: ENABLE_WEBHOOKS
+        value: false
       image:
         repository: prorobotech/addons-operator
         tag: v0.1.0-a90bf6c5
@@ -56,5 +61,55 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
     metrics:
+      enable: false
+      port: 8443
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-operator-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonOperatorCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: addon-operator
+spec:
+  values: |
+    certManager:
+      enable: true
+    manager:
+      env:
+      - name: ENABLE_WEBHOOKS
+        value: true
+    metrics:
       enable: true
       port: 8443
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseAddonOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: addon-operator
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: addon-operator
