@@ -175,6 +175,8 @@ spec:
             jqPathExpressions:
             - '.spec.rules[] | select(.name|test("autogen-."))'
           kustomize.buildOptions: --enable-helm
+          timeout.reconciliation: 180s
+          timeout.reconciliation.jitter: 60s
         params:
           application.namespaces: '*'
           applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
@@ -186,6 +188,7 @@ spec:
           controller.self.heal.backoff.timeout.seconds: "10s"
           controller.self.heal.backoff.factor: "1"
           controller.self.heal.backoff.cap.seconds: "30m"
+          controller.sync.timeout.seconds: 120
           server.basehref: /argocd
           server.rootpath: /argocd
           server.staticassets: /shared/app

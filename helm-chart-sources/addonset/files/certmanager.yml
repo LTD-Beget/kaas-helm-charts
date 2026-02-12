@@ -89,6 +89,7 @@ spec:
           cpu: 100m
           memory: 128Mi
       startupapicheck:
+        enabled: false
         containerSecurityContext:
           runAsNonRoot: true
       webhook:
