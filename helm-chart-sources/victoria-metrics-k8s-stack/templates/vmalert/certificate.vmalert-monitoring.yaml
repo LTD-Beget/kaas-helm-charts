@@ -5,17 +5,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vmalert-monitoring-svc-tls
+  name: {{ .Release.Name }}-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: vmalert-monitoring-svc-tls
+  secretName: {{ .Release.Name }}-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: vmalert-monitoring
+  commonName: {{ .Release.Name }}
   dnsNames:
-    - vmalert-monitoring
-    - vmalert-monitoring.{{ .Release.Namespace }}
-    - vmalert-monitoring.{{ .Release.Namespace }}.svc
+    - {{ .Release.Name }}
+    - {{ .Release.Name }}.{{ .Release.Namespace }}
+    - {{ .Release.Name }}.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

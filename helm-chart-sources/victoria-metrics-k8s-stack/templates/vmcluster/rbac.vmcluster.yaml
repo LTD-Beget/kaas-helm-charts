@@ -1,17 +1,17 @@
 {{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
 
-{{- if and .Values.monitoring.enabled $vmstack.vmagent.enabled }}
+{{- if and .Values.monitoring.enabled $vmstack.vmcluster.enabled }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: vmagent-{{ .Release.Name }}-kube-rbac-proxy
+  name: {{ .Release.Name }}-vmcluster-kube-rbac-proxy
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: vmagent-{{ .Release.Name }}
+    name: {{ .Release.Name }}-vmcluster-victoria-metrics-k8s-stack
     namespace: {{ .Release.Namespace }}
 {{- end }}
