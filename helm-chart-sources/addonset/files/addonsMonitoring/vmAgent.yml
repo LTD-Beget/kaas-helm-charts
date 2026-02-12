@@ -381,7 +381,7 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmagent-monitoring-svc-tls
+                secretName: vm-agent-monitoring-svc-tls
     monitoring:
       secureService:
         enabled: true
