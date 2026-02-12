@@ -184,10 +184,10 @@ spec:
           # repo.server: 127.0.0.1:8081
           # redis.server: 127.0.0.1:6379
           controller.sharding.algorithm: round-robin
-          controller.self.heal.timeout.seconds: "10s"
-          controller.self.heal.backoff.timeout.seconds: "10s"
-          controller.self.heal.backoff.factor: "1"
-          controller.self.heal.backoff.cap.seconds: "30m"
+          controller.self.heal.timeout.seconds: "20s"
+          controller.self.heal.backoff.timeout.seconds: "20s"
+          controller.self.heal.backoff.factor: "2"
+          controller.self.heal.backoff.cap.seconds: "120s"
           controller.sync.timeout.seconds: 120
           server.basehref: /argocd
           server.rootpath: /argocd
