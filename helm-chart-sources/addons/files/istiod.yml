@@ -78,6 +78,8 @@ spec:
     istiod:
       base:
         validationCABundle: ""
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
       pilot:
         autoscaleMin: 1
         resources:
@@ -167,6 +169,8 @@ spec:
     istiod:
       pilot:
         autoscaleMin: 2
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
