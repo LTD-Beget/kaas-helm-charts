@@ -1,1 +1,3 @@
+{{- if .Values.addons.istiogw.enabled }}
 {{ .Files.Get "files/istiogw.yml" }}
+{{- end }}

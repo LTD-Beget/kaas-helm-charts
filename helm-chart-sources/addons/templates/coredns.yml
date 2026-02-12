@@ -1,1 +1,3 @@
+{{- if .Values.addons.coredns.enabled }}
 {{- .Files.Get "files/coredns.yml" }}
+{{- end }}
