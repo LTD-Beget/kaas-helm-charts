@@ -13,24 +13,6 @@ composite:
     common:
       targetRevision: v0.0.4
 
-    # feature/alerting
-    clickhouseinserter:
-      targetRevision: feature/alerting
-    crossplanecompositions:
-      targetRevision: feature/alerting
-    processexporter:
-      targetRevision: feature/alerting
-    victoriametricsagent:
-      targetRevision: feature/alerting
-    victoriametricsalert:
-      targetRevision: feature/alerting
-    victoriametricsalertmanager:
-      targetRevision: feature/alerting
-    victoriametricsalertrules:
-      targetRevision: feature/alerting
-    victoriametricscluster:
-      targetRevision: feature/alerting
-
     # external repos
     ccm:
       targetRevision: HEAD
