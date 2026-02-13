@@ -1,0 +1,34 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-base-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-base
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-base-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-base
+spec:
+  values: |
+    global:
+      istioNamespace: beget-istio
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-base-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: istio-base
+spec:
+  values: ""

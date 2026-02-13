@@ -1,10 +1,9 @@
+{{- define "istio-base.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: istio-base
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioBase
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: "base"
   repoURL: "https://istio-release.storage.googleapis.com/charts"
@@ -39,20 +38,9 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-base
-
----
-
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-base-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioBaseDefault
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: istio-base
-spec:
-  values: |
-    global:
-      istioNamespace: beget-istio
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: istio-base
+{{- end }}
