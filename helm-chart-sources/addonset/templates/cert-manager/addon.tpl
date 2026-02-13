@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/cert-manager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  version: "feat/addons"
   releaseName: cert-manager
   targetCluster: in-cluster
   targetNamespace: "beget-cert-manager"

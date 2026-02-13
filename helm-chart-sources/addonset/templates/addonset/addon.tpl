@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/addonset"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addonset"
+  version: "feat/addons"
   targetCluster: in-cluster
   targetNamespace: "beget-addonset"
   variables:
