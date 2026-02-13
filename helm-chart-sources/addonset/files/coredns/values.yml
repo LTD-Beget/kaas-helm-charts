@@ -1,71 +1,8 @@
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
-metadata:
-  name: coredns
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonCoredns
-    gotemplating.fn.crossplane.io/ready: "True"
-spec:
-  path: "helm-chart-sources/coredns"
-  pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
-  targetCluster: in-cluster
-  targetNamespace: "beget-coredns"
-  variables:
-    cluster_name: in-cluster
-  valuesSources:
-    - name: xclustercomponent
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
-  initDependencies:
-    - name: cilium
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend: 
-    type: "argocd"
-    namespace: "beget-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: default
-      priority: 0
-      matchLabels:
-        addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: coredns
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: coredns
-
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: coredns
@@ -177,10 +114,18 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: coredns-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: coredns-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: coredns
@@ -205,9 +150,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: initialized
     addons.in-cloud.io/addon: coredns
@@ -221,9 +163,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: "cert-manager"
     addons.in-cloud.io/addon: coredns
@@ -240,9 +179,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: coredns
@@ -256,9 +192,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: coredns
@@ -327,9 +260,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: coredns-multi-control-plane
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsMultiControlPlane
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: multi-control-plane
     addons.in-cloud.io/addon: coredns
@@ -344,91 +274,3 @@ spec:
                   app.kubernetes.io/name: coredns
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCoredns
-    gotemplating.fn.crossplane.io/ready: "True"
-  name: coredns
-spec:
-  rules:
-    - name: initialized
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: coredns
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: coredns
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: coredns
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: coredns
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters
-            namespace: beget-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "True"
-      selector:
-        name: system
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: coredns
-    - name: multi-control-plane
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters
-            namespace: beget-system
-          jsonPath: $.data.controlPlaneReplicas
-          operator: GreaterThan
-          value: 1
-      selector:
-        name: multi-control-plane
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: multi-control-plane
-          addons.in-cloud.io/addon: coredns
