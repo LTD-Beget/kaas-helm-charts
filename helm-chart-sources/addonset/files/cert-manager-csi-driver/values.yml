@@ -1,0 +1,68 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    cert-manager-csi-driver:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    cert-manager-csi-driver:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    monitoring:
+      enabled: true
