@@ -1,9 +1,9 @@
-{{- define "trust-manager.phase" }}
+{{- define "istio-gw.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: trust-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+  name: istio-gw
 spec:
   rules:
     - name: infra
@@ -21,7 +21,7 @@ spec:
         priority: 10
         matchLabels:
           addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: trust-manager
+          addons.in-cloud.io/addon: istio-gw
     - name: vm-operator
       criteria:
         - source:
@@ -33,24 +33,8 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 10
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: trust-manager
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
-            namespace: beget-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "True"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: trust-manager
+          addons.in-cloud.io/addon: istio-gw
 {{- end }}

@@ -1,0 +1,119 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      priorityClassName: system-cluster-critical
+      service:
+        type: NodePort
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    gateway:
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/type: "external"
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+        ports:
+          - name: status-port
+            port: 15021
+            protocol: TCP
+            targetPort: 15021
+            nodePort: 32021
+          - name: http2
+            port: 80
+            protocol: TCP
+            targetPort: 80
+            nodePort: 32080
+          - name: https
+            port: 443
+            protocol: TCP
+            targetPort: 443
+            nodePort: 32443
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      enabled: true
+      certificate:
+        name: {{ .Values.cluster.name }}-gateway
+        secretName: {{ .Values.cluster.name }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+    extraGateway:
+      enabled: true
+      name: default
+      servers:
+        - hosts: ["*"]
+          port:
+            protocol: HTTPS
+          tls:
+            mode: SIMPLE
+            credentialName: {{ .Values.cluster.name }}-gateway
+        - hosts: ["*"]
+          port:
+            protocol: HTTP 
+    telemetry:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    monitoring:
+      enabled: true

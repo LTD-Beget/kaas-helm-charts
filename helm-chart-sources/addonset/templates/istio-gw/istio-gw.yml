@@ -1,0 +1,13 @@
+{{- if .Values.addons.istiogw.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "istio-gw.addon" . }}
+
+  {{- .Files.Get "files/istio-gw/values.yml" | nindent 0 }}
+
+  {{- include "istio-gw.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "istio-gw.phase" $clientContext }}
+  {{- end }}
+{{- end }}

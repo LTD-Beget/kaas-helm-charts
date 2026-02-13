@@ -1,16 +1,19 @@
-{{- define "trust-manager.addon" }}
+{{- define "istio-gw.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: trust-manager
+  name: istio-gw
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioGw
+    gotemplating.fn.crossplane.io/ready: "True"
 spec:
-  path: "helm-chart-sources/trustmanager"
+  path: "helm-chart-sources/istio-gw"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-trust-manager"
+  targetNamespace: "beget-istio-gw"
   variables:
     cluster_name: in-cluster
   valuesSources:
@@ -29,8 +32,18 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
+    - name: istio-base
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
     namespace: "beget-argocd"
     project: "default"
     syncPolicy:
@@ -49,11 +62,11 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: trust-manager
+        addons.in-cloud.io/addon: istio-gw
     - name: immutable
-      priority: 0
+      priority: 10
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: trust-manager
-
+        addons.in-cloud.io/addon: istio-gw
 {{- end }}
+
