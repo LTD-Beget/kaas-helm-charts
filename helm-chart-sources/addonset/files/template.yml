@@ -63,6 +63,7 @@ spec:
           in-cloud.io/caBundle: approved
           in-cloud.io/clusterName: in-cluster
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
     - name: default
@@ -124,6 +125,7 @@ spec:
       secureService:
         issuer:
           name: selfsigned-cluster-issuer
+
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue

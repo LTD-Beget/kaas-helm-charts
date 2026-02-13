@@ -50,6 +50,7 @@ spec:
         labels:
           in-cloud.io/clusterName: client
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
     - name: client

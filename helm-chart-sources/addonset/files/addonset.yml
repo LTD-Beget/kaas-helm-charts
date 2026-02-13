@@ -37,6 +37,7 @@ spec:
           in-cloud.io/caBundle: approved
           in-cloud.io/clusterName: in-cluster
       syncOptions:
+        - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
     - name: default
