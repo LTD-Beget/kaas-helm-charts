@@ -1,16 +1,17 @@
-{{- define "trust-manager.addon" }}
+{{- define "istiod.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: trust-manager
+  name: istiod
 spec:
-  path: "helm-chart-sources/trustmanager"
+  path: "helm-chart-sources/istiod"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
+  releaseName: istiod
   targetCluster: in-cluster
-  targetNamespace: "beget-trust-manager"
+  targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
   valuesSources:
@@ -21,16 +22,21 @@ spec:
         name: parameters
         namespace: beget-system
       extract:
-        - as: cluster.name
-          jsonPath: .data.clusterName
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
   initDependencies:
-    - name: cert-manager
+    - name: istio-base
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
   backend: 
     type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
     namespace: "beget-argocd"
     project: "default"
     syncPolicy:
@@ -49,11 +55,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: trust-manager
+        addons.in-cloud.io/addon: istiod
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: trust-manager
-
+        addons.in-cloud.io/addon: istiod
 {{- end }}

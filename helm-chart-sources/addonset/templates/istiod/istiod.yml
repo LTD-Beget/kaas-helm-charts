@@ -1,0 +1,13 @@
+{{- if .Values.addons.istiod.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "istiod.addon" . }}
+
+  {{- .Files.Get "files/istiod/values.yml" | nindent 0 }}
+
+  {{- include "istiod.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "istiod.phase" $clientContext }}
+  {{- end }}
+{{- end }}

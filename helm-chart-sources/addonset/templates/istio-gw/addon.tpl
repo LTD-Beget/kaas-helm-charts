@@ -4,9 +4,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: istio-gw
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioGw
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/istio-gw"
   pluginName: helm-with-values
@@ -64,7 +61,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-gw
     - name: immutable
-      priority: 10
+      priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-gw

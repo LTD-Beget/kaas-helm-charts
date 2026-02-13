@@ -1,0 +1,116 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      base:
+        validationCABundle: ""
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      pilot:
+        autoscaleMin: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      global:
+        priorityClassName: system-cluster-critical
+        istioNamespace: beget-istio
+        proxy:
+          tracer: zipkin
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-multi-control-plane
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      pilot:
+        autoscaleMin: 2
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: istiod
+                  app.kubernetes.io/instance: istiod
+              topologyKey: kubernetes.io/hostname

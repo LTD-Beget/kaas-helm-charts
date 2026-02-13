@@ -3,7 +3,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: istio-gw
+  name: istio-gw{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
     - name: infra
