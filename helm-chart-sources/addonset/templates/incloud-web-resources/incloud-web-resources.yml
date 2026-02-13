@@ -1,0 +1,13 @@
+{{- if .Values.addons.incloudwebresources.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "incloud-web-resources.addon" . }}
+
+  {{- .Files.Get "files/incloud-web-resources/values.yml" | nindent 0 }}
+
+  {{- include "incloud-web-resources.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "incloud-web-resources.phase" $clientContext }}
+  {{- end }}
+{{- end }}
