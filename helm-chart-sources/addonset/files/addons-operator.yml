@@ -1,16 +1,13 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: addon-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonAddonOperator
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: addons-operator
 spec:
   path: "helm-chart-sources/addons-operator"
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
   targetCluster: in-cluster
-  targetNamespace: "beget-addonoperators"
+  targetNamespace: "beget-addons-operator"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -31,19 +28,16 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addon-operator
+        addons.in-cloud.io/addon: addons-operator
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: addon-operator-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonOperatorDefault
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: addons-operator-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: addon-operator
+    addons.in-cloud.io/addon: addons-operator
 spec:
   values: |
     certManager:
@@ -69,13 +63,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: addon-operator-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonOperatorCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: addons-operator-cert-manager
   labels:
     addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: addon-operator
+    addons.in-cloud.io/addon: addons-operator
 spec:
   values: |
     certManager:
@@ -93,10 +84,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseAddonOperator
-    gotemplating.fn.crossplane.io/ready: "True"
-  name: addon-operator
+  name: addons-operator
 spec:
   rules:
     - name: cert-manager
@@ -113,4 +101,4 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: addon-operator
+          addons.in-cloud.io/addon: addons-operator

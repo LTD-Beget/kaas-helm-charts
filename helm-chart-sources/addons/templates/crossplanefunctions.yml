@@ -1,3 +1,0 @@
-{{- if .Values.addons.crossplanefunctions.enabled }}
-{{ .Files.Get "files/crossplanefunctions.yml" }}
-{{- end }}

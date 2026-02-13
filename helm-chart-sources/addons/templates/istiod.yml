@@ -1,3 +1,0 @@
-{{- if .Values.addons.istiod.enabled }}
-{{ .Files.Get "files/istiod.yml" }}
-{{- end }}

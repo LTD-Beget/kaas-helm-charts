@@ -1,3 +1,0 @@
-{{- if .Values.addons.vmoperator.enabled }}
-{{ .Files.Get "files/vmoperator.yml" }}
-{{- end }}

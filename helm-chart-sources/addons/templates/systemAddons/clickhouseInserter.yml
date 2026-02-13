@@ -1,5 +1,0 @@
-{{- with .Values.addons.system }}
-{{- if and .enabled .clickhouseInserter.enabled -}}
-{{ .Files.Get "files/addonsMonitoring/clickhouseInserter.yml" }}
-{{- end }}
-{{- end }}
