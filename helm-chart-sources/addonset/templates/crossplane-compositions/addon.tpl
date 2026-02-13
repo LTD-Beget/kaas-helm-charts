@@ -1,10 +1,9 @@
+{{- define "crossplane-compositions.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: crossplane-compositions
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonCrossplaneCompositions
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/crossplane-compositions"
   pluginName: helm-with-values
@@ -15,7 +14,7 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
@@ -51,21 +50,9 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: crossplane-compositions
-
----
-
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: crossplane-compositions-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneCompositionsDefault
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: crossplane-compositions
-spec:
-  values: |
-    xclusterComponents:
-      client:
-        enabled: {{ .Values.client.enabled }}
+    - name: immmutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immmutable
+        addons.in-cloud.io/addon: crossplane-compositions
+{{- end }}

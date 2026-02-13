@@ -1,61 +1,8 @@
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
-metadata:
-  name: crossplane-functions
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonCrossplaneFunctions
-    gotemplating.fn.crossplane.io/ready: "True"
-spec:
-  path: "helm-chart-sources/crossplane-functions"
-  pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
-  targetCluster: in-cluster
-  targetNamespace: "beget-crossplane"
-  variables:
-    cluster_name: in-cluster
-  initDependencies:
-    - name: crossplane
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend: 
-    type: "argocd"
-    namespace: "beget-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: default
-      priority: 0
-      matchLabels:
-        addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: crossplane-functions
-    - name: phase1
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: phase1
-        addons.in-cloud.io/addon: crossplane-functions
-
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: crossplane-functions-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneFunctionsDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: crossplane-functions
@@ -179,12 +126,20 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: crossplane-functions-phase1
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneFunctionsPhase1
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: crossplane-functions-immmutable
   labels:
-    addons.in-cloud.io/values: phase1
+    addons.in-cloud.io/values: immmutable
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-infra
+  labels:
+    addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: crossplane-functions
 spec:
   values: |
@@ -293,9 +248,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: crossplane-functions-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneFunctionsVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: crossplane-functions
@@ -312,9 +264,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: crossplane-functions-system-and-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCrossplaneFunctionsSystemAndInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system-and-initialized
     addons.in-cloud.io/addon: crossplane-functions
@@ -448,52 +397,3 @@ spec:
                       operator: Exists
                   nodeSelector:
                     node-role.kubernetes.io/crossplane: ''
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCrossplaneFunctions
-    gotemplating.fn.crossplane.io/ready: "True"
-  name: crossplane-functions
-spec:
-  rules:
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: crossplane-functions
-    - name: system-and-initialized
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters
-            namespace: beget-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: crossplane-functions
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: system-and-initialized
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: system-and-initialized
-          addons.in-cloud.io/addon: crossplane-functions

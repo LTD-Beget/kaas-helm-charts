@@ -1,0 +1,24 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-compositions-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: crossplane-compositions
+spec:
+  values: |
+    xclusterComponents:
+      client:
+        enabled: {{ .Values.client.enabled }}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-compositions-immmutable
+  labels:
+    addons.in-cloud.io/values: immmutable
+    addons.in-cloud.io/addon: crossplane-compositions
+spec:
+  values: ""
