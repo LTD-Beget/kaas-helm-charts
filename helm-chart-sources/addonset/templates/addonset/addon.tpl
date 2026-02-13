@@ -1,21 +1,19 @@
+{{- define "addonset.addon" }}
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: addon-set
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonAddonSet
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: addonset
 spec:
   path: "helm-chart-sources/addonset"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "feat/addonset"
   targetCluster: in-cluster
-  targetNamespace: "beget-addon-set"
+  targetNamespace: "beget-addonset"
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
@@ -45,19 +43,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: addon-set
-
----
-
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: addon-set-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonSetDefault
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: addon-set
-spec:
-  values: |
-    clientName: {{ .Values.cluster.client.name }}
+{{- end }}

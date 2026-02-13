@@ -1,0 +1,22 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: |
+    clientName: {{ .Values.cluster.client.name }}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: ""
