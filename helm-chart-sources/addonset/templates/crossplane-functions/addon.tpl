@@ -11,7 +11,7 @@ spec:
   path: "helm-chart-sources/crossplane-functions"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addons"
+  version: "feat/addon"
   targetCluster: in-cluster
   targetNamespace: "beget-crossplane"
   variables:

@@ -8,7 +8,7 @@ spec:
   path: "dist/chart"
   pluginName: helm-with-values
   repoURL: "https://github.com/PRO-Robotech/certificate-set"
-  version: "feat/addons"
+  version: "feat/addon"
   targetCluster: in-cluster
   targetNamespace: "beget-certificate-set"
   variables:
