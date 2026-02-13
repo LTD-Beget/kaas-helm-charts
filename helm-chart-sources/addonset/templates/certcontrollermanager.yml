@@ -1,3 +1,0 @@
-{{- if .Values.addons.certcontrollermanager.enabled }}
-{{ .Files.Get "files/certcontrollermanager.yml" }}
-{{- end }}

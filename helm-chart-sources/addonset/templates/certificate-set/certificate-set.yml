@@ -1,0 +1,7 @@
+{{- if .Values.addons.certificateset.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "certificate-set.addon" . }}
+
+  {{- .Files.Get "files/certificate-set/values.yml" | nindent 0 }}
+{{- end }}
