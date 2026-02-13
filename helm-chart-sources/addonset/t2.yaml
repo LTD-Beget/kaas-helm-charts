@@ -1,0 +1,5512 @@
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: addons-operator
+spec:
+  path: "helm-chart-sources/addons-operator"
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "feat/addon"
+  targetCluster: in-cluster
+  targetNamespace: "beget-addons-operator"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addons-operator
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: addons-operator
+---
+# Source: addons/templates/addonsClient/konnectivityAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: konnectivity-agent
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/konnectivity-agent"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: konnectivity-agent
+  targetCluster: client
+  targetNamespace: "beget-konnectivity-agent"
+  variables:
+    cluster_name: client
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/clusterName: client
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: client
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: client
+        addons.in-cloud.io/addon: konnectivity-agent
+---
+# Source: addons/templates/addonsClient/kubeadmResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: kubeadm-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/kubeadm-resources-client-cp"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: kubeadm-resources
+  targetCluster: client
+  targetNamespace: "beget-kubeadm-resources"
+  variables:
+    cluster_name: client
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: cluster.name
+          jsonPath: .data.clusterName
+    - name: clientca
+      sourceRef:
+        apiVersion: v1
+        kind: Secret
+        name: client-ca
+        namespace: beget-system
+      extract:
+        - as: cluster.kubeCaCrtBase64
+          jsonPath: .data["tls.crt"]
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/clusterName: client
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: client
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: client
+        addons.in-cloud.io/addon: kubeadm-resources
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: incloud-ui
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIncloudUi
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/incloud-ui"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-incloud-ui"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: 
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: incloudUICookieSecret
+          jsonPath: .data.incloudUICookieSecret
+        - as: system.istioGwVip
+          jsonPath: .data.systemIstioGwVip
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: incloud-ui
+---
+# Source: addons/templates/addonsMonitoring/incloudWebResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: incloud-web-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIncloudWebResources
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/incloud-web-resources"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-incloud-ui"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:  []
+  initDependencies:
+    - name: incloud-ui
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: incloud-web-resources
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: kube-state-metrics
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonKubeStateMetrics
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/kube-state-metrics"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-kube-state-metrics"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: kube-state-metrics
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: kube-state-metrics
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: metrics-server
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonMetricsServer
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/metrics-server"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-metrics-server"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: metrics-server
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: metrics-server
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: process-exporter
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonProcessExporter
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/process-exporter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-process-exporter"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: process-exporter
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: process-exporter
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: prometheus-node-exporter
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPrometheusNodeExporter
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/prometheus-node-exporter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-prometheus-node-exporter"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: prometheus-node-exporter
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: prometheus-node-exporter
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: vm-agent
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonVmAgent
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/victoria-metrics-k8s-stack"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-vmagent"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: customer.name
+          jsonPath: .data.customer
+        - as: system.vmInsertVIP
+          jsonPath: .data.systemVmInsertVIP
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: vm-agent
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: vm-agent
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-agent
+---
+# Source: addons/templates/addonsMonitoring/vmAgentAdditionalRbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonHelmInsVmagentAdditionalRbac
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-vmagent"
+  variables:
+    cluster_name: in-cluster
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+---
+# Source: addons/templates/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: addon-set
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonAddonSet
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/addonset"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "feat/addon"
+  targetCluster: in-cluster
+  targetNamespace: "beget-addon-set"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.client.name
+          jsonPath: .data.clusterClientName
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-set
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: argocd
+spec:
+  path: "helm-chart-sources/argocd"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-argocd"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: argocd
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: argocd
+---
+# Source: addons/templates/certcontrollermanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: cert-controller-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCertControllerManager
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "dist/chart"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/PRO-Robotech/certificate-set"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-cert-controller-manager"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cert-controller-manager
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/certmanager"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: cert-manager
+  targetCluster: in-cluster
+  targetNamespace: "beget-certmanager"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cert-manager
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: cert-manager
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: cert-manager
+---
+# Source: addons/templates/certmanagercsidriver.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: cert-manager-csi-driver
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCertManagerCsiDriver
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/certmanager-csi-driver"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-certmanager-csi-driver"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cert-manager-csi-driver
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: cert-manager-csi-driver
+---
+# Source: addons/templates/cilium.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: cilium
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCilium
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  finalizer: false
+  path: "helm-chart-sources/cilium"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-cilium"
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort #tmp need change -> clusterPort for prod-ready (infra) or clusterClientPort
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: Service
+      jqPathExpressions:
+        - .spec.ports[]?.nodePort
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cilium
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: cilium
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: coredns
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonCoredns
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/coredns"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-coredns"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: coredns
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: coredns
+---
+# Source: addons/templates/etcdbackup.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: etcd-backups
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonEtcdBackups
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/etcd-backup-snapshot"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-etcd-backups"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: etcd-backups
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: etcd-backups
+---
+# Source: addons/templates/extraresources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: extra-resources
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonExtraResources
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-extra-resources"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: environment
+          jsonPath: .data.environment
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: xcluster
+          jsonPath: .data.xcluster
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: certificateset
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: certificateset
+        addons.in-cloud.io/addon: extra-resources
+---
+# Source: addons/templates/extraresources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: extra-resources-client
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonExtraResources
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-extra-resources"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: environment
+          jsonPath: .data.environment
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: xcluster
+          jsonPath: .data.xcluster
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: certificateset
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: certificateset
+        addons.in-cloud.io/addon: extra-resources
+---
+# Source: addons/templates/istiobase.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: istio-base
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioBase
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  chart: "base"
+  repoURL: "https://istio-release.storage.googleapis.com/charts"
+  version: "1.26.0"
+  targetCluster: in-cluster
+  targetNamespace: "beget-istio"
+  variables:
+    cluster_name: in-cluster
+  backend: 
+    type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: istio-base
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: istiod
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstiod
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/istiod"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  releaseName: istiod
+  targetCluster: in-cluster
+  targetNamespace: "beget-istio"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+  initDependencies:
+    - name: istio-base
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: istiod
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: istiod
+---
+# Source: addons/templates/istiogw.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: istio-gw
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonIstioGw
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/istio-gw"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-istio-gw"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+    - name: istio-base
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: istio-gw
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: istio-gw
+---
+# Source: addons/templates/test.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: test
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonTest
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "feat/addon"
+  pluginName: helm-with-values
+  releaseName: mytest
+  targetCluster: in-cluster
+  targetNamespace: "beget-test"
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-test
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: trust-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonTrustManager
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/trustmanager"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-trust-manager"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: trust-manager
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: trust-manager
+---
+# Source: addons/templates/vmoperator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/victoria-metrics-operator"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-vm-operator"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cert-manager-csi-driver
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: vm-operator
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: vm-operator
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: addons-operator
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: addons-operator
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: addons-operator-client
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: addons-operator
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIncloudUi
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-ui
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: incloud-ui
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: incloud-ui
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: incloud-ui
+---
+# Source: addons/templates/addonsMonitoring/incloudWebResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIncloudWebResources
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-resources
+spec:
+  rules:
+    - name: system-trivy
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-trivy
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system-trivy
+          addons.in-cloud.io/addon: incloud-web-resources
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseKubeStateMetrics
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: kube-state-metrics
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: kube-state-metrics
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: kube-state-metrics
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseMetricsServer
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: metrics-server
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: metrics-server
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: metrics-server
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseProcessExporter
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: process-exporter
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: process-exporter
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: process-exporter
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: process-exporter
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhasePrometheusNodeExporter
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: prometheus-node-exporter
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: prometheus-node-exporter
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: prometheus-node-exporter
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: prometheus-node-exporter
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseVmAgent
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: vm-agent
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: vm-agent
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: vm-agent
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: vm-agent
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: argocd
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: argocd
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: argocd
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: argocd
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: argocd
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-and-initialized
+        priority: 60
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: argocd
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: argocd-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: beget-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: argocd
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: argocd
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: argocd
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: argocd
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-and-initialized
+        priority: 60
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: argocd
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: cert-manager
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: cert-manager
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: cert-manager
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: cert-manager
+---
+# Source: addons/templates/certmanagercsidriver.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCertManagerCsiDriver
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: cert-manager-csi-driver
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: cert-manager-csi-driver
+---
+# Source: addons/templates/cilium.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCilium
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: cilium
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: cilium
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCoredns
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: coredns
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: coredns
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: coredns
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: coredns
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: coredns
+    - name: multi-control-plane
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.controlPlaneReplicas
+          operator: GreaterThan
+          value: 1
+      selector:
+        name: multi-control-plane
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: multi-control-plane
+          addons.in-cloud.io/addon: coredns
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIstiod
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: istiod
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: istiod
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istiod
+    - name: multi-control-plane
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.controlPlaneReplicas
+          operator: GreaterThan
+          value: 1
+      selector:
+        name: multi-control-plane
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: multi-control-plane
+          addons.in-cloud.io/addon: istiod
+---
+# Source: addons/templates/istiogw.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIstioGw
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: istio-gw
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseTrustManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  name: trust-manager
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: trust-manager
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: trust-manager
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    certManager:
+      enable: false
+    manager:
+      env:
+      - name: ENABLE_WEBHOOKS
+        value: false
+      image:
+        repository: prorobotech/addons-operator
+        tag: feature-CLOUD-434-4a2d9e71
+        pullPolicy: IfNotPresent
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    metrics:
+      enable: false
+      port: 8443
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: ""
+---
+# Source: addons/templates/addons-operator/addons-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    certManager:
+      enable: true
+    manager:
+      env:
+      - name: ENABLE_WEBHOOKS
+        value: true
+    metrics:
+      enable: true
+      port: 8443
+---
+# Source: addons/templates/addonsClient/konnectivityAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: konnectivity-agent-client
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKonnectivityAgentClient
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: konnectivity-agent
+spec:
+  values: |
+    hostNetwork: true
+    agent:
+      extraArgs:
+        proxy-server-host: {{ .Values.cluster.host }}
+        proxy-server-port: 8132
+---
+# Source: addons/templates/addonsClient/kubeadmResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kubeadm-resources-client
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKonnectivityAgentClient
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: kubeadm-resources
+spec:
+  values: |
+    clusterInfo:
+      clusterApiUrl: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+      clusterName: "{{ .Values.cluster.name }}"
+      kubeCaCrtBase64: "{{ .Values.cluster.kubeCaCrtBase64 }}"
+    kubeadmConfig:
+      namespace: kube-system
+      clusterConfiguration:
+        clusterName: "{{ .Values.cluster.name }}"
+        controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+    rbac:
+      authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-ui-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: incloud-ui
+spec:
+  values: |
+      argocdPlugins:
+        kustomize: true
+      incloud-web-chart:
+        oauth2-proxy:
+          enabled: true
+          config:
+            clientID: "kubernetes"
+            clientSecret: "incloud-ui-super-secret"
+            cookieSecret: "{{ .Values.incloudUICookieSecret }}"
+          extraArgs:
+            upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:8081"
+            redirect-url: "https://{{ .Values.system.istioGwVip }}/oauth2/callback"
+            oidc-issuer-url: "https://{{ .Values.system.istioGwVip }}/dex"
+            insecure-oidc-skip-issuer-verification: true
+            login-url: "https://{{ .Values.system.istioGwVip }}/dex/auth"
+            proxy-prefix: "/oauth2"
+            skip-oidc-discovery: true
+            oidc-jwks-url: "https://{{ .Values.system.istioGwVip }}/keys"
+            redeem-url: "https://{{ .Values.system.istioGwVip }}/token"
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+        ingress:
+          enabled: false
+        web:
+          env:
+            LOGIN_URL: "/oauth2/userinfo"
+            LOGIN_USERNAME_FIELD: "email"
+            BASEPREFIX: "/openapi-ui"
+            TITLE_TEXT: "Beget"
+            LOGO_TEXT: " "
+            FOOTER_TEXT: "Beget"
+            CUSTOM_LOGO_SVG: "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NyA0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjM1IiBmaWxsPSJub25lIiBjbGFzcz0iYmVnZXQtaWNvbl9fY29udGVudCI+CiAgICA8cGF0aCBkPSJNNTEuMTE2OSAyMy43MDE4QzU1LjM3MjYgMjYuNzEzNSA1Ni4wNjg5IDMyLjEwNzMgNTMuNjc4NyAzNS45MTAzQzUxLjMwMzEgMzkuNjkwMyA0Ni41Mzg5IDQxLjA2MTggNDIuNTcxNCAzOS4xMzY0QzM4Ljg1ODIgMzcuMzM0NiAzNi4yNTkxIDMyLjUzMjYgMzguNDUxOCAyNy4zMjAyQzM4LjA5NTUgMjcuMjY1OCAzNy43NTU0IDI3LjIxMyAzNy40MTU0IDI3LjE2MDNDMzcuNDA0IDI3LjExNzQgMzcuMzkyNyAyNy4wNzI5IDM3LjM4MTMgMjcuMDNDMzguNzAxMSAyNi41ODUgNDAuMDIwOSAyNi4xMzk5IDQxLjQwODcgMjUuNjcwMUM0MS42MDYzIDI3LjE0MDUgNDEuNzk1OCAyOC41NDUgNDEuOTgzNiAyOS45NDc4QzQxLjk0OCAyOS45NjYgNDEuOTEwNyAyOS45ODU3IDQxLjg3NTEgMzAuMDAzOUM0MS41OTAxIDI5LjU4MDIgNDEuMzAzNSAyOS4xNTgyIDQxLjAwODcgMjguNzIxNEMzOS45NDE2IDMwLjYxMzggNDAuNDA0NyAzMy40ODcxIDQyLjAzNTQgMzUuMjUwOUM0My44NzUgMzcuMjM5IDQ2Ljc4OTkgMzcuNzIyIDQ5LjE0MjkgMzYuNDI2M0M1MS40OTU4IDM1LjEzMDYgNTIuNzA1NSAzMi4zNTc5IDUyLjA2MjYgMjkuNzI4NkM1MS40MDM1IDI3LjAzMzMgNDkuMTA0IDI1LjE3MDYgNDYuMzk4IDI1LjEzOTNDNDEuODQ0MyAyNS4wODY1IDM4LjI0NDUgMjEuODE3NiAzNy42Nzc3IDE3LjIyMzNDMzcuMTU0NiAxMi45Nzg1IDM5Ljk0IDguODUyNDMgNDQuMTAzNCA3LjcxMDA0QzQ4LjA1NjMgNi42MjM3IDUyLjIyOTQgOC41MjI3MyA1NC4wOTY1IDEyLjI1ODJDNTUuOTYwNCAxNS45ODUzIDU1LjAwNjYgMjAuNTM1MSA1MS44MTMyIDIzLjE1MjlDNTEuNTk0NiAyMy4zMjkyIDUxLjM3MTEgMjMuNTAwNyA1MS4xMTY5IDIzLjcwMThaTTQwLjQ1MDEgMTYuMjM1OUM0MC40Mzg3IDE5LjU2MjUgNDMuMDQyNyAyMi4yNTYxIDQ2LjI4OTUgMjIuMjc3NUM0OS41NjIzIDIyLjI5OSA1Mi4yMzkxIDE5LjYwMzcgNTIuMjQ0IDE2LjI4MjFDNTIuMjQ3MiAxMi45ODE4IDQ5LjYwMjggMTAuMjc2NyA0Ni4zNjQgMTAuMjY4NUM0My4xMDU4IDEwLjI1ODYgNDAuNDYxNCAxMi45MjkxIDQwLjQ1MDEgMTYuMjM1OVoiIGZpbGw9ImN1cnJlbnRDb2xvciI+PC9wYXRoPgogICAgPHBhdGggZD0iTTMuOTk1MjQgMTIuMzQzN0M0LjMzODU1IDEwLjkzMSA0LjYzOTc1IDkuNjE3MTQgNC45OTExNiA4LjMxODE1QzUuMDM5NzQgOC4xMzY4MiA1LjMxMzQxIDcuOTY4NjggNS41MTkwNyA3Ljg4OTU1QzguNjEzNjkgNi43MTA5IDEyLjA2OTQgNy43MTY0NiAxNC4yNjM3IDEwLjQxOTlDMTcuODQ3NCAxNC44MzEyIDE2LjUwOTggMjEuODAyNiAxMS41OTk4IDI0LjMwNUM3LjQ2MjMyIDI2LjQxMzMgMi40ODc2MSAyNC4zOTQgMC43MTExNTcgMTkuODA2M0MwLjMxNDQxIDE4Ljc4MjYgMC4wNTUzMTA5IDE3LjYzMiAwLjA0MDczNjUgMTYuNTM1OEMtMC4wMjcyNzcxIDExLjE0MzYgMC4wMDgzNDkwNiA1Ljc0ODIgMC4wMDgzNDkwNiAwLjM1NDQyQzAuMDA4MzQ5MDYgMC4yNDM5NzMgMC4wMTk2ODQ3IDAuMTM1MTc0IDAuMDI2MTYyMiAwQzAuOTU0MDYyIDAuMDAxNjQ4NDYgMS44NDQ3MiAwLjAwMTY0ODQ2IDIuODE3OTYgMC4wMDE2NDg0NkMyLjgxNzk2IDAuMjIwODk0IDIuODE3OTYgMC40NDAxNCAyLjgxNzk2IDAuNjYxMDM0QzIuODE3OTYgNS44NDU0NiAyLjgxNzk2IDExLjAyOTkgMi44MTc5NiAxNi4yMTI3QzIuODE3OTYgMTcuODE2NiAzLjI4NzU4IDE5LjI1NDEgNC4zNDAxNyAyMC40NjA3QzYuNDc3NzQgMjIuOTEyIDkuOTA0MzMgMjIuODgyMyAxMi4wMTYgMjAuNDA4QzE0LjExOTYgMTcuOTQ1MiAxMy45NDc5IDEzLjk5NTUgMTEuNjQxOSAxMS43MzU0QzkuNjQxOTkgOS43NzcwNSA2LjY2MjM1IDkuNzc4NjkgNC42NTkxOSAxMS43MzcxQzQuNDcyOTYgMTEuOTE4NCA0LjI3NTM5IDEyLjA4ODIgMy45OTUyNCAxMi4zNDM3WiIgZmlsbD0iY3VycmVudENvbG9yIj48L3BhdGg+CiAgICA8cGF0aCBkPSJNMzUuMjQwNiAxNy42OTc3QzMzLjA2NDEgMTcuNjk3NyAzMC44NzggMTcuNjk3NyAyOC42OTAyIDE3LjY5NzdDMjYuNTAyNSAxNy42OTc3IDI0LjMxNjMgMTcuNjk3NyAyMi4wNTczIDE3LjY5NzdDMjIuNTkzMyAxOS43NjY1IDIzLjY5MjggMjEuMjYxNyAyNS42NDI2IDIxLjk5MDNDMjcuNjU4NyAyMi43NDM2IDI5LjQwOTIgMjIuMTQwMyAzMS40NjEgMjAuMDM2OUMzMi4yMzUgMjAuNDk4NCAzMy4wMTg4IDIwLjk2NSAzMy44NDc5IDIxLjQ1OTVDMzIuNTAwNiAyMy4zODk4IDMwLjc4MDggMjQuNjU0MiAyOC41MjAyIDI1LjAxMTlDMjQuMDI5NyAyNS43MjI0IDE5Ljg2NzkgMjIuNDY2NyAxOS4yMjE4IDE3Ljc5MTdDMTguODA1NiAxNC43Nzk5IDE5LjUyMTMgMTIuMTAyOCAyMS42MDA2IDkuODkzODZDMjUuNjQ1OCA1LjU5MzAyIDMyLjQ1ODUgNy4wNzk5NCAzNC43MTI3IDEyLjcyOTJDMzUuMzU4OCAxNC4zNDMxIDM1LjU1OTYgMTYuMTgxMSAzNS4yNDA2IDE3LjY5NzdaTTMyLjM2NjIgMTQuODE3OEMzMi4wNTg1IDEyLjI5NTcgMjkuNjIxNCAxMC4yMTM3IDI3LjEwOTcgMTAuMjY0OEMyNC43MzA5IDEwLjMxNDIgMjIuMzExNSAxMi41MTgyIDIyLjEzMzQgMTQuODE3OEMyNS41MzU3IDE0LjgxNzggMjguOTM2NCAxNC44MTc4IDMyLjM2NjIgMTQuODE3OFoiIGZpbGw9ImN1cnJlbnRDb2xvciI+PC9wYXRoPgogICAgPHBhdGggZD0iTTczLjQ1NjQgMTcuNjkzQzY5LjA2MyAxNy42OTMgNjQuNzAzNyAxNy42OTMgNjAuMjU2OSAxNy42OTNDNjAuNzM3OCAxOS42NDY0IDYxLjczODYgMjEuMTIzNSA2My41Mzk0IDIxLjg2MzZDNjUuOTkxMSAyMi44NzI1IDY3Ljk4NjEgMjIuMDIzNSA2OS42MzYzIDIwLjAzMjJDNzAuNDIxNyAyMC40OTg3IDcxLjE5NTcgMjAuOTU3IDcyLjAzNzggMjEuNDU4MUM3MS44Njc4IDIxLjY5MDUgNzEuNzI1MyAyMS45MDMyIDcxLjU2NjYgMjIuMTAxQzY4LjMwODQgMjYuMTQ0NyA2Mi41NzI2IDI2LjE0NDcgNTkuMzA5NiAyMi4xMDQzQzU2LjQ3MjQgMTguNTg5OCA1Ni42NTIyIDEzLjI1NTMgNTkuNzE5MyA5Ljk1NTEyQzYzLjg3MTMgNS40ODc3OCA3MC45MjIxIDcuMTM2MjUgNzMuMDMwNSAxMy4wNjc0QzczLjU1MTkgMTQuNTMyOSA3My42OTYxIDE2LjAzMTQgNzMuNDU2NCAxNy42OTNaTTcwLjU1MTIgMTQuODE0OEM3MC4zMzEgMTIuMzQ1NCA2Ny43Nzg5IDEwLjE4MSA2NS4yMTg2IDEwLjI3QzYyLjg2ODkgMTAuMzUyNCA2MC4zNzE5IDEyLjY3ODQgNjAuMzQ1OSAxNC44MTQ4QzYzLjc0ODIgMTQuODE0OCA2Ny4xNDg5IDE0LjgxNDggNzAuNTUxMiAxNC44MTQ4WiIgZmlsbD0iY3VycmVudENvbG9yIj48L3BhdGg+CiAgICA8cGF0aCBkPSJNODUuNDA3NSAyMC42Njk5Qzg1LjcwODcgMjEuNTkxNCA4Ni4wMjQ0IDIyLjUyNjEgODYuMzA3OCAyMy40NzA3Qzg2LjM0NTEgMjMuNTk2IDg2LjI1NiAyMy44MzMzIDg2LjE0NzUgMjMuOTIwN0M4My43MDM5IDI1Ljg5NzIgNzkuMzQxMyAyNS40MDc2IDc3LjM2NTcgMjIuOTQ0OEM3Ni43NTUyIDIyLjE4MzIgNzYuMzk4OSAyMS4zMTI4IDc2LjM5NzMgMjAuMzIyMUM3Ni4zOTI0IDE0LjgxMjkgNzYuMzk0IDkuMzAzNzggNzYuMzk1NyAzLjc5NDYxQzc2LjM5NTcgMy42ODQxNiA3Ni40MDg2IDMuNTcyMDYgNzYuNDE4MyAzLjQzMzU5Qzc3LjMzNDkgMy40MzM1OSA3OC4yMjU2IDMuNDMzNTkgNzkuMTg0MiAzLjQzMzU5Qzc5LjE4NDIgNC45MjM4MSA3OS4xODQyIDYuNDE4OTYgNzkuMTg0MiA3Ljk1ODYzQzgwLjg5MSA3Ljk1ODYzIDgyLjUzMTUgNy45NTg2MyA4NC4yMTU2IDcuOTU4NjNDODQuMjE1NiA4LjkyNjI4IDg0LjIxNTYgOS44NDYxMiA4NC4yMTU2IDEwLjgxNzFDODIuNTY3MSAxMC44MTcxIDgwLjkyNjcgMTAuODE3MSA3OS4yMzQ0IDEwLjgxNzFDNzkuMjIxNSAxMS4wNDQ2IDc5LjIwMzcgMTEuMjI3NSA3OS4yMDM3IDExLjQwODlDNzkuMjAyIDE0LjI4NzEgNzkuMjEzNCAxNy4xNjUzIDc5LjE5MzkgMjAuMDQzNUM3OS4xODkxIDIwLjcyNDMgNzkuNDY3NiAyMS4yMTIzIDc5Ljk3OTMgMjEuNTkzMUM4MS4xOTcxIDIyLjUwMyA4My4zODE2IDIyLjUwOCA4NC41ODY0IDIxLjU3NDlDODQuODkyNSAyMS4zNDI1IDg1LjExNDQgMjAuOTk5NiA4NS40MDc1IDIwLjY2OTlaIiBmaWxsPSJjdXJyZW50Q29sb3IiPjwvcGF0aD4KPC9zdmc+CjxkaXYgc3R5bGU9Im1hcmdpbjogMCAtNnB4IiAvPgo="
+            CUSTOM_TENANT_TEXT: " "
+            ICON_SVG: "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJub25lIiBjbGFzcz0iYmVnZXQtaWNvbl9fY29udGVudCI+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0yNi41MzggMjBDMjkuNTcwNyAxOC4wNzgxIDMxLjU4MzcgMTQuNjkzOCAzMS41ODM3IDEwLjgzOTdDMzEuNTgzNyA0Ljg1MzAzIDI2LjcyNzQgMCAyMC43MzY3IDBDMTQuNzQ2IDAgOS44ODk2OSA0Ljg1MzAzIDkuODg5NjkgMTAuODM5N0M5Ljg4OTY5IDE2LjgyNjQgMTQuNzQ2IDIxLjY3OTQgMjAuNzM2NyAyMS42Nzk0QzIyLjczNTkgMjEuNjc5NCAyNC42MTYyIDIyLjQ1NzMgMjYuMDI5OSAyMy44NzA3QzI3LjQ0MzYgMjUuMjgzNCAyOC4yMjI3IDI3LjE2MjQgMjguMjIyNyAyOS4xNjAzQzI4LjIyMjcgMzEuMTU4MiAyNy40NDQzIDMzLjAzNzIgMjYuMDI5OSAzNC40NDk5QzI0LjYxNjIgMzUuODYyNyAyMi43MzU5IDM2LjY0MTIgMjAuNzM2NyAzNi42NDEyQzE4LjczNzUgMzYuNjQxMiAxNi44NTcyIDM1Ljg2MzQgMTUuNDQzNSAzNC40NDk5QzE0LjAyOTggMzMuMDM3MiAxMy4yNTA3IDMxLjE1ODIgMTMuMjUwNyAyOS4xNjAzQzEzLjI1MDcgMjguNDYwNSAxMy4zNDY4IDI3Ljc3NTkgMTMuNTMyMSAyNy4xMjAzTDE1LjI4OCAyOC4xMjc1TDE1LjA5MDkgMjQuODMxNkwxNC44OTM5IDIxLjUzNTdMMTEuOTQ3IDIzLjAyODZMOSAyNC41MjE0TDEwLjU1NjggMjUuNDE0QzEwLjEyNjEgMjYuNTgxNSA5Ljg4OTY5IDI3Ljg0MjkgOS44ODk2OSAyOS4xNjAzQzkuODg5NjkgMzUuMTQ3IDE0Ljc0NiA0MCAyMC43MzY3IDQwQzI2LjcyNzQgNDAgMzEuNTgzNyAzNS4xNDcgMzEuNTgzNyAyOS4xNjAzQzMxLjU4MzcgMjUuMzA2MiAyOS41NzA3IDIxLjkyMTkgMjYuNTM4IDIwWk0yMC43MzY3IDE4LjMyMDZDMTguNzM3NSAxOC4zMjA2IDE2Ljg1NzIgMTcuNTQyNyAxNS40NDM1IDE2LjEyOTNDMTQuMDI5OCAxNC43MTY2IDEzLjI1MDcgMTIuODM3NiAxMy4yNTA3IDEwLjgzOTdDMTMuMjUwNyA4Ljg0MTg0IDE0LjAyOTEgNi45NjI4IDE1LjQ0MzUgNS41NTAwN0MxNi44NTcyIDQuMTM3MzQgMTguNzM3NSAzLjM1ODc4IDIwLjczNjcgMy4zNTg3OEMyMi43MzU5IDMuMzU4NzggMjQuNjE2MiA0LjEzNjY0IDI2LjAyOTkgNS41NTAwN0MyNy40NDM2IDYuOTYyOCAyOC4yMjI3IDguODQxODQgMjguMjIyNyAxMC44Mzk3QzI4LjIyMjcgMTIuODM3NiAyNy40NDQzIDE0LjcxNjYgMjYuMDI5OSAxNi4xMjkzQzI0LjYxNjIgMTcuNTQyMSAyMi43MzU5IDE4LjMyMDYgMjAuNzM2NyAxOC4zMjA2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L3N2Zz4K"
+        bff:
+          env:
+            BASE_ALLOWED_AUTH_HEADERS: "user-agent,accept,content-type,origin,referer,accept-encoding,cookie,authorization"
+        clusters:
+          - name: default
+            description: default
+            tenant: dev
+            scheme: http
+            api: 127.0.0.1
+          - name: cluster2
+            description: cluster2
+            tenant: dev
+            scheme: http
+            api: 93.189.231.174  # TODO: dynamicaly cluster-list
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      monitoring:
+        secureService:
+          enabled: true
+          issuer:
+            name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-ui-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: incloud-ui
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-ui-istio-base
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiIstioBase
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: incloud-ui
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          route:
+            host: incloud-ui-oauth2-proxy
+            port: 4080
+---
+# Source: addons/templates/addonsMonitoring/incloudUi.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-ui-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: incloud-ui
+spec:
+  values: |
+    incloud-web-chart:
+      clusters:
+        - name: default
+          description: default
+          tenant: dev
+          scheme: http
+          api: {{ .Values.system.istioGwVip }}
+        - name: cluster2
+          description: cluster2
+          tenant: dev
+          scheme: http
+          api: 93.189.231.174  # TODO: dynamicaly cluster-list
+---
+# Source: addons/templates/addonsMonitoring/incloudWebResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudWebResourcesInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      enabled: true
+      addons:
+        argocd:
+          enabled: true
+---
+# Source: addons/templates/addonsMonitoring/incloudWebResources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-system-trivy
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudWebResourcesSystemTrivy
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system-trivy
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      addons:
+        trivy:
+          enabled: true
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      prometheusScrape: false
+      metricLabelsAllowlist:
+        - nodes=[node-group.beget.com/name]
+      customLabels:
+        in-cloud.io/clusterName: ""
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/kubeStateMetrics.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      metrics:
+        enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/metricsServer.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: process-exporter-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      serviceAccount:
+        name: prometheus-process-exporter
+      image:
+        repository: ncabatoff/process-exporter
+        tag: 0.8.1
+      service:
+        type: ClusterIP
+        port: 9101
+        targetPort: 9101
+        nodePort:
+        annotations:
+          prometheus.io/scrape: "true"
+      priorityClassName: system-cluster-critical
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: 1
+        requests:
+          memory: 128Mi
+          cpu: 100m
+      hostNetwork: true
+      rbac:
+        pspEnabled: false
+      templates:
+        config.yml: |
+          process_names:
+            - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
+              cmdline:
+              - '.+'
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: process-exporter-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: process-exporter-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: process-exporter
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: process-exporter-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: process-exporter
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/processExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: process-exporter-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      service:
+        labels:
+          beget.com/prometheus-job: node-exporter
+      containerSecurityContext:
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      serviceAccount:
+        automountServiceAccountToken: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 512m
+          memory: 256Mi
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/prometheusNodeExporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-prometheus-node-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+              ephemeral-storage: "1Gi"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: '1'
+          extraArgs:
+            remoteWrite.tlsInsecureSkipVerify: "true"
+            remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
+            promscrape.maxScrapeSize: "33554432"
+            remoteWrite.maxDiskUsagePerURL: "67108864"
+            remoteWrite.queues: "24"
+            remoteWrite.shardByURL: "true"
+            remoteWrite.shardByURLReplicas: "3"
+          replicaCount: 1
+          shardCount: 1
+          updateStrategy: RollingUpdate
+          rollingUpdate:
+            maxSurge: 10%
+            maxUnavailable: 0
+          remoteWriteSettings:
+            queues: 24
+          statefulMode: false
+          serviceScrapeSelector: {}
+          serviceScrapeNamespaceSelector: {}
+          podScrapeSelector: {}
+          podScrapeNamespaceSelector: {}
+          nodeScrapeSelector: {}
+          nodeScrapeNamespaceSelector: {}
+          staticScrapeSelector: {}
+          staticScrapeNamespaceSelector: {}
+          podMetadata: {}
+          scrapeInterval: 30s
+          minScrapeInterval: 15s
+          maxScrapeInterval: 60s
+          remoteWrite:
+            - url: https://vminsert-vmcluster-victoria-metrics-k8s-stack.beget-vmcluster.svc:8480/insert/0/prometheus
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+          externalLabels:
+            cluster_full_name: "cluster" #namespace-cluster_name
+            remotewrite_cluster: cluster #namespace-cluster_name
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmagent
+                        - key: app.kubernetes.io/instance
+                          operator: In
+                          values:
+                            - vmagent
+                    topologyKey: failure-domain.beta.kubernetes.io/region
+                  weight: 100
+          probeNamespaceSelector: {}
+          priorityClassName: system-cluster-critical
+      kubeControllerManager:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: "localhost"
+      kubeEtcd:
+        enabled: true
+        service:
+          port: 2381
+          targetPort: 2381
+        vmScrape:
+          spec:
+            endpoints:
+              - scheme: "http"
+                port: http-metrics
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: "localhost"
+                  insecureSkipVerify: true
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vmagent"
+      vmagent:
+        spec:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          podMetadata:
+            labels:
+              app: vmagent
+              incloud-metrics: "infra"
+          extraArgs:
+            remoteWrite.tlsInsecureSkipVerify: "false"
+            remoteWrite.label: remotewrite_cluster={{ .Values.customer.name }}-{{ .Values.cluster.name }} #namespace-cluster_name
+          serviceScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          podScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          nodeScrapeSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          staticScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "in-cloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          probeNamespaceSelector:
+            matchExpressions:
+              - operator: In
+                key: "incloud.io/clusterName"
+                values: [{{ .Values.cluster.name }}]
+          remoteWrite:
+            - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /tls/cabundle/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /tls/cabundle
+              readOnly: true
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+          externalLabels:
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "infra"
+      kubeControllerManager:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: {{ .Values.cluster.name }}-controller-manager
+      kubeScheduler:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: {{ .Values.cluster.name }}-scheduler
+            jobLabel: "jobLabel"
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      coreDns:
+        enabled: false
+      kubeDns:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      alertmanager:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      defaultRules:
+        create: false
+      grafana:
+        enabled: false
+      prometheus-node-exporter:
+        enabled: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: true
+      vmalert:
+        enabled: false
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          containers:
+            - name: config-reloader
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 65534
+            - name: vmagent
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+            - name: rbac-proxy
+              image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=http://127.0.0.1:8429
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vm-agent-monitoring-svc-tls
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/addonsMonitoring/vmAgent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          remoteWrite:
+            - url: https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /etc/ssl/certs/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          externalLabels:
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "system"
+---
+# Source: addons/templates/addonsMonitoring/vmAgentAdditionalRbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: |
+    resources:
+      tokenreviewClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: kube-rbac-proxy-tokenreview
+        rules:
+          - apiGroups:
+              - authentication.k8s.io
+            resources:
+              - tokenreviews
+            verbs:
+              - create
+          - apiGroups:
+              - authorization.k8s.io
+            resources:
+              - subjectaccessreviews
+            verbs:
+              - create
+
+      metricsClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: non-resource-metrics-url
+        rules:
+          - nonResourceURLs:
+              - "/metrics"
+              - "/grafana/metrics"
+            verbs:
+              - get
+
+      metricsClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: metrics
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: non-resource-metrics-url
+        subjects:
+          - kind: ServiceAccount
+            name: vmagent-vmagent
+            namespace: beget-vmagent
+---
+# Source: addons/templates/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueAddonSetDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: |
+    clientName: {{ .Values.cluster.client.name }}
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      global:
+        deploymentStrategy:
+          type: RollingUpdate
+      configs:
+        cm:
+          application.resourceTrackingMethod: annotation
+          reposerver.default.cache.expiration: 8h0m0s
+          reposerver.repo.cache.expiration: 8h0m0s
+          resource.compareoptions: |
+            ignoreAggregatedRoles: true
+          resource.customizations: |
+            "*.upbound.io/*":
+              health.lua: |
+                health_status = {
+                  status = "Progressing",
+                  message = "Provisioning ..."
+                }
+
+                local function contains (table, val)
+                  for i, v in ipairs(table) do
+                    if v == val then
+                      return true
+                    end
+                  end
+                  return false
+                end
+
+                local has_no_status = {
+                  "ProviderConfig",
+                  "ProviderConfigUsage"
+                }
+
+                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
+                  health_status.status = "Healthy"
+                  health_status.message = "Resource is up-to-date."
+                  return health_status
+                end
+
+                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
+                  if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is in use."
+                    return health_status
+                  end
+                  return health_status
+                end
+
+                for i, condition in ipairs(obj.status.conditions) do
+                  if condition.type == "LastAsyncOperation" then
+                    if condition.status == "False" then
+                      health_status.status = "Degraded"
+                      health_status.message = condition.message
+                      return health_status
+                    end
+                  end
+
+                  if condition.type == "Synced" then
+                    if condition.status == "False" then
+                      health_status.status = "Degraded"
+                      health_status.message = condition.message
+                      return health_status
+                    end
+                  end
+
+                  if condition.type == "Ready" then
+                    if condition.status == "True" then
+                      health_status.status = "Healthy"
+                      health_status.message = "Resource is up-to-date."
+                      return health_status
+                    end
+                  end
+                end
+
+                return health_status
+
+            "*.crossplane.io/*":
+              health.lua: |
+                health_status = {
+                  status = "Progressing",
+                  message = "Provisioning ..."
+                }
+
+                local function contains (table, val)
+                  for i, v in ipairs(table) do
+                    if v == val then
+                      return true
+                    end
+                  end
+                  return false
+                end
+
+                local has_no_status = {
+                  "Composition",
+                  "CompositionRevision",
+                  "DeploymentRuntimeConfig",
+                  "ControllerConfig",
+                  "ProviderConfig",
+                  "ProviderConfigUsage"
+                }
+                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is up-to-date."
+                  return health_status
+                end
+
+                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
+                  if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is in use."
+                    return health_status
+                  end
+                  return health_status
+                end
+
+                for i, condition in ipairs(obj.status.conditions) do
+                  if condition.type == "LastAsyncOperation" then
+                    if condition.status == "False" then
+                      health_status.status = "Degraded"
+                      health_status.message = condition.message
+                      return health_status
+                    end
+                  end
+
+                  if condition.type == "Synced" then
+                    if condition.status == "False" then
+                      health_status.status = "Degraded"
+                      health_status.message = condition.message
+                      return health_status
+                    end
+                  end
+
+                  if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
+                    if condition.status == "True" then
+                      health_status.status = "Healthy"
+                      health_status.message = "Resource is up-to-date."
+                      return health_status
+                    end
+                  end
+                end
+
+                return health_status
+          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
+            jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_ValidatingWebhookConfiguration: |
+            jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+          resource.customizations.ignoreDifferences.all: |
+            jqPathExpressions:
+            - '.spec.template.spec.containers[].volumeMounts[] | select(.name == "ssl-certs")'
+            - '.spec.template.spec.volumes[] | select(.name == "ssl-certs")'
+            - '.spec.template.spec.securityContext'
+            - '.spec.template.spec.containers[].securityContext'
+            - '.spec.template.spec.initContainers[].securityContext'
+            - '.spec.replicas'
+          resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
+            jqPathExpressions:
+            - '.spec.rules[] | select(.name|test("autogen-."))'
+          resource.customizations.ignoreDifferences.kyverno.io_Policy: |
+            jqPathExpressions:
+            - '.spec.rules[] | select(.name|test("autogen-."))'
+          kustomize.buildOptions: --enable-helm
+          timeout.reconciliation: 180s
+          timeout.reconciliation.jitter: 60s
+        params:
+          application.namespaces: '*'
+          applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
+          applicationsetcontroller.namespaces: '*'
+          # repo.server: 127.0.0.1:8081
+          # redis.server: 127.0.0.1:6379
+          controller.sharding.algorithm: round-robin
+          controller.self.heal.timeout.seconds: "20s"
+          controller.self.heal.backoff.timeout.seconds: "20s"
+          controller.self.heal.backoff.factor: "2"
+          controller.self.heal.backoff.cap.seconds: "120s"
+          controller.sync.timeout.seconds: 120
+          server.basehref: /argocd
+          server.rootpath: /argocd
+          server.staticassets: /shared/app
+        secret:
+          argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+        rbac:
+          policy.default: role:readonly
+          policy.csv: |
+            g, admin@beget.ru, role:admin
+      dex:
+        enabled: false
+      notifications:
+        enabled: false
+      redis:
+        image:
+          imagePullPolicy: IfNotPresent
+        replicas: 1
+        # hostNetwork: true
+        exporter:
+          enabled: true
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 10Mi
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 10Mi
+              memory: 64Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 100Mi
+            memory: 196Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 100Mi
+            memory: 128Mi
+      redisSecretInit:
+        enabled: false
+      repoServer:
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        emptyDir:
+          sizeLimit: 10Gi
+        metrics:
+          enabled: true
+        rbac:
+        - apiGroups:
+          - '*'
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        replicas: 1
+        resources:
+          limits:
+            ephemeral-storage: 10Gi
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 10Gi
+            memory: 150Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      server:
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        extraArgs:
+          # - --repo-server
+          # - 127.0.0.1:8081
+          # - --redis
+          # - 127.0.0.1:6379
+          - --kubeconfig
+          - /etc/kubernetes/admin.conf
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+        volumeMounts:
+          - mountPath: /etc/kubernetes/admin.conf
+            name: admin-conf
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            ephemeral-storage: 100Mi
+          requests:
+            cpu: 50m
+            ephemeral-storage: 100Mi
+            memory: 64Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      controller:
+        dynamicClusterDistribution: true
+        replicas: 1
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        extraArgs:
+          # - --repo-server
+          # - 127.0.0.1:8081
+          # - --redis
+          # - 127.0.0.1:6379
+          - --kubeconfig
+          - /etc/kubernetes/admin.conf
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+        volumeMounts:
+          - mountPath: /etc/kubernetes/admin.conf
+            name: admin-conf
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            ephemeral-storage: 500Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 500Mi
+            memory: 64Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      applicationSet:
+        replicas: 0
+        image:
+          imagePullPolicy: IfNotPresent
+        allowAnyNamespace: true
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            cpu: 400m
+            ephemeral-storage: 100Mi
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            ephemeral-storage: 100Mi
+            memory: 32Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: ""
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      global:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      configs:
+        cm:
+          url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
+          oidc.config: |
+            name: Dex
+            issuer: {{ printf "https://%%s" .Values.istioGwVip }}
+            clientID: argocd
+            clientSecret: argo-cd-super-secret
+            requestedScopes: ["openid","profile","email","groups"]
+            insecureSkipVerify: true
+          oidc.tls.insecure.skip.verify: "true"
+        cmp:
+          create: true
+          plugins:
+            helm-with-values:
+              allowConcurrency: true
+              lockRepo: false
+              discover:
+                find:
+                  command:
+                    - bash
+                    - '-c'
+                    - |
+                      if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
+                        find . -name 'Chart.yaml' &&
+                        find . -name 'values.yaml'
+                      fi
+              generate:
+                command:
+                  - bash
+                  - '-c'
+                  - |
+                      #!/bin/bash
+                      set -e
+
+                      if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
+                          ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
+                      fi
+
+                      echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
+
+                      KUSTOMIZE_ENABLED=$(yq e '.argocdPlugins.kustomize // false' ./additionalValues.yaml)
+                      VAULT_ENABLED=$(yq e '.argocdPlugins.vault // false' ./additionalValues.yaml)
+
+                      if [ "$KUSTOMIZE_ENABLED" = "true" ]; then
+                          helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml
+
+                          OUTPUT=$(kustomize build ./patches)
+                      else
+                          OUTPUT=$(helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .)
+                      fi
+
+                      if [ "$VAULT_ENABLED" = "true" ]; then
+                          echo "$OUTPUT" | argocd-vault-plugin generate -s beget-argocd:avp-config -
+                      else
+                          echo "$OUTPUT"
+                      fi
+        secret:
+          argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
+          argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
+      repoServer:
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+        # dnsPolicy: "ClusterFirstWithHostNet"
+        extraContainers:
+          - name: helm-with-values
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: helm-with-values.yaml
+                name: cmp-plugin
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          name: argocd
+          route:
+            host: argocd-server
+            port: 443
+      destinationRule:
+        enabled: true
+        host: argocd-server
+        trafficPolicy:
+          tls:
+            mode: SIMPLE
+            insecureSkipVerify: true
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      configs:
+        cm:
+          url: {{ printf "https://%%s/argocd" .Values.istioGwVip }}
+      repoServer:
+        envFrom:
+          - secretRef:
+              name: avp-config
+        resources:
+          limits:
+            cpu: 8
+            memory: 8Gi
+      extraObjects:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: avp-config
+            namespace: beget-argocd
+          type: Opaque
+          stringData:
+            AVP_TYPE: "vault"
+            AVP_AUTH_TYPE: "k8s"
+            VAULT_ADDR: "http://vault.beget-vault.svc.cluster.local:8200"
+            AVP_K8S_ROLE: "credentials-ro"
+---
+# Source: addons/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-system-and-initialized
+  labels:
+    addons.in-cloud.io/values: system-and-initialized
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      controller:
+        resources:
+          limits:
+            cpu: '16'
+            ephemeral-storage: 10Gi
+          requests:
+            cpu: 5
+            ephemeral-storage: 500Mi
+            memory: 6Gi
+      global:
+        nodeSelector:
+          node-role.kubernetes.io/argocd: ''
+        tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/argocd
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/master
+            operator: Exists
+      redis:
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+---
+# Source: addons/templates/certcontrollermanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-controller-manager-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertControllerManagerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-controller-manager
+spec:
+  values: |
+    manager:
+      args:
+      - --cluster-wide
+      image:
+        repository: prorobotech/certificate-set
+        tag: main-6b6710b3
+        pullPolicy: IfNotPresent
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    metrics:
+      enable: true
+      port: 8443
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      installCRDs: true
+      global:
+        priorityClassName: system-cluster-critical
+      cainjector:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      containerSecurityContext:
+        runAsNonRoot: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      startupapicheck:
+        enabled: false
+        containerSecurityContext:
+          runAsNonRoot: true
+      webhook:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      clusterResourceNamespace: beget-system
+      cainjector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      startupapicheck:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      webhook:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      enableCertificateOwnerRef: true
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    issuers:
+      selfsignedIssuer:
+        kind: Issuer
+        name: selfsigned-issuer
+        namespace: beget-system
+        spec:
+          selfSigned: {}
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: selfsigned-infra-cluster-ca
+    certificates:
+      mainCA:
+        name: selfsigned-infra-cluster-ca
+        namespace: beget-system
+        spec:
+          issuerRef:
+            group: cert-manager.io
+            kind: Issuer
+            name: selfsigned-issuer
+          privateKey:
+            algorithm: RSA
+            encoding: PKCS1
+            size: 4096
+          duration: 175200h
+          renewBefore: 720h
+          isCA: true
+          commonName: root-ca
+          secretName: selfsigned-infra-cluster-ca
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/certmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      cainjector:
+        resources:
+          limits:
+            cpu: 1
+      resources:
+        limits:
+          cpu: 1
+      webhook:
+        resources:
+          limits:
+            cpu: 1
+---
+# Source: addons/templates/certmanagercsidriver.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerCsiDriverDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    cert-manager-csi-driver:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+---
+# Source: addons/templates/certmanagercsidriver.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerCsiDriverInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    cert-manager-csi-driver:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/certmanagercsidriver.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerCsiDriverVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/cilium.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      ciliumEndpointSlice:
+        enabled: true
+      image:
+        pullPolicy: IfNotPresent
+      envoy:
+        enabled: false
+      hubble:
+        enabled: false
+      kubeProxyReplacement: true
+      podLabels:
+        in-cloud.io/clusterName: "{{ .Values.cluster.name }}"
+      nodePort:
+        enabled: true
+      operator:
+        replicas: 1
+        image:
+          pullPolicy: IfNotPresent
+      dnsPolicy: ClusterFirstWithHostNet
+      prometheus:
+        metricsService: true
+        enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+      tls:
+        readSecretsOnlyFromSecretsNamespace: false
+        secretSync:
+          enabled: false
+        secretsNamespace:
+          create: false
+          name: ~
+---
+# Source: addons/templates/cilium.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      k8sServiceHost: "{{ .Values.cluster.host }}"
+      k8sServicePort: "{{ .Values.cluster.port }}"
+---
+# Source: addons/templates/cilium.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      priorityClassName: system-cluster-critical
+      prometheus:
+        service:
+          enabled: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+      rollingUpdate:
+        maxUnavailable: 35%
+        maxSurge: 1
+      securityContext:
+        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsUser: 0
+      service:
+        clusterIP: 29.64.0.10
+      serviceAccount:
+        create: true
+        name: coredns
+      affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: coredns
+                app.kubernetes.io/instance: coredns
+            topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - coredns
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - coredns
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified 
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . 8.8.8.8
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-initialized
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsInitialized
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+---
+# Source: addons/templates/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-multi-control-plane
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCorednsMultiControlPlane
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: coredns
+                  app.kubernetes.io/instance: coredns
+              topologyKey: kubernetes.io/hostname
+---
+# Source: addons/templates/etcdbackup.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backups-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueEtcdBackupsDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: etcd-backups
+spec:
+  values: |
+    secret:
+      s3:
+        region: us-east-1
+        accessKeyID: {{ .Values.etcdbackupS3AccessKey }}
+        secretAccessKey: {{ .Values.etcdbackupS3SecretAccessKey }}
+        endpoint: {{ .Values.etcdbackupS3SecretEndpoint}}
+        s3ForcePathStyle: "true"
+    app:
+      args:
+        - --use-etcd-wrapper=false
+        - --schedule=0 */4 * * *  
+        - --delta-snapshot-period=1h
+        - --storage-provider=S3
+        - --store-container={{ .Values.etcdbackupAppArgsStorecontainer }}
+        - --store-prefix=etcd-{{ .Values.cluster.name }}
+        - --garbage-collection-period=30m
+        - --max-backups=6
+        - --garbage-collection-policy=LimitBased
+        - --compression-policy=gzip
+        - --compress-snapshots=true
+        - --etcd-snapshot-timeout=8m
+        - --etcd-defrag-timeout=8m
+        - --etcd-connection-timeout=30s
+        - --delta-snapshot-memory-limit=204857600
+        - --endpoints=https://$(NODE_IP):2379
+        - --server-port=18080
+        - --cacert=/etc/etcd-pki/ca.crt
+        - --cert=/etc/etcd-pki/healthcheck-client.crt
+        - --key=/etc/etcd-pki/healthcheck-client.key
+        - --max-parallel-chunk-uploads=1
+        - --min-chunk-size=16777212
+        - --defragmentation-schedule=10 0 */3 * *
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+---
+# Source: addons/templates/etcdbackup.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backups-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueEtcdBackupsInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: etcd-backups
+spec:
+  values: |
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/extraresources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-certificateset
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueExtraResourcesCertificateset
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: certificateset
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      certificate:
+        apiVersion: in-cloud.io/v1alpha1
+        kind: CertificateSet
+        metadata:
+          labels:
+            cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
+            clusterctl.cluster.x-k8s.io/move: "true"
+            xcluster.in-cloud.io/name: {{ .Values.cluster.name }}
+          name: {{ .Values.cluster.name }}
+          namespace: beget-system
+        spec:
+          environment: infra
+          argocdCluster: true
+          issuerRef:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned
+          issuerRefOidc:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
+          kubeconfig: false
+          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
+      issuer:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          annotations:
+            gotemplating.fn.crossplane.io/composition-resource-name: ClusterIssuerEtcd
+            gotemplating.fn.crossplane.io/ready: "True"
+          name: etcd-ca{{ if eq .Values.environment "client" }}-client{{ end }}
+        spec:
+          ca:
+            secretName: {{ .Values.cluster.name }}-etcd
+---
+# Source: addons/templates/istiobase.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-base-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioBaseDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-base
+spec:
+  values: |
+    global:
+      istioNamespace: beget-istio
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      base:
+        validationCABundle: ""
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      pilot:
+        autoscaleMin: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      global:
+        priorityClassName: system-cluster-critical
+        istioNamespace: beget-istio
+        proxy:
+          tracer: zipkin
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-multi-control-plane
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodMultiControlPlane
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      pilot:
+        autoscaleMin: 2
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: istiod
+                  app.kubernetes.io/instance: istiod
+              topologyKey: kubernetes.io/hostname
+---
+# Source: addons/templates/istiogw.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      priorityClassName: system-cluster-critical
+      service:
+        type: NodePort
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+---
+# Source: addons/templates/istiogw.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    gateway:
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/type: "external"
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+        ports:
+          - name: status-port
+            port: 15021
+            protocol: TCP
+            targetPort: 15021
+            nodePort: 32021
+          - name: http2
+            port: 80
+            protocol: TCP
+            targetPort: 80
+            nodePort: 32080
+          - name: https
+            port: 443
+            protocol: TCP
+            targetPort: 443
+            nodePort: 32443
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      enabled: true
+      certificate:
+        name: {{ .Values.cluster.name }}-gateway
+        secretName: {{ .Values.cluster.name }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+    extraGateway:
+      enabled: true
+      name: default
+      servers:
+        - hosts: ["*"]
+          port:
+            protocol: HTTPS
+          tls:
+            mode: SIMPLE
+            credentialName: {{ .Values.cluster.name }}-gateway
+        - hosts: ["*"]
+          port:
+            protocol: HTTP 
+    telemetry:
+      enabled: true
+---
+# Source: addons/templates/istiogw.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstioGwVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/test.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: test-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTestDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-test
+spec:
+  values: |
+    resources:
+      configMap:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: mytest
+          namespace: beget-test
+        data:
+          host: "{{ .Values.cluster.host }}"
+          port: "{{ .Values.cluster.port }}"
+          name: "{{ .Values.cluster.name }}"
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTrustManagerDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    trust-manager:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTrustManagerInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    trust-manager:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      app:
+        trust:
+          namespace: beget-system
+    bundle:
+      enabled: true
+      name: "ca"
+      sources:
+        - secret:
+            name: selfsigned-infra-cluster-ca
+            key: tls.crt
+      target:
+        namespaceSelector:
+          matchLabels:
+            in-cloud.io/clusterName: infra
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-vm-operator
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTrustManagerVmOperator
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addons/templates/trustmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-system
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueTrustManagerSystem
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    bundle:
+      sources:
+        - secret:
+            name: selfsigned-infra-cluster-ca
+            key: tls.crt
+        - secret:
+            name: {{ $clusterName }}-ca-oidc
+            key: ca.crt
+      target:
+        namespaceSelector:
+          matchLabels:
+            in-cloud.io/caBundle: "approved"
+---
+# Source: addons/templates/vmoperator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      env:
+        - name: GOMAXPROCS
+          value: '1'
+        - name: VM_VMAGENTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTMANAGER_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 320Mi
+      admissionWebhooks:
+        enabled: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - victoria-metrics-operator
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - vmoperator-infra
+              topologyKey: failure-domain.beta.kubernetes.io/region
+            weight: 100
+---
+# Source: addons/templates/vmoperator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    victoria-metrics-operator:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
