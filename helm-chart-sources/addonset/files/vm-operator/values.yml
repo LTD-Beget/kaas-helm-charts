@@ -3,9 +3,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-operator-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: vm-operator
@@ -51,9 +48,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-operator-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmOperatorInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: vm-operator

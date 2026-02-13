@@ -1,3 +1,0 @@
-{{- if .Values.addons.trustmanager.enabled }}
-{{ .Files.Get "files/trustmanager.yml" }}
-{{- end }}

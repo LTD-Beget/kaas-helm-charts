@@ -1,0 +1,103 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    trust-manager:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    trust-manager:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      app:
+        trust:
+          namespace: beget-system
+    bundle:
+      enabled: true
+      name: "ca"
+      sources:
+        - secret:
+            name: selfsigned-infra-cluster-ca
+            key: tls.crt
+      target:
+        namespaceSelector:
+          matchLabels:
+            in-cloud.io/clusterName: infra
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    bundle:
+      sources:
+        - secret:
+            name: selfsigned-infra-cluster-ca
+            key: tls.crt
+        - secret:
+            name: {{ .Values.cluster.name }}-ca-oidc
+            key: ca.crt
+      target:
+        namespaceSelector:
+          matchLabels:
+            in-cloud.io/caBundle: "approved"
+

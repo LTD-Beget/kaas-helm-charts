@@ -1,20 +1,30 @@
-{{- define "vm-operator.addon" }}
+{{- define "trust-manager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: vm-operator
+  name: trust-manager
 spec:
-  path: "helm-chart-sources/victoria-metrics-operator"
+  path: "helm-chart-sources/trustmanager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-vm-operator"
+  targetNamespace: "beget-trust-manager"
   variables:
     cluster_name: in-cluster
+  valuesSources:
+    - name: xclustercomponent
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
   initDependencies:
-    - name: cert-manager-csi-driver
+    - name: cert-manager
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
@@ -39,10 +49,11 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: vm-operator
+        addons.in-cloud.io/addon: trust-manager
     - name: immutable
-      priority: 99
+      priority: 0
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: vm-operator
+        addons.in-cloud.io/addon: trust-manager
+
 {{- end }}
