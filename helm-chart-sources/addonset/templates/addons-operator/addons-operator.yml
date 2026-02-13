@@ -1,0 +1,13 @@
+{{- if .Values.addons.addonsoperator.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "addons-operator.addon" . }}
+
+  {{- .Files.Get "files/addons-operator/values.yml" | nindent 0 }}
+
+  {{- include "addons-operator.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "addons-operator.phase" $clientContext }}
+  {{- end }}
+{{- end }}
