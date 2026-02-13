@@ -1,10 +1,9 @@
+{{- define "argocd.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonArgocd
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: argocd
 spec:
   path: "helm-chart-sources/argocd"
   pluginName: helm-with-values
@@ -15,7 +14,7 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
@@ -55,8 +54,9 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: argocd
-    - name: infra
-      priority: 10
+    - name: immutable
+      priority: 99
       matchLabels:
-        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: argocd
+{{- end }}

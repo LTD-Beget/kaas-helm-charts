@@ -1,13 +1,27 @@
+{{- define "argocd.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseArgocd
-    gotemplating.fn.crossplane.io/ready: "True"
   name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: argocd
     - name: cert-manager
       criteria:
         - source:
@@ -99,3 +113,4 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system-and-initialized
           addons.in-cloud.io/addon: argocd
+{{- end }}

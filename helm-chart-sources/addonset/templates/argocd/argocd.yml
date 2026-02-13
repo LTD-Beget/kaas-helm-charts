@@ -1,10 +1,13 @@
 {{- if .Values.addons.argocd.enabled }}
-{{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
-{{ tpl (.Files.Get "files/argocd/addon.yml") . }}
-{{ .Files.Get "files/argocd/values.yml" }}
+  {{- include "argocd.addon" . }}
 
-{{ tpl (.Files.Get "files/argocd/phase.yml") . }}
+  {{- .Files.Get "files/argocd/values.yml" | nindent 0 }}
 
-{{ tpl (.Files.Get "files/argocd/phase.yml") $clientContext }}
+  {{- include "argocd.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "argocd.phase" $clientContext }}
+  {{- end }}
 {{- end }}

@@ -1,12 +1,8 @@
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: argocd
@@ -398,10 +394,18 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: argocd-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: argocd-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: argocd
@@ -503,9 +507,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: argocd
@@ -524,9 +525,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: argocd
@@ -540,9 +538,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-istio-base
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdIstioBase
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: istio-base
     addons.in-cloud.io/addon: argocd
@@ -573,9 +568,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: argocd
@@ -612,9 +604,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: argocd-system-and-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueArgocdSystemAndInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system-and-initialized
     addons.in-cloud.io/addon: argocd
