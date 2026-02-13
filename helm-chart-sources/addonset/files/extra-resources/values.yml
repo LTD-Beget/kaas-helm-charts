@@ -1,14 +1,10 @@
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: extra-resources-certificateset
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueExtraResourcesCertificateset
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: extra-resources-certificate-set
   labels:
-    addons.in-cloud.io/values: certificateset
+    addons.in-cloud.io/values: certificate-set
     addons.in-cloud.io/addon: extra-resources
 spec:
   values: |

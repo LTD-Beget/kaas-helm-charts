@@ -1,0 +1,11 @@
+{{- if .Values.addons.extraresources.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "extra-resources.addon" . }}
+  
+  {{- .Files.Get "files/extra-resources/values.yml" | nindent 0 }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "extra-resources.addon" $clientContext }}
+  {{- end }}
+{{- end }}

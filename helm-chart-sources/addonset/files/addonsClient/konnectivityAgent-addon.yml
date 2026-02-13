@@ -16,7 +16,7 @@ spec:
   variables:
     cluster_name: {{ .Values.clientName }}
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap

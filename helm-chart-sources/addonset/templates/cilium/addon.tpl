@@ -13,7 +13,7 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-cilium"
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap

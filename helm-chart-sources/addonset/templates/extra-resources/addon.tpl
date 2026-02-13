@@ -1,10 +1,9 @@
+{{- define "extra-resources.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: extra-resources
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonExtraResources
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   path: "helm-chart-sources/helm-inserter"
   pluginName: helm-with-values
@@ -15,11 +14,11 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
         namespace: beget-system
       extract:
         - as: argocdServerAdminPassword
@@ -70,58 +69,9 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: certificateset
+    - name: certificate-set
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: certificateset
+        addons.in-cloud.io/values: certificate-set
         addons.in-cloud.io/addon: extra-resources
-
----
-
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: extra-resources-certificateset
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueExtraResourcesCertificateset
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: certificateset
-    addons.in-cloud.io/addon: extra-resources
-spec:
-  values: |
-    resources:
-      certificate:
-        apiVersion: in-cloud.io/v1alpha1
-        kind: CertificateSet
-        metadata:
-          labels:
-            cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
-            clusterctl.cluster.x-k8s.io/move: "true"
-            xcluster.in-cloud.io/name: {{ .Values.cluster.name }}
-          name: {{ .Values.cluster.name }}
-          namespace: beget-system
-        spec:
-          environment: infra
-          argocdCluster: true
-          issuerRef:
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            name: selfsigned
-          issuerRefOidc:
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            name: selfsigned-cluster-issuer
-          kubeconfig: false
-          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
-      issuer:
-        apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          annotations:
-            gotemplating.fn.crossplane.io/composition-resource-name: ClusterIssuerEtcd
-            gotemplating.fn.crossplane.io/ready: "True"
-          name: etcd-ca
-        spec:
-          ca:
-            secretName: {{ .Values.cluster.name }}-etcd
+{{- end }}

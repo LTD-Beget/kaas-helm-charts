@@ -15,7 +15,7 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: xclustercomponent
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
