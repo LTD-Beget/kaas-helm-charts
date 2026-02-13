@@ -1,0 +1,81 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      ciliumEndpointSlice:
+        enabled: true
+      image:
+        pullPolicy: IfNotPresent
+      envoy:
+        enabled: false
+      hubble:
+        enabled: false
+      kubeProxyReplacement: true
+      podLabels:
+        in-cloud.io/clusterName: "{{ .Values.cluster.name }}"
+      nodePort:
+        enabled: true
+      operator:
+        replicas: 1
+        image:
+          pullPolicy: IfNotPresent
+      dnsPolicy: ClusterFirstWithHostNet
+      prometheus:
+        metricsService: true
+        enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+      tls:
+        readSecretsOnlyFromSecretsNamespace: false
+        secretSync:
+          enabled: false
+        secretsNamespace:
+          create: false
+          name: ~
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-immutable
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumImmutable
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      k8sServiceHost: "{{ .Values.cluster.host }}"
+      k8sServicePort: "{{ .Values.cluster.port }}"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-cert-manager
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumCertManager
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

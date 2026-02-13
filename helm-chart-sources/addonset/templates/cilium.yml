@@ -1,3 +1,0 @@
-{{- if .Values.addons.cilium.enabled }}
-{{ .Files.Get "files/cilium.yml" }}
-{{- end }}
