@@ -1,4 +1,5 @@
 {{- define "addonset.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -42,5 +43,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-set
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: addon-set
 {{- end }}

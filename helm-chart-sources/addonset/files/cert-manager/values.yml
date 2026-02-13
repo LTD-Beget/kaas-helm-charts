@@ -1,66 +1,8 @@
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
-metadata:
-  name: cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
-spec:
-  path: "helm-chart-sources/certmanager"
-  pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
-  releaseName: cert-manager
-  targetCluster: in-cluster
-  targetNamespace: "beget-certmanager"
-  variables:
-    cluster_name: in-cluster
-  initDependencies:
-    - name: cilium
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend: 
-    type: "argocd"
-    namespace: "beget-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: default
-      priority: 0
-      matchLabels:
-        addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: cert-manager
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: cert-manager
-    - name: immutable
-      priority: 99
-      matchLabels:
-        addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: cert-manager
-
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cert-manager-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: cert-manager
@@ -108,10 +50,20 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: cert-manager-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      enableCertificateOwnerRef: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: cert-manager-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: cert-manager
@@ -155,26 +107,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: cert-manager-immutable
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerImmutable
-    gotemplating.fn.crossplane.io/ready: "True"
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: cert-manager
-spec:
-  values: |
-    cert-manager:
-      enableCertificateOwnerRef: true
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: cert-manager-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: initialized
     addons.in-cloud.io/addon: cert-manager
@@ -229,9 +162,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cert-manager-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: cert-manager
@@ -246,9 +176,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cert-manager-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCertManagerSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: cert-manager
@@ -266,60 +193,3 @@ spec:
         resources:
           limits:
             cpu: 1
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
-  name: cert-manager
-spec:
-  rules:
-    - name: initialized
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: cert-manager
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: cert-manager
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters
-            namespace: beget-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "True"
-      selector:
-        name: system
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: cert-manager

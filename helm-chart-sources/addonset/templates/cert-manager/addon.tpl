@@ -1,15 +1,25 @@
-{{- define "addons-operator.addon" }}
+{{- define "cert-manager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: addons-operator
+  name: cert-manager
 spec:
-  path: "helm-chart-sources/addons-operator"
+  path: "helm-chart-sources/cert-manager"
+  pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "HEAD"
+  releaseName: cert-manager
   targetCluster: in-cluster
-  targetNamespace: "beget-addons-operator"
+  targetNamespace: "beget-cert-manager"
+  variables:
+    cluster_name: in-cluster
+  initDependencies:
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -30,10 +40,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addons-operator
+        addons.in-cloud.io/addon: cert-manager
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: addons-operator
+        addons.in-cloud.io/addon: cert-manager
 {{- end }}
