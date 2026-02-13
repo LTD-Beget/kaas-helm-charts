@@ -1,72 +1,22 @@
+---
 apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
+kind: AddonValue
 metadata:
-  name: incloud-ui
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonIncloudUi
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-chart-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: incloud-web-chart
 spec:
-  path: "helm-chart-sources/incloud-ui"
-  pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
-  targetCluster: in-cluster
-  targetNamespace: "beget-incloud-ui"
-  variables:
-    cluster_name: in-cluster
-  valuesSources: 
-    - name: xclustercomponent
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: incloudUICookieSecret
-          jsonPath: .data.incloudUICookieSecret
-        - as: system.istioGwVip
-          jsonPath: .data.systemIstioGwVip
-  initDependencies:
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend: 
-    type: "argocd"
-    namespace: "beget-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: incloud-ui
+  values: ""
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: incloud-ui-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiInfra
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-chart-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: incloud-ui
+    addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
       argocdPlugins:
@@ -76,10 +26,10 @@ spec:
           enabled: true
           config:
             clientID: "kubernetes"
-            clientSecret: "incloud-ui-super-secret"
+            clientSecret: "incloud-web-chart-super-secret"
             cookieSecret: "{{ .Values.incloudUICookieSecret }}"
           extraArgs:
-            upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:8081"
+            upstream: "http://incloud-web-chart-incloud-web-chart.beget-incloud-web-chart.svc:8081"
             redirect-url: "https://{{ .Values.system.istioGwVip }}/oauth2/callback"
             oidc-issuer-url: "https://{{ .Values.system.istioGwVip }}/dex"
             insecure-oidc-skip-issuer-verification: true
@@ -139,13 +89,21 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: incloud-ui-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-chart-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: incloud-ui
+    addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
     monitoring:
@@ -155,13 +113,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: incloud-ui-istio-base
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiIstioBase
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-chart-istio-base
   labels:
     addons.in-cloud.io/values: istio-base
-    addons.in-cloud.io/addon: incloud-ui
+    addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
     istio:
@@ -173,20 +128,17 @@ spec:
           - "*"
         http:
           route:
-            host: incloud-ui-oauth2-proxy
+            host: incloud-web-chart-oauth2-proxy
             port: 4080
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: incloud-ui-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIncloudUiSystem
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: incloud-web-chart-system
   labels:
     addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: incloud-ui
+    addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
     incloud-web-chart:
@@ -202,60 +154,3 @@ spec:
           scheme: http
           api: 93.189.231.174  # TODO: dynamicaly cluster-list
 
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseIncloudUi
-    gotemplating.fn.crossplane.io/ready: "True"
-  name: incloud-ui
-spec:
-  rules:
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: incloud-ui
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: istio-base
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: incloud-ui
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters
-            namespace: beget-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "True"
-      selector:
-        name: system
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: incloud-ui
