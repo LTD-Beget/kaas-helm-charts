@@ -5,7 +5,7 @@ kind: Addon
 metadata:
   name: trust-manager
 spec:
-  path: "helm-chart-sources/trustmanager"
+  path: "helm-chart-sources/trust-manager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
