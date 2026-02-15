@@ -6,8 +6,4 @@
   {{- .Files.Get "files/addonsMonitoring/clientvmscrapeconfig/values.yml" | nindent 0 }}
 
   {{- include "clientvmscrapeconfig.phase" . }}
-
-  {{- if eq .Values.environment "infra" }}
-    {{- include "clientvmscrapeconfig.phase" $clientContext }}
-  {{- end }}
 {{- end }}
