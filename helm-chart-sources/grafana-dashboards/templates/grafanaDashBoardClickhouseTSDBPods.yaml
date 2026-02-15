@@ -566,8 +566,8 @@ spec:
           },
           {
             "current": {
-              "text": "dlputim6-apmistcs-system-2-infra",
-              "value": "dlputim6-apmistcs-system-2-infra"
+              "text": "apmistcs-c7c36d-infra",
+              "value": "apmistcs-c7c36d-infra"
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
@@ -584,18 +584,18 @@ spec:
           },
           {
             "current": {
-              "text": "apmistcs",
-              "value": "apmistcs"
+              "text": "beget-argocd",
+              "value": "beget-argocd"
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT t.tags['namespace']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] IN (${cluster:singlequote})\n  AND t.tags['namespace'] != ''\nORDER BY 1;",
             "label": "namespace",
             "name": "namespace",
             "options": [],
-            "query": "SELECT DISTINCT tags['namespace']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['namespace'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT t.tags['namespace']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] IN (${cluster:singlequote})\n  AND t.tags['namespace'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -603,23 +603,23 @@ spec:
           {
             "current": {
               "text": [
-                "apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc"
+                "argocd-repo-server-5564949f55-ggfrs"
               ],
               "value": [
-                "apmistcs-system-2-infra-cloud-controller-manager-8f45949d-2qldc"
+                "argocd-repo-server-5564949f55-ggfrs"
               ]
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT t.tags['pod']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod'] != ''\nORDER BY 1;",
             "includeAll": true,
             "label": "pod",
             "multi": true,
             "name": "pod",
             "options": [],
-            "query": "SELECT DISTINCT tags['pod']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster']   IN (${cluster:singlequote})\n  AND tags['namespace'] IN (${namespace:singlequote})\n  AND tags['pod'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT t.tags['pod']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_pod_info'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']   IN (${cluster:singlequote})\n  AND t.tags['namespace'] IN (${namespace:singlequote})\n  AND t.tags['pod'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
