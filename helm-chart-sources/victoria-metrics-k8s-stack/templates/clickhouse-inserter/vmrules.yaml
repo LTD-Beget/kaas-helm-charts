@@ -338,6 +338,7 @@ spec:
           record: 'beget_node_filesystem_used_mb'
 
         - annotations: {}
+          expr: |-
             (
               avg by (cluster, instance, device, fstype) (
                 label_replace(

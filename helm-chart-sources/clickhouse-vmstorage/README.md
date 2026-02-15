@@ -413,6 +413,88 @@ GROUP BY time, metric
 ORDER BY time;
 ```
 
+### beget_nodegroup_filesystem_used_percent
+#### Описание
+Соотношение использованного дискового простарнства к общему на группу нод
+#### Лейблы
+- cluster
+- nodegroup
+#### Значения
+В процентах
+#### Как вычисляется в vmAlert
+```
+sum by (cluster, nodegroup) (
+  (
+    (
+      avg by (cluster, instance, device, fstype) (
+        label_replace(
+          (
+            node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}
+            -
+            node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}
+          ),
+          "cluster", "$1", "cluster_full_name", "(.*)"
+        )
+      )
+      * on(instance) group_left(nodename)
+      max by (instance, nodename) (node_uname_info)
+    )
+  )
+  * on(nodename) group_left(nodegroup)
+  max by (nodename, nodegroup) (
+    label_replace(
+      label_replace(
+        kube_node_labels,
+        "nodename", "$1", "node", "(.*)"
+      ),
+      "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+    )
+  )
+)
+/
+sum by (cluster, nodegroup) (
+  (
+    (
+      avg by (cluster, instance, device, fstype) (
+        label_replace(
+          node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"},
+          "cluster", "$1", "cluster_full_name", "(.*)"
+        )
+      )
+      * on(instance) group_left(nodename)
+      max by (instance, nodename) (node_uname_info)
+    )
+  )
+  * on(nodename) group_left(nodegroup)
+  max by (nodename, nodegroup) (
+    label_replace(
+      label_replace(
+        kube_node_labels,
+        "nodename", "$1", "node", "(.*)"
+      ),
+      "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+    )
+  )
+) * 100
+```
+#### Пример запроса в Clikhouse
+```
+SELECT
+  toStartOfInterval(d.timestamp, INTERVAL 30 SECOND) AS time,
+  t.tags['nodegroup'] AS metric,
+  avg(d.value) AS USAGE
+FROM timeSeriesData(metrics.ts) AS d
+INNER JOIN timeSeriesTags(metrics.ts) AS t
+  ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_nodegroup_filesystem_used_percent'
+  AND d.timestamp >= toDateTime(1770500419) AND d.timestamp <= toDateTime(1770543619)
+  AND t.tags['cluster']  IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['nodegroup'] IN ('linux')
+GROUP BY time, metric
+ORDER BY time;
+```
+
 ## Метрики нод
 Метрики и примеры графиков можно посмотреть в графане на дашборде beget-grafana -> ClickhouseTSDB / Nodes (по пути https://GRAFANA_ADDR/grafana/d/clickhouse-tsdb-nodes)
 
@@ -637,6 +719,54 @@ INNER JOIN timeSeriesTags(metrics.ts) AS t
   ON t.id = d.id
 WHERE
   t.metric_name = 'beget_node_filesystem_total_mb'
+  AND d.timestamp >= toDateTime(1770524118) AND d.timestamp <= toDateTime(1770545718)
+  AND t.tags['cluster']  IN ('dlputim6-apmistcs-system-2-infra')
+  AND t.tags['nodename'] IN ('apmistcs-system-2-infra-bdwxn-2djm2')
+GROUP BY time, metric
+ORDER BY time;
+```
+
+### beget_node_filesystem_used_percent
+#### Описание
+Потребление дискового пространства на ноде
+#### Лейблы
+- cluster
+- nodename
+#### Значения
+В мегабайтах
+#### Как вычисляется в vmAlert
+```
+(
+  avg by (cluster, instance, device, fstype) (
+    label_replace(
+      (node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}),
+      "cluster", "$1", "cluster_full_name", "(.*)"
+    )
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
+)
+/
+(
+  avg by (cluster, instance, device, fstype) (
+    label_replace(
+      node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"},
+      "cluster", "$1", "cluster_full_name", "(.*)"
+    )
+  ) * on(instance) group_left(nodename)
+    max by (instance, nodename) (node_uname_info)
+) * 100
+```
+#### Пример запроса в Clikhouse
+```
+SELECT
+  toStartOfInterval(d.timestamp, INTERVAL 15 SECOND) AS time,
+  t.tags['nodename'] AS metric,
+  avg(d.value) AS USAGE
+FROM timeSeriesData(metrics.ts) AS d
+INNER JOIN timeSeriesTags(metrics.ts) AS t
+  ON t.id = d.id
+WHERE
+  t.metric_name = 'beget_node_filesystem_used_percent'
   AND d.timestamp >= toDateTime(1770524118) AND d.timestamp <= toDateTime(1770545718)
   AND t.tags['cluster']  IN ('dlputim6-apmistcs-system-2-infra')
   AND t.tags['nodename'] IN ('apmistcs-system-2-infra-bdwxn-2djm2')
