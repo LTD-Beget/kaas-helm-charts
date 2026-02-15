@@ -55,6 +55,9 @@ spec:
         - secret:
             name: selfsigned-infra-cluster-ca
             key: tls.crt
+        - secret:
+            name: {{ .Values.cluster.name }}-ca-oidc
+            key: ca.crt
       target:
         namespaceSelector:
           matchLabels:
@@ -93,9 +96,6 @@ spec:
         - secret:
             name: selfsigned-infra-cluster-ca
             key: tls.crt
-        - secret:
-            name: {{ .Values.cluster.name }}-ca-oidc
-            key: ca.crt
       target:
         namespaceSelector:
           matchLabels:
