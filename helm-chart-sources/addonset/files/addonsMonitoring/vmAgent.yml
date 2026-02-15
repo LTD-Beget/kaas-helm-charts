@@ -383,6 +383,29 @@ spec:
               secret:
                 defaultMode: 420
                 secretName: vm-agent-monitoring-svc-tls
+          serviceSpec:
+            metadata:
+              name: vmagent
+              labels:
+                monitoring.in-cloud.io/service: vmagent
+            spec:
+              type: ClusterIP
+              ports:
+                - name: http
+                  port: 8429
+                  protocol: TCP
+                  targetPort: 8429
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+              useAsDefault: true
+          serviceScrapeSelector:
+            matchExpressions:
+              - key: managed-by
+                operator: NotIn
+                values:
+                  - vm-operator
     monitoring:
       secureService:
         enabled: true
