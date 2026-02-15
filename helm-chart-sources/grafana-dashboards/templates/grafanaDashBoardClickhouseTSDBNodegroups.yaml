@@ -433,6 +433,116 @@ spec:
           ],
           "title": "Node Disk in megabytes",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          },
+          "id": 4,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${datasource}"
+              },
+              "editorType": "sql",
+              "format": 0,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.13.0",
+              "queryType": "timeseries",
+              "rawSql": "SELECT\n  toStartOfInterval(d.timestamp, INTERVAL $__interval_s SECOND) AS time,\n  t.tags['nodegroup'] AS metric,\n  avg(d.value) AS USAGE\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_filesystem_used_percent'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster']  IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] IN (${nodegroup:singlequote})\nGROUP BY time, metric\nORDER BY time;",
+              "refId": "A"
+            }
+          ],
+          "title": "Node Disk in megabytes",
+          "type": "timeseries"
         }
       ],
       "preload": false,
@@ -462,12 +572,12 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_node_cpu_total_cores'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT t.tags['cluster']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] != ''\nORDER BY 1;",
             "description": "",
             "label": "cluster",
             "name": "cluster",
             "options": [],
-            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_node_cpu_total_cores'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT t.tags['cluster']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
@@ -475,23 +585,23 @@ spec:
           {
             "current": {
               "text": [
-                "linux"
+                "All"
               ],
               "value": [
-                "linux"
+                "$__all"
               ]
             },
             "datasource": {
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['nodegroup']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodegroup'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT t.tags['nodegroup']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] != ''\nORDER BY 1;",
             "includeAll": true,
             "label": "nodegroup",
             "multi": true,
             "name": "nodegroup",
             "options": [],
-            "query": "SELECT DISTINCT tags['nodegroup']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND tags['cluster'] IN (${cluster:singlequote})\n  AND tags['nodegroup'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT t.tags['nodegroup']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_nodegroup_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] IN (${cluster:singlequote})\n  AND t.tags['nodegroup'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
