@@ -573,11 +573,11 @@ spec:
               "type": "grafana-clickhouse-datasource",
               "uid": "${datasource}"
             },
-            "definition": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "definition": "SELECT DISTINCT t.tags['cluster']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] != ''\nORDER BY 1;",
             "label": "cluster",
             "name": "cluster",
             "options": [],
-            "query": "SELECT DISTINCT tags['cluster']\nFROM timeSeriesTags(metrics.ts)\nWHERE metric_name = 'beget_pod_info'\n  AND tags['cluster'] != ''\nORDER BY 1;",
+            "query": "SELECT DISTINCT t.tags['cluster']\nFROM timeSeriesData(metrics.ts) AS d\nINNER JOIN timeSeriesTags(metrics.ts) AS t\n  ON t.id = d.id\nWHERE\n  t.metric_name = 'beget_node_cpu_total_cores'\n  AND $__timeFilter(d.timestamp)\n  AND t.tags['cluster'] != ''\nORDER BY 1;",
             "refresh": 1,
             "regex": "",
             "type": "query"
