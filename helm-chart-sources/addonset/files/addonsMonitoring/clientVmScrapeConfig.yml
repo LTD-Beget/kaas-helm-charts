@@ -383,21 +383,6 @@ metadata:
   name: client-vm-scrape-config
 spec:
   rules:
-    - name: initialized
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: client-vm-scrape-config
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: client-vm-scrape-config
     - name: infra
       criteria:
         - source:
