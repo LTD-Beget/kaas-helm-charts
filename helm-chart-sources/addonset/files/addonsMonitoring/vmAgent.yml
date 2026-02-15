@@ -154,6 +154,25 @@ spec:
                   weight: 100
           probeNamespaceSelector: {}
           priorityClassName: system-cluster-critical
+      kubeApiServer:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: https
+                scheme: https
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                  serverName: kubernetes
+            namespaceSelector:
+              matchNames:
+                - default
+            selector:
+              matchLabels:
+                component: apiserver
+                provider: kubernetes
+            jobLabel: component
       kubeControllerManager:
         enabled: true
         vmScrape:
@@ -180,6 +199,8 @@ spec:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   serverName: "localhost"
                   insecureSkipVerify: true
+      kubelet:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -222,7 +243,7 @@ spec:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ .Values.cluster.name }}]
-          nodeScrapeSelector:
+          nodeScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
