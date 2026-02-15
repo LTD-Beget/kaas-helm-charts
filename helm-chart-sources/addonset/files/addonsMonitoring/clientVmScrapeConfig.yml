@@ -1,0 +1,379 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: helm-inserter-client-vm-scrape-config
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonHelmInserterClientVmScrapeConfig
+    gotemplating.fn.crossplane.io/ready: "True"
+spec:
+  path: "helm-chart-sources/helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  version: "HEAD"
+  targetCluster: in-cluster
+  targetNamespace: "beget-system"
+  variables:
+    cluster_name: in-cluster
+  backend: 
+    type: "argocd"
+    namespace: "beget-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: infra
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/addon: helm-inserter-client-vm-scrape-config
+  valuesSources:
+    - name: parameters-client
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: controlPlaneReplicas
+          jsonPath: .data.controlPlaneReplicas
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-client-vm-scrape-config-infra
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacInfra
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: helm-inserter-client-vm-scrape-config
+spec:
+  values: |
+    resources:
+      clientClusterKubeletMetrics:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-metrics
+          namespace: beget-system
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: ca.crt
+            cert:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: tls.crt
+            keySecret:
+              name: "{{ .Values.cluster.name }}-super-admin"
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: tls.crt
+                keySecret:
+                  name: "{{ .Values.cluster.name }}-super-admin"
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
+
+      clientClusterKubeletCadvisor:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-cadvisor
+          namespace: beget-system
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: ca.crt
+            cert:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: tls.crt
+            keySecret:
+              name: "{{ .Values.cluster.name }}-super-admin"
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: tls.crt
+                keySecret:
+                  name: "{{ .Values.cluster.name }}-super-admin"
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet-cadvisor
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
+
+      clientClusterKubeletProbes:
+        ---
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-probes
+          namespace: beget-system
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: ca.crt
+            cert:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: tls.crt
+            keySecret:
+              name: "{{ .Values.cluster.name }}-super-admin"
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: tls.crt
+                keySecret:
+                  name: "{{ .Values.cluster.name }}-super-admin"
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics/probes
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet-probes
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
+
+      clientClusterKubeletResource:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-resource
+          namespace: beget-system
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: ca.crt
+            cert:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: tls.crt
+            keySecret:
+              name: "{{ .Values.cluster.name }}-super-admin"
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: "{{ .Values.cluster.name }}-super-admin"
+                    key: tls.crt
+                keySecret:
+                  name: "{{ .Values.cluster.name }}-super-admin"
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics/resource
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet-resource
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
+
+      clientClusterKubeApiserver:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kube-apiserver
+          namespace: beget-system
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+          path: /metrics
+
+          staticConfigs:
+            - targets:
+                - {{ .Values.cluster.host }}:{{ .Values.cluster.port }}
+              labels:
+                job: kube-apiserver
+                cluster_full_name: {{ .Values.cluster.name }}
+                remotewrite_cluster: {{ .Values.cluster.name }}
+                client_cluster: {{ .Values.cluster.name }}
+
+          tlsConfig:
+            ca:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: ca.crt
+            cert:
+              secret:
+                name: "{{ .Values.cluster.name }}-super-admin"
+                key: tls.crt
+            keySecret:
+              name: "{{ .Values.cluster.name }}-super-admin"
+              key: tls.key
+            insecureSkipVerify: false
+
+          relabelConfigs:
+            - targetLabel: instance
+              replacement: external-apiserver
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
