@@ -1,10 +1,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: helm-inserter-client-vm-scrape-config
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonHelmInserterClientVmScrapeConfig
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: client-vm-scrape-config
 spec:
   path: "helm-chart-sources/helm-inserter"
   pluginName: helm-with-values
@@ -14,6 +11,12 @@ spec:
   targetNamespace: "beget-system"
   variables:
     cluster_name: in-cluster
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -30,11 +33,11 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: infra
+    - name: initialized
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: helm-inserter-client-vm-scrape-config
+        addons.in-cloud.io/values: initialized
+        addons.in-cloud.io/addon: client-vm-scrape-config
   valuesSources:
     - name: parameters-client
       sourceRef:
@@ -68,13 +71,22 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: helm-inserter-client-vm-scrape-config-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueHelmInsVmagentAdditionalRbacInfra
-    gotemplating.fn.crossplane.io/ready: "True"
+  name: client-vm-scrape-config-initialized
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: client-vm-scrape-config
+spec:
+  values: |
+    resources: {}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-vm-scrape-config
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: helm-inserter-client-vm-scrape-config
+    addons.in-cloud.io/addon: client-vm-scrape-config
 spec:
   values: |
     resources:
@@ -377,3 +389,42 @@ spec:
               replacement: {{ .Values.cluster.name }}
             - targetLabel: cluster_type
               replacement: client
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: client-vm-scrape-config
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: client-vm-scrape-config
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: client-vm-scrape-config
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: client-vm-scrape-config

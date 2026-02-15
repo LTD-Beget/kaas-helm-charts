@@ -1,1 +1,3 @@
-{{ .Files.Get "files/addonsMonitoring/clientVmScrapeConfig.yml" }}
+{{- if .Values.addons.clientvmscrapeconfig.enabled }}
+{{ .Files.Get "files/addonsMonitoring/clientvmscrapeconfig.yml" }}
+{{- end }}
