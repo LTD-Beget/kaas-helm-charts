@@ -15,7 +15,7 @@ spec:
     cluster_name: in-cluster
   valuesSources:  []
   initDependencies:
-    - name: incloud-ui
+    - name: incloud-web-chart
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
