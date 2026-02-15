@@ -171,8 +171,8 @@ spec:
             jqPathExpressions:
             - '.spec.rules[] | select(.name|test("autogen-."))'
           kustomize.buildOptions: --enable-helm
-          timeout.reconciliation: 180s
-          timeout.reconciliation.jitter: 60s
+          timeout.reconciliation: 10s
+          timeout.reconciliation.jitter: 10s
         params:
           application.namespaces: '*'
           applicationsetcontroller.allowed.scm.providers: https://gitlab.beget.ru
@@ -180,10 +180,6 @@ spec:
           # repo.server: 127.0.0.1:8081
           # redis.server: 127.0.0.1:6379
           controller.sharding.algorithm: round-robin
-          controller.self.heal.timeout.seconds: "20s"
-          controller.self.heal.backoff.timeout.seconds: "20s"
-          controller.self.heal.backoff.factor: "2"
-          controller.self.heal.backoff.cap.seconds: "120s"
           controller.sync.timeout.seconds: 120
           server.basehref: /argocd
           server.rootpath: /argocd
@@ -562,6 +558,23 @@ spec:
           tls:
             mode: SIMPLE
             insecureSkipVerify: true
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      configs:
+        cm:
+          timeout.reconciliation: 180s
+          timeout.reconciliation.jitter: 60s
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

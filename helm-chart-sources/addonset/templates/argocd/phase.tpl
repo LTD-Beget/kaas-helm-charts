@@ -64,7 +64,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: argocd
+            name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
@@ -73,6 +73,28 @@ spec:
         priority: 40
         matchLabels:
           addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-gw
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: argocd
     - name: system
       criteria:
