@@ -20,6 +20,35 @@ spec:
             sum by (cluster, nodegroup) (
               (
                 (
+                  avg by (cluster, nodename) (
+                    label_replace(
+                      node_memory_MemTotal_bytes,
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    )
+                    * on(instance) group_left(nodename)
+                    max by (instance, nodename) (node_uname_info)
+                  )
+                ) / 1024 / 1024
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
+                  label_replace(
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+                )
+              )
+            )
+          labels: {}
+          record: 'beget_nodegroup_memory_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              (
+                (
                   avg by (cluster, instance) (
                     label_replace(
                       (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes),
@@ -47,31 +76,29 @@ spec:
         - annotations: {}
           expr: |-
             sum by (cluster, nodegroup) (
-              (
+              count by (cluster, nodename, nodegroup) (
                 (
-                  avg by (cluster, nodename) (
-                    label_replace(
-                      node_memory_MemTotal_bytes,
-                      "cluster", "$1", "cluster_full_name", "(.*)"
-                    )
-                    * on(instance) group_left(nodename)
-                    max by (instance, nodename) (node_uname_info)
-                  )
-                ) / 1024 / 1024
-              )
-              * on(nodename) group_left(nodegroup)
-              max by (nodename, nodegroup) (
-                label_replace(
                   label_replace(
-                    kube_node_labels,
-                    "nodename", "$1", "node", "(.*)"
-                  ),
-                  "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+                    node_cpu_seconds_total{mode="idle"},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  )
+                  * on(instance) group_left(nodename)
+                  max by (instance, nodename) (node_uname_info)
+                )
+                * on(nodename) group_left(nodegroup)
+                max by (nodename, nodegroup) (
+                  label_replace(
+                    label_replace(
+                      kube_node_labels,
+                      "nodename", "$1", "node", "(.*)"
+                    ),
+                    "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+                  )
                 )
               )
             )
           labels: {}
-          record: 'beget_nodegroup_memory_total_mb'
+          record: 'beget_nodegroup_cpu_total_cores'
 
         - annotations: {}
           expr: |-
@@ -105,29 +132,31 @@ spec:
         - annotations: {}
           expr: |-
             sum by (cluster, nodegroup) (
-              count by (cluster, nodename, nodegroup) (
+              (
                 (
-                  label_replace(
-                    node_cpu_seconds_total{mode="idle"},
-                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  avg by (cluster, instance, device, fstype) (
+                    label_replace(
+                      node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    )
                   )
                   * on(instance) group_left(nodename)
                   max by (instance, nodename) (node_uname_info)
-                )
-                * on(nodename) group_left(nodegroup)
-                max by (nodename, nodegroup) (
+                ) / 1024 / 1024
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
                   label_replace(
-                    label_replace(
-                      kube_node_labels,
-                      "nodename", "$1", "node", "(.*)"
-                    ),
-                    "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
-                  )
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
                 )
               )
             )
           labels: {}
-          record: 'beget_nodegroup_cpu_total_cores'
+          record: 'beget_nodegroup_filesystem_total_mb'
 
         - annotations: {}
           expr: |-
@@ -169,13 +198,17 @@ spec:
                 (
                   avg by (cluster, instance, device, fstype) (
                     label_replace(
-                      node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"},
+                      (
+                        node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}
+                        -
+                        node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}
+                      ),
                       "cluster", "$1", "cluster_full_name", "(.*)"
                     )
                   )
                   * on(instance) group_left(nodename)
                   max by (instance, nodename) (node_uname_info)
-                ) / 1024 / 1024
+                )
               )
               * on(nodename) group_left(nodegroup)
               max by (nodename, nodegroup) (
@@ -188,13 +221,52 @@ spec:
                 )
               )
             )
+            /
+            sum by (cluster, nodegroup) (
+              (
+                (
+                  avg by (cluster, instance, device, fstype) (
+                    label_replace(
+                      node_filesystem_size_bytes{mountpoint="/", fstype!~"tmpfs|overlay|squashfs"},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    )
+                  )
+                  * on(instance) group_left(nodename)
+                  max by (instance, nodename) (node_uname_info)
+                )
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
+                  label_replace(
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+                )
+              )
+            ) * 100
           labels: {}
-          record: 'beget_nodegroup_filesystem_total_mb'
+          record: 'beget_nodegroup_filesystem_used_percent'
 
     # NODES
     - name: beget-clickhouse-rules.node
       params: {}
       rules:
+        - annotations: {}
+          expr: |-
+            (
+              avg by (cluster, instance) (
+                label_replace(
+                  node_memory_MemTotal_bytes{},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
+            ) / 1024 / 1024
+          labels: {}
+          record: 'beget_node_memory_total_mb'
+
         - annotations: {}
           expr: |-
             (
@@ -211,17 +283,16 @@ spec:
 
         - annotations: {}
           expr: |-
-            (
-              avg by (cluster, instance) (
-                label_replace(
-                  node_memory_MemTotal_bytes{},
-                  "cluster", "$1", "cluster_full_name", "(.*)"
-                )
-              ) * on(instance) group_left(nodename)
+            count by (cluster, nodename) (
+              label_replace(
+                node_cpu_seconds_total{mode="idle"},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+              * on(instance) group_left(nodename)
                 max by (instance, nodename) (node_uname_info)
-            ) / 1024 / 1024
+            )
           labels: {}
-          record: 'beget_node_memory_total_mb'
+          record: 'beget_node_cpu_total_cores'
 
         - annotations: {}
           expr: |-
@@ -240,16 +311,17 @@ spec:
 
         - annotations: {}
           expr: |-
-            count by (cluster, nodename) (
-              label_replace(
-                node_cpu_seconds_total{mode="idle"},
-                "cluster", "$1", "cluster_full_name", "(.*)"
-              )
-              * on(instance) group_left(nodename)
+            (
+              avg by (cluster, instance, device, fstype) (
+                label_replace(
+                  node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename)
                 max by (instance, nodename) (node_uname_info)
-            )
+            ) / 1024 / 1024
           labels: {}
-          record: 'beget_node_cpu_total_cores'
+          record: 'beget_node_filesystem_total_mb'
 
         - annotations: {}
           expr: |-
@@ -266,7 +338,16 @@ spec:
           record: 'beget_node_filesystem_used_mb'
 
         - annotations: {}
-          expr: |-
+            (
+              avg by (cluster, instance, device, fstype) (
+                label_replace(
+                  (node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} - node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              ) * on(instance) group_left(nodename)
+                max by (instance, nodename) (node_uname_info)
+            )
+            /
             (
               avg by (cluster, instance, device, fstype) (
                 label_replace(
@@ -275,9 +356,9 @@ spec:
                 )
               ) * on(instance) group_left(nodename)
                 max by (instance, nodename) (node_uname_info)
-            ) / 1024 / 1024
+            ) * 100
           labels: {}
-          record: 'beget_node_filesystem_total_mb'
+          record: 'beget_node_filesystem_used_percent'
 
     # PODS
     - name: beget-clickhouse-rules.pods
