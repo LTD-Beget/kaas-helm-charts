@@ -99,7 +99,6 @@ spec:
               value: '1'
           extraArgs:
             remoteWrite.tlsInsecureSkipVerify: "true"
-            remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
             promscrape.maxScrapeSize: "33554432"
             remoteWrite.maxDiskUsagePerURL: "67108864"
             remoteWrite.queues: "24"
@@ -133,6 +132,25 @@ spec:
                   configMap:
                     name: ca
                     key: ca.crt
+              relabelConfigs:
+                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+                - action: replace
+                  source_labels: [exported_cluster_full_name]
+                  regex: (.+)
+                  target_label: cluster_full_name
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_remotewrite_cluster]
+                  regex: (.+)
+                  target_label: remotewrite_cluster
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_cluster_type]
+                  regex: (.+)
+                  target_label: cluster_type
+                  replacement: $1
           externalLabels:
             cluster_full_name: "cluster" #namespace-cluster_name
             remotewrite_cluster: cluster #namespace-cluster_name
@@ -232,7 +250,6 @@ spec:
               incloud-metrics: "infra"
           extraArgs:
             remoteWrite.tlsInsecureSkipVerify: "false"
-            remoteWrite.label: remotewrite_cluster={{ .Values.customer.name }}-{{ .Values.cluster.name }} #namespace-cluster_name
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
@@ -262,6 +279,25 @@ spec:
             - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
               tlsConfig:
                 caFile: /tls/cabundle/ca.crt
+              relabelConfigs:
+                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+                - action: replace
+                  source_labels: [exported_cluster_full_name]
+                  regex: (.+)
+                  target_label: cluster_full_name
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_remotewrite_cluster]
+                  regex: (.+)
+                  target_label: remotewrite_cluster
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_cluster_type]
+                  regex: (.+)
+                  target_label: cluster_type
+                  replacement: $1
           volumeMounts:
             - name: trusted-ca-certs
               mountPath: /tls/cabundle
@@ -469,6 +505,25 @@ spec:
             - url: https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus
               tlsConfig:
                 caFile: /etc/ssl/certs/ca.crt
+              relabelConfigs:
+                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+                - action: replace
+                  source_labels: [exported_cluster_full_name]
+                  regex: (.+)
+                  target_label: cluster_full_name
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_remotewrite_cluster]
+                  regex: (.+)
+                  target_label: remotewrite_cluster
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_cluster_type]
+                  regex: (.+)
+                  target_label: cluster_type
+                  replacement: $1
           volumeMounts:
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
@@ -534,4 +589,3 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: vm-agent
-
