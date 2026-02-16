@@ -82,7 +82,7 @@ vmAgent:
             {{ else }}
                 caFile: /tls/cabundle/ca.crt
             {{ end }}
-              relabelConfigs:
+              inlineUrlRelabelConfig:
                 # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
                 - action: replace
                   source_labels: [exported_cluster_full_name]
