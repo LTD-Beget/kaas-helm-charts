@@ -418,6 +418,7 @@ spec:
               secret:
                 defaultMode: 420
                 secretName: vmagent-monitoring-svc-tls
+          # TODO: Обязательно при мерже мастера нужно синкануть параметры, так как чарт немного изменился
           serviceSpec:
             metadata:
               name: vmagent
