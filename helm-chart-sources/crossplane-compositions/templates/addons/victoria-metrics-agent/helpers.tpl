@@ -28,7 +28,6 @@ default: |
             value: '1'
         extraArgs:
           remoteWrite.tlsInsecureSkipVerify: "true"
-          remoteWrite.label: remotewrite_cluster=cluster #namespace-cluster_name
           promscrape.streamParse: "true"
           promscrape.maxScrapeSize: "33554432"
           remoteWrite.maxDiskUsagePerURL: "67108864"
