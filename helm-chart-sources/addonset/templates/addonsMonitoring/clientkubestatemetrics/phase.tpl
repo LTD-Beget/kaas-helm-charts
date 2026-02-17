@@ -20,7 +20,7 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: kube-state-metrics
+          addons.in-cloud.io/addon: client-kube-state-metrics
     - name: vm-operator
       criteria:
         - source:
@@ -35,7 +35,7 @@ spec:
         priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: kube-state-metrics
+          addons.in-cloud.io/addon: client-kube-state-metrics
     - name: infra
       criteria:
         - source:
