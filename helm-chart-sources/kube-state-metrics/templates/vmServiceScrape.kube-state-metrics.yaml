@@ -17,5 +17,9 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}
-  jobLabel: kube-state-metrics
+      {{- with .Values.monitoring.serviceScrapeConfig.relabelConfigs }}
+      relabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  jobLabel: {{ .Release.Name }}
 {{- end }}

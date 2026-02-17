@@ -26,6 +26,60 @@ spec:
           cpu: 50m
           memory: 128Mi
 
+      extraArgs:
+        - --kubeconfig=/kubeconfig/config
+
+      volumeMounts:
+       - mountPath: /kubeconfig/config
+         name: kubeconfig
+         subPath: config
+       - mountPath: /kubeconfig/ca.crt
+         name: kubeconfig-certs
+         subPath: ca.crt
+       - mountPath: /kubeconfig/tls.crt
+         name: kubeconfig-certs
+         subPath: tls.crt
+       - mountPath: /kubeconfig/tls.key
+         name: kubeconfig-certs
+         subPath: tls.key
+
+      volumes:
+        - secret:
+           secretName: client-kube-state-metrics-kubeconfig
+          name: kubeconfig
+        - secret:
+           secretName: "{{ .Values.cluster.name }}-super-admin"
+          name: kubeconfig-certs
+
+      extraManifests:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: client-kube-state-metrics-kubeconfig
+            namespace: beget-system
+          type: Opaque
+          stringData:
+            config: |
+              apiVersion: v1
+              kind: Config
+              clusters:
+                - name: kubernetes
+                  cluster:
+                    certificate-authority: /kubeconfig/ca.crt
+                    server: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              users:
+                - name: user
+                  user:
+                    client-certificate: /kubeconfig/tls.crt
+                    client-key: /kubeconfig/tls.key
+              contexts:
+                - name: default-context
+                  context:
+                    cluster: kubernetes
+                    user: user
+                    namespace: default
+              current-context: default-context
+
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
@@ -76,3 +130,13 @@ spec:
   values: |
     monitoring:
       enabled: true
+      serviceScrapeConfig:
+        relabelConfigs:
+          - targetLabel: cluster_full_name
+            replacement: {{ .Values.cluster.name }}
+          - targetLabel: remotewrite_cluster
+            replacement: {{ .Values.cluster.name }}
+          - targetLabel: client_cluster
+            replacement: {{ .Values.cluster.name }}
+          - targetLabel: cluster_type
+            replacement: client

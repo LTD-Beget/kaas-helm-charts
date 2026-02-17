@@ -12,3 +12,5 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+  serviceScrapeConfig:
+    relabelConfigs: []
