@@ -6,7 +6,7 @@ spec:
   path: "helm-chart-sources/victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  version: "feat/addon-clientkubestatemetrics" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-vmagent"
   variables:
