@@ -422,7 +422,7 @@ spec:
             metadata:
               name: vmagent
               labels:
-                monitoring.in-cloud.io/service: vmagent
+                monitoring.in-cloud.io/service: vm-agent
             spec:
               type: ClusterIP
               ports:
