@@ -132,25 +132,6 @@ spec:
                   configMap:
                     name: ca
                     key: ca.crt
-              inlineUrlRelabelConfig:
-                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
-                - action: replace
-                  source_labels: [exported_cluster_full_name]
-                  regex: (.+)
-                  target_label: cluster_full_name
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_remotewrite_cluster]
-                  regex: (.+)
-                  target_label: remotewrite_cluster
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_cluster_type]
-                  regex: (.+)
-                  target_label: cluster_type
-                  replacement: $1
           externalLabels:
             cluster_full_name: "cluster" #namespace-cluster_name
             remotewrite_cluster: cluster #namespace-cluster_name
@@ -505,25 +486,6 @@ spec:
             - url: https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus
               tlsConfig:
                 caFile: /etc/ssl/certs/ca.crt
-              inlineUrlRelabelConfig:
-                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
-                - action: replace
-                  source_labels: [exported_cluster_full_name]
-                  regex: (.+)
-                  target_label: cluster_full_name
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_remotewrite_cluster]
-                  regex: (.+)
-                  target_label: remotewrite_cluster
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_cluster_type]
-                  regex: (.+)
-                  target_label: cluster_type
-                  replacement: $1
           volumeMounts:
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
