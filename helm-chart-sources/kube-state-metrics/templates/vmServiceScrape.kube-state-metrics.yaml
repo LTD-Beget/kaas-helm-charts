@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: kube-state-metrics
+      monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
     - port: https-metrics
       path: /metrics
