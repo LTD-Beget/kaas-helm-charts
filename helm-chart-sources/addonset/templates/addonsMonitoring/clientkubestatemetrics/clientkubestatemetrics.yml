@@ -1,0 +1,9 @@
+{{- if .Values.addons.clientkubestatemetrics.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "clientkubestatemetrics.addon" . }}
+
+  {{- .Files.Get "files/addonsMonitoring/clientkubestatemetrics/values.yml" | nindent 0 }}
+
+  {{- include "clientkubestatemetrics.phase" . }}
+{{- end }}
