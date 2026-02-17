@@ -54,4 +54,6 @@ spec:
           jsonPath: .data.clusterName
         - as: cluster.port
           jsonPath: .data.clusterPort
+        - as: cluster.customer
+          jsonPath: .data.customer
 {{- end }}

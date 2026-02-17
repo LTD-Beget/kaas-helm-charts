@@ -133,10 +133,10 @@ spec:
       serviceScrapeConfig:
         relabelConfigs:
           - targetLabel: cluster_full_name
-            replacement: {{ .Values.cluster.name }}
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
           - targetLabel: remotewrite_cluster
-            replacement: {{ .Values.cluster.name }}
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
           - targetLabel: client_cluster
-            replacement: {{ .Values.cluster.name }}
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
           - targetLabel: cluster_type
             replacement: client
