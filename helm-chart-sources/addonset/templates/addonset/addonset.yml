@@ -5,4 +5,5 @@
 
   {{- .Files.Get "files/addonset/values.yml" | nindent 0 }}
 
+  {{- include "addonset.phase" . }}
 {{- end }}
