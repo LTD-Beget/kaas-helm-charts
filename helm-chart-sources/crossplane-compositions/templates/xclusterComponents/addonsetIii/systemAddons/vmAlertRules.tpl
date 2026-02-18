@@ -213,6 +213,8 @@ vmAlertRules:
               rules:
                 ControlPlanePodsRestart:
                   enabled: true
+                ClientControlPlanePodsRestart:
+                  enabled: true
                 PodsRestart:
                   enabled: true
         cpuUtilization:

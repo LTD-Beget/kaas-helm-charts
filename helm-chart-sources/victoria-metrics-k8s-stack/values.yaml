@@ -565,11 +565,25 @@ alertRules:
                 expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system"}[10m]) * 600>=1
                 for: 1m
                 labels:
-                  severity: warning
+                  severity: critical
                 annotations:
                   description: A control-plane pod restarted
                   summary: |-
                     An control plane pod restarted.
+                    This may be caused by updates in the cluster, or it may be a lack of resources.
+
+            ClientControlPlanePodsRestart:
+              enabled: true
+              spec:
+                alert: ClientControlPlanePodsRestart
+                expr: rate(kube_pod_container_status_restarts_total{namespace="beget-system", container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"}[10m]) * 600>=1
+                for: 1m
+                labels:
+                  severity: critical
+                annotations:
+                  description: A client control-plane pod restarted
+                  summary: |-
+                    An client control plane pod restarted.
                     This may be caused by updates in the cluster, or it may be a lack of resources.
 
             PodsRestart:
