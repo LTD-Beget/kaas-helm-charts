@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: incloud-ui-oauth2-proxy
+  name: incloud-web-chart-oauth2-proxy
 spec:
   template:
     spec:
@@ -34,4 +34,4 @@ spec:
       - name: rbac-proxy-tls
         secret:
           defaultMode: 420
-          secretName: incloud-ui-oauth2-proxy-svc-tls
+          secretName: incloud-web-chart-oauth2-proxy-svc-tls
