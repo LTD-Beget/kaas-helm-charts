@@ -108,7 +108,7 @@ spec:
                     node_cpu_usage_seconds_total{},
                     "cluster", "$1", "cluster_full_name", "(.*)"
                   ),
-                  "nodegroup", "$1", "label_node_group_beget_com_name", "(.*)"
+                  "nodegroup", "$1", "node_group_beget_com_name", "(.*)"
                 )[5m]
               )
             )
