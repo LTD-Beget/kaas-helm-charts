@@ -68,10 +68,4 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
-  valuesSelectors:
-    - name: certificate-set
-      priority: 0
-      matchLabels:
-        addons.in-cloud.io/values: certificate-set
-        addons.in-cloud.io/addon: extra-resources
 {{- end }}
