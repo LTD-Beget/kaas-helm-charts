@@ -22,6 +22,7 @@ spec:
       argocdPlugins:
         kustomize: true
       incloud-web-chart:
+        fullnameOverride: incloud-ui
         oauth2-proxy:
           enabled: true
           config:
