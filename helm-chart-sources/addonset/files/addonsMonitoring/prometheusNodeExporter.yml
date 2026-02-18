@@ -2,9 +2,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: prometheus-node-exporter
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPrometheusNodeExporter
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/prometheus-node-exporter"
   pluginName: helm-with-values

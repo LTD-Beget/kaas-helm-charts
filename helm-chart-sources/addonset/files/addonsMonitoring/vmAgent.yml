@@ -2,9 +2,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: vm-agent
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonVmAgent
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/victoria-metrics-k8s-stack"
   pluginName: helm-with-values

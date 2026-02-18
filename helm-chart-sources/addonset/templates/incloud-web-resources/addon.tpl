@@ -10,7 +10,7 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon"
   targetCluster: in-cluster
-  targetNamespace: "beget-incloud-ui"
+  targetNamespace: "beget-incloud-web-chart"
   variables:
     cluster_name: in-cluster
   valuesSources:  []

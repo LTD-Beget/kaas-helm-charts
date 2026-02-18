@@ -2,9 +2,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: process-exporter
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonProcessExporter
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/process-exporter"
   pluginName: helm-with-values

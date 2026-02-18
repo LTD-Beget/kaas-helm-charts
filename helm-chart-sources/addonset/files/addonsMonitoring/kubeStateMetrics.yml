@@ -2,9 +2,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: kube-state-metrics
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonKubeStateMetrics
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/kube-state-metrics"
   pluginName: helm-with-values
