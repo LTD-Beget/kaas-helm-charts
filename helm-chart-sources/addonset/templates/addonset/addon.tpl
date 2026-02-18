@@ -23,6 +23,8 @@ spec:
       extract:
         - as: cluster.client.name
           jsonPath: .data.clusterClientName
+        - as: cluster.name
+          jsonPath: .data.clusterName
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

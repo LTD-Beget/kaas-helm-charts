@@ -9,6 +9,7 @@ metadata:
 spec:
   values: |
     clientName: {{ .Values.cluster.client.name }}
+    clusterName: {{ .Values.cluster.name }}
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
