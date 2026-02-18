@@ -15,8 +15,10 @@ addons:
     enabled: true
   coredns:
     enabled: true
+  clientkubestatemetrics:
+    enabled: false
   clientvmscrapeconfig:
-    enabled: true
+    enabled: false
   crossplane:
     enabled: false
   crossplanecompositions:

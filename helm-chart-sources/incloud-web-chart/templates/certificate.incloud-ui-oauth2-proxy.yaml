@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: incloud-ui-oauth2-proxy-svc-tls
+  secretName: incloud-web-chart-oauth2-proxy-svc-tls
   duration: 8760h
   renewBefore: 720h
   commonName: {{ .Release.Name }}-oauth2-proxy

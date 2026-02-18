@@ -1,0 +1,142 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-default
+  annotations:
+    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsDefault
+    gotemplating.fn.crossplane.io/ready: "True"
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      enabled: false
+      prometheusScrape: false
+      metricLabelsAllowlist:
+        - nodes=[node-group.beget.com/name]
+      customLabels:
+        in-cloud.io/clusterName: ""
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
+
+      extraArgs:
+        - --kubeconfig=/kubeconfig/config
+
+      volumeMounts:
+       - mountPath: /kubeconfig/config
+         name: kubeconfig
+         subPath: config
+       - mountPath: /kubeconfig/ca.crt
+         name: kubeconfig-certs
+         subPath: ca.crt
+       - mountPath: /kubeconfig/tls.crt
+         name: kubeconfig-certs
+         subPath: tls.crt
+       - mountPath: /kubeconfig/tls.key
+         name: kubeconfig-certs
+         subPath: tls.key
+
+      volumes:
+        - secret:
+           secretName: client-kube-state-metrics-kubeconfig
+          name: kubeconfig
+        - secret:
+           secretName: "{{ .Values.cluster.name }}-super-admin"
+          name: kubeconfig-certs
+
+      extraManifests:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: client-kube-state-metrics-kubeconfig
+            namespace: beget-system
+          type: Opaque
+          stringData:
+            config: |
+              apiVersion: v1
+              kind: Config
+              clusters:
+                - name: kubernetes
+                  cluster:
+                    certificate-authority: /kubeconfig/ca.crt
+                    server: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              users:
+                - name: user
+                  user:
+                    client-certificate: /kubeconfig/tls.crt
+                    client-key: /kubeconfig/tls.key
+              contexts:
+                - name: default-context
+                  context:
+                    cluster: kubernetes
+                    user: user
+                    namespace: default
+              current-context: default-context
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      enabled: true
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    monitoring:
+      enabled: true
+      serviceScrapeConfig:
+        relabelConfigs:
+          - targetLabel: cluster_full_name
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: remotewrite_cluster
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: client_cluster
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: cluster_type
+            replacement: client

@@ -10,6 +10,6 @@ roleRef:
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}
+    name: {{ .Release.Name }}-victoria-metrics-operator
     namespace: {{ .Release.Namespace }}
 {{- end }}

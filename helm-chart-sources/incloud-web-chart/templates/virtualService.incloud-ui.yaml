@@ -3,7 +3,7 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: incloud-ui
+  name: incloud-web-chart
   namespace: {{ .Release.Namespace }}
 spec:
   gateways:
@@ -15,7 +15,7 @@ spec:
     - {{ $d | quote }}
     {{- end }}
   http:
-    - name: incloud-ui-redirect
+    - name: incloud-web-chart-redirect
       match:
         - uri:
             exact: /
@@ -32,7 +32,7 @@ spec:
             host: {{ .Values.istio.virtualService.http.route.host }}
             port:
               number: {{ .Values.istio.virtualService.http.route.port }}
-    - name: incloud-ui-all
+    - name: incloud-web-chart-all
       match:
         - uri: { prefix: /openapi-ui }
         - uri: { prefix: /oauth2/ }           # oauth2-proxy endpoints

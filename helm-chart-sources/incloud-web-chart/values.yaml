@@ -1,5 +1,5 @@
 incloud-web-chart: {}
-# some values for incloud-ui
+# some values for incloud-web-chart
 
 istio:
   virtualService:
@@ -9,9 +9,9 @@ istio:
     hosts:
       - "*"
     http:
-      name: incloud-ui-redirect
+      name: incloud-web-chart-redirect
       route:
-        host: incloud-ui-oauth2-proxy
+        host: incloud-web-chart-oauth2-proxy
         port: 80
       
 monitoring:

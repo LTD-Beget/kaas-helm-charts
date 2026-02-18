@@ -5,12 +5,12 @@ resources:
   - ./base.yaml
 
 patches:
-  - path: ./deployment.incloud-ui-oauth2-proxy.yaml
+  - path: ./deployment.incloud-web-chart-oauth2-proxy.yaml
     target:
       kind: Deployment
-      name: incloud-ui-oauth2-proxy
+      name: incloud-web-chart-oauth2-proxy
 
-  - path: ./service.incloud-ui-oauth2-proxy.yaml
+  - path: ./service.incloud-web-chart-oauth2-proxy.yaml
     target:
       kind: Service
-      name: incloud-ui-oauth2-proxy
+      name: incloud-web-chart-oauth2-proxy

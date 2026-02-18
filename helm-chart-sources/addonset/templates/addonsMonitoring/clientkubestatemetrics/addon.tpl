@@ -1,20 +1,20 @@
-{{- define "vm-operator.addon" }}
+{{- define "clientkubestatemetrics.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: vm-operator
+  name: client-kube-state-metrics
 spec:
-  path: "helm-chart-sources/victoria-metrics-operator"
+  path: "helm-chart-sources/kube-state-metrics"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon-clientkubestatemetrics"
+  version: "feat/addon-clientkubestatemetrics" # "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-vm-operator"
+  targetNamespace: "beget-system"
   variables:
     cluster_name: in-cluster
   initDependencies:
-    - name: cert-manager-csi-driver
+    - name: vm-operator
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
@@ -26,7 +26,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: false
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -39,10 +39,21 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: vm-operator
-    - name: immutable
-      priority: 99
-      matchLabels:
-        addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: vm-operator
+        addons.in-cloud.io/addon: client-kube-state-metrics
+  valuesSources:
+    - name: parameters-client
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: cluster.customer
+          jsonPath: .data.customer
 {{- end }}
