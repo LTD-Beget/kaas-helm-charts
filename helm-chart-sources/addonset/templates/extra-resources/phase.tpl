@@ -9,13 +9,12 @@ spec:
     - name: certificate-set
       criteria:
         - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
+            apiVersion: v1
+            kind: Secret
             name: {{ if eq .Values.environment "client" }}{{ .Values.clientName }}{{ else }}{{ .Values.clusterName }}{{ end }}-ca
             namespace: beget-system
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
       selector:
         name: certificate-set
         priority: 20
