@@ -9,8 +9,6 @@ metadata:
 spec:
   values: |
     victoria-metrics-operator:
-      fullnameOverride: victoria-metrics-operator
-      nameOverride: victoria-metrics-operator
       env:
         - name: GOMAXPROCS
           value: '1'
