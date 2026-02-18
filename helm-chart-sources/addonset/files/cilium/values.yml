@@ -47,9 +47,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cilium-immutable
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumImmutable
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: cilium
@@ -64,9 +61,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cilium-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueCiliumCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: "cert-manager"
     addons.in-cloud.io/addon: cilium
@@ -79,3 +73,16 @@ spec:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-vm-operator
+  labels:
+    addons.in-cloud.io/values: "vm-operator"
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    monitoring:
+      enabled: true
