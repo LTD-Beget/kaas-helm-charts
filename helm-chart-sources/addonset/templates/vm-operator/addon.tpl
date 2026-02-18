@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/victoria-metrics-operator"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon-clientkubestatemetrics"
+  version: "feat/addon" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-vm-operator"
   variables:
