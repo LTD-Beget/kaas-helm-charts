@@ -222,7 +222,7 @@ spec:
             sum by (cluster, nodename) (
               label_replace(
                 label_replace(
-                  (container_memory_working_set_bytes{metrics_path="/metrics/cadvisor", container!=""}),
+                  (container_memory_working_set_bytes{metrics_path=~"/metrics/cadvisor|", container!=""}),
                   "cluster", "$1", "cluster_full_name", "(.*)"
                 ),
                 "nodename", "$1", "node", "(.*)"
