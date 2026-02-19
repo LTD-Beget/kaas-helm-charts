@@ -24,9 +24,9 @@ grafanaDashboards:
       processExporter:
         enabled: true
       metallb:
-        enabled: true
+        enabled: false
       vector:
-        enabled: true
+        enabled: false
       vmagent:
         enabled: true
       vmalert:
