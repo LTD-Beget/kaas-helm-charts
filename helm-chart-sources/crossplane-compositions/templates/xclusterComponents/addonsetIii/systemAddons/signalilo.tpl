@@ -33,6 +33,8 @@ signalilo:
           value: "true"
         - name: SIGNALILO_ICINGA_SERVICE_TEMPLATE
           value: "signalilo-passive-service"
+        - name: SIGNALILO_ICINGA_SERVICE_NAME_TEMPLATE
+          value: "{{ .CommonLabels.cluster_full_name }} / {{ .CommonLabels.alertname }}"
 
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
