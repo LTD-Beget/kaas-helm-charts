@@ -280,7 +280,8 @@ alertRules:
               spec:
                 alert: CertManagerAbsent
                 annotations:
-                  description: CertManager Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}. New certificates will not be able to be minted, and existing ones
+                  description: |
+                    CertManager Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}. New certificates will not be able to be minted, and existing ones
                     can't be renewed until cert-manager is back.
                   runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
                   summary: Cert Manager has disappeared from Prometheus service discovery.
@@ -1276,13 +1277,15 @@ alertRules:
               spec:
                 alert: KubePodCrashLooping
                 annotations:
-                  description: 'Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container
-                    }}) is in waiting state (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name
-                    }}.'
+                  description: |
+                    Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
+                    (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
                   summary: Pod is crash looping.
-                expr: max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",
-                  job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]) >= 1
+                expr: |
+                  max_over_time(
+                    kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+                  ) >= 1
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
@@ -1293,9 +1296,9 @@ alertRules:
               spec:
                 alert: KubePodNotReady
                 annotations:
-                  description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
-                    state for longer than 15 minutes on cluster {{ $labels.cluster_full_name
-                    }}.
+                  description: |
+                    Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
+                    state for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodnotready
                   summary: Pod has been in a non-ready state for more than 15 minutes.
                 expr: |-
@@ -1316,8 +1319,9 @@ alertRules:
               spec:
                 alert: KubeDeploymentGenerationMismatch
                 annotations:
-                  description: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment
-                    }} does not match, this indicates that the Deployment has failed but has
+                  description: |
+                    Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment }}
+                    does not match, this indicates that the Deployment has failed but has
                     not been rolled back on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentgenerationmismatch
                   summary: Deployment generation mismatch due to possible roll-back
@@ -1335,7 +1339,8 @@ alertRules:
               spec:
                 alert: KubeDeploymentReplicasMismatch
                 annotations:
-                  description: Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
+                  description: |
+                    Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
                     not matched the expected number of replicas for longer than 15 minutes on
                     cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
@@ -1360,9 +1365,9 @@ alertRules:
               spec:
                 alert: KubeDeploymentRolloutStuck
                 annotations:
-                  description: Rollout of deployment {{ $labels.namespace }}/{{ $labels.deployment
-                    }} is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name
-                    }}.
+                  description: |
+                    Rollout of deployment {{ $labels.namespace }}/{{ $labels.deployment }}
+                    is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
                   summary: Deployment rollout is not progressing.
                 expr: |-
@@ -1378,7 +1383,8 @@ alertRules:
               spec:
                 alert: KubeStatefulSetReplicasMismatch
                 annotations:
-                  description: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
+                  description: |
+                    StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
                     has not matched the expected number of replicas for longer than 15 minutes
                     on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetreplicasmismatch
@@ -1403,8 +1409,9 @@ alertRules:
               spec:
                 alert: KubeStatefulSetGenerationMismatch
                 annotations:
-                  description: StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset
-                    }} does not match, this indicates that the StatefulSet has failed but has
+                  description: |
+                    StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset }}
+                    does not match, this indicates that the StatefulSet has failed but has
                     not been rolled back on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetgenerationmismatch
                   summary: StatefulSet generation mismatch due to possible roll-back
@@ -1422,7 +1429,8 @@ alertRules:
               spec:
                 alert: KubeStatefulSetUpdateNotRolledOut
                 annotations:
-                  description: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
+                  description: |
+                    StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
                     update has not been rolled out on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetupdatenotrolledout
                   summary: StatefulSet update has not been rolled out.
@@ -1454,9 +1462,9 @@ alertRules:
               spec:
                 alert: KubeDaemonSetRolloutStuck
                 annotations:
-                  description: DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
-                    not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name
-                    }}.
+                  description: |
+                    DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
+                    not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
                   summary: DaemonSet rollout is stuck.
                 expr: |-
@@ -1493,14 +1501,14 @@ alertRules:
               spec:
                 alert: KubeContainerWaiting
                 annotations:
-                  description: 'pod/{{ $labels.pod }} in namespace {{ $labels.namespace }} on
+                  description: |
+                    pod/{{ $labels.pod }} in namespace {{ $labels.namespace }} on
                     container {{ $labels.container}} has been in waiting state for longer than
-                    1 hour. (reason: "{{ $labels.reason }}") on cluster {{ $labels.cluster_full_name
-                    }}.'
+                    1 hour. (reason: "{{ $labels.reason }}") on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecontainerwaiting
                   summary: Pod container waiting longer than 1 hour
-                expr: kube_pod_container_status_waiting_reason{reason!="CrashLoopBackOff", job="kube-state-metrics",
-                  namespace=~"beget.*|kube.*|default"} > 0
+                expr: |
+                  kube_pod_container_status_waiting_reason{reason!="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 1h
                 labels:
                   namespace: in-cloud-monitoring
@@ -1511,8 +1519,9 @@ alertRules:
               spec:
                 alert: KubeDaemonSetNotScheduled
                 annotations:
-                  description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
-                    }} are not scheduled on cluster {{ $labels.cluster_full_name }}.'
+                  description: |
+                    {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
+                    are not scheduled on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetnotscheduled
                   summary: DaemonSet pods are not scheduled.
                 expr: |-
@@ -1529,13 +1538,12 @@ alertRules:
               spec:
                 alert: KubeDaemonSetMisScheduled
                 annotations:
-                  description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
-                    }} are running where they are not supposed to run on cluster {{ $labels.cluster_full_name
-                    }}.'
+                  description: |
+                    {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
+                    are running where they are not supposed to run on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetmisscheduled
                   summary: DaemonSet pods are misscheduled.
-                expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  > 0
+                expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
@@ -1546,9 +1554,9 @@ alertRules:
               spec:
                 alert: KubeJobNotCompleted
                 annotations:
-                  description: Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking
-                    more than {{ "43200" | humanizeDuration }} to complete on cluster {{ $labels.cluster_full_name
-                    }}.
+                  description: |
+                    Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking
+                    more than {{ "43200" | humanizeDuration }} to complete on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobnotcompleted
                   summary: Job did not complete in time
                 expr: |-
@@ -1564,7 +1572,8 @@ alertRules:
               spec:
                 alert: KubeJobFailed
                 annotations:
-                  description: Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to
+                  description: |
+                    Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to
                     complete. Removing failed job after investigation should clear this alert
                     on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobfailed
@@ -1581,7 +1590,8 @@ alertRules:
               spec:
                 alert: KubeHpaReplicasMismatch
                 annotations:
-                  description: HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                  description: |
+                    HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
                     has not matched the desired number of replicas for longer than 15 minutes
                     on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpareplicasmismatch
@@ -1610,7 +1620,8 @@ alertRules:
               spec:
                 alert: KubeHpaMaxedOut
                 annotations:
-                  description: HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                  description: |
+                    HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
                     has been running at max replicas for longer than 15 minutes on cluster {{
                     $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpamaxedout
@@ -1629,9 +1640,9 @@ alertRules:
               spec:
                 alert: KubePdbNotEnoughHealthyPods
                 annotations:
-                  description: PDB {{ $labels.cluster_full_name }}/{{ $labels.namespace }}/{{
-                    $labels.poddisruptionbudget }} expects {{ $value }} more healthy pods. The
-                    desired number of healthy pods has not been met for at least 15m.
+                  description: |
+                    PDB {{ $labels.cluster_full_name }}/{{ $labels.namespace }}/{{ $labels.poddisruptionbudget }} 
+                    expects {{ $value }} more healthy pods. The desired number of healthy pods has not been met for at least 15m.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepdbnotenoughhealthypods
                   summary: PDB does not have enough healthy pods.
                 expr: |-
