@@ -13,7 +13,7 @@ signalilo:
       fullnameOverride: "signalilo"
       config:
         uuid: da4c0b1d-da4c-4f3b-9e5d-c23f5fcd751a
-        icinga_hostname: "{{ $clusterName }}"
+        icinga_hostname: "signalilo"
         icinga_url: https://192.168.88.204:25665
         icinga_username: root
         icinga_password: "13283597db083426"
