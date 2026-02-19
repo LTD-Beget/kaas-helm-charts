@@ -26,7 +26,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator
+            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
