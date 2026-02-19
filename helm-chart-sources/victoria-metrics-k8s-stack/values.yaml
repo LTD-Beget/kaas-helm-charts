@@ -723,7 +723,6 @@ alertRules:
                 expr: |
                   sum(increase(pod_security_evaluations_total{decision="deny",mode="audit",resource="pod"}[1d])) by (policy_level) > 0
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
     prometheusK8sPrometheusRules:
@@ -1097,7 +1096,6 @@ alertRules:
                   (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeMemoryOvercommit:
@@ -1116,7 +1114,6 @@ alertRules:
                   (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeCPUQuotaOvercommit:
@@ -1136,7 +1133,6 @@ alertRules:
                     > 1.5
                 for: 5m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeMemoryQuotaOvercommit:
@@ -1154,7 +1150,6 @@ alertRules:
                     > 1.5
                 for: 5m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeQuotaAlmostFull:
@@ -1174,7 +1169,6 @@ alertRules:
                     > 0.9 < 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
             KubeQuotaFullyUsed:
@@ -1194,7 +1188,6 @@ alertRules:
                     == 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
             KubeQuotaExceeded:
@@ -1214,7 +1207,6 @@ alertRules:
                     > 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             CPUThrottlingHigh:
@@ -1222,12 +1214,27 @@ alertRules:
               spec:
                 alert: CPUThrottlingHigh
                 annotations:
+                  summary: "Elevated CPU throttling"
+                  message: >-
+                    cluster={{ $labels.cluster_full_name }}
+                    ns={{ $labels.namespace }}
+                    pod={{ $labels.pod }}
+                    container={{ $labels.container }}
+                    node={{ $labels.node }}
+                    throttling={{ $value | humanizePercentage }}
                   description: |
-                    {{ $value | humanizePercentage }} throttling of CPU in namespace
-                    {{ $labels.namespace }} for container {{ $labels.container }} in pod {{
-                    $labels.pod }} on cluster {{ $labels.cluster_full_name }}.
-                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/cputhrottlinghigh
-                  summary: Processes experience elevated CPU throttling.
+                    Elevated CPU throttling for 15m.
+
+                    Cluster: {{ $labels.cluster_full_name }}
+                    Namespace: {{ $labels.namespace }}
+                    Pod: {{ $labels.pod }}
+                    Container: {{ $labels.container }}
+                    Node: {{ $labels.node }}
+                    Throttling ratio (5m): {{ $value | humanizePercentage }}
+
+                    Hints:
+                    - Check CPU limits/requests for the container.
+                    - Look for noisy-neighbor workloads on the node.
                 expr: |
                   (
                     sum by (cluster_full_name, namespace, pod, container, node) (
@@ -1261,7 +1268,6 @@ alertRules:
                   ) > 0.05
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
     kubernetesApps:
@@ -1288,7 +1294,6 @@ alertRules:
                   ) >= 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraPodCrashLooping:
@@ -1311,7 +1316,6 @@ alertRules:
                   ) >= 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubePodNotReady:
@@ -1334,7 +1338,6 @@ alertRules:
                   ) > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDeploymentGenerationMismatch:
@@ -1354,7 +1357,6 @@ alertRules:
                   kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDeploymentReplicasMismatch:
@@ -1380,7 +1382,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDeploymentReplicasMismatch:
@@ -1418,7 +1419,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDeploymentRolloutStuck:
@@ -1440,7 +1440,6 @@ alertRules:
                   } != 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDeploymentRolloutStuck:
@@ -1463,7 +1462,6 @@ alertRules:
                   } != 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeStatefulSetReplicasMismatch:
@@ -1489,7 +1487,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeStatefulSetGenerationMismatch:
@@ -1509,7 +1506,6 @@ alertRules:
                   kube_statefulset_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeStatefulSetUpdateNotRolledOut:
@@ -1542,7 +1538,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDaemonSetRolloutStuck:
@@ -1588,7 +1583,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDaemonSetRolloutStuck:
@@ -1627,7 +1621,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeContainerWaiting:
@@ -1649,7 +1642,6 @@ alertRules:
                   } > 0
                 for: 1h
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDaemonSetNotScheduled:
@@ -1668,7 +1660,6 @@ alertRules:
                   kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDaemonSetMisScheduled:
@@ -1684,7 +1675,6 @@ alertRules:
                 expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeJobNotCompleted:
@@ -1706,7 +1696,6 @@ alertRules:
                     kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                   ) > 43200
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeJobFailed:
@@ -1723,7 +1712,6 @@ alertRules:
                 expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeHpaReplicasMismatch:
@@ -1753,7 +1741,6 @@ alertRules:
                   changes(kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[15m]) == 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeHpaMaxedOut:
@@ -1773,7 +1760,6 @@ alertRules:
                   kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubePdbNotEnoughHealthyPods:
@@ -1794,5 +1780,4 @@ alertRules:
                   ) > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
