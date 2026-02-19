@@ -74,7 +74,7 @@ vault:
               vault status || true
         extraSecretEnvironmentVars:
           - envName: UNSEAL_KEYS
-            secretName: vault-keys
+            secretName: {{ $clusterName }}-vault-keys
             secretKey: UNSEAL_KEYS
         nodeSelector:
           node-role.kubernetes.io/control-plane: ""

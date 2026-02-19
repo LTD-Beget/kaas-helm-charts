@@ -15,21 +15,18 @@ vmAlertmanager:
         config:
           global:
             resolve_timeout: 5m
+
           route:
             receiver: signalilo
-            group_by: ["alertname", "namespace", "severity"]
+            group_by: ["cluster_full_name", "alertname", "severity"]
             group_wait: 30s
             group_interval: 5m
-            repeat_interval: 1h
+            repeat_interval: 2h
 
             routes:
               - matchers:
                   - alertname="Watchdog"
                 receiver: blackhole
-
-              - matchers:
-                  - severity=~"info|warning|critical"
-                receiver: signalilo
 
           receivers:
             - name: signalilo
