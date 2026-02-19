@@ -11,6 +11,14 @@ rules:
         - create
         - patch
     - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
         - '*'
       resources:
         - '*'
@@ -21,6 +29,7 @@ rules:
     - apiGroups:
         - addons.in-cloud.io
       resources:
+        - addonclaims
         - addonphases
         - addons
       verbs:
@@ -34,6 +43,7 @@ rules:
     - apiGroups:
         - addons.in-cloud.io
       resources:
+        - addonclaims/finalizers
         - addonphases/finalizers
         - addons/finalizers
       verbs:
@@ -41,6 +51,7 @@ rules:
     - apiGroups:
         - addons.in-cloud.io
       resources:
+        - addonclaims/status
         - addonphases/status
         - addons/status
       verbs:
@@ -50,6 +61,7 @@ rules:
     - apiGroups:
         - addons.in-cloud.io
       resources:
+        - addontemplates
         - addonvalues
       verbs:
         - get
