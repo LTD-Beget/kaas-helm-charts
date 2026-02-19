@@ -77,12 +77,10 @@ vmAlertRules:
             create: false
           kubePrometheusNodeRecording:
             create: false
-          kubernetesApps:
-            create: true
+          kubernetesApps: # Мигрировал в vmRules
+            create: false
             targetNamespace: "beget.*|kube.*|default"
-          # kubernetesResources выключен так как часть правил было
-          # необходимо изменить, поэтому они мигрировали в кастомные
-          kubernetesResources:
+          kubernetesResources: # Мигрировал в vmRules
             create: false
           kubernetesStorage:
             create: true
@@ -310,6 +308,44 @@ vmAlertRules:
                 KubeQuotaExceeded:
                   enabled: true
                 CPUThrottlingHigh:
+                  enabled: true
+        kubernetesApps:
+          enabled: true
+          groups:
+            kubernetesApps:
+              enabled: true
+              rules:
+                KubePodNotReady:
+                  enabled: true
+                KubeDeploymentGenerationMismatch:
+                  enabled: true
+                KubeDeploymentReplicasMismatch:
+                  enabled: true
+                KubeDeploymentRolloutStuck:
+                  enabled: true
+                KubeStatefulSetReplicasMismatch:
+                  enabled: true
+                KubeStatefulSetGenerationMismatch:
+                  enabled: true
+                KubeStatefulSetUpdateNotRolledOut:
+                  enabled: true
+                KubeDaemonSetRolloutStuck:
+                  enabled: true
+                KubeContainerWaiting:
+                  enabled: true
+                KubeDaemonSetNotScheduled:
+                  enabled: true
+                KubeDaemonSetMisScheduled:
+                  enabled: true
+                KubeJobNotCompleted:
+                  enabled: true
+                KubeJobFailed:
+                  enabled: true
+                KubeHpaReplicasMismatch:
+                  enabled: true
+                KubeHpaMaxedOut:
+                  enabled: true
+                KubePdbNotEnoughHealthyPods:
                   enabled: true
   ` }}
 {{- end -}}
