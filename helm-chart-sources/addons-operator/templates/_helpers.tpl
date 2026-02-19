@@ -1,6 +1,9 @@
 {{/*
 Expand the name of the chart.
 */}}
+{{- define "addon-operator-claim.name" -}}
+{{- printf "%s-claim" (default .Chart.Name .Values.nameOverride | trunc 57 | trimSuffix "-") }}
+{{- end }}
 {{- define "addon-operator.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
