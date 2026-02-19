@@ -1291,6 +1291,29 @@ alertRules:
                   namespace: in-cloud-monitoring
                   severity: warning
 
+            KubeInfraPodCrashLooping:
+              enabled: true
+              spec:
+                alert: KubeInfraPodCrashLooping
+                annotations:
+                  description: |
+                    Infrastructure Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
+                    (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
+                  summary: Infrastructure Pod is crash looping.
+                expr: |
+                  max_over_time(
+                    kube_pod_container_status_waiting_reason{
+                      reason="CrashLoopBackOff",
+                      job="kube-state-metrics",
+                      namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$"
+                    }[5m]
+                  ) >= 1
+                for: 15m
+                labels:
+                  namespace: in-cloud-monitoring
+                  severity: critical
+
             KubePodNotReady:
               enabled: true
               spec:
@@ -1360,6 +1383,44 @@ alertRules:
                   namespace: in-cloud-monitoring
                   severity: warning
 
+            KubeInfraDeploymentReplicasMismatch:
+              enabled: true
+              spec:
+                alert: KubeInfraDeploymentReplicasMismatch
+                annotations:
+                  description: |
+                    Infrastructure Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
+                    not matched the expected number of replicas for longer than 15 minutes on
+                    cluster {{ $labels.cluster_full_name }}.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
+                  summary: Infrastructure Deployment has not matched the expected number of replicas.
+                expr: |-
+                  (
+                    kube_deployment_spec_replicas{
+                      job="kube-state-metrics",
+                      namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                      deployment!="client-kube-state-metrics"
+                    }
+                      >
+                    kube_deployment_status_replicas_available{
+                      job="kube-state-metrics",
+                      namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                      deployment!="client-kube-state-metrics"
+                    }
+                  ) and (
+                    changes(
+                      kube_deployment_status_replicas_updated{
+                        job="kube-state-metrics",
+                        namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                        deployment!="client-kube-state-metrics"
+                      }[10m]
+                    ) == 0
+                  )
+                for: 15m
+                labels:
+                  namespace: in-cloud-monitoring
+                  severity: critical
+
             KubeDeploymentRolloutStuck:
               enabled: true
               spec:
@@ -1371,12 +1432,39 @@ alertRules:
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
                   summary: Deployment rollout is not progressing.
                 expr: |-
-                  kube_deployment_status_condition{condition="Progressing", status="false",job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  != 0
+                  kube_deployment_status_condition{
+                    condition="Progressing",
+                    status="false",
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default"
+                  } != 0
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
                   severity: warning
+
+            KubeInfraDeploymentRolloutStuck:
+              enabled: true
+              spec:
+                alert: KubeInfraDeploymentRolloutStuck
+                annotations:
+                  description: |
+                    Rollout of infrastructure deployment {{ $labels.namespace }}/{{ $labels.deployment }}
+                    is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
+                  summary: Infrastructure Deployment rollout is not progressing.
+                expr: |-
+                  kube_deployment_status_condition{
+                    condition="Progressing",
+                    status="false",
+                    job="kube-state-metrics",
+                    namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                    deployment!="client-kube-state-metrics"
+                  } != 0
+                for: 15m
+                labels:
+                  namespace: in-cloud-monitoring
+                  severity: critical
 
             KubeStatefulSetReplicasMismatch:
               enabled: true
@@ -1395,9 +1483,9 @@ alertRules:
                       !=
                     kube_statefulset_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                   ) and (
-                    changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m])
-                      ==
-                    0
+                    changes(
+                      kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m]
+                    ) == 0
                   )
                 for: 15m
                 labels:
@@ -1473,28 +1561,74 @@ alertRules:
                       kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                       !=
                       kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                    ) or (
+                    )
+                    or
+                    (
                       kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                      !=
-                      0
-                    ) or (
+                      != 0
+                    )
+                    or
+                    (
                       kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                       !=
                       kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                    ) or (
+                    )
+                    or
+                    (
                       kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                       !=
                       kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                     )
+                  )
+                  and
+                  (
+                    changes(
+                      kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+                    ) == 0
+                  )
+                for: 15m
+                labels:
+                  namespace: in-cloud-monitoring
+                  severity: warning
+
+            KubeInfraDaemonSetRolloutStuck:
+              enabled: true
+              spec:
+                alert: KubeInfraDaemonSetRolloutStuck
+                annotations:
+                  description: |
+                    Infrastructure DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
+                    not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
+                  summary: Infrastructure DaemonSet rollout is stuck.
+                expr: |-
+                  (
+                    (
+                      kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                      !=
+                      kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                    ) or (
+                      kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                      !=
+                      0
+                    ) or (
+                      kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                      !=
+                      kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                    ) or (
+                      kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                      !=
+                      kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                    )
                   ) and (
-                    changes(kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m])
+                    changes(kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}[5m])
                       ==
                     0
                   )
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
-                  severity: warning
+                  severity: critical
 
             KubeContainerWaiting:
               enabled: true
@@ -1508,7 +1642,11 @@ alertRules:
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecontainerwaiting
                   summary: Pod container waiting longer than 1 hour
                 expr: |
-                  kube_pod_container_status_waiting_reason{reason!="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+                  kube_pod_container_status_waiting_reason{
+                    reason!="CrashLoopBackOff",
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default"
+                  } > 0
                 for: 1h
                 labels:
                   namespace: in-cloud-monitoring
@@ -1560,9 +1698,13 @@ alertRules:
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobnotcompleted
                   summary: Job did not complete in time
                 expr: |-
-                  time() - max by (namespace,job_name,cluster_full_name) (kube_job_status_start_time{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  time()
+                    -
+                  max by (namespace,job_name,cluster_full_name) (
+                    kube_job_status_start_time{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                     and
-                  kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0) > 43200
+                    kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+                  ) > 43200
                 labels:
                   namespace: in-cloud-monitoring
                   severity: warning
@@ -1578,8 +1720,7 @@ alertRules:
                     on cluster {{ $labels.cluster_full_name }}.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobfailed
                   summary: Job failed to complete.
-                expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}  >
-                  0
+                expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
@@ -1650,8 +1791,7 @@ alertRules:
                     kube_poddisruptionbudget_status_desired_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                     -
                     kube_poddisruptionbudget_status_current_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  )
-                  > 0
+                  ) > 0
                 for: 15m
                 labels:
                   namespace: in-cloud-monitoring
