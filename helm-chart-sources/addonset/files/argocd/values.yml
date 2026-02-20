@@ -7,7 +7,7 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: argocd
 spec:
-  values: 
+  values: |
     argo-cd:
       global:
         deploymentStrategy:
@@ -19,7 +19,7 @@ spec:
           reposerver.repo.cache.expiration: 8h0m0s
           resource.compareoptions: |
             ignoreAggregatedRoles: true
-          resource.customizations: 
+          resource.customizations: |
             "*.upbound.io/*":
               health.lua: |
                 health_status = {
