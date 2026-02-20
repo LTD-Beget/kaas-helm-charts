@@ -108,7 +108,6 @@ vmAlertmanager:
             {{- end }}
             {{ end -}}
             {{- end }}
-
         spec:
           serviceSpec:
             metadata:

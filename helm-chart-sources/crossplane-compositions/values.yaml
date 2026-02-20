@@ -13,6 +13,12 @@ composite:
     common:
       targetRevision: v0.0.5
 
+    # feature/tg-alerting
+    crossplanecompositions:
+      targetRevision: feature/tg-alerting
+    victoriametricsalertmanager:
+      targetRevision: feature/tg-alerting
+
     # external repos
     begetcmprovider:
       targetRevision: v0.0.4
