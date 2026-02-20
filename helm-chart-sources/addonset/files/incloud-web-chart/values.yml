@@ -79,7 +79,8 @@ spec:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-        podDisruptionBudget: {}
+        podDisruptionBudget:
+          minAvailable: 1
       monitoring:
         secureService:
           enabled: true
