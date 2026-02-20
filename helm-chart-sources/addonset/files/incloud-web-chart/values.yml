@@ -19,8 +19,6 @@ metadata:
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
-      argocdPlugins:
-        kustomize: true
       incloud-web-chart:
         oauth2-proxy:
           enabled: true
@@ -81,11 +79,6 @@ spec:
             effect: "NoSchedule"
         podDisruptionBudget:
           minAvailable: 0
-      monitoring:
-        secureService:
-          enabled: true
-          issuer:
-            name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -97,6 +90,24 @@ metadata:
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
