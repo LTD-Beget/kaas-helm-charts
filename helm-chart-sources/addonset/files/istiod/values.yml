@@ -55,6 +55,9 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+      global:
+        defaultPodDisruptionBudget:
+          enabled: false
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -114,3 +117,6 @@ spec:
                   app.kubernetes.io/name: istiod
                   app.kubernetes.io/instance: istiod
               topologyKey: kubernetes.io/hostname
+      global:
+        defaultPodDisruptionBudget:
+          enabled: true
