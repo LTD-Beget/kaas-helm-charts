@@ -38,8 +38,6 @@ metadata:
     addons.in-cloud.io/addon: istio-gw
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     gateway:
       service:
         type: LoadBalancer
@@ -71,11 +69,6 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
     tls:
       enabled: true
       certificate:
@@ -104,6 +97,24 @@ spec:
             protocol: HTTP 
     telemetry:
       enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

@@ -6,6 +6,21 @@ metadata:
   name: cert-manager-csi-driver{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: cert-manager-csi-driver
     - name: vm-operator
       criteria:
         - source:
@@ -17,7 +32,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: cert-manager-csi-driver
@@ -33,7 +48,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: cert-manager-csi-driver

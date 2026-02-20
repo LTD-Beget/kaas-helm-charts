@@ -22,6 +22,21 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: trust-manager
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: trust-manager
     - name: vm-operator
       criteria:
         - source:
@@ -33,7 +48,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 10
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: trust-manager

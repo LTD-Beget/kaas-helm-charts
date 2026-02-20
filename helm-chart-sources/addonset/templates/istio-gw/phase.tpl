@@ -22,6 +22,21 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istio-gw
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: istio-gw
     - name: vm-operator
       criteria:
         - source:

@@ -35,8 +35,6 @@ metadata:
     addons.in-cloud.io/addon: trust-manager
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     trust-manager:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
@@ -62,6 +60,19 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: infra
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
     monitoring:
       secureService:
         enabled: true
