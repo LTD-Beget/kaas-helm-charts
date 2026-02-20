@@ -40,11 +40,16 @@ vmAlertmanager:
                   send_resolved: true
                   message: ''
 
-          templates:
-              - "/etc/vm/configs/**/*.tmpl"
-              - "/etc/vm/templates/vmalertmanager-alertmanager-monzo-tpl/monzo.tmpl"
-              - "/etc/vm/templates/alertmanager-templates/*.tmpl"
+          # templates:
+          #     - "/etc/vm/configs/**/*.tmpl"
+          #     - "/etc/vm/templates/vmalertmanager-alertmanager-monzo-tpl/monzo.tmpl"
+          #     - "/etc/vm/templates/alertmanager-templates/*.tmpl"
         spec:
+          templates:
+          - key: monzo.tmpl
+            name: vmalertmanager-alertmanager-monzo-tpl
+          - key: telegram_alerts.tmpl
+            name: vmalertmanager-alertmanager-alert-templates
           serviceSpec:
             metadata:
               name: vmalertmanager
@@ -66,9 +71,9 @@ vmAlertmanager:
                 - name: alertmanager-tls
                   mountPath: /app/config/alertmanager/web/tls
                   readOnly: true
-                - name: alertmanager-templates
-                  mountPath: /etc/vm/templates/alertmanager-templates
-                  readOnly: true
+                # - name: alertmanager-templates
+                #   mountPath: /etc/vm/templates/alertmanager-templates
+                #   readOnly: true
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
               args:
@@ -105,10 +110,10 @@ vmAlertmanager:
               secret:
                 defaultMode: 420
                 secretName: {{ $clusterName }}-alertmanager
-            - name: alertmanager-templates
-              configMap:
-                name: vmalertmanager-alertmanager-alert-templates
-                defaultMode: 420
+            # - name: alertmanager-templates
+            #   configMap:
+            #     name: vmalertmanager-alertmanager-alert-templates
+            #     defaultMode: 420
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
