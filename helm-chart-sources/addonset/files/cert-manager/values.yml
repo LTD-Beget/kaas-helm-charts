@@ -113,8 +113,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     issuers:
       selfsignedIssuer:
         kind: Issuer
@@ -156,6 +154,8 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
+    argocdPlugins:
+      kustomize: true
     monitoring:
       secureService:
         enabled: true
