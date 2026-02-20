@@ -10,11 +10,16 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-system"
+  targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
   initDependencies:
     - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+    - name: extra-resources-client
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal

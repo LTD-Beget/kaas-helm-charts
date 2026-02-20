@@ -21,12 +21,36 @@ metadata:
 spec:
   values: |
     resources:
+      monitoringVmAgentCertificate:
+        apiVersion: cert-manager.io/v1
+        kind: Certificate
+        metadata:
+          name: monitoring-client
+          namespace: beget-vmagent
+        spec:
+          commonName: metrics-reader
+          duration: 8760h
+          isCA: false
+          issuerRef:
+            kind: ClusterIssuer
+            name: ca-client
+          privateKey:
+            algorithm: RSA
+            size: 2048
+          renewBefore: 1460h
+          secretName: monitoring-client
+          subject:
+            organizations:
+              - beget:metrics-reader
+          usages:
+          - client auth
+
       clientClusterKubeletMetrics:
         apiVersion: operator.victoriametrics.com/v1beta1
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-metrics
-          namespace: beget-system
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -35,14 +59,14 @@ spec:
           tlsConfig:
             ca:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: ca.crt
             cert:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: tls.crt
             keySecret:
-              name: "{{ .Values.cluster.name }}-super-admin"
+              name: monitoring-client
               key: tls.key
 
           kubernetesSDConfigs:
@@ -51,14 +75,14 @@ spec:
               tlsConfig:
                 ca:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: ca.crt
                 cert:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: tls.crt
                 keySecret:
-                  name: "{{ .Values.cluster.name }}-super-admin"
+                  name: monitoring-client
                   key: tls.key
 
           relabelConfigs:
@@ -89,7 +113,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-cadvisor
-          namespace: beget-system
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -98,14 +122,14 @@ spec:
           tlsConfig:
             ca:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: ca.crt
             cert:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: tls.crt
             keySecret:
-              name: "{{ .Values.cluster.name }}-super-admin"
+              name: monitoring-client
               key: tls.key
 
           kubernetesSDConfigs:
@@ -114,14 +138,14 @@ spec:
               tlsConfig:
                 ca:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: ca.crt
                 cert:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: tls.crt
                 keySecret:
-                  name: "{{ .Values.cluster.name }}-super-admin"
+                  name: monitoring-client
                   key: tls.key
 
           relabelConfigs:
@@ -152,7 +176,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-probes
-          namespace: beget-system
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -161,14 +185,14 @@ spec:
           tlsConfig:
             ca:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: ca.crt
             cert:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: tls.crt
             keySecret:
-              name: "{{ .Values.cluster.name }}-super-admin"
+              name: monitoring-client
               key: tls.key
 
           kubernetesSDConfigs:
@@ -177,14 +201,14 @@ spec:
               tlsConfig:
                 ca:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: ca.crt
                 cert:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: tls.crt
                 keySecret:
-                  name: "{{ .Values.cluster.name }}-super-admin"
+                  name: monitoring-client
                   key: tls.key
 
           relabelConfigs:
@@ -215,7 +239,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-resource
-          namespace: beget-system
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -224,14 +248,14 @@ spec:
           tlsConfig:
             ca:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: ca.crt
             cert:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: tls.crt
             keySecret:
-              name: "{{ .Values.cluster.name }}-super-admin"
+              name: monitoring-client
               key: tls.key
 
           kubernetesSDConfigs:
@@ -240,14 +264,14 @@ spec:
               tlsConfig:
                 ca:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: ca.crt
                 cert:
                   secret:
-                    name: "{{ .Values.cluster.name }}-super-admin"
+                    name: monitoring-client
                     key: tls.crt
                 keySecret:
-                  name: "{{ .Values.cluster.name }}-super-admin"
+                  name: monitoring-client
                   key: tls.key
 
           relabelConfigs:
@@ -278,7 +302,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kube-apiserver
-          namespace: beget-system
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -297,14 +321,14 @@ spec:
           tlsConfig:
             ca:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: ca.crt
             cert:
               secret:
-                name: "{{ .Values.cluster.name }}-super-admin"
+                name: monitoring-client
                 key: tls.crt
             keySecret:
-              name: "{{ .Values.cluster.name }}-super-admin"
+              name: monitoring-client
               key: tls.key
             insecureSkipVerify: false
 
