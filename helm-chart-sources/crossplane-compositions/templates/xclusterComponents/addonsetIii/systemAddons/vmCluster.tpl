@@ -46,12 +46,7 @@ vmCluster:
                     subPath: ca.crt
                     name: trusted-ca-certs
                     readOnly: true
-            storageDataPath: /vm-data
             claimTemplates: []
-            storage:
-              emptyDir:
-                sizeLimit: 210Gi
-              volumeClaimTemplate: {}
             resources:
               limits:
                 cpu: "5"
@@ -71,6 +66,10 @@ vmCluster:
               - name: trusted-ca-certs
                 configMap:
                   name: ca
+              - hostPath:	
+                  path: /var/lib/victoria-metrics	
+                  type: DirectoryOrCreate	
+                name: vmstorage-data
             serviceSpec:
               metadata:
                 name: vmstorage
