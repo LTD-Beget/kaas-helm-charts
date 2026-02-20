@@ -25,9 +25,9 @@ spec:
     - name: cert-manager
       criteria:
         - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned-cluster-issuer
           jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
