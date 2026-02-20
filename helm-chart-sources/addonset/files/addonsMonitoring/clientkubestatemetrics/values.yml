@@ -3,9 +3,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: client-kube-state-metrics-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: client-kube-state-metrics
@@ -18,6 +15,11 @@ spec:
         - nodes=[node-group.beget.com/name]
       customLabels:
         in-cloud.io/clusterName: ""
+
+      collectors:
+        - nodes
+        - pods
+
       resources:
         limits:
           cpu: 500m
@@ -48,7 +50,7 @@ spec:
            secretName: client-kube-state-metrics-kubeconfig
           name: kubeconfig
         - secret:
-           secretName: "{{ .Values.cluster.name }}-super-admin"
+           secretName: monitoring-client
           name: kubeconfig-certs
 
       extraManifests:
@@ -56,7 +58,7 @@ spec:
           kind: Secret
           metadata:
             name: client-kube-state-metrics-kubeconfig
-            namespace: beget-system
+            namespace: beget-client-monitoring
           type: Opaque
           stringData:
             config: |
