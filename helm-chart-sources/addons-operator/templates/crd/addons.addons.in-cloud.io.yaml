@@ -24,6 +24,9 @@ spec:
             - jsonPath: .status.conditions[?(@.type=="Ready")].status
               name: Ready
               type: string
+            - jsonPath: .status.deployed
+              name: Deployed
+              type: boolean
             - jsonPath: .metadata.creationTimestamp
               name: Age
               type: date
@@ -542,6 +545,11 @@ spec:
                                 x-kubernetes-list-map-keys:
                                     - type
                                 x-kubernetes-list-type: map
+                            deployed:
+                                description: |-
+                                    Deployed indicates that the Addon has been successfully deployed at least once.
+                                    Once set to true, this field is never reset to false.
+                                type: boolean
                             observedGeneration:
                                 description: ObservedGeneration is the last spec.generation processed by the controller.
                                 format: int64
