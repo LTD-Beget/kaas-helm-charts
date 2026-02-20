@@ -14,6 +14,12 @@ spec:
             name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
           operator: Exists
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: cilium
     - name: vm-operator
       criteria:
         - source:
