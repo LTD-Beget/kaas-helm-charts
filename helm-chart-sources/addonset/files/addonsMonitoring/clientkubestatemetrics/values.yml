@@ -58,7 +58,7 @@ spec:
           kind: Secret
           metadata:
             name: client-kube-state-metrics-kubeconfig
-            namespace: beget-client-monitoring
+            namespace: beget-client-kube-state-metrics
           type: Opaque
           stringData:
             config: |
@@ -81,6 +81,29 @@ spec:
                     user: user
                     namespace: default
               current-context: default-context
+
+        - apiVersion: cert-manager.io/v1
+          kind: Certificate
+          metadata:
+            name: monitoring-client
+            namespace: beget-client-kube-state-metrics
+          spec:
+            commonName: metrics-reader
+            duration: 8760h
+            isCA: false
+            issuerRef:
+              kind: ClusterIssuer
+              name: ca-client
+            privateKey:
+              algorithm: RSA
+              size: 2048
+            renewBefore: 1460h
+            secretName: monitoring-client
+            subject:
+              organizations:
+                - beget:metrics-reader
+            usages:
+            - client auth
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

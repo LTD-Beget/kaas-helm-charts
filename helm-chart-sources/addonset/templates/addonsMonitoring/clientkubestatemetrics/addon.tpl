@@ -10,7 +10,7 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "feat/addon" # "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-client-monitoring"
+  targetNamespace: "beget-client-kube-state-metrics"
   variables:
     cluster_name: in-cluster
   initDependencies:
@@ -20,6 +20,11 @@ spec:
           operator: Equal
           value: "True"
     - name: client-vm-scrape-config
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+    - name: cert-manager
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal

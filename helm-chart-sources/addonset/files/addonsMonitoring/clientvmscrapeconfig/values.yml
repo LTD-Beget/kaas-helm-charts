@@ -21,12 +21,12 @@ metadata:
 spec:
   values: |
     resources:
-      monitoringCertificate:
+      monitoringVmAgentCertificate:
         apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
           name: monitoring-client
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           commonName: metrics-reader
           duration: 8760h
@@ -39,6 +39,9 @@ spec:
             size: 2048
           renewBefore: 1460h
           secretName: monitoring-client
+          subject:
+            organizations:
+              - beget:metrics-reader
           usages:
           - client auth
 
@@ -47,7 +50,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-metrics
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -110,7 +113,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-cadvisor
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -173,7 +176,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-probes
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -236,7 +239,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kubelet-resource
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s
@@ -299,7 +302,7 @@ spec:
         kind: VMScrapeConfig
         metadata:
           name: client-cluster-kube-apiserver
-          namespace: beget-client-monitoring
+          namespace: beget-vmagent
         spec:
           scheme: https
           scrape_interval: 30s

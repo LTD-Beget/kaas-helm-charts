@@ -10,7 +10,7 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-client-monitoring"
+  targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
   initDependencies:
