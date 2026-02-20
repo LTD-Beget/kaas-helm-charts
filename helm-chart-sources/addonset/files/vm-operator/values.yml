@@ -68,10 +68,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: cert-manager-csi-driver-cert-manager
+  name: vm-operator-cert-manager
   labels:
     addons.in-cloud.io/values: "cert-manager"
-    addons.in-cloud.io/addon: cert-manager-csi-driver
+    addons.in-cloud.io/addon: vm-operator
 spec:
   values: |
     argocdPlugins:
