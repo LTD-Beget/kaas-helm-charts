@@ -38,7 +38,7 @@ vmAlertmanager:
                   chat_id: "-1001234567890"
                   parse_mode: 'HTML'
                   send_resolved: true
-                  message: '{{ template "tg.message" . }}'
+                  message: ''
 
           templates:
               - "/etc/vm/configs/**/*.tmpl"
