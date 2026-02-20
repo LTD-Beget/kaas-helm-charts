@@ -9,6 +9,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   telegram_alerts.tmpl: |
+  `{{
     {{ define "emoji.status" -}}
     {{- if eq .Status "firing" -}}🚨{{- else -}}✅{{- end -}}
     {{- end }}
@@ -75,4 +76,5 @@ data:
     {{- end }}
     {{ end -}}
     {{- end }}
+  }}`
 {{- end }}
