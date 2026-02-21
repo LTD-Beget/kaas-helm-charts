@@ -9,12 +9,11 @@ spec:
     - name: cert-manager
       criteria:
         - source:
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            name: selfsigned-cluster-issuer
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
       selector:
         name: cert-manager
         priority: 20
