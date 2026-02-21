@@ -24,11 +24,11 @@ spec:
     - name: initialized-2
       criteria:
         - source:
-          apiVersion: addons.in-cloud.io/v1alpha1
-          kind: Addon
-          name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-        jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
-        operator: Exists
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
+          operator: Exists
       selector:
         name: initialized-2
         priority: 13
