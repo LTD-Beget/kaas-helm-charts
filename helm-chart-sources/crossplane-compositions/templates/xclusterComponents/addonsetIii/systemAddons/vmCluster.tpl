@@ -46,18 +46,35 @@ vmCluster:
                     subPath: ca.crt
                     name: trusted-ca-certs
                     readOnly: true
+            extraArgs:
+              blockcache.missesBeforeCaching: '2'
+              cacheExpireDuration: 45m
+              memory.allowedPercent: '85'
+              prevCacheRemovalPercent: '0.5'
+              storage.cacheSizeIndexDBDataBlocks: 12Gib
+              storage.cacheSizeIndexDBDataBlocksSparse: 2Gib
+              storage.cacheSizeIndexDBIndexBlocks: 12Gib
+              storage.cacheSizeIndexDBTagFilters: 4Gib
+              storageDataPath: /opt/monitoring/data
             claimTemplates: []
+            storage:
+              emptyDir:
+                sizeLimit: 210Gi
+              volumeClaimTemplate: {}
             resources:
               limits:
                 cpu: "5"
+                memory: 22Gi
               requests:
                 cpu: "50m"
                 memory: "64Mi"
-            #TODO change hostpath
             tolerations:
               - key: "node-role.kubernetes.io/vm-data"
                 operator: "Exists"
                 effect: "NoSchedule"
+            volumeMounts:
+              - mountPath: /opt/monitoring/data
+                name: vmstorage-data
             volumes:
               - name: rbac-proxy-tls
                 secret:
@@ -261,6 +278,7 @@ vmCluster:
             resources:
               limits:
                 cpu: "4"
+                memory: 10Gi
               requests:
                 cpu: "50m"
                 memory: "64Mi"

@@ -43,6 +43,9 @@ victoria-metrics-k8s-stack:
   clickhouseIserter:
     enabled: false
 
+  vmcluster:
+    enabled: false
+
 monitoring:
   enabled: false
   type: VictoriaMetrics
