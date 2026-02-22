@@ -4,6 +4,35 @@ victoria-metrics-k8s-stack:
 
   alertmanager:
     enabled: false
+    config:
+      global:
+        resolve_timeout: 5m
+
+      route:
+        receiver: blackhole
+        group_by: ["cluster_full_name", "alertname", "severity"]
+        group_wait: 10s
+        group_interval: 30s
+        repeat_interval: 3h
+
+        routes:
+          - matchers:
+              - alertname="Watchdog"
+            receiver: blackhole
+          - matchers:
+              - severity="critical"
+            receiver: telegram-critical
+            continue: true
+
+      receivers:
+        - name: blackhole
+        - name: telegram-critical
+          telegram_configs:
+            - bot_token: "123456789:AAExampleTokenHere"
+              chat_id: -1001234567890
+              parse_mode: 'HTML'
+              send_resolved: true
+              message: '{{ template "tg.message" . }}'
 
   vmagent:
     enabled: false
@@ -129,7 +158,7 @@ alertRules:
               spec:
                 alert: CoreDNSDown
                 annotations:
-                  description: CoreDNS Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}
+                  description: CoreDNS Down in cluster {{ $labels.cluster_full_name }}
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
                   summary: CoreDNS has disappeared from Prometheus target discovery.
                 expr: |
@@ -145,7 +174,7 @@ alertRules:
               spec:
                 alert: CoreDNSLatencyHigh
                 annotations:
-                  description: CoreDNS has 99th percentile latency of {{"{{"}} $value {{"}}"}} seconds for server {{"{{"}} $labels.server {{"}}"}} zone {{"{{"}} $labels.zone {{"}}"}}.
+                  description: CoreDNS has 99th percentile latency of {{ $value }} seconds for server {{ $labels.server }} zone {{ $labels.zone }}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
                   summary: CoreDNS is experiencing high 99th percentile latency.
                 expr: |
@@ -159,7 +188,7 @@ alertRules:
               spec:
                 alert: CoreDNSErrorsTooHigh
                 annotations:
-                  description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of requests.
+                  description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
                   summary: CoreDNS is returning SERVFAIL.
                 expr: |
@@ -175,7 +204,7 @@ alertRules:
               spec:
                 alert: CoreDNSErrorsHigh
                 annotations:
-                  description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of requests.
+                  description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
                   summary: CoreDNS is returning SERVFAIL.
                 expr: |
@@ -196,7 +225,7 @@ alertRules:
               spec:
                 alert: CoreDNSForwardLatencyHigh
                 annotations:
-                  description: CoreDNS has 99th percentile latency of {{"{{"}} $value {{"}}"}} seconds forwarding requests to {{"{{"}} $labels.to {{"}}"}}.
+                  description: CoreDNS has 99th percentile latency of {{ $value }} seconds forwarding requests to {{ $labels.to }}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
                   summary: CoreDNS is experiencing high latency forwarding requests.
                 expr: |
@@ -210,7 +239,7 @@ alertRules:
               spec:
                 alert: CoreDNSForwardErrorsTooHigh
                 annotations:
-                  description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of forward requests to {{"{{"}} $labels.to {{"}}"}}.
+                  description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
                   summary: CoreDNS is returning SERVFAIL for forward requests.
                 expr: |
@@ -226,7 +255,7 @@ alertRules:
               spec:
                 alert: CoreDNSForwardErrorsHigh
                 annotations:
-                  description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of forward requests to {{"{{"}} $labels.to {{"}}"}}.
+                  description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
                   summary: CoreDNS is returning SERVFAIL for forward requests.
                 expr: |
@@ -242,7 +271,7 @@ alertRules:
               spec:
                 alert: CoreDNSForwardHealthcheckFailureCount
                 annotations:
-                  description: CoreDNS health checks have failed to upstream server {{"{{"}} $labels.to {{"}}"}}.
+                  description: CoreDNS health checks have failed to upstream server {{ $labels.to }}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
                   summary: CoreDNS health checks have failed to upstream server.
                 expr: |
@@ -281,7 +310,7 @@ alertRules:
                 alert: CertManagerAbsent
                 annotations:
                   description: |
-                    CertManager Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}. New certificates will not be able to be minted, and existing ones
+                    CertManager Down in cluster {{ $labels.cluster_full_name }}. New certificates will not be able to be minted, and existing ones
                     can't be renewed until cert-manager is back.
                   runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
                   summary: Cert Manager has disappeared from Prometheus service discovery.
@@ -305,11 +334,11 @@ alertRules:
                 annotations:
                   dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
                   description: |
-                    The domain that this cert covers will be unavailable after {{"{{"}} $value | humanizeDuration {{"}}"}}.
-                    Clients using endpoints that this cert protects will start to fail in {{"{{"}} $value | humanizeDuration {{"}}"}}.
+                    The domain that this cert covers will be unavailable after {{ $value | humanizeDuration }}.
+                    Clients using endpoints that this cert protects will start to fail in {{ $value | humanizeDuration }}.
                   runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertexpirysoon
                   summary: |
-                    The cert {{"{{"}} $labels.name {{"}}"}} is {{"{{"}} $value | humanizeDuration {{"}}"}} from
+                    The cert {{ $labels.name }} is {{ $value | humanizeDuration }} from
                     expiry, it should have renewed over a week ago.
                 expr: |
                   avg by (exported_namespace, namespace, name) (
@@ -329,7 +358,7 @@ alertRules:
                     10m. If the cert is being renewed or there is another valid cert, the ingress
                     controller _may_ be able to serve that instead.
                   runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertnotready
-                  summary: The cert {{"{{"}} $labels.name {{"}}"}} is not ready to serve traffic.
+                  summary: The cert {{ $labels.name }} is not ready to serve traffic.
                 expr: |
                   max by (name, exported_namespace, namespace, condition) (
                     certmanager_certificate_ready_status{condition!="True"} == 1
@@ -375,8 +404,8 @@ alertRules:
                 labels:
                   severity: warning
                 annotations:
-                  summary: Etcd high deviv fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})
-                  description: Etcd WAL fsync duration increasing is over 15%\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
+                  summary: Etcd high deviv fsync durations (instance {{ $labels.instance }})
+                  description: Etcd WAL fsync duration increasing is over 15%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
 
             EtcdHighFsyncDurations:
               enabled: true
@@ -387,8 +416,8 @@ alertRules:
                 labels:
                   severity: warning
                 annotations:
-                  summary: Etcd high fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})
-                  description: Etcd WAL fsync duration increasing, 99th percentile is over 0.5s\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
+                  summary: Etcd high fsync durations (instance {{ $labels.instance }})
+                  description: Etcd WAL fsync duration increasing, 99th percentile is over 0.5s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
 
             EtcdHighCommitDurations:
               enabled: true
@@ -399,8 +428,8 @@ alertRules:
                 labels:
                   severity: warning
                 annotations:
-                  summary: Etcd high commit durations (instance {{"{{"}} $labels.instance {{"}}"}})
-                  description: Etcd commit duration increasing, 99th percentile is over 0.25s\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
+                  summary: Etcd high commit durations (instance {{ $labels.instance }})
+                  description: Etcd commit duration increasing, 99th percentile is over 0.25s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
 
             EtcdNoLeader:
               enabled: true
@@ -411,8 +440,8 @@ alertRules:
                 labels:
                   severity: warning
                 annotations:
-                  summary: Etcd no Leader (instance {{"{{"}} $labels.instance {{"}}"}})
-                  description: Etcd cluster have no leader\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
+                  summary: Etcd no Leader (instance {{ $labels.instance }})
+                  description: Etcd cluster have no leader\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
 
             EtcdHighNumberOfLeaderChanges:
               enabled: true
@@ -423,15 +452,15 @@ alertRules:
                 labels:
                   severity: warning
                 annotations:
-                  summary: Etcd high number of leader changes (instance {{"{{"}} $labels.instance {{"}}"}})
-                  description: Etcd leader changed more than 1 times during 5 minutes\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
+                  summary: Etcd high number of leader changes (instance {{ $labels.instance }})
+                  description: Etcd leader changed more than 1 times during 5 minutes\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
 
             etcdMembersDown:
               enabled: true
               spec:
                 alert: etcdMembersDown
                 annotations:
-                  description: etcd cluster {{"{{"}} $labels.job {{"}}"}} - members are down ({{"{{"}} $value {{"}}"}}).
+                  description: etcd cluster {{ $labels.job }} - members are down ({{ $value }}).
                   summary: etcd cluster members are down.
                 expr: |
                   max without (endpoint) (
@@ -452,8 +481,8 @@ alertRules:
                 alert: etcdDatabaseQuotaLowSpace
                 annotations:
                   description: |
-                    etcd cluster {{"{{"}} $labels.job {{"}}"}} - database size exceeds the defined
-                    quota on etcd instance {{"{{"}} $labels.instance {{"}}"}}, please defrag or increase the
+                    etcd cluster {{ $labels.job }} - database size exceeds the defined
+                    quota on etcd instance {{ $labels.instance }}, please defrag or increase the
                     quota as the writes to etcd will be disabled when it is full.
                   summary: etcd cluster database is running full.
                 expr: |
@@ -468,9 +497,9 @@ alertRules:
                 alert: etcdExcessiveDatabaseGrowth
                 annotations:
                   description: |
-                    etcd cluster {{"{{"}} $labels.job {{"}}"}} - Predicting running out of disk
+                    etcd cluster {{ $labels.job }} - Predicting running out of disk
                     space in the next four hours, based on write observations within the past
-                    four hours on etcd instance {{"{{"}} $labels.instance {{"}}"}}, please check as it might
+                    four hours on etcd instance {{ $labels.instance }}, please check as it might
                     be disruptive.
                   summary: etcd cluster database growing very fast.
                 expr: |
@@ -485,8 +514,8 @@ alertRules:
                 alert: etcdDatabaseHighFragmentationRatio
                 annotations:
                   description: |
-                    etcd cluster {{"{{"}} $labels.job {{"}}"}} - database size in use on instance
-                    {{"{{"}} $labels.instance {{"}}"}} is {{"{{"}} $value | humanizePercentage {{"}}"}} of the actual
+                    etcd cluster {{ $labels.job }} - database size in use on instance
+                    {{ $labels.instance }} is {{ $value | humanizePercentage }} of the actual
                     allocated disk space, please run defragmentation (e.g. etcdctl defrag) to
                     retrieve the unused fragmented disk space.
                   runbook_url: https://etcd.io/docs/v3.5/op-guide/maintenance/#defragmentation
@@ -516,8 +545,8 @@ alertRules:
                       up{job="vmagent",cluster_type="system"} == 1
                 for: 2m
                 annotations:
-                  description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
-                  summary: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+                  description: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+                  summary: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
                 labels:
                   severity: critical
 
@@ -531,8 +560,8 @@ alertRules:
                       up{job="vmalert",cluster_type="system"} == 1
                 for: 2m
                 annotations:
-                  description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
-                  summary: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+                  description: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+                  summary: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
                 labels:
                   severity: critical
 
@@ -546,8 +575,8 @@ alertRules:
                       up{job="vmalertmanager",cluster_type="system"} == 1
                 for: 2m
                 annotations:
-                  description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
-                  summary: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
+                  description: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+                  summary: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
                 labels:
                   severity: critical
 
@@ -713,8 +742,8 @@ alertRules:
                 annotations:
                   description: |
                     A workload (pod, deployment, deamonset, ...) was created somewhere
-                    in the cluster but it did not match the PodSecurity "{{"{{"}} $labels.policy_level
-                    {{"}}"}}" profile defined by its namespace either via the cluster-wide configuration
+                    in the cluster but it did not match the PodSecurity "{{ $labels.policy_level
+                    }}" profile defined by its namespace either via the cluster-wide configuration
                     (which triggers on a "restricted" profile violations) or by the namespace
                     local Pod Security labels. Refer to Kubernetes documentation on Pod Security
                     Admission to learn more about these violations.
@@ -723,7 +752,6 @@ alertRules:
                 expr: |
                   sum(increase(pod_security_evaluations_total{decision="deny",mode="audit",resource="pod"}[1d])) by (policy_level) > 0
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
     prometheusK8sPrometheusRules:
@@ -739,7 +767,7 @@ alertRules:
               spec:
                 alert: PrometheusBadConfig
                 annotations:
-                  description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed to reload its configuration.
+                  description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to reload its configuration.
                   summary: Failed Prometheus configuration reload.
                 expr: |
                   # Without max_over_time, failed scrapes could create false negatives, see
@@ -754,7 +782,7 @@ alertRules:
               spec:
                 alert: PrometheusNotificationQueueRunningFull
                 annotations:
-                  description: Alert notification queue of Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is running full.
+                  description: Alert notification queue of Prometheus {{$labels.namespace}}/{{$labels.pod}} is running full.
                   summary: Prometheus alert notification queue predicted to run full in less
                     than 30m.
                 expr: |
@@ -775,8 +803,8 @@ alertRules:
                 alert: PrometheusErrorSendingAlertsToSomeAlertmanagers
                 annotations:
                   description: |
-                    {{"{{"}} printf "%.1f" $value {{"}}"}}% errors while sending alerts from
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} to Alertmanager {{"{{"}}$labels.alertmanager}}.
+                    {{ printf "%.1f" $value }}% errors while sending alerts from
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} to Alertmanager {{$labels.alertmanager}}.
                   summary: Prometheus has encountered more than 1% errors sending alerts to
                     a specific Alertmanager.
                 expr: |
@@ -796,7 +824,7 @@ alertRules:
               spec:
                 alert: PrometheusNotConnectedToAlertmanagers
                 annotations:
-                  description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is not connected to any Alertmanagers.
+                  description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not connected to any Alertmanagers.
                   summary: Prometheus is not connected to any Alertmanagers.
                 expr: |
                   # Without max_over_time, failed scrapes could create false negatives, see
@@ -812,8 +840,8 @@ alertRules:
                 alert: PrometheusTSDBReloadsFailing
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has detected
-                    {{"{{"}}$value | humanize}} reload failures over the last 3h.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
+                    {{$value | humanize}} reload failures over the last 3h.
                   summary: Prometheus has issues reloading blocks from disk.
                 expr: |
                   increase(prometheus_tsdb_reloads_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
@@ -827,8 +855,8 @@ alertRules:
                 alert: PrometheusTSDBCompactionsFailing
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has detected
-                    {{"{{"}}$value | humanize}} compaction failures over the last 3h.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
+                    {{$value | humanize}} compaction failures over the last 3h.
                   summary: Prometheus has issues compacting blocks.
                 expr: |
                   increase(prometheus_tsdb_compactions_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
@@ -841,7 +869,7 @@ alertRules:
               spec:
                 alert: PrometheusNotIngestingSamples
                 annotations:
-                  description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is not ingesting samples.
+                  description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not ingesting samples.
                   summary: Prometheus is not ingesting samples.
                 expr: |
                   (
@@ -863,8 +891,8 @@ alertRules:
                 alert: PrometheusDuplicateTimestamps
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is dropping
-                    {{"{{"}} printf "%.4g" $value  {{"}}"}} samples/s with different values but duplicated
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping
+                    {{ printf "%.4g" $value  }} samples/s with different values but duplicated
                     timestamp.
                   summary: Prometheus is dropping samples with duplicate timestamps.
                 expr: |
@@ -879,8 +907,8 @@ alertRules:
                 alert: PrometheusOutOfOrderTimestamps
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is dropping
-                    {{"{{"}} printf "%.4g" $value  {{"}}"}} samples/s with timestamps arriving out of order.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping
+                    {{ printf "%.4g" $value  }} samples/s with timestamps arriving out of order.
                   summary: Prometheus drops samples with out-of-order timestamps.
                 expr: |
                   rate(prometheus_target_scrapes_sample_out_of_order_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
@@ -894,8 +922,8 @@ alertRules:
                 alert: PrometheusRemoteStorageFailures
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} failed to send
-                    {{"{{"}} printf "%.1f" $value {{"}}"}}% of the samples to {{"{{"}} $labels.remote_name {{"}}"}}:{{"{{"}} $labels.url {{"}}"}}
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} failed to send
+                    {{ printf "%.1f" $value }}% of the samples to {{ $labels.remote_name }}:{{ $labels.url }}
                   summary: Prometheus fails to send samples to remote storage.
                 expr: |
                   (
@@ -919,8 +947,8 @@ alertRules:
                 alert: PrometheusRemoteWriteBehind
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} remote write
-                    is {{"{{"}} printf "%.1f" $value {{"}}"}}s behind for {{"{{"}} $labels.remote_name}}:{{"{{"}} $labels.url {{"}}"}}.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write
+                    is {{ printf "%.1f" $value }}s behind for {{ $labels.remote_name}}:{{ $labels.url }}.
                   summary: Prometheus remote write is behind.
                 expr: |
                   # Without max_over_time, failed scrapes could create false negatives, see
@@ -941,9 +969,9 @@ alertRules:
                 alert: PrometheusRemoteWriteDesiredShards
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} remote write
-                    desired shards calculation wants to run {{"{{"}} $value {{"}}"}} shards for queue
-                    {{"{{"}}$labels.remote_name}}:{{"{{"}}$labels.url}}, which **may exceed** the configured max.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write
+                    desired shards calculation wants to run {{ $value }} shards for queue
+                    {{$labels.remote_name}}:{{$labels.url}}, which **may exceed** the configured max.
                     Please review 'prometheus_remote_storage_shards_max' for the corresponding job.
                   summary: Prometheus remote write desired shards calculation wants to run more
                     than configured max shards.
@@ -965,8 +993,8 @@ alertRules:
                 alert: VMRuleFailures
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed to
-                    evaluate {{"{{"}} printf "%.0f" $value {{"}}"}} rules in the last 5m.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to
+                    evaluate {{ printf "%.0f" $value }} rules in the last 5m.
                   summary: Prometheus is failing rule evaluations.
                 expr: |
                   increase(prometheus_rule_evaluation_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
@@ -980,8 +1008,8 @@ alertRules:
                 alert: PrometheusMissingRuleEvaluations
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has missed {{"{{"}}
-                    printf "%.0f" $value {{"}}"}} rule group evaluations in the last 5m.
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has missed {{
+                    printf "%.0f" $value }} rule group evaluations in the last 5m.
                   summary: Prometheus is missing rule evaluations due to slow rule group evaluation.
                 expr: |
                   increase(prometheus_rule_group_iterations_missed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
@@ -995,8 +1023,8 @@ alertRules:
                 alert: PrometheusTargetLimitHit
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has dropped
-                    {{"{{"}} printf "%.0f" $value {{"}}"}} targets because the number of targets exceeded
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped
+                    {{ printf "%.0f" $value }} targets because the number of targets exceeded
                     the configured target_limit.
                   summary: Prometheus has dropped targets because some scrape configs have exceeded
                     the targets limit.
@@ -1012,8 +1040,8 @@ alertRules:
                 alert: PrometheusLabelLimitHit
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has dropped
-                    {{"{{"}} printf "%.0f" $value {{"}}"}} targets because some samples exceeded the configured
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped
+                    {{ printf "%.0f" $value }} targets because some samples exceeded the configured
                     label_limit, label_name_length_limit or label_value_length_limit.
                   summary: Prometheus has dropped targets because some scrape configs have exceeded
                     the labels limit.
@@ -1029,8 +1057,8 @@ alertRules:
                 alert: PrometheusScrapeBodySizeLimitHit
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed {{"{{"}}
-                    printf "%.0f" $value {{"}}"}} scrapes in the last 5m because some targets exceeded
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{
+                    printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
                     the configured body_size_limit.
                   summary: Prometheus has dropped some targets that exceeded body size limit.
                 expr: |
@@ -1045,8 +1073,8 @@ alertRules:
                 alert: PrometheusScrapeSampleLimitHit
                 annotations:
                   description: |
-                    Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed {{"{{"}}
-                    printf "%.0f" $value {{"}}"}} scrapes in the last 5m because some targets exceeded
+                    Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{
+                    printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
                     the configured sample_limit.
                   summary: Prometheus has failed scrapes that have exceeded the configured sample
                     limit.
@@ -1062,7 +1090,7 @@ alertRules:
                 alert: PrometheusTargetSyncFailure
                 annotations:
                   description: |
-                    {{"{{"}} printf "%.0f" $value {{"}}"}} targets in Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}}
+                    {{ printf "%.0f" $value }} targets in Prometheus {{$labels.namespace}}/{{$labels.pod}}
                     have failed to sync because invalid configuration was supplied.
                   runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-monitoring-operator/PrometheusTargetSyncFailure.md
                   summary: Prometheus has failed to sync targets.
@@ -1097,7 +1125,6 @@ alertRules:
                   (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeMemoryOvercommit:
@@ -1116,7 +1143,6 @@ alertRules:
                   (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeCPUQuotaOvercommit:
@@ -1136,7 +1162,6 @@ alertRules:
                     > 1.5
                 for: 5m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeMemoryQuotaOvercommit:
@@ -1154,7 +1179,6 @@ alertRules:
                     > 1.5
                 for: 5m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeQuotaAlmostFull:
@@ -1174,7 +1198,6 @@ alertRules:
                     > 0.9 < 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
             KubeQuotaFullyUsed:
@@ -1194,7 +1217,6 @@ alertRules:
                     == 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: info
 
             KubeQuotaExceeded:
@@ -1214,7 +1236,6 @@ alertRules:
                     > 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             CPUThrottlingHigh:
@@ -1261,7 +1282,6 @@ alertRules:
                   ) > 0.05
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
     kubernetesApps:
@@ -1288,7 +1308,6 @@ alertRules:
                   ) >= 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraPodCrashLooping:
@@ -1311,7 +1330,6 @@ alertRules:
                   ) >= 1
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubePodNotReady:
@@ -1334,7 +1352,6 @@ alertRules:
                   ) > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDeploymentGenerationMismatch:
@@ -1354,7 +1371,6 @@ alertRules:
                   kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDeploymentReplicasMismatch:
@@ -1380,7 +1396,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDeploymentReplicasMismatch:
@@ -1418,7 +1433,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDeploymentRolloutStuck:
@@ -1440,7 +1454,6 @@ alertRules:
                   } != 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDeploymentRolloutStuck:
@@ -1463,7 +1476,6 @@ alertRules:
                   } != 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeStatefulSetReplicasMismatch:
@@ -1489,7 +1501,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeStatefulSetGenerationMismatch:
@@ -1509,7 +1520,6 @@ alertRules:
                   kube_statefulset_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeStatefulSetUpdateNotRolledOut:
@@ -1542,7 +1552,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDaemonSetRolloutStuck:
@@ -1588,7 +1597,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeInfraDaemonSetRolloutStuck:
@@ -1627,7 +1635,6 @@ alertRules:
                   )
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeContainerWaiting:
@@ -1649,7 +1656,6 @@ alertRules:
                   } > 0
                 for: 1h
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: critical
 
             KubeDaemonSetNotScheduled:
@@ -1668,7 +1674,6 @@ alertRules:
                   kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 10m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeDaemonSetMisScheduled:
@@ -1684,7 +1689,6 @@ alertRules:
                 expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeJobNotCompleted:
@@ -1706,7 +1710,6 @@ alertRules:
                     kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                   ) > 43200
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeJobFailed:
@@ -1723,7 +1726,6 @@ alertRules:
                 expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeHpaReplicasMismatch:
@@ -1753,7 +1755,6 @@ alertRules:
                   changes(kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[15m]) == 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubeHpaMaxedOut:
@@ -1773,7 +1774,6 @@ alertRules:
                   kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning
 
             KubePdbNotEnoughHealthyPods:
@@ -1794,5 +1794,4 @@ alertRules:
                   ) > 0
                 for: 15m
                 labels:
-                  namespace: in-cloud-monitoring
                   severity: warning

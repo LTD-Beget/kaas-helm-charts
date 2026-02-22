@@ -12,38 +12,6 @@ vmAlertmanager:
     victoria-metrics-k8s-stack:
       fullnameOverride: "alertmanager"
       alertmanager:
-        config:
-          global:
-            resolve_timeout: 5m
-
-          route:
-            receiver: 'telegram'
-            group_wait: 10s
-            group_interval: 30s
-            repeat_interval: 1h
-
-            routes:
-              - matchers:
-                  - severity="critical"
-                receiver: telegram-critical
-                continue: true
-              - matchers:
-                  - alertname="Watchdog"
-                receiver: blackhole
-
-          receivers:
-            - name: telegram-critical
-              telegram_configs:
-                - bot_token: "123456789:AAExampleTokenHere"
-                  chat_id: "-1001234567890"
-                  parse_mode: 'HTML'
-                  send_resolved: true
-                  message: '{{`}} {{- printf `template "tg.message" . }}'
-
-          # templates:
-          #     - "/etc/vm/configs/**/*.tmpl"
-          #     - "/etc/vm/templates/vmalertmanager-alertmanager-monzo-tpl/monzo.tmpl"
-          #     - "/etc/vm/templates/alertmanager-templates/*.tmpl"
         spec:
           templates:
           - key: monzo.tmpl
