@@ -38,7 +38,7 @@ vmAlertmanager:
                   chat_id: "-1001234567890"
                   parse_mode: 'HTML'
                   send_resolved: true
-                  message: ''
+                  message: '{{`}} {{- printf `template "tg.message" . }}'
 
           # templates:
           #     - "/etc/vm/configs/**/*.tmpl"
@@ -155,5 +155,5 @@ vmAlertmanager:
             - "vmalertmanager-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
-  ` }}
+  `}}
 {{- end -}}
