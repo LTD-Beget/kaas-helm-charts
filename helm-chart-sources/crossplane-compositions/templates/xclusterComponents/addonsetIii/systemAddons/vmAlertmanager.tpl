@@ -14,8 +14,6 @@ vmAlertmanager:
       alertmanager:
         spec:
           templates:
-          - key: monzo.tmpl
-            name: vmalertmanager-alertmanager-monzo-tpl
           - key: telegram_alerts.tmpl
             name: vmalertmanager-alertmanager-alert-templates
           serviceSpec:
@@ -39,9 +37,6 @@ vmAlertmanager:
                 - name: alertmanager-tls
                   mountPath: /app/config/alertmanager/web/tls
                   readOnly: true
-                # - name: alertmanager-templates
-                #   mountPath: /etc/vm/templates/alertmanager-templates
-                #   readOnly: true
             - name: rbac-proxy
               image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
               args:
@@ -78,10 +73,6 @@ vmAlertmanager:
               secret:
                 defaultMode: 420
                 secretName: {{ $clusterName }}-alertmanager
-            # - name: alertmanager-templates
-            #   configMap:
-            #     name: vmalertmanager-alertmanager-alert-templates
-            #     defaultMode: 420
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
