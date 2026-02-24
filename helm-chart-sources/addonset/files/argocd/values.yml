@@ -221,7 +221,7 @@ spec:
             ephemeral-storage: 100Mi
             memory: 128Mi
       redisSecretInit:
-        enabled: false
+        enabled: true
       repoServer:
         image:
           imagePullPolicy: IfNotPresent
@@ -475,6 +475,8 @@ spec:
         secret:
           argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
           argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
+      redisSecretInit:
+        enabled: false
       repoServer:
         volumes:
           - configMap:
