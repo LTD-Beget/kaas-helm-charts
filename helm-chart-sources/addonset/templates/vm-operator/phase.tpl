@@ -22,4 +22,18 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: vm-operator
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: "cert-manager"
+          addons.in-cloud.io/addon: vm-operator
 {{- end }}
