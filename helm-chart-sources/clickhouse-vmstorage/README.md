@@ -90,6 +90,21 @@ metrics.ts — хранилище метрик на ClickHouse Engine=TimeSeries
 Из-за вычисления id кардинальность серий напрямую зависит от количества уникальных комбинаций metric_name + tags; поэтому запрещены высококардинальные теги (request_id/trace_id и т.п.).
 
 # Метрики
+## Метрики необходимые для расчета агрегированных метрик
+
+|Metric|Source|Agregated metric|
+|---|---|---|
+|kube_node_status_capacity|kube-state-metrics|beget_nodegroup_memory_total_mb beget_nodegroup_cpu_total_cores beget_nodegroup_filesystem_total_mb beget_nodegroup_filesystem_used_percent beget_node_memory_total_mb beget_node_cpu_total_cores beget_node_filesystem_total_mb beget_node_filesystem_used_percent|
+|kube_node_labels|kube-state-metrics|beget_nodegroup_memory_total_mb beget_nodegroup_memory_used_mb beget_nodegroup_cpu_total_cores beget_nodegroup_filesystem_total_mb beget_nodegroup_filesystem_used_percent|
+|container_memory_working_set_bytes|cadvisor|beget_nodegroup_memory_used_mb beget_node_memory_used_mb|
+|node_cpu_usage_seconds_total|resource|beget_nodegroup_cpu_used_cores beget_node_cpu_used_cores|
+|container_fs_usage_bytes|cadvisor|beget_nodegroup_filesystem_used_mb beget_nodegroup_filesystem_used_percent beget_node_filesystem_used_mb beget_node_filesystem_used_percent|
+|kube_pod_status_phase|kube-state-metrics|beget_pod_status_phase|
+|kube_pod_container_status_restarts_total|kube-state-metrics|beget_pod_restarts_total|
+|kube_pod_info|kube-state-metrics|beget_pod_info|
+|container_memory_working_set_bytes|cadvisor|beget_pod_memory_usage_mb|
+|container_cpu_usage_seconds_total|cadvisor|beget_pod_cpu_usage_cores|
+
 ## Метрики групп нод
 Метрики и примеры графиков можно посмотреть в графане на дашборде beget-grafana -> ClickhouseTSDB / Nodegroups (по пути https://GRAFANA_ADDR/grafana/d/clickhouse-tsdb-nodegroups)
 
