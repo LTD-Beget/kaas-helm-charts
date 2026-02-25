@@ -19,7 +19,12 @@ signalilo:
         icinga_password: "13283597db083426"
         alertmanager_port: 8888
         alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
-
+        mapping:
+          host: "k8s"
+          service: "{{ .CommonLabels.cluster_full_name }} / {{ .CommonLabels.alertname }}"
+          state:
+            firing: 2
+            resolved: 0
       extraEnvVars:
         - name: SIGNALILO_LOG_LEVEL
           value: "2"
@@ -33,8 +38,6 @@ signalilo:
           value: "true"
         - name: SIGNALILO_ICINGA_SERVICE_TEMPLATE
           value: "signalilo-passive-service"
-        - name: SIGNALILO_ICINGA_SERVICE_NAME_TEMPLATE
-          value: "{{ .CommonLabels.cluster_full_name }} / {{ .CommonLabels.alertname }}"
 
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
