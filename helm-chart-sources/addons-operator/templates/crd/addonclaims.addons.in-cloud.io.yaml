@@ -15,14 +15,8 @@ spec:
     scope: Namespaced
     versions:
         - additionalPrinterColumns:
-            - jsonPath: .spec.name
+            - jsonPath: .spec.addon.name
               name: Addon
-              type: string
-            - jsonPath: .spec.version
-              name: Version
-              type: string
-            - jsonPath: .spec.cluster
-              name: Cluster
               type: string
             - jsonPath: .status.conditions[?(@.type=="Ready")].status
               name: Ready
@@ -58,11 +52,20 @@ spec:
                     spec:
                         description: AddonClaimSpec defines the desired state of an AddonClaim.
                         properties:
-                            cluster:
-                                description: Cluster is the target client cluster name (used in template rendering).
-                                maxLength: 253
-                                minLength: 1
-                                type: string
+                            addon:
+                                description: |-
+                                    Addon specifies the identity of the remote Addon resource.
+                                    The name is required and immutable — it cannot be changed after creation.
+                                    The rendered template's metadata.name is overridden by this value.
+                                properties:
+                                    name:
+                                        description: Name of the Addon resource in the remote cluster.
+                                        maxLength: 253
+                                        minLength: 1
+                                        type: string
+                                required:
+                                    - name
+                                type: object
                             credentialRef:
                                 description: |-
                                     CredentialRef references the Secret containing the infra cluster kubeconfig.
@@ -75,16 +78,6 @@ spec:
                                 required:
                                     - name
                                 type: object
-                            dependency:
-                                description: |-
-                                    Dependency marks this addon as a dependency for devops tooling.
-                                    When true, the annotation dependency.addons.in-cloud.io/enabled is set on the Addon.
-                                type: boolean
-                            name:
-                                description: Name is the addon name. Used as the Addon resource name in the infra cluster.
-                                maxLength: 253
-                                minLength: 1
-                                type: string
                             templateRef:
                                 description: TemplateRef references the AddonTemplate to use for rendering.
                                 properties:
@@ -95,6 +88,13 @@ spec:
                                 required:
                                     - name
                                 type: object
+                            valueLabels:
+                                default: claim
+                                description: |-
+                                    ValueLabels overrides the "addons.in-cloud.io/values" label on the generated AddonValue.
+                                    Defaults to "claim". Used to match custom valuesSelectors in the rendered Addon.
+                                maxLength: 63
+                                type: string
                             values:
                                 description: |-
                                     Values provides structured Helm values as a JSON object.
@@ -107,21 +107,22 @@ spec:
                                     May contain Go template expressions rendered with the AddonClaim context.
                                     Mutually exclusive with Values — only one may be set.
                                 type: string
-                            version:
-                                description: Version is the addon version.
-                                maxLength: 64
-                                minLength: 1
-                                type: string
+                            variables:
+                                description: |-
+                                    Variables provides arbitrary parameters for template rendering.
+                                    Accessible in templates as .Vars.<key> (shortcut) or .Values.spec.variables.<key>.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                         required:
-                            - cluster
+                            - addon
                             - credentialRef
-                            - name
                             - templateRef
-                            - version
                         type: object
                         x-kubernetes-validations:
                             - message: values and valuesString are mutually exclusive
                               rule: '!(has(self.values) && size(self.valuesString) > 0)'
+                            - message: spec.addon.name is immutable
+                              rule: self.addon.name == oldSelf.addon.name
                     status:
                         description: AddonClaimStatus defines the observed state of an AddonClaim.
                         properties:
@@ -186,6 +187,24 @@ spec:
                                 x-kubernetes-list-type: map
                             deployed:
                                 description: Deployed indicates the remote Addon has been deployed at least once.
+                                type: boolean
+                            externalManagedControlPlane:
+                                description: |-
+                                    ExternalManagedControlPlane indicates the control plane is externally managed.
+                                    Populated only when annotation "external-status/type" is present.
+                                type: boolean
+                            initialization:
+                                description: Initialization contains CAPI v1beta2 initialization status.
+                                properties:
+                                    controlPlaneInitialized:
+                                        description: ControlPlaneInitialized indicates the first control plane instance is ready.
+                                        type: boolean
+                                type: object
+                            initialized:
+                                description: |-
+                                    Initialized indicates the control plane has been initialized (CAPI v1beta1, deprecated).
+                                    Reflects the Deployed condition from the remote Addon.
+                                    Populated only when annotation "external-status/type" is present.
                                 type: boolean
                             observedGeneration:
                                 description: ObservedGeneration is the last spec.generation processed by the controller.
@@ -257,6 +276,11 @@ spec:
                                         description: Deployed indicates the remote Addon has been deployed.
                                         type: boolean
                                 type: object
+                            version:
+                                description: |-
+                                    Version reflects the Kubernetes version from the claim's variables.
+                                    Populated only when annotation "external-status/type" is present.
+                                type: string
                         type: object
                 required:
                     - spec
