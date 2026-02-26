@@ -53,8 +53,23 @@ create-packages: check-tools
 
 index: check-tools
 	@mkdir -p "$(PACKAGES_DIR)"
-	@old_index=$$(mktemp); \
-	trap 'rm -f "$$old_index" "$(PACKAGES_DIR)/index.yaml"' EXIT; \
+	@expected=$$(mktemp); \
+	old_index=$$(mktemp); \
+	trap 'rm -f "$$expected" "$$old_index" "$(PACKAGES_DIR)/index.yaml"' EXIT; \
+	for d in $(CHART_DIRS); do \
+		chart="$${d%/}"; \
+		name=$$($(YQ) -r '.name' "$$chart/Chart.yaml"); \
+		version=$$($(YQ) -r '.version' "$$chart/Chart.yaml"); \
+		echo "$${name}-$${version}.tgz"; \
+	done > "$$expected"; \
+	for pkg in "$(PACKAGES_DIR)"/*.tgz; do \
+		[ -f "$$pkg" ] || continue; \
+		base=$$(basename "$$pkg"); \
+		if ! grep -qxF "$$base" "$$expected"; then \
+			echo "purge $$pkg"; \
+			rm -f "$$pkg"; \
+		fi; \
+	done; \
 	if [ -s "$(INDEX_FILE)" ]; then \
 		cp "$(INDEX_FILE)" "$$old_index"; \
 	fi; \
