@@ -53,19 +53,20 @@ create-packages: check-tools
 
 index: check-tools
 	@mkdir -p "$(PACKAGES_DIR)"
-	@expected=$$(mktemp); \
+	@known_names=$$(mktemp); \
 	old_index=$$(mktemp); \
-	trap 'rm -f "$$expected" "$$old_index" "$(PACKAGES_DIR)/index.yaml"' EXIT; \
+	trap 'rm -f "$$known_names" "$$old_index" "$(PACKAGES_DIR)/index.yaml"' EXIT; \
 	for d in $(CHART_DIRS); do \
-		chart="$${d%/}"; \
-		name=$$($(YQ) -r '.name' "$$chart/Chart.yaml"); \
-		version=$$($(YQ) -r '.version' "$$chart/Chart.yaml"); \
-		echo "$${name}-$${version}.tgz"; \
-	done > "$$expected"; \
+		$(YQ) -r '.name' "$${d%/}/Chart.yaml"; \
+	done | sort -u > "$$known_names"; \
 	for pkg in "$(PACKAGES_DIR)"/*.tgz; do \
 		[ -f "$$pkg" ] || continue; \
-		base=$$(basename "$$pkg"); \
-		if ! grep -qxF "$$base" "$$expected"; then \
+		base=$$(basename "$$pkg" .tgz); \
+		matched=0; \
+		while read -r name; do \
+			case "$$base" in "$$name"-[0-9]*|"$$name"-v[0-9]*) matched=1; break;; esac; \
+		done < "$$known_names"; \
+		if [ "$$matched" -eq 0 ]; then \
 			echo "purge $$pkg"; \
 			rm -f "$$pkg"; \
 		fi; \
