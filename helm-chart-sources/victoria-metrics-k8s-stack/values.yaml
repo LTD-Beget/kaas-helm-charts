@@ -372,7 +372,10 @@ alertRules:
                 alert: "EtcdHighFsyncDurationsIncreasing"
                 annotations:
                   summary: Etcd high deviv fsync durations (instance {{ $labels.instance }})
-                  description: Etcd WAL fsync duration increasing is over 15%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+                  description: |
+                    Etcd WAL fsync duration increasing is over 15%
+                      VALUE = {{ $value }}
+                      LABELS = {{ $labels }}
                 expr: (rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m) / rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)) > 1.15
                 for: 2m
                 labels:
@@ -384,7 +387,10 @@ alertRules:
                 alert: "EtcdHighFsyncDurations"
                 annotations:
                   summary: Etcd high fsync durations (instance {{ $labels.instance }})
-                  description: Etcd WAL fsync duration increasing, 99th percentile is over 0.5s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+                  description: |
+                    Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
+                      VALUE = {{ $value }}
+                      LABELS = {{ $labels }}
                 expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) > 0.5
                 for: 2m
                 labels:
@@ -396,7 +402,10 @@ alertRules:
                 alert: "EtcdHighCommitDurations"
                 annotations:
                   summary: Etcd high commit durations (instance {{ $labels.instance }})
-                  description: Etcd commit duration increasing, 99th percentile is over 0.25s\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+                  description: |
+                    Etcd commit duration increasing, 99th percentile is over 0.25s
+                      VALUE = {{ $value }}
+                      LABELS = {{ $labels }}
                 expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[1m])) > 0.25
                 for: 2m
                 labels:
@@ -408,7 +417,10 @@ alertRules:
                 alert: "EtcdNoLeader"
                 annotations:
                   summary: Etcd no Leader (instance {{ $labels.instance }})
-                  description: Etcd cluster have no leader\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+                  description: |
+                    Etcd cluster have no leader
+                      VALUE = {{ $value }}
+                      LABELS = {{ $labels }}
                 expr: etcd_server_has_leader == 0
                 for: 0m
                 labels:
@@ -420,7 +432,10 @@ alertRules:
                 alert: "EtcdHighNumberOfLeaderChanges"
                 annotations:
                   summary: Etcd high number of leader changes (instance {{ $labels.instance }})
-                  description: Etcd leader changed more than 1 times during 5 minutes\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+                  description: |
+                    Etcd leader changed more than 1 times during 5 minutes
+                      VALUE = {{ $value }}
+                      LABELS = {{ $labels }}
                 expr: increase(etcd_server_leader_changes_seen_total[5m]) > 1
                 for: 0m
                 labels:
@@ -1471,7 +1486,8 @@ alertRules:
                 annotations:
                   summary: "StatefulSet replicas mismatch"
                   message: |
-                    {{ $labels.cluster_full_name }}: StatefulSet не соответствует ожидаемому количеству реплик в течение как минимум 15 минут.
+                    {{ $labels.cluster_full_name }}: Несоответствие количества реплик StatefulSet
+                    StatefulSet не соответствует ожидаемому количеству реплик в течение как минимум 15 минут.
                     Cluster: {{ $labels.cluster_full_name }}
                     Namespace: {{ $labels.namespace }}
                     StatefulSet: {{ $labels.statefulset }}
@@ -1784,11 +1800,18 @@ alertRules:
                 alert: "KubePdbNotEnoughHealthyPods"
                 annotations:
                   summary: "PDB does not have enough healthy pods"
-                  message: >-
-                    cluster={{ $labels.cluster_full_name }}
-                    ns={{ $labels.namespace }}
-                    pdb={{ $labels.poddisruptionbudget }}
-                    missing_healthy={{ $value | humanize }}
+                  message: |
+                    {{ $labels.cluster_full_name }}: Недостаточно здоровых pod’ов (не хватает: {{ $value | humanize }})
+                    PodDisruptionBudget не достигает требуемого количества здоровых pod’ов более 15 минут.
+                    Cluster: {{ $labels.cluster_full_name }}
+                    Namespace: {{ $labels.namespace }}
+                    PDB: {{ $labels.poddisruptionbudget }}
+                    Недостающих pod’ов: {{ $value | humanize }}
+
+                    Возможные причины и действия:
+                    - статус pod’ов (Pending/CrashLoopBackOff)
+                    - события StatefulSet/Deployment
+                    - доступность узлов и ресурсов
                   description: |
                     PodDisruptionBudget has not met desired healthy pods for 15m.
 
@@ -1800,7 +1823,7 @@ alertRules:
                     Meaning:
                     - Voluntary disruptions (drain/eviction) may be blocked.
                     - Indicates under-replication or unhealthy pods.
-                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepdbnotenoughhealthypods
+                  runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
                 expr: |-
                   (
                     kube_poddisruptionbudget_status_desired_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
