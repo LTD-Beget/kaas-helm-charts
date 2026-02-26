@@ -100,7 +100,7 @@ alertRules:
             AuditLogError:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | AuditLogError"
+                alert: "AuditLogError"
                 annotations:
                   description: An API Server had an error writing to an audit log.
                   summary: |-
@@ -127,7 +127,7 @@ alertRules:
             CoreDNSDown:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSDown"
+                alert: "CoreDNSDown"
                 annotations:
                   description: CoreDNS Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
@@ -143,7 +143,7 @@ alertRules:
             CoreDNSLatencyHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSLatencyHigh"
+                alert: "CoreDNSLatencyHigh"
                 annotations:
                   description: CoreDNS has 99th percentile latency of {{"{{"}} $value {{"}}"}} seconds for server {{"{{"}} $labels.server {{"}}"}} zone {{"{{"}} $labels.zone {{"}}"}}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
@@ -157,7 +157,7 @@ alertRules:
             CoreDNSErrorsTooHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSErrorsTooHigh"
+                alert: "CoreDNSErrorsTooHigh"
                 annotations:
                   description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of requests.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
@@ -173,7 +173,7 @@ alertRules:
             CoreDNSErrorsHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSErrorsHigh"
+                alert: "CoreDNSErrorsHigh"
                 annotations:
                   description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of requests.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
@@ -194,7 +194,7 @@ alertRules:
             CoreDNSForwardLatencyHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSForwardLatencyHigh"
+                alert: "CoreDNSForwardLatencyHigh"
                 annotations:
                   description: CoreDNS has 99th percentile latency of {{"{{"}} $value {{"}}"}} seconds forwarding requests to {{"{{"}} $labels.to {{"}}"}}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
@@ -208,7 +208,7 @@ alertRules:
             CoreDNSForwardErrorsTooHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSForwardErrorsTooHigh"
+                alert: "CoreDNSForwardErrorsTooHigh"
                 annotations:
                   description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of forward requests to {{"{{"}} $labels.to {{"}}"}}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
@@ -224,7 +224,7 @@ alertRules:
             CoreDNSForwardErrorsHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSForwardErrorsHigh"
+                alert: "CoreDNSForwardErrorsHigh"
                 annotations:
                   description: CoreDNS is returning SERVFAIL for {{"{{"}} $value | humanizePercentage {{"}}"}} of forward requests to {{"{{"}} $labels.to {{"}}"}}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
@@ -240,7 +240,7 @@ alertRules:
             CoreDNSForwardHealthcheckFailureCount:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSForwardHealthcheckFailureCount"
+                alert: "CoreDNSForwardHealthcheckFailureCount"
                 annotations:
                   description: CoreDNS health checks have failed to upstream server {{"{{"}} $labels.to {{"}}"}}.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
@@ -254,7 +254,7 @@ alertRules:
             CoreDNSForwardHealthcheckBrokenCount:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CoreDNSForwardHealthcheckBrokenCount"
+                alert: "CoreDNSForwardHealthcheckBrokenCount"
                 annotations:
                   description: CoreDNS health checks have failed for all upstream servers.
                   runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckbrokencount
@@ -278,7 +278,7 @@ alertRules:
             CertManagerAbsent:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CertManagerAbsent"
+                alert: "CertManagerAbsent"
                 annotations:
                   description: |
                     CertManager Down in cluster {{"{{"}} $labels.cluster_full_name {{"}}"}}. New certificates will not be able to be minted, and existing ones
@@ -301,7 +301,7 @@ alertRules:
             CertManagerCertExpirySoon:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CertManagerCertExpirySoon"
+                alert: "CertManagerCertExpirySoon"
                 annotations:
                   dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
                   description: |
@@ -322,7 +322,7 @@ alertRules:
             CertManagerCertNotReady:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CertManagerCertNotReady"
+                alert: "CertManagerCertNotReady"
                 annotations:
                   dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
                   description: This certificate has not been ready to serve traffic for at least
@@ -341,7 +341,7 @@ alertRules:
             CertManagerHittingRateLimits:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CertManagerHittingRateLimits"
+                alert: "CertManagerHittingRateLimits"
                 annotations:
                   dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
                   description: Depending on the rate limit, cert-manager may be unable to generate
@@ -369,7 +369,7 @@ alertRules:
             EtcdHighFsyncDurationsIncreasing:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | EtcdHighFsyncDurationsIncreasing"
+                alert: "EtcdHighFsyncDurationsIncreasing"
                 annotations:
                   summary: Etcd high deviv fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})
                   description: Etcd WAL fsync duration increasing is over 15%\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
@@ -381,7 +381,7 @@ alertRules:
             EtcdHighFsyncDurations:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | EtcdHighFsyncDurations"
+                alert: "EtcdHighFsyncDurations"
                 annotations:
                   summary: Etcd high fsync durations (instance {{"{{"}} $labels.instance {{"}}"}})
                   description: Etcd WAL fsync duration increasing, 99th percentile is over 0.5s\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
@@ -393,7 +393,7 @@ alertRules:
             EtcdHighCommitDurations:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | EtcdHighCommitDurations"
+                alert: "EtcdHighCommitDurations"
                 annotations:
                   summary: Etcd high commit durations (instance {{"{{"}} $labels.instance {{"}}"}})
                   description: Etcd commit duration increasing, 99th percentile is over 0.25s\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
@@ -405,7 +405,7 @@ alertRules:
             EtcdNoLeader:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | EtcdNoLeader"
+                alert: "EtcdNoLeader"
                 annotations:
                   summary: Etcd no Leader (instance {{"{{"}} $labels.instance {{"}}"}})
                   description: Etcd cluster have no leader\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
@@ -417,7 +417,7 @@ alertRules:
             EtcdHighNumberOfLeaderChanges:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | EtcdHighNumberOfLeaderChanges"
+                alert: "EtcdHighNumberOfLeaderChanges"
                 annotations:
                   summary: Etcd high number of leader changes (instance {{"{{"}} $labels.instance {{"}}"}})
                   description: Etcd leader changed more than 1 times during 5 minutes\n  VALUE = {{"{{"}} $value {{"}}"}}\n  LABELS = {{"{{"}} $labels {{"}}"}}
@@ -429,7 +429,7 @@ alertRules:
             etcdMembersDown:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | etcdMembersDown"
+                alert: "etcdMembersDown"
                 annotations:
                   description: etcd cluster {{"{{"}} $labels.job {{"}}"}} - members are down ({{"{{"}} $value {{"}}"}}).
                   summary: etcd cluster members are down.
@@ -449,7 +449,7 @@ alertRules:
             etcdDatabaseQuotaLowSpace:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | etcdDatabaseQuotaLowSpace"
+                alert: "etcdDatabaseQuotaLowSpace"
                 annotations:
                   description: |
                     etcd cluster {{"{{"}} $labels.job {{"}}"}} - database size exceeds the defined
@@ -465,7 +465,7 @@ alertRules:
             etcdExcessiveDatabaseGrowth:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | etcdExcessiveDatabaseGrowth"
+                alert: "etcdExcessiveDatabaseGrowth"
                 annotations:
                   description: |
                     etcd cluster {{"{{"}} $labels.job {{"}}"}} - Predicting running out of disk
@@ -482,7 +482,7 @@ alertRules:
             etcdDatabaseHighFragmentationRatio:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | etcdDatabaseHighFragmentationRatio"
+                alert: "etcdDatabaseHighFragmentationRatio"
                 annotations:
                   description: |
                     etcd cluster {{"{{"}} $labels.job {{"}}"}} - database size in use on instance
@@ -509,7 +509,7 @@ alertRules:
             VMAgentJobAbsent:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | VMAgentJobAbsent"
+                alert: "VMAgentJobAbsent"
                 annotations:
                   description: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
                   summary: VMAgent is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -524,7 +524,7 @@ alertRules:
             VMAlertJobAbsent:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | VMAlertJobAbsent"
+                alert: "VMAlertJobAbsent"
                 annotations:
                   description: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
                   summary: VMAlert is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -539,7 +539,7 @@ alertRules:
             VMAlertmanagerJobAbsent:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | VMAlertmanagerJobAbsent"
+                alert: "VMAlertmanagerJobAbsent"
                 annotations:
                   description: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
                   summary: VMAlertmanager is absesnt in {{"{{"}} $labels.cluster_full_name }}.
@@ -562,7 +562,7 @@ alertRules:
             ControlPlanePodsRestart:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | ControlPlanePodsRestart"
+                alert: "ControlPlanePodsRestart"
                 annotations:
                   description: A control-plane pod restarted
                   summary: |-
@@ -576,7 +576,7 @@ alertRules:
             ClientControlPlanePodsRestart:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | ClientControlPlanePodsRestart"
+                alert: "ClientControlPlanePodsRestart"
                 annotations:
                   description: A client control-plane pod restarted
                   summary: |-
@@ -590,7 +590,7 @@ alertRules:
             PodsRestart:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PodsRestart"
+                alert: "PodsRestart"
                 annotations:
                   description: Pod restarted
                   summary: |-
@@ -612,7 +612,7 @@ alertRules:
             HighOverallControlPlaneCPU:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | HighOverallControlPlaneCPU"
+                alert: "HighOverallControlPlaneCPU"
                 annotations:
                   description: Given three control plane nodes, the overall CPU utilization
                     may only be about 2/3 of all available capacity. This is because if a single
@@ -640,7 +640,7 @@ alertRules:
             HighIndividualControlPlaneCPU:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | HighIndividualControlPlaneCPU"
+                alert: "HighIndividualControlPlaneCPU"
                 annotations:
                   description: Extreme CPU pressure can cause slow serialization and poor performance
                     from the kube-apiserver and etcd. When this happens, there is a risk of
@@ -662,7 +662,7 @@ alertRules:
             ExtremelyHighIndividualControlPlaneCPU:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | ExtremelyHighIndividualControlPlaneCPU"
+                alert: "ExtremelyHighIndividualControlPlaneCPU"
                 annotations:
                   description: Extreme CPU pressure can cause slow serialization and poor performance
                     from the kube-apiserver and etcd. When this happens, there is a risk of
@@ -709,7 +709,7 @@ alertRules:
             PodSecurityViolation:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PodSecurityViolation"
+                alert: "PodSecurityViolation"
                 annotations:
                   description: |
                     A workload (pod, deployment, deamonset, ...) was created somewhere
@@ -736,7 +736,7 @@ alertRules:
             PrometheusBadConfig:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusBadConfig"
+                alert: "PrometheusBadConfig"
                 annotations:
                   description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed to reload its configuration.
                   summary: Failed Prometheus configuration reload.
@@ -751,7 +751,7 @@ alertRules:
             PrometheusNotificationQueueRunningFull:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusNotificationQueueRunningFull"
+                alert: "PrometheusNotificationQueueRunningFull"
                 annotations:
                   description: Alert notification queue of Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is running full.
                   summary: Prometheus alert notification queue predicted to run full in less
@@ -771,7 +771,7 @@ alertRules:
             PrometheusErrorSendingAlertsToSomeAlertmanagers:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusErrorSendingAlertsToSomeAlertmanagers"
+                alert: "PrometheusErrorSendingAlertsToSomeAlertmanagers"
                 annotations:
                   description: |
                     {{"{{"}} printf "%.1f" $value {{"}}"}}% errors while sending alerts from
@@ -793,7 +793,7 @@ alertRules:
             PrometheusNotConnectedToAlertmanagers:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusNotConnectedToAlertmanagers"
+                alert: "PrometheusNotConnectedToAlertmanagers"
                 annotations:
                   description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is not connected to any Alertmanagers.
                   summary: Prometheus is not connected to any Alertmanagers.
@@ -808,7 +808,7 @@ alertRules:
             PrometheusTSDBReloadsFailing:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusTSDBReloadsFailing"
+                alert: "PrometheusTSDBReloadsFailing"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has detected
@@ -823,7 +823,7 @@ alertRules:
             PrometheusTSDBCompactionsFailing:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusTSDBCompactionsFailing"
+                alert: "PrometheusTSDBCompactionsFailing"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has detected
@@ -838,7 +838,7 @@ alertRules:
             PrometheusNotIngestingSamples:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusNotIngestingSamples"
+                alert: "PrometheusNotIngestingSamples"
                 annotations:
                   description: Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is not ingesting samples.
                   summary: Prometheus is not ingesting samples.
@@ -859,7 +859,7 @@ alertRules:
             PrometheusDuplicateTimestamps:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusDuplicateTimestamps"
+                alert: "PrometheusDuplicateTimestamps"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is dropping
@@ -875,7 +875,7 @@ alertRules:
             PrometheusOutOfOrderTimestamps:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusOutOfOrderTimestamps"
+                alert: "PrometheusOutOfOrderTimestamps"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} is dropping
@@ -890,7 +890,7 @@ alertRules:
             PrometheusRemoteStorageFailures:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusRemoteStorageFailures"
+                alert: "PrometheusRemoteStorageFailures"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} failed to send
@@ -915,7 +915,7 @@ alertRules:
             PrometheusRemoteWriteBehind:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusRemoteWriteBehind"
+                alert: "PrometheusRemoteWriteBehind"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} remote write
@@ -937,7 +937,7 @@ alertRules:
             PrometheusRemoteWriteDesiredShards:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusRemoteWriteDesiredShards"
+                alert: "PrometheusRemoteWriteDesiredShards"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} remote write
@@ -961,7 +961,7 @@ alertRules:
             VMRuleFailures:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | VMRuleFailures"
+                alert: "VMRuleFailures"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed to
@@ -976,7 +976,7 @@ alertRules:
             PrometheusMissingRuleEvaluations:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusMissingRuleEvaluations"
+                alert: "PrometheusMissingRuleEvaluations"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has missed {{"{{"}}
@@ -991,7 +991,7 @@ alertRules:
             PrometheusTargetLimitHit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusTargetLimitHit"
+                alert: "PrometheusTargetLimitHit"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has dropped
@@ -1008,7 +1008,7 @@ alertRules:
             PrometheusLabelLimitHit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusLabelLimitHit"
+                alert: "PrometheusLabelLimitHit"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has dropped
@@ -1025,7 +1025,7 @@ alertRules:
             PrometheusScrapeBodySizeLimitHit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusScrapeBodySizeLimitHit"
+                alert: "PrometheusScrapeBodySizeLimitHit"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed {{"{{"}}
@@ -1041,7 +1041,7 @@ alertRules:
             PrometheusScrapeSampleLimitHit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusScrapeSampleLimitHit"
+                alert: "PrometheusScrapeSampleLimitHit"
                 annotations:
                   description: |
                     Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}} has failed {{"{{"}}
@@ -1058,7 +1058,7 @@ alertRules:
             PrometheusTargetSyncFailure:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | PrometheusTargetSyncFailure"
+                alert: "PrometheusTargetSyncFailure"
                 annotations:
                   description: |
                     {{"{{"}} printf "%.0f" $value {{"}}"}} targets in Prometheus {{"{{"}}$labels.namespace}}/{{"{{"}}$labels.pod}}
@@ -1082,7 +1082,7 @@ alertRules:
             KubeCPUOvercommit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeCPUOvercommit"
+                alert: "KubeCPUOvercommit"
                 annotations:
                   description: |
                     Cluster {{ $labels.cluster_full_name }} has overcommitted CPU
@@ -1101,7 +1101,7 @@ alertRules:
             KubeMemoryOvercommit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeMemoryOvercommit"
+                alert: "KubeMemoryOvercommit"
                 annotations:
                   description: |
                     Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests
@@ -1119,7 +1119,7 @@ alertRules:
             KubeCPUQuotaOvercommit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeCPUQuotaOvercommit"
+                alert: "KubeCPUQuotaOvercommit"
                 annotations:
                   description: |
                     Cluster {{ $labels.cluster_full_name }}  has overcommitted CPU
@@ -1138,7 +1138,7 @@ alertRules:
             KubeMemoryQuotaOvercommit:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeMemoryQuotaOvercommit"
+                alert: "KubeMemoryQuotaOvercommit"
                 annotations:
                   description: Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests for Namespaces.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryquotaovercommit
@@ -1155,7 +1155,7 @@ alertRules:
             KubeQuotaAlmostFull:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeQuotaAlmostFull"
+                alert: "KubeQuotaAlmostFull"
                 annotations:
                   description: |
                     Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
@@ -1174,7 +1174,7 @@ alertRules:
             KubeQuotaFullyUsed:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeQuotaFullyUsed"
+                alert: "KubeQuotaFullyUsed"
                 annotations:
                   description: |
                     Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
@@ -1193,7 +1193,7 @@ alertRules:
             KubeQuotaExceeded:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeQuotaExceeded"
+                alert: "KubeQuotaExceeded"
                 annotations:
                   description: |
                     Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
@@ -1212,7 +1212,7 @@ alertRules:
             CPUThrottlingHigh:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | CPUThrottlingHigh"
+                alert: "CPUThrottlingHigh"
                 annotations:
                   summary: "Elevated CPU throttling"
                   message: >-
@@ -1281,7 +1281,7 @@ alertRules:
             KubePodCrashLooping:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubePodCrashLooping"
+                alert: "KubePodCrashLooping"
                 annotations:
                   description: |
                     Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
@@ -1299,7 +1299,7 @@ alertRules:
             KubeInfraPodCrashLooping:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeInfraPodCrashLooping"
+                alert: "KubeInfraPodCrashLooping"
                 annotations:
                   description: |
                     Infrastructure Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
@@ -1321,7 +1321,7 @@ alertRules:
             KubePodNotReady:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubePodNotReady"
+                alert: "KubePodNotReady"
                 annotations:
                   description: |
                     Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
@@ -1343,7 +1343,7 @@ alertRules:
             KubeDeploymentGenerationMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDeploymentGenerationMismatch"
+                alert: "KubeDeploymentGenerationMismatch"
                 annotations:
                   description: |
                     Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment }}
@@ -1362,7 +1362,7 @@ alertRules:
             KubeDeploymentReplicasMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDeploymentReplicasMismatch"
+                alert: "KubeDeploymentReplicasMismatch"
                 annotations:
                   description: |
                     Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
@@ -1387,7 +1387,7 @@ alertRules:
             KubeInfraDeploymentReplicasMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeInfraDeploymentReplicasMismatch"
+                alert: "KubeInfraDeploymentReplicasMismatch"
                 annotations:
                   description: |
                     Infrastructure Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
@@ -1424,7 +1424,7 @@ alertRules:
             KubeDeploymentRolloutStuck:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDeploymentRolloutStuck"
+                alert: "KubeDeploymentRolloutStuck"
                 annotations:
                   description: |
                     Rollout of deployment {{ $labels.namespace }}/{{ $labels.deployment }}
@@ -1445,7 +1445,7 @@ alertRules:
             KubeInfraDeploymentRolloutStuck:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeInfraDeploymentRolloutStuck"
+                alert: "KubeInfraDeploymentRolloutStuck"
                 annotations:
                   description: |
                     Rollout of infrastructure deployment {{ $labels.namespace }}/{{ $labels.deployment }}
@@ -1467,7 +1467,7 @@ alertRules:
             KubeStatefulSetReplicasMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeStatefulSetReplicasMismatch"
+                alert: "KubeStatefulSetReplicasMismatch"
                 annotations:
                   summary: "StatefulSet replicas mismatch"
                   message: >-
@@ -1504,7 +1504,7 @@ alertRules:
             KubeStatefulSetGenerationMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeStatefulSetGenerationMismatch"
+                alert: "KubeStatefulSetGenerationMismatch"
                 annotations:
                   description: |
                     StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset }}
@@ -1523,7 +1523,7 @@ alertRules:
             KubeStatefulSetUpdateNotRolledOut:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeStatefulSetUpdateNotRolledOut"
+                alert: "KubeStatefulSetUpdateNotRolledOut"
                 annotations:
                   description: |
                     StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
@@ -1555,7 +1555,7 @@ alertRules:
             KubeDaemonSetRolloutStuck:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDaemonSetRolloutStuck"
+                alert: "KubeDaemonSetRolloutStuck"
                 annotations:
                   description: |
                     DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
@@ -1600,7 +1600,7 @@ alertRules:
             KubeInfraDaemonSetRolloutStuck:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeInfraDaemonSetRolloutStuck"
+                alert: "KubeInfraDaemonSetRolloutStuck"
                 annotations:
                   description: |
                     Infrastructure DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
@@ -1638,7 +1638,7 @@ alertRules:
             KubeContainerWaiting:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeContainerWaiting"
+                alert: "KubeContainerWaiting"
                 annotations:
                   description: |
                     pod/{{ $labels.pod }} in namespace {{ $labels.namespace }} on
@@ -1659,7 +1659,7 @@ alertRules:
             KubeDaemonSetNotScheduled:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDaemonSetNotScheduled"
+                alert: "KubeDaemonSetNotScheduled"
                 annotations:
                   description: |
                     {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
@@ -1677,7 +1677,7 @@ alertRules:
             KubeDaemonSetMisScheduled:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeDaemonSetMisScheduled"
+                alert: "KubeDaemonSetMisScheduled"
                 annotations:
                   description: |
                     {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
@@ -1692,7 +1692,7 @@ alertRules:
             KubeJobNotCompleted:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeJobNotCompleted"
+                alert: "KubeJobNotCompleted"
                 annotations:
                   description: |
                     Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking
@@ -1713,7 +1713,7 @@ alertRules:
             KubeJobFailed:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeJobFailed"
+                alert: "KubeJobFailed"
                 annotations:
                   description: |
                     Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to
@@ -1729,7 +1729,7 @@ alertRules:
             KubeHpaReplicasMismatch:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeHpaReplicasMismatch"
+                alert: "KubeHpaReplicasMismatch"
                 annotations:
                   description: |
                     HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
@@ -1758,7 +1758,7 @@ alertRules:
             KubeHpaMaxedOut:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubeHpaMaxedOut"
+                alert: "KubeHpaMaxedOut"
                 annotations:
                   description: |
                     HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
@@ -1777,7 +1777,7 @@ alertRules:
             KubePdbNotEnoughHealthyPods:
               enabled: true
               spec:
-                alert: "{{ $labels.cluster_full_name }} | KubePdbNotEnoughHealthyPods"
+                alert: "KubePdbNotEnoughHealthyPods"
                 annotations:
                   summary: "PDB does not have enough healthy pods"
                   message: >-
