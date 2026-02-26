@@ -1472,19 +1472,17 @@ alertRules:
                   summary: "StatefulSet replicas mismatch"
                   message: |
                     StatefulSet replicas mismatch for at least 15m.
-                    cluster={{ $labels.cluster_full_name }}
+                    Cluster: {{ $labels.cluster_full_name }}
                     ns={{ $labels.namespace }}
                     sts={{ $labels.statefulset }}
                   description: |
-                    StatefulSet has not matched the expected number of replicas for at least 15m.
-
-                    Cluster: {{ $labels.cluster_full_name }}
-                    Namespace: {{ $labels.namespace }}
-                    StatefulSet: {{ $labels.statefulset }}
-
-                    Hints:
-                    - Check StatefulSet events and pods status.
-                    - Look for Pending/CrashLoopBackOff pods and PVC issues.
+                    StatefulSet has not matched the expected number of replicas for at least 15m.<br/>
+                    Cluster: {{ $labels.cluster_full_name }}<br/>
+                    Namespace: {{ $labels.namespace }}<br/>
+                    StatefulSet: {{ $labels.statefulset }}<br/>
+                    Hints:<br/>
+                    - Check StatefulSet events and pods status.<br/>
+                    - Look for Pending/CrashLoopBackOff pods and PVC issues.<br/>
                     - Verify node capacity / scheduling constraints.
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetreplicasmismatch
                 expr: |-
