@@ -1471,11 +1471,10 @@ alertRules:
                 annotations:
                   summary: "StatefulSet replicas mismatch"
                   message: |
-                    StatefulSet replicas mismatch for at least 15m.\n
-                    cluster={{ $labels.cluster_full_name }}\n
-                    ns={{ $labels.namespace }}\n
-                    sts={{ $labels.statefulset }}\n
-                    replicas_not_ready_for=15m
+                    StatefulSet replicas mismatch for at least 15m.
+                    cluster={{ $labels.cluster_full_name }}
+                    ns={{ $labels.namespace }}
+                    sts={{ $labels.statefulset }}
                   description: |
                     StatefulSet has not matched the expected number of replicas for at least 15m.
 
