@@ -1,12 +1,6 @@
 {{- range $name, $vs := .Values.istioVirtualService }}
 {{- if $vs.enabled }}
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: {{ $cert.certificate.name | default $preparedName }}
-  namespace: {{ $.Release.Namespace }}
----
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
