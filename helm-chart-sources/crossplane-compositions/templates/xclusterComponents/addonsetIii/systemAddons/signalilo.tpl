@@ -27,7 +27,7 @@ signalilo:
         - name: SIGNALILO_ICINGA_DEBUG
           value: "false"
         - name: SIGNALILO_ALERTMANAGER_PLUGINOUTPUT_ANNOTATIONS
-          value: "message\nsummary"
+          value: "message\nsummary\ndescription"
         - name: SIGNALILO_ALERTMANAGER_PLUGINOUTPUT_BY_STATES
           value: "true"
         - name: SIGNALILO_ICINGA_SERVICE_TEMPLATE

@@ -1470,10 +1470,11 @@ alertRules:
                 alert: "KubeStatefulSetReplicasMismatch"
                 annotations:
                   summary: "StatefulSet replicas mismatch"
-                  message: >-
-                    cluster={{ $labels.cluster_full_name }}
-                    ns={{ $labels.namespace }}
-                    sts={{ $labels.statefulset }}
+                  message: |
+                    StatefulSet replicas mismatch for at least 15m.\n
+                    cluster={{ $labels.cluster_full_name }}\n
+                    ns={{ $labels.namespace }}\n
+                    sts={{ $labels.statefulset }}\n
                     replicas_not_ready_for=15m
                   description: |
                     StatefulSet has not matched the expected number of replicas for at least 15m.
