@@ -45,69 +45,16 @@ spec:
           usages:
           - client auth
 
-      clientClusterKubeletMetrics:
-        apiVersion: operator.victoriametrics.com/v1beta1
-        kind: VMScrapeConfig
-        metadata:
-          name: client-cluster-kubelet-metrics
-          namespace: beget-vmagent
-        spec:
-          scheme: https
-          scrape_interval: 30s
-          scrapeTimeout: 10s
-
-          tlsConfig:
-            ca:
-              secret:
-                name: monitoring-client
-                key: ca.crt
-            cert:
-              secret:
-                name: monitoring-client
-                key: tls.crt
-            keySecret:
-              name: monitoring-client
-              key: tls.key
-
-          kubernetesSDConfigs:
-            - role: node
-              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-              tlsConfig:
-                ca:
-                  secret:
-                    name: monitoring-client
-                    key: ca.crt
-                cert:
-                  secret:
-                    name: monitoring-client
-                    key: tls.crt
-                keySecret:
-                  name: monitoring-client
-                  key: tls.key
-
-          relabelConfigs:
-            - targetLabel: __address__
-              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-            - sourceLabels: [__meta_kubernetes_node_name]
-              targetLabel: __metrics_path__
-              replacement: /api/v1/nodes/$1/proxy/metrics
-
-            - sourceLabels: [__meta_kubernetes_node_name]
-              targetLabel: node
-            - action: labelmap
-              regex: __meta_kubernetes_node_label_(.+)
-
-            - targetLabel: job
-              replacement: kubelet
-            - targetLabel: cluster_full_name
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: remotewrite_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: client_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: cluster_type
-              replacement: client
-
+      # cadvisor metrics: /api/v1/nodes/$1/proxy/metrics/cadvisor
+      # Use for calculate metrics:
+      # - beget_nodegroup_memory_used_mb
+      # - beget_node_memory_used_mb
+      # - beget_nodegroup_filesystem_used_mb
+      # - beget_nodegroup_filesystem_used_percent
+      # - beget_node_filesystem_used_mb
+      # - beget_node_filesystem_used_percent
+      # - beget_pod_memory_usage_mb
+      # - beget_pod_cpu_usage_cores
       clientClusterKubeletCadvisor:
         apiVersion: operator.victoriametrics.com/v1beta1
         kind: VMScrapeConfig
@@ -171,69 +118,10 @@ spec:
             - targetLabel: cluster_type
               replacement: client
 
-      clientClusterKubeletProbes:
-        apiVersion: operator.victoriametrics.com/v1beta1
-        kind: VMScrapeConfig
-        metadata:
-          name: client-cluster-kubelet-probes
-          namespace: beget-vmagent
-        spec:
-          scheme: https
-          scrape_interval: 30s
-          scrapeTimeout: 10s
-
-          tlsConfig:
-            ca:
-              secret:
-                name: monitoring-client
-                key: ca.crt
-            cert:
-              secret:
-                name: monitoring-client
-                key: tls.crt
-            keySecret:
-              name: monitoring-client
-              key: tls.key
-
-          kubernetesSDConfigs:
-            - role: node
-              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-              tlsConfig:
-                ca:
-                  secret:
-                    name: monitoring-client
-                    key: ca.crt
-                cert:
-                  secret:
-                    name: monitoring-client
-                    key: tls.crt
-                keySecret:
-                  name: monitoring-client
-                  key: tls.key
-
-          relabelConfigs:
-            - targetLabel: __address__
-              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-            - sourceLabels: [__meta_kubernetes_node_name]
-              targetLabel: __metrics_path__
-              replacement: /api/v1/nodes/$1/proxy/metrics/probes
-
-            - sourceLabels: [__meta_kubernetes_node_name]
-              targetLabel: node
-            - action: labelmap
-              regex: __meta_kubernetes_node_label_(.+)
-
-            - targetLabel: job
-              replacement: kubelet-probes
-            - targetLabel: cluster_full_name
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: remotewrite_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: client_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: cluster_type
-              replacement: client
-
+      # resource metrics: /api/v1/nodes/$1/proxy/metrics/resource
+      # Use for calculate metrics:
+      # - beget_nodegroup_cpu_used_cores
+      # -beget_node_cpu_used_cores
       clientClusterKubeletResource:
         apiVersion: operator.victoriametrics.com/v1beta1
         kind: VMScrapeConfig
@@ -288,53 +176,6 @@ spec:
 
             - targetLabel: job
               replacement: kubelet-resource
-            - targetLabel: cluster_full_name
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: remotewrite_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: client_cluster
-              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-            - targetLabel: cluster_type
-              replacement: client
-
-      clientClusterKubeApiserver:
-        apiVersion: operator.victoriametrics.com/v1beta1
-        kind: VMScrapeConfig
-        metadata:
-          name: client-cluster-kube-apiserver
-          namespace: beget-vmagent
-        spec:
-          scheme: https
-          scrape_interval: 30s
-          scrapeTimeout: 10s
-          path: /metrics
-
-          staticConfigs:
-            - targets:
-                - {{ .Values.cluster.host }}:{{ .Values.cluster.port }}
-              labels:
-                job: kube-apiserver
-                cluster_full_name: {{ .Values.cluster.name }}
-                remotewrite_cluster: {{ .Values.cluster.name }}
-                client_cluster: {{ .Values.cluster.name }}
-
-          tlsConfig:
-            ca:
-              secret:
-                name: monitoring-client
-                key: ca.crt
-            cert:
-              secret:
-                name: monitoring-client
-                key: tls.crt
-            keySecret:
-              name: monitoring-client
-              key: tls.key
-            insecureSkipVerify: false
-
-          relabelConfigs:
-            - targetLabel: instance
-              replacement: external-apiserver
             - targetLabel: cluster_full_name
               replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
             - targetLabel: remotewrite_cluster

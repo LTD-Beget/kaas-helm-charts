@@ -24,6 +24,8 @@ spec:
         istioNamespace: beget-istio
         proxy:
           tracer: zipkin
+        defaultPodDisruptionBudget:
+          enabled: false
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

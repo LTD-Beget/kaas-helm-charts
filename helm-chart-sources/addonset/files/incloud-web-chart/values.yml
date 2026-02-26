@@ -7,7 +7,10 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
-  values: ""
+  values: |
+      incloud-web-chart:
+        podDisruptionBudget:
+          minAvailable: 0
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
