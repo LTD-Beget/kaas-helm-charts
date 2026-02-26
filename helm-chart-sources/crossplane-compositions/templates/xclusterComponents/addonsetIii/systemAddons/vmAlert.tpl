@@ -133,8 +133,8 @@ vmAlert:
           name: selfsigned-cluster-issuer
 
     {{ if $istioBaseReady }}
-    istio:
-      virtualService:
+    istioVirtualService:
+      vmalert:
         enabled: true
         gateways:
           - beget-istio-gw/default
