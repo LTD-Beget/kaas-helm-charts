@@ -1471,20 +1471,26 @@ alertRules:
                 annotations:
                   summary: "StatefulSet replicas mismatch"
                   message: |
-                    {{ $labels.cluster_full_name }}: StatefulSet replicas mismatch for at least 15m.
+                    {{ $labels.cluster_full_name }}: StatefulSet не соответствует ожидаемому количеству реплик в течение как минимум 15 минут.
                     Cluster: {{ $labels.cluster_full_name }}
                     Namespace: {{ $labels.namespace }}
                     StatefulSet: {{ $labels.statefulset }}
+
+                    Возможные причины и действия:
+                    - Проверьте события StatefulSet и статус pod’ов.
+                    - Убедитесь, что нет pod’ов в состоянии Pending или CrashLoopBackOff.
+                    - Проверьте корректность PVC и доступность хранилища.
+                    - Проверьте доступность ресурсов узлов и ограничения планирования.
                   description: |
-                    StatefulSet has not matched the expected number of replicas for at least 15m.\n
-                    Cluster: {{ $labels.cluster_full_name }}\n
-                    Namespace: {{ $labels.namespace }}\n
-                    StatefulSet: {{ $labels.statefulset }}\n
-                    Hints:\n
-                    - Check StatefulSet events and pods status.\n
-                    - Look for Pending/CrashLoopBackOff pods and PVC issues.\n
+                    StatefulSet has not matched the expected number of replicas for at least 15m.
+                    Cluster: {{ $labels.cluster_full_name }}
+                    Namespace: {{ $labels.namespace }}
+                    StatefulSet: {{ $labels.statefulset }}
+                    Hints:
+                    - Check StatefulSet events and pods status.
+                    - Look for Pending/CrashLoopBackOff pods and PVC issues.
                     - Verify node capacity / scheduling constraints.
-                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetreplicasmismatch
+                  runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
                 expr: |-
                   (
                     kube_statefulset_status_replicas_ready{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
