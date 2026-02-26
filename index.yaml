@@ -159,13 +159,13 @@ entries:
   cilium:
   - apiVersion: v2
     appVersion: 1.18.5
-    created: "2026-02-26T21:18:26.558183171+03:00"
+    created: "2026-02-26T21:21:11.531626151+03:00"
     dependencies:
     - name: cilium
       repository: https://helm.cilium.io
       version: 1.18.5
     description: eBPF-based Networking, Security, and Observability
-    digest: da56dee57f98ac4f79245c32cb4a8697ec3ef8f94cc2e645c1dde8a73cdc5030
+    digest: 81408f16ad580e453d785c22761f8e2bb25ce24d50ff90521779e264402419ec
     home: https://cilium.io/
     icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
     keywords:
@@ -181,8 +181,8 @@ entries:
     sources:
     - https://github.com/cilium/cilium
     urls:
-    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.67-2.tgz
-    version: 1.18.67-2
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5.tgz
+    version: 1.18.5
   common-crds:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -212,14 +212,14 @@ entries:
   coredns:
   - apiVersion: v2
     appVersion: 1.28.0
-    created: "2026-02-26T21:18:26.586496771+03:00"
+    created: "2026-02-26T21:21:11.560103042+03:00"
     dependencies:
     - name: coredns
       repository: https://coredns.github.io/helm
       version: 1.28.0
     description: CoreDNS is a DNS server that chains plugins and provides Kubernetes
       DNS Services
-    digest: c9d0e56d04f3038bac3cb8e226f7f41bcdf5e7f38268bd7ab0c626ed2b54f199
+    digest: 9aee4af4b7b56280db47f9e55b589ff5ae90905ec26e7875e1b6bfd3efd2e91d
     home: https://coredns.io
     icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
     keywords:
@@ -236,8 +236,8 @@ entries:
     - https://github.com/coredns/coredns
     type: application
     urls:
-    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-1.tgz
-    version: 1.28.0-1
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0.tgz
+    version: 1.28.0
   crossplane:
   - apiVersion: v1
     appVersion: 0.0.1
@@ -818,4 +818,4 @@ entries:
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.54.0.tgz
     version: 0.54.0
-generated: "2026-02-26T21:18:26.520157076+03:00"
+generated: "2026-02-26T21:21:11.493109775+03:00"
