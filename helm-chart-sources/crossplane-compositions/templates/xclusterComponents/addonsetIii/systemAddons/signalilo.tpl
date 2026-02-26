@@ -33,9 +33,11 @@ signalilo:
         - name: SIGNALILO_ICINGA_SERVICE_TEMPLATE
           value: "signalilo-passive-service"
         - name: SIGNALILO_ICINGA_KEEP_FOR
-          value: "24h"
+          value: "2h"
         - name: SIGNALILO_ICINGA_GC_INTERVAL
           value: "15m"
+        - name: "SIGNALILO_ICINGA_DISPLAY_NAME_AS_SERVICE_NAME"
+          value: "true"
 
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
