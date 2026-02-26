@@ -19,12 +19,6 @@ signalilo:
         icinga_password: "13283597db083426"
         alertmanager_port: 8888
         alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
-        mapping:
-          host: "k8s"
-          service: "{{ .CommonLabels.cluster_full_name }} / {{ .CommonLabels.alertname }}"
-          state:
-            firing: 2
-            resolved: 0
       extraEnvVars:
         - name: SIGNALILO_LOG_LEVEL
           value: "2"

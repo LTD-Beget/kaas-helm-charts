@@ -28,7 +28,7 @@ spec:
           {{- if $ruleSpec.record }}
           record: {{ $ruleSpec.record }}
           {{- else }}
-          alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+          alert: "{{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}"
           {{- end }}
           {{- with $ruleSpec.annotations }}
           annotations:
