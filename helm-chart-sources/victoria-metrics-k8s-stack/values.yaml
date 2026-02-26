@@ -67,6 +67,20 @@ tls:
       ipAddresses:
         - "127.0.0.1"
 
+istioVirtualService:
+  vmalert:
+    enabled: false
+    gateways:
+      - beget-istio-gw/default
+    hosts:
+      - "*"
+    path: "/vmalert"
+    http:
+      name: vmalert
+      route:
+        host: vmalert
+        port: 8080
+
   alertmanager:
     enabled: false
     issuer:

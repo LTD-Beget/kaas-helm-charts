@@ -71,6 +71,8 @@ vmAlert:
               effect: "NoSchedule"
           externalLabels:
             in-cloud-metrics: "infra"
+          extraArgs:
+            external.url: "https://{{ $systemIstioGwVip }}/vmalert"
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
@@ -129,5 +131,21 @@ vmAlert:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+    {{ if $istioBaseReady }}
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        path: "/vmalert"
+        http:
+          name: vmalert
+          route:
+            host: vmalert
+            port: 8080
+    {{ end }}
   ` }}
 {{- end -}}
