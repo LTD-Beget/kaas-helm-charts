@@ -42,7 +42,7 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: trust-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Exists
       selector:
         name: trust-manager
