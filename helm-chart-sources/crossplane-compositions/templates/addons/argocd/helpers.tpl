@@ -27,7 +27,7 @@ default: |
         reposerver.repo.cache.expiration: 8h0m0s
         resource.compareoptions: |
           ignoreAggregatedRoles: true
-          resource.customizations: |
+        resource.customizations: |
           "*.upbound.io/*":
             health.lua: |
               health_status = {
