@@ -45,6 +45,7 @@ default: |
               end
 
               local has_no_status = {
+                "ClusterProviderConfig",
                 "ProviderConfig",
                 "ProviderConfigUsage"
               }
@@ -56,7 +57,7 @@ default: |
               end
 
               if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
                   health_status.status = "Healthy"
                   health_status.message = "Resource is in use."
                   return health_status
@@ -85,7 +86,6 @@ default: |
                   if condition.status == "True" then
                     health_status.status = "Healthy"
                     health_status.message = "Resource is up-to-date."
-                    return health_status
                   end
                 end
               end
@@ -112,7 +112,7 @@ default: |
                 "Composition",
                 "CompositionRevision",
                 "DeploymentRuntimeConfig",
-                "ControllerConfig",
+                "ClusterProviderConfig",
                 "ProviderConfig",
                 "ProviderConfigUsage"
               }
@@ -123,7 +123,7 @@ default: |
               end
 
               if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
                   health_status.status = "Healthy"
                   health_status.message = "Resource is in use."
                   return health_status
@@ -148,11 +148,10 @@ default: |
                   end
                 end
 
-                if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
+                if contains({"Ready", "Healthy", "Offered", "Established", "ValidPipeline", "RevisionHealthy"}, condition.type) then
                   if condition.status == "True" then
                     health_status.status = "Healthy"
                     health_status.message = "Resource is up-to-date."
-                    return health_status
                   end
                 end
               end
@@ -178,9 +177,9 @@ default: |
         resource.customizations.ignoreDifferences.kyverno.io_Policy: |
           jqPathExpressions:
           - '.spec.rules[] | select(.name|test("autogen-."))'
-        timeout.reconciliation: 10s
-        timeout.reconciliation.jitter: 10s
         kustomize.buildOptions: --enable-helm
+        timeout.reconciliation: 180s  
+        timeout.reconciliation.jitter: 30s
       cmp:
         create: true
         plugins:
@@ -404,6 +403,7 @@ default: |
                   app.kubernetes.io/name: argocd-redis
               topologyKey: kubernetes.io/hostname
     controller:
+      dynamicClusterDistribution: true
       image:
         imagePullPolicy: IfNotPresent
       # hostNetwork: true
