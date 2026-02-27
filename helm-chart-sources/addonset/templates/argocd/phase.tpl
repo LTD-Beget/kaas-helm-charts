@@ -36,6 +36,20 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: argocd
+    - name: trust-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+      selector:
+        name: trust-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: trust-manager
+          addons.in-cloud.io/addon: argocd
     - name: vm-operator
       criteria:
         - source:

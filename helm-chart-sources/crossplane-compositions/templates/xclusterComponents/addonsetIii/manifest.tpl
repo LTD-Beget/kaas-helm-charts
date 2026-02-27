@@ -167,6 +167,7 @@ spec:
 {{- $istioBaseReady              := dig "istioBase" "deployed" false ($xAddonSetObserve) }}
 {{- $infraTrivyOperatorReady     := dig "trivyOperator" "deployed" false ($xAddonSetObserve) }}
 {{- $certManagerReady            := dig "certManager"  "deployed" false ($xAddonSetObserve) }}
+{{- $trustManagerReady           := dig "trustManager"  "deployed" false ($xAddonSetObserve) }}
 {{- $corednsReady                := dig "coredns"  "deployed" false ($xAddonSetObserve) }}
 {{- $argocdReady                 := dig "argocd"  "deployed" false ($xAddonSetObserve) }}
 {{- $crossplaneReady             := dig "crossplane"  "deployed" false ($xAddonSetObserve) }}

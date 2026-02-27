@@ -13,6 +13,12 @@ composite:
     common:
       targetRevision: v0.0.5
 
+    # feature/argocd-trusted-certs
+    argocd:
+      targetRevision: feature/argocd-trusted-certs
+    crossplanecompositions:
+      targetRevision: feature/argocd-trusted-certs
+
     # external repos
     begetcmprovider:
       targetRevision: v0.0.4
