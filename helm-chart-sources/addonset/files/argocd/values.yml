@@ -520,6 +520,34 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: argocd-trust-manager
+  labels:
+    addons.in-cloud.io/values: trust-manager
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      repoServer:
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+          - name: beget-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: beget-ca.crt
+        volumeMounts:
+          - name: beget-ca
+            mountPath: /etc/ssl/certs/beget-ca.crt
+            subPath: beget-ca.crt
+            readOnly: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: argocd-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
