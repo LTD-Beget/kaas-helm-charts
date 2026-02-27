@@ -113,13 +113,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
     issuers:
       selfsignedIssuer:
         kind: Issuer
@@ -132,12 +125,6 @@ spec:
         name: selfsigned
         spec:
           selfSigned: {}
-      selfsignedClusterIssuer:
-        kind: ClusterIssuer
-        name: selfsigned-cluster-issuer
-        spec:
-          ca:
-            secretName: selfsigned-infra-cluster-ca
     certificates:
       mainCA:
         name: selfsigned-infra-cluster-ca
@@ -156,6 +143,31 @@ spec:
           isCA: true
           commonName: root-ca
           secretName: selfsigned-infra-cluster-ca
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-initialized-2
+  labels:
+    addons.in-cloud.io/values: initialized-2
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    issuers:
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: selfsigned-infra-cluster-ca
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

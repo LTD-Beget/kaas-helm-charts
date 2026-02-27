@@ -21,6 +21,20 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: initialized
           addons.in-cloud.io/addon: cert-manager
+    - name: initialized-2
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
+          operator: Exists
+      selector:
+        name: initialized-2
+        priority: 13
+        matchLabels:
+          addons.in-cloud.io/values: initialized-2
+          addons.in-cloud.io/addon: cert-manager
     - name: infra
       criteria:
         - source:

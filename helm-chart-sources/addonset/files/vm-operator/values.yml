@@ -53,8 +53,6 @@ metadata:
     addons.in-cloud.io/addon: vm-operator
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     victoria-metrics-operator:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
@@ -65,6 +63,20 @@ spec:
           effect: "NoSchedule"
     monitoring:
       enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
       secureService:
         enabled: true
         issuer:

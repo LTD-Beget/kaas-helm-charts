@@ -117,6 +117,19 @@ argocd:
           - configMap:
               name: argocd-cmp-cm
             name: cmp-plugin
+        {{- if $trustManagerReady }}
+          - name: beget-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: beget-ca.crt
+        volumeMounts:
+          - name: beget-ca
+            mountPath: /etc/ssl/certs/beget-ca.crt
+            subPath: beget-ca.crt
+            readOnly: true
+        {{- end }}
         # dnsPolicy: "ClusterFirstWithHostNet"
         extraContainers:
           - name: helm-with-values

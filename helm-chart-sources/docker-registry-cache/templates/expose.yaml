@@ -77,7 +77,6 @@ spec:
     {{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
     {{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
     {{- $httpServicePrefix  := printf "%s%s/" $expose.repositoryPrefix $proxyParsedName -}}
-
     - name: {{ $proxyParsedName }}
       match:
         - uri:
@@ -87,6 +86,19 @@ spec:
             host: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
             port:
               number: {{ $proxyMergedValues.service.port }}
+    {{- if eq $.Values.mainRegistryName $proxyName }}
+    - name: {{ $proxyParsedName  }}-v2-rewrite
+      match:
+        - uri:
+            prefix: /v2/
+      rewrite:
+        uri: '{{ dig "config" "http" "prefix" $httpServicePrefix $proxyMergedValues }}/v2/'
+      route:
+        - destination:
+            host: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+            port:
+              number: {{ $proxyMergedValues.service.port }}
+    {{- end }}
     {{- end }}
     {{ end }}
   {{ else if eq $expose.resourceType "ingress" }}

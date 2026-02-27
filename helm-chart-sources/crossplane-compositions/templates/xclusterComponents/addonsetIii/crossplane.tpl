@@ -20,8 +20,6 @@ crossplane:
     crossplane:
       args:
         - '--enable-realtime-compositions'
-        - '--enable-composition-webhook-schema-validation'
-        - '--enable-composition-functions'
         - '--enable-usages'
         - '--leader-election'
         - '--max-reconcile-rate=200'

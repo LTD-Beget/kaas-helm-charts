@@ -16,7 +16,7 @@ grafana:
       spec:
         config:
           auth:
-              disable_login_form: "true"
+            disable_login_form: "true"
           security:
             admin_user: {{ $argsGrafanaConfigAdminUser }}
             admin_password: {{ $argsGrafanaConfigAdminPassword }}
@@ -25,6 +25,10 @@ grafana:
             serve_from_sub_path: "true"
             protocol: http
             http_port: "3000"
+          plugins:
+            plugin_admin_enabled: "true"
+            preinstall: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
+            preinstall_disabled: "false"
           auth.generic_oauth:
             enabled: "true"
             name: "Dex"
@@ -66,7 +70,8 @@ grafana:
                         cpu: "1"
                         memory: "2Gi"
                     volumeMounts:
-                      - mountPath: /etc/ssl/certs
+                      - mountPath: /etc/ssl/certs/ca.crt
+                        subPath: ca.crt
                         name: trusted-ca-certs
                         readOnly: true
                   - name: rbac-proxy
@@ -100,6 +105,44 @@ grafana:
                     secret:
                       defaultMode: 420
                       secretName: grafana-monitoring-svc-tls
+
+    grafanaDataSources:
+      victoriametrics:
+        enabled: true
+        spec:
+          allowCrossNamespaceImport: false
+          datasource:
+            access: proxy
+            isDefault: true
+            jsonData:
+              timeInterval: 5s
+            name: victoriametrics
+            type: prometheus
+            url: https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+          resyncPeriod: 10m0s
+
+      grafana-clickhouse-datasource:
+        enabled: true
+        spec:
+          allowCrossNamespaceImport: false
+          datasource:
+            jsonData:
+              timeInterval: 5s
+              host: clickhouse-vmstorage.beget-clickhouse-vmstorage.svc
+              port: 9000
+              username: default
+            secureJsonData:
+              password: dbpswd
+            name: clickhouse-tsdb
+            type: grafana-clickhouse-datasource
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+          resyncPeriod: 10m0s
+
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true

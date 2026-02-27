@@ -24,9 +24,9 @@ grafanaDashboards:
       processExporter:
         enabled: true
       metallb:
-        enabled: true
+        enabled: false
       vector:
-        enabled: true
+        enabled: false
       vmagent:
         enabled: true
       vmalert:
@@ -34,6 +34,12 @@ grafanaDashboards:
       vmcluster:
         enabled: true
       vmoperator:
+        enabled: true
+      clickhouseTSDBNodegroups:
+        enabled: true
+      clickhouseTSDBNodes:
+        enabled: true
+      clickhouseTSDBPods:
         enabled: true
       k8s:
         coredns:

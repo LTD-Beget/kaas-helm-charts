@@ -7,7 +7,10 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
-  values: ""
+  values: |
+      incloud-web-chart:
+        podDisruptionBudget:
+          minAvailable: 0
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -19,8 +22,6 @@ metadata:
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: |
-      argocdPlugins:
-        kustomize: true
       incloud-web-chart:
         oauth2-proxy:
           enabled: true
@@ -79,11 +80,8 @@ spec:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-      monitoring:
-        secureService:
-          enabled: true
-          issuer:
-            name: selfsigned-cluster-issuer
+        podDisruptionBudget:
+          minAvailable: 0
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -95,6 +93,24 @@ metadata:
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

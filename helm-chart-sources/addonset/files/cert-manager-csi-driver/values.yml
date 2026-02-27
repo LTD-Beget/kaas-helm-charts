@@ -8,8 +8,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager-csi-driver
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
     cert-manager-csi-driver:
       resources:
         limits:
@@ -48,6 +46,19 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
     monitoring:
       secureService:
         enabled: true

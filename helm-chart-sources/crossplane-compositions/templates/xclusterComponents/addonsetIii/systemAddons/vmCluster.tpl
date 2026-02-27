@@ -18,6 +18,34 @@ vmCluster:
           replicationFactor: 2
           vmstorage:
             replicaCount: 3
+            containers:
+              - name: rbac-proxy
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                args:
+                  - --secure-listen-address=0.0.0.0:11043
+                  - --upstream=http://127.0.0.1:8482
+                  - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                  - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                  - --v=2
+                ports:
+                  - name: https-metrics
+                    containerPort: 11043
+                    protocol: TCP
+                resources:
+                  requests:
+                    memory: "32Mi"
+                    cpu: "10m"
+                  limits:
+                    memory: "64Mi"
+                    cpu: "50m"
+                volumeMounts:
+                  - name: rbac-proxy-tls
+                    mountPath: /app/config/metrics/tls
+                    readOnly: true
+                  - mountPath: /etc/ssl/certs/ca.crt
+                    subPath: ca.crt
+                    name: trusted-ca-certs
+                    readOnly: true
             storageDataPath: /vm-data
             claimTemplates: []
             storage:
@@ -35,6 +63,31 @@ vmCluster:
               - key: "node-role.kubernetes.io/vm-data"
                 operator: "Exists"
                 effect: "NoSchedule"
+            volumes:
+              - name: rbac-proxy-tls
+                secret:
+                  defaultMode: 420
+                  secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
+            serviceSpec:
+              metadata:
+                name: vmstorage
+                labels:
+                  monitoring.in-cloud.io/service: vmstorage
+              spec:
+                type: ClusterIP
+                ports:
+                  - name: http
+                    port: 8482
+                    protocol: TCP
+                    targetPort: 8482
+                  - name: https-metrics
+                    port: 11043
+                    protocol: TCP
+                    targetPort: https-metrics
+                useAsDefault: true
             affinity:
               nodeAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,6 +107,38 @@ vmCluster:
           vmselect:
             enabled: true
             replicaCount: 3
+            containers:
+              - name: rbac-proxy
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                args:
+                  - --secure-listen-address=0.0.0.0:11043
+                  - --upstream=https://127.0.0.1:8481
+                  - --upstream-ca-file=/app/config/vmselect/tls/ca.crt
+                  - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                  - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                  - --v=2
+                ports:
+                  - name: https-metrics
+                    containerPort: 11043
+                    protocol: TCP
+                resources:
+                  requests:
+                    memory: "32Mi"
+                    cpu: "10m"
+                  limits:
+                    memory: "64Mi"
+                    cpu: "50m"
+                volumeMounts:
+                  - name: rbac-proxy-tls
+                    mountPath: /app/config/metrics/tls
+                    readOnly: true
+                  - mountPath: /etc/ssl/certs/ca.crt
+                    subPath: ca.crt
+                    name: trusted-ca-certs
+                    readOnly: true
+                  - name: vmselect-tls
+                    mountPath: /app/config/vmselect/tls
+                    readOnly: true
             extraArgs:
               dedup.minScrapeInterval: 30s
               search.maxQueryDuration: 60s
@@ -91,6 +176,13 @@ vmCluster:
               - name: vmselect-tls
                 secret:
                   secretName: {{ $clusterName }}-vmselect
+              - name: rbac-proxy-tls
+                secret:
+                  defaultMode: 420
+                  secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
             volumeMounts:
               - name: vmselect-tls
                 mountPath: /tls
@@ -98,8 +190,19 @@ vmCluster:
             serviceSpec:
               metadata:
                 name: vmselect
+                labels:
+                  monitoring.in-cloud.io/service: vmselect
               spec:
                 type: ClusterIP
+                ports:
+                  - name: http
+                    port: 8481
+                    protocol: TCP
+                    targetPort: 8481
+                  - name: https-metrics
+                    port: 11043
+                    protocol: TCP
+                    targetPort: https-metrics
                 useAsDefault: true
             affinity:
               nodeAffinity:
@@ -120,6 +223,38 @@ vmCluster:
           vminsert:
             enabled: true
             replicaCount: 3
+            containers:
+              - name: rbac-proxy
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                args:
+                  - --secure-listen-address=0.0.0.0:11043
+                  - --upstream=https://127.0.0.1:8480
+                  - --upstream-ca-file=/app/config/vminsert/tls/ca.crt
+                  - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                  - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                  - --v=2
+                ports:
+                  - name: https-metrics
+                    containerPort: 11043
+                    protocol: TCP
+                resources:
+                  requests:
+                    memory: "32Mi"
+                    cpu: "10m"
+                  limits:
+                    memory: "64Mi"
+                    cpu: "50m"
+                volumeMounts:
+                  - name: rbac-proxy-tls
+                    mountPath: /app/config/metrics/tls
+                    readOnly: true
+                  - mountPath: /etc/ssl/certs/ca.crt
+                    subPath: ca.crt
+                    name: trusted-ca-certs
+                    readOnly: true
+                  - name: vminsert-tls
+                    mountPath: /app/config/vminsert/tls
+                    readOnly: true
             rollingUpdate:
               maxSurge: 0
               maxUnavailable: 1
@@ -141,11 +276,18 @@ vmCluster:
             tolerations:
               - key: "node-role.kubernetes.io/vm-stream"
                 operator: "Exists"
-                effect: "NoSchedule"   
+                effect: "NoSchedule"
             volumes:
               - name: vminsert-tls
                 secret:
-                  secretName: {{ $clusterName }}-vminsert
+                  secretName: vminsert-tls
+              - name: rbac-proxy-tls
+                secret:
+                  defaultMode: 420
+                  secretName: vmcluster-monitoring-svc-tls
+              - name: trusted-ca-certs
+                configMap:
+                  name: ca
             volumeMounts:
               - name: vminsert-tls
                 mountPath: /tls
@@ -153,13 +295,24 @@ vmCluster:
             serviceSpec:
               metadata:
                 name: vminsert
+                labels:
+                  monitoring.in-cloud.io/service: vminsert
                 # annotations:
                 #   lb.beget.com/algorithm: "round_robin"
                 #   lb.beget.com/type: "internal"
                 #   lb.beget.com/healthcheck-interval-seconds: "60"
                 #   lb.beget.com/healthcheck-timeout-seconds: "5"
               spec:
-                type: ClusterIP # LoadBalancer
+                type: ClusterIP
+                ports:
+                  - name: http
+                    port: 8480
+                    protocol: TCP
+                    targetPort: 8480
+                  - name: https-metrics
+                    port: 11043
+                    protocol: TCP
+                    targetPort: https-metrics
                 useAsDefault: true
             affinity:
               nodeAffinity:
@@ -188,23 +341,16 @@ vmCluster:
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
         labels:
-          app: "vminsert"
+          app: vminsert
         selector:
-          app.kubernetes.io/name: "vminsert"
+          app.kubernetes.io/name: vminsert
     monitoring:
-      enabled: false
+      enabled: true
       namespace: beget-prometheus
-      grafana:
-        vmDatasource:
-          enabled: true
-          name: {{ printf "victoriametrics-%%s" $clusterName }}
-          namespace: beget-grafana
-          selector: grafana
-          type: prometheus
-          isDefault: true
-          url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
-          jsonData:
-            timeInterval: 5s
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
     tls:
       vmInsert:
         enabled: true
@@ -212,8 +358,8 @@ vmCluster:
           kind: ClusterIssuer
           name: selfsigned-cluster-issuer
         certificate:
-          name: {{ $clusterName }}-vminsert
-          secretName: {{ $clusterName }}-vminsert
+          name: vminsert-tls
+          secretName: vminsert-tls
           commonName: vminsert
           dnsNames:
             - "vminsert"
@@ -235,7 +381,5 @@ vmCluster:
             - "vmselect"
             - "vmselect.beget-vmcluster"
             - "vmselect.beget-vmcluster.svc"
-          ipAddresses:
-            - 127.0.0.1
   ` }}
 {{- end -}}

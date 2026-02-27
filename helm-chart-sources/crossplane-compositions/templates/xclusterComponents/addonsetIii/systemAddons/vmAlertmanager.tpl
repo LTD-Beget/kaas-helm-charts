@@ -13,18 +13,21 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
-          # serviceScrapeSpec:
-          #   selector:
-          #     matchLabels:
-          #       monitoring.in-cloud.io/service: alertmanager
-          #   endpoints:
-          #     - port: https-metrics
-          #       path: /metrics
-          #       scheme: HTTPS
-          #       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-          #       tlsConfig:
-          #         serverName: alertmanager-monitoring
-          #   jobLabel: alertmanager
+          serviceSpec:
+            metadata:
+              name: vmalertmanager
+              labels:
+                monitoring.in-cloud.io/service: vmalertmanager
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
           containers:
             - name: alertmanager
               volumeMounts:
@@ -62,7 +65,7 @@ vmAlertmanager:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: alertmanager-monitoring-svc-tls
+                secretName: vmalertmanager-monitoring-svc-tls
             - name: alertmanager-tls
               secret:
                 defaultMode: 420

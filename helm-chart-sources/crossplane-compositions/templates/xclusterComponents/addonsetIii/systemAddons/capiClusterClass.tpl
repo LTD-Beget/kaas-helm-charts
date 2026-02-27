@@ -136,5 +136,17 @@ capiClusterClass:
                     args:
                       skip_verify: false
                       priority: 2
+              registry.beget.ru:
+                server: https://registry.beget.ru
+                mirrors:
+                  - mirror: '{{ "{{` }} {{ printf ` .containerd_mirror_url }}" }}/repository/registry-beget-ru'
+                    args:
+                      skip_verify: false
+                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                      priority: 1
+                  - mirror: "https://registry.beget.ru"
+                    args:
+                      skip_verify: false
+                      priority: 2
   ` }}
 {{- end -}}

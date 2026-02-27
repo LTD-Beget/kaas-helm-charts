@@ -1,7 +1,7 @@
 {{- define "addons.certmanager" }}
 name: CertManager
 debug: false
-path: helm-chart-sources/certmanager
+path: helm-chart-sources/cert-manager
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "certmanager" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
