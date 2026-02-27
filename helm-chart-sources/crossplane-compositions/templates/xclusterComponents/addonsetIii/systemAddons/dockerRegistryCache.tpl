@@ -62,6 +62,8 @@ dockerRegistryCache:
         log:
           level: info
 
+    mainRegistryName: registry-beget-ru
+
     proxies:
       registry-1-docker-io:
         enabled: true
