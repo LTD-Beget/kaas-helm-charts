@@ -1,7 +1,7 @@
 {{- define "addons.trustmanager" }}
 name: TrustManager
 debug: false
-path: helm-chart-sources/trustmanager
+path: helm-chart-sources/trust-manager
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "trustmanager" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
