@@ -62,6 +62,8 @@ dockerRegistryCache:
         log:
           level: info
 
+    mainRegistryName: registry-beget-ru
+
     proxies:
       registry-1-docker-io:
         enabled: true
@@ -130,5 +132,11 @@ dockerRegistryCache:
         config:
           proxy:
             remoteurl: https://xpkg.crossplane.io
+
+      registry-beget-ru:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://registry.beget.ru
   ` }}
 {{- end -}}

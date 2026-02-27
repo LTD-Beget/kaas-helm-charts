@@ -1,0 +1,487 @@
+globalVolumeConfigCarbonFile:   &globalVolumeConfigCarbonFile   "/etc/carbon-clickhouse/carbon-clickhouse.conf"
+globalVolumeConfigGraphiteFile: &globalVolumeConfigGraphiteFile "/etc/graphite-clickhouse/graphite-clickhouse.conf"
+
+appSpec:
+  applications:
+    carbon:
+      enabled: true
+      type: Deployment
+      name: carbon
+      replicas: 1
+
+      tolerations:
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - effect: NoSchedule
+          key: dedicated
+          value: vm-stream
+
+      service:
+        enabled: true
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/algorithm: "round_robin"
+          lb.beget.com/type: "internal"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+
+      ingress:
+        enabled: false
+
+      # affinity:
+      #   mode: soft
+
+      strategy:
+        type: RollingUpdate
+        maxSurge: 25%
+        maxUnavailable: 25%
+
+      volumes:
+        migration:
+          volume:
+            mode: configMap
+            name: migration
+            #projected: true
+            payload:
+              format: text
+              content: |-
+                -- +goose Up
+                -- +goose StatementBegin
+                CREATE TABLE IF NOT EXISTS graphite (
+                  Path String,
+                  Value Float64,
+                  Time UInt32,
+                  Date Date,
+                  Timestamp UInt32
+                ) ENGINE = GraphiteMergeTree('graphite_rollup')
+                PARTITION BY toYYYYMM(Date)
+                ORDER BY (Path, Time);
+                -- +goose StatementEnd
+
+                -- +goose StatementBegin
+                CREATE TABLE IF NOT EXISTS graphite_index (
+                  Date Date,
+                  Level UInt32,
+                  Path String,
+                  Version UInt32
+                ) ENGINE = ReplacingMergeTree(Version)
+                PARTITION BY toYYYYMM(Date)
+                ORDER BY (Level, Path, Date);
+                -- +goose StatementEnd
+
+                -- +goose StatementBegin
+                CREATE TABLE IF NOT EXISTS graphite_tagged (
+                  Date Date,
+                  Tag1 String,
+                  Path String,
+                  Tags Array(String),
+                  Version UInt32
+                ) ENGINE = ReplacingMergeTree(Version)
+                PARTITION BY toYYYYMM(Date)
+                ORDER BY (Tag1, Path, Date);
+                -- +goose StatementEnd
+
+                -- +goose Down
+                -- +goose StatementBegin
+                DROP TABLE graphite;
+                -- +goose StatementEnd
+
+                -- +goose StatementBegin
+                DROP TABLE graphite_index;
+                -- +goose StatementEnd
+
+                -- +goose StatementBegin
+                DROP TABLE graphite_tagged;
+                -- +goose StatementEnd
+
+        configCarbonFile:
+          volume:
+            mode: configMap
+            name: carbon-config
+            #projected: true
+            payload:
+              format: text
+              content: |-
+                [common]
+                metric-prefix = "carbon.agents.{host}"
+                metric-endpoint = "local"
+                max-cpu = 2
+                enabled = true
+                metric-interval = "1m0s"
+
+                [data]
+                path = "/data/carbon-clickhouse/"
+                chunk-max-size = 0
+                compression-level = 0
+                utc-date = true # false
+                chunk-interval = "1s"
+                chunk-auto-interval = ""
+                compression = "none"
+
+                [upload]
+                [upload.graphite]
+                type = "points"
+                table = "swarm.graphite"
+                date = ""
+                zero-timestamp = false
+                threads = 1
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
+                compress-data = false
+                hash = ""
+                disable-daily-index = false
+                timeout = "1m0s"
+
+                [upload.graphite_index]
+                type = "index"
+                table = "swarm.graphite_index"
+                threads = 1
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
+                timeout = "1m0s"
+                cache-ttl = "12h0m0s"
+                hash = ""
+                disable-daily-index = false
+
+                [upload.graphite_tagged]
+                type = "tagged"
+                table = "swarm.graphite_tagged"
+                threads = 1
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123"
+                timeout = "1m0s"
+                cache-ttl = "12h0m0s"
+
+                [udp]
+                enabled = false
+
+                [tcp]
+                enabled = false
+
+                [pickle]
+                enabled = false
+
+                [grpc]
+                enabled = false
+
+                [prometheus]
+                listen = ":2006"
+                enabled = true # false
+                drop-longer-than = 0
+                drop-future = "0s"
+                drop-past = "0s"
+
+                [telegraf_http_json]
+                enabled = false
+
+                [pprof]
+                enabled = false
+
+                [[logging]]
+                logger = ""
+                file = ""
+                level = "debug"
+                encoding = "mixed"
+                encoding-time = "iso8601"
+                encoding-duration = "seconds"
+
+                [convert_to_tagged]
+                enabled = false
+                separator = ""
+
+        dataDir:
+          volume:
+            mode: emptyDir
+            spec: {}
+
+      containers:
+        carbon:
+          name: carbon
+          enabled: true
+          image:
+            repository: ghcr.io/go-graphite/carbon-clickhouse
+            tag: master
+
+          extraArg:
+            config: *globalVolumeConfigCarbonFile
+
+          extraPorts:
+            ingress:
+              containerPort: 2006
+              protocol: TCP
+          
+          extraResources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+          extraVolumeMounts:
+            configCarbonFile:
+              volumeMount:
+                path: *globalVolumeConfigCarbonFile
+                spec:
+                  subPath: carbon-config
+            dataDir:
+              volumeMount:
+                path: /data
+
+      initContainers:
+        migration:
+          name: goose
+          enabled: true
+          image:
+            repository: kukymbr/goose-docker
+            tag: 3.26.0
+
+          extraEnv:
+            GOOSE_DRIVER: clickhouse
+            GOOSE_DBSTRING: tcp://default:dbpswd@clickhouse-vmstorage:9000/swarm
+            GOOSE_EXTRA_ARGS: "-dir=/migrations"
+            GOOSE_VERBOSE: true
+
+          extraVolumeMounts:
+            migration:
+              volumeMount:
+                path: /migrations/01_tables.sql
+                spec:
+                  subPath: migration
+
+    graphite:
+      enabled: true
+      type: Deployment
+      name: graphite
+      replicas: 1
+
+      tolerations:
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - effect: NoSchedule
+          key: dedicated
+          value: vm-stream
+
+      service:
+        enabled: true
+
+      ingress:
+        enabled: false
+
+      # affinity:
+      #   mode: soft
+
+      strategy:
+        type: RollingUpdate
+        maxSurge: 25%
+        maxUnavailable: 25%
+
+      volumes:
+        configGraphiteFile:
+          volume:
+            mode: configMap
+            name: graphite-config
+            #projected: true
+            payload:
+              format: text
+              content: |-
+                [common]
+                listen = ":9090"
+
+                max-cpu = 2
+
+                max-metrics-in-find-answer = 0
+                max-metrics-per-target   = 0
+
+                rollup-conf = "/etc/graphite-clickhouse/rollup.xml"
+
+                [clickhouse]
+                url = "http://default:dbpswd@clickhouse-vmstorage:8123/"
+
+                extra-prefix = ""
+
+                date-tree-table = ""
+                tree-table      = ""
+                index-table   = "swarm.graphite_index"
+                tagged-table  = "swarm.graphite_tagged"
+
+                data-timeout  = "10m0s"
+                index-timeout = "10m0s"
+                tree-timeout  = "10m0s"
+
+                [[data-table]]
+                table = "swarm.graphite"
+
+                [carbonlink]
+                server = ""
+                threads-per-request = 10
+                connect-timeout = "50ms"
+                query-timeout   = "50ms"
+                total-timeout   = "500ms"
+
+                [prometheus]
+                listen = ":9092"
+
+                [[logging]]
+                file = ""
+                level = "debug"
+                encoding = "mixed"
+                encoding-time = "iso8601"
+                encoding-duration = "seconds"
+
+                [[logging]]
+                logger = "query"
+                file = ""
+                level = "warn"
+                encoding = "mixed"
+                encoding-time = "iso8601"
+                encoding-duration = "seconds"
+
+        graphiteRollupFile:
+          volume:
+            mode: configMap
+            name: rollup-config
+            #projected: true
+            payload:
+              format: text
+              content: |-
+                <yandex>
+                    <graphite_rollup>
+                        <path_column_name>Path</path_column_name>
+                        <time_column_name>Time</time_column_name>
+                        <value_column_name>Value</value_column_name>
+                        <version_column_name>Timestamp</version_column_name>
+                        <default>
+                            <function>avg</function>
+                            <retention>
+                                <age>0</age>
+                                <precision>60</precision>
+                            </retention>
+                            <retention>
+                                <age>86400</age>
+                                <precision>300</precision>
+                            </retention>
+                        </default>
+                    </graphite_rollup>
+                </yandex>
+
+      containers:
+        graphite:
+          name: graphite
+          enabled: true
+          image:
+            repository: ghcr.io/go-graphite/graphite-clickhouse
+            tag: master
+
+          extraArg:
+            config: *globalVolumeConfigGraphiteFile
+
+          extraPorts:
+            ingress:
+              containerPort: 9090
+              protocol: TCP
+            prometheus:
+              containerPort: 9092
+              protocol: TCP
+
+          extraResources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+          extraVolumeMounts:
+            configGraphiteFile:
+              volumeMount:
+                path: *globalVolumeConfigGraphiteFile
+                spec:
+                  subPath: graphite-config
+            graphiteRollupFile:
+              volumeMount:
+                path: /etc/graphite-clickhouse/rollup.xml
+                spec:
+                  subPath: rollup-config
+
+clickhouse:
+  enabled: true
+
+  global:
+    security:
+      allowInsecureImages: true
+
+  clusterName: distributed_cluster
+  auth:
+    username: default
+    password: "dbpswd"
+
+  image:
+    repository: bitnamilegacy/clickhouse
+
+  initdbScripts:
+    create-db.sh: |
+      #!/bin/bash
+      echo "Creating database swarm"
+      # clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS swarm"
+      clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS metrics; SET allow_experimental_time_series_table = 1; CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;"
+
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
+
+  existingConfigdConfigmap: clickhouse-vmstorage-extra-configd
+
+  shards: 1
+  replicaCount: 1
+
+  persistence:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+  service:
+    type: LoadBalancer
+    annotations:
+      lb.beget.com/algorithm: "round_robin"
+      lb.beget.com/type: "internal"
+      lb.beget.com/healthcheck-interval-seconds: "60"
+      lb.beget.com/healthcheck-timeout-seconds: "5"
+
+  containerSecurityContext:
+    capabilities:
+      add:
+        - SYS_NICE
+        - IPC_LOCK 
+
+  tolerations:
+    - key: "node-role.kubernetes.io/vm-data"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  keeper:
+    replicaCount: 1
+    image:
+      repository: bitnamilegacy/clickhouse-keeper
+
+    persistence:
+      enabled: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
+
+    tolerations:
+      - key: "node-role.kubernetes.io/vm-data"
+        operator: "Exists"
+        effect: "NoSchedule"

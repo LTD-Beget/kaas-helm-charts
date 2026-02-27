@@ -13,18 +13,6 @@ vmAgent:
       fullnameOverride: "vmagent"
       vmagent:
         spec:
-          # serviceScrapeSpec:
-          #   selector:
-          #     matchLabels:
-          #       monitoring.in-cloud.io/service: vmagent
-          #   endpoints:
-          #     - port: https-metrics
-          #       path: /metrics
-          #       scheme: HTTPS
-          #       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-          #       tlsConfig:
-          #         serverName: vmagent-monitoring
-          #   jobLabel: vmagent
           containers:
             - name: config-reloader
               requests:
@@ -77,9 +65,9 @@ vmAgent:
           remoteWrite:
             - url: {{ $remoteWriteUrlVmAgent }}
               tlsConfig:
-            {{ if $systemEnabled }}
+            {{- if $systemEnabled }}
                 caFile: /etc/ssl/certs/ca.crt
-            {{ else }}
+            {{- else }}
                 caFile: /tls/cabundle/ca.crt
             {{ end }}
               inlineUrlRelabelConfig:
@@ -102,14 +90,15 @@ vmAgent:
                   target_label: cluster_type
                   replacement: $1
           volumeMounts:
-            {{ if not $systemEnabled }}
-            - name: trusted-ca-certs
-              mountPath: /tls/cabundle
-              readOnly: true
-            {{ end }}
+            {{- if $systemEnabled }}
             - name: trusted-ca-certs
               mountPath: /etc/ssl/certs
               readOnly: true
+            {{- else }}
+            - name: trusted-ca-certs
+              mountPath: /tls/cabundle
+              readOnly: true
+            {{- end }}
           volumes:
             - name: trusted-ca-certs
               configMap:
@@ -118,11 +107,34 @@ vmAgent:
               secret:
                 defaultMode: 420
                 secretName: vmagent-monitoring-svc-tls
+          serviceSpec:
+            metadata:
+              name: vmagent
+              labels:
+                monitoring.in-cloud.io/service: vmagent
+            spec:
+              type: ClusterIP
+              ports:
+                - name: http
+                  port: 8429
+                  protocol: TCP
+                  targetPort: 8429
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+              useAsDefault: true
           serviceScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
                 values: [{{ $clusterName }}]
+          serviceScrapeSelector:
+            matchExpressions:
+              - key: managed-by
+                operator: NotIn
+                values:
+                  - vm-operator
           podScrapeNamespaceSelector:
             matchExpressions:
               - operator: In

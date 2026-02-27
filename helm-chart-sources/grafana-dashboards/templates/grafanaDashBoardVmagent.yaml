@@ -12,7 +12,6 @@ spec:
     matchLabels:
       dashboards: "grafana"
   json: |-
-    
     {
       "__inputs": [],
       "__elements": {},
@@ -445,7 +444,7 @@ spec:
                 "uid": "${datasource}"
               },
               "editorMode": "code",
-              "expr": "sum(vm_promscrape_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", status=\"down\"})",
+              "expr": "sum(vm_promscrape_scrape_pool_targets{cluster_full_name=~\"$cluster_full_name\", instance=~\"$instance\", scrape_job!~\"scrapeConfig/beget-vmagent/(client-cluster-kubelet-cadvisor|client-cluster-kubelet-resource)\", status=\"down\"})",
               "hide": false,
               "interval": "",
               "legendFormat": "down",

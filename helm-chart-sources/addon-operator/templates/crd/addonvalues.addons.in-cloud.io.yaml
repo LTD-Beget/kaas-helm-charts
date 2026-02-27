@@ -1,0 +1,79 @@
+{{- if .Values.crd.enable }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+    annotations:
+        controller-gen.kubebuilder.io/version: v0.19.0
+    name: addonvalues.addons.in-cloud.io
+spec:
+    group: addons.in-cloud.io
+    names:
+        kind: AddonValue
+        listKind: AddonValueList
+        plural: addonvalues
+        singular: addonvalue
+    scope: Cluster
+    versions:
+        - additionalPrinterColumns:
+            - jsonPath: .metadata.creationTimestamp
+              name: Age
+              type: date
+          name: v1alpha1
+          schema:
+            openAPIV3Schema:
+                description: |-
+                    AddonValue stores a fragment of Helm values that can be selected by Addon.
+                    Values are selected through label matching (ValuesSelector.matchLabels).
+                    Multiple AddonValues can be merged with priority-based override semantics.
+
+                    Label conventions:
+                      - addons.in-cloud.io/addon: <addon-name> - associates with a specific Addon
+                      - addons.in-cloud.io/values: <type> - categorizes values (default, immutable, custom)
+                      - addons.in-cloud.io/feature.<name>: "true" - enables feature-specific values
+                properties:
+                    apiVersion:
+                        description: |-
+                            APIVersion defines the versioned schema of this representation of an object.
+                            Servers should convert recognized schemas to the latest internal value, and
+                            may reject unrecognized values.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                        type: string
+                    kind:
+                        description: |-
+                            Kind is a string value representing the REST resource this object represents.
+                            Servers may infer this from the endpoint the client submits requests to.
+                            Cannot be updated.
+                            In CamelCase.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                        type: string
+                    metadata:
+                        type: object
+                    spec:
+                        description: Spec defines the values fragment.
+                        properties:
+                            values:
+                                description: |-
+                                    Values contains the Helm values fragment as raw YAML string.
+                                    Use block scalar syntax (values: |) to write multi-line YAML.
+                                    Values can include Go template expressions (e.g. .Variables.key)
+                                    which are rendered before YAML parsing during value aggregation.
+                                type: string
+                        required:
+                            - values
+                        type: object
+                    status:
+                        description: Status defines the observed state.
+                        properties:
+                            observedGeneration:
+                                description: ObservedGeneration is the last spec.generation processed.
+                                format: int64
+                                type: integer
+                        type: object
+                required:
+                    - spec
+                type: object
+          served: true
+          storage: true
+          subresources:
+            status: {}
+{{- end }}

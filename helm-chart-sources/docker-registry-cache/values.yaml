@@ -412,6 +412,9 @@ default:
     #       - architecture: amd64
     #         os: linux
 
+# [optional] Create for selected registry /v2 path in VirtualService
+mainRegistryName: docker-io
+
 proxies:
   docker-io:
     enabled: false                 # Enable this proxy deployment

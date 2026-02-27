@@ -16,6 +16,9 @@ default: |
       monitor:
         enabled: false
 
+    metricLabelsAllowlist:
+      - nodes=[node-group.beget.com/name]
+
     customLabels:
       in-cloud.io/clusterName: ""
 
