@@ -11,9 +11,11 @@ composition:
 composite:
   addons:
     common:
-      targetRevision: v0.0.4
+      targetRevision: v0.0.5
 
     # external repos
+    begetcmprovider:
+      targetRevision: v0.0.4
     ccm:
       targetRevision: HEAD
     certcontrollermanager:
