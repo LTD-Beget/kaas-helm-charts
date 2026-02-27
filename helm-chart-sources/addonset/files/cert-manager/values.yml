@@ -1,0 +1,207 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      installCRDs: true
+      global:
+        priorityClassName: system-cluster-critical
+      cainjector:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      containerSecurityContext:
+        runAsNonRoot: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      startupapicheck:
+        enabled: false
+        containerSecurityContext:
+          runAsNonRoot: true
+      webhook:
+        containerSecurityContext:
+          runAsNonRoot: true
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      enableCertificateOwnerRef: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      clusterResourceNamespace: beget-system
+      cainjector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      startupapicheck:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      webhook:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-initialized
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    issuers:
+      selfsignedIssuer:
+        kind: Issuer
+        name: selfsigned-issuer
+        namespace: beget-system
+        spec:
+          selfSigned: {}
+      selfsigned:
+        kind: ClusterIssuer
+        name: selfsigned
+        spec:
+          selfSigned: {}
+    certificates:
+      mainCA:
+        name: selfsigned-infra-cluster-ca
+        namespace: beget-system
+        spec:
+          issuerRef:
+            group: cert-manager.io
+            kind: Issuer
+            name: selfsigned-issuer
+          privateKey:
+            algorithm: RSA
+            encoding: PKCS1
+            size: 4096
+          duration: 175200h
+          renewBefore: 720h
+          isCA: true
+          commonName: root-ca
+          secretName: selfsigned-infra-cluster-ca
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-initialized-2
+  labels:
+    addons.in-cloud.io/values: initialized-2
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    issuers:
+      selfsignedClusterIssuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+        spec:
+          ca:
+            secretName: selfsigned-infra-cluster-ca
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      cainjector:
+        resources:
+          limits:
+            cpu: 1
+      resources:
+        limits:
+          cpu: 1
+      webhook:
+        resources:
+          limits:
+            cpu: 1

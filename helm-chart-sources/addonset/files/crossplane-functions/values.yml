@@ -1,0 +1,399 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: |
+    components:
+      kubernetes:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/provider: provider-kubernetes
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                      args:
+                        - --poll=5s
+                        - --enable-watches
+                        - --poll-jitter-percentage=1
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fpat:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/function: function-patch-and-transform
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      far:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/function: function-auto-ready 
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fer:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/function: function-extra-resources
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fgt:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/function: function-go-templating
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fec:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              selector:
+                matchLabels:
+                  pkg.crossplane.io/function: function-environment-configs
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-immmutable
+  labels:
+    addons.in-cloud.io/values: immmutable
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: |
+    components:
+      kubernetes:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                      args:
+                        - --poll=5s
+                        - --enable-watches
+                        - --poll-jitter-percentage=1
+                        - '--max-reconcile-rate=500'
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+        monitoring:
+          type: VictoriaMetrics
+          secureService:
+            enabled: true
+            port: 11052
+            issuer:
+              name: selfsigned-cluster-issuer
+      fpat:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      far:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fer:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+      fgt:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                  containers:
+                    - name: package-runtime
+                      resources:
+                        requests: { cpu: "400m", memory: "128Mi" }
+                        limits:   { cpu: "2", memory: "500Mi" }
+      fec:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: |
+    components:
+      kubernetes:
+        monitoring:
+          enabled: true
+
+---
+
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-functions-system-and-initialized
+  labels:
+    addons.in-cloud.io/values: system-and-initialized
+    addons.in-cloud.io/addon: crossplane-functions
+spec:
+  values: |
+    components:
+      kubernetes:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  containers:
+                    - name: package-runtime
+                      args:
+                        - --poll=5s
+                        - --enable-watches
+                        - --poll-jitter-percentage=1
+                        - '--max-reconcile-rate=500'
+                      resources:
+                        requests: { cpu: "6", memory: "8Mi" }
+                        limits:   { cpu: "16", memory: "32Gi" }
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane-prov
+                      operator: Exists
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane-prov: ''
+      fpat:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists	
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane: ''
+      far:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane: ''
+      fer:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane: ''
+      fgt:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane: ''
+                  containers:
+                    - name: package-runtime
+                      resources:
+                        requests: { cpu: "1", memory: "1Gi" }
+                        limits:   { cpu: "6", memory: "4Gi" }
+              replicas: 5
+      fec:
+        runtimeConfig:
+          deploymentTemplate:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+                      effect: NoSchedule
+                    - key: node-role.kubernetes.io/master
+                      operator: Exists
+                      effect: NoSchedule
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/crossplane	
+                      operator: Exists
+                  nodeSelector:
+                    node-role.kubernetes.io/crossplane: ''

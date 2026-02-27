@@ -14,3 +14,13 @@ patches:
     target:
       kind: Service
       name: kube-state-metrics
+
+  - path: ./deployment.client-kube-state-metrics.yaml
+    target:
+      kind: Deployment
+      name: client-kube-state-metrics
+
+  - path: ./service.client-kube-state-metrics.yaml
+    target:
+      kind: Service
+      name: client-kube-state-metrics

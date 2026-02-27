@@ -1,0 +1,276 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      priorityClassName: system-cluster-critical
+      prometheus:
+        service:
+          enabled: true
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+      rollingUpdate:
+        maxUnavailable: 35%
+        maxSurge: 1
+      securityContext:
+        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsUser: 0
+      service:
+        clusterIP: 29.64.0.10
+      serviceAccount:
+        create: true
+        name: coredns
+      affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: coredns
+                app.kubernetes.io/instance: coredns
+            topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - coredns
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - coredns
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified 
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . 8.8.8.8
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      secureService:
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-initialized
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      replicaCount: {{ .Values.controlPlaneReplicas }}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+          
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-multi-control-plane
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: coredns
+                  app.kubernetes.io/instance: coredns
+              topologyKey: kubernetes.io/hostname

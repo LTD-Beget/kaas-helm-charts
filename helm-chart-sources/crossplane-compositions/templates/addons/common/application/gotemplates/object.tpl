@@ -21,9 +21,6 @@ spec:
       labels:
         in-cloud.io/clusterName: {{ "\"{{ $clusterName }}\"" }}
         in-cloud.io/caBundle: "approved"
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
     - CreateNamespace=true
   source:

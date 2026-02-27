@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: kube-state-metrics
+      monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
     - port: https-metrics
       path: /metrics
@@ -17,5 +17,9 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}
-  jobLabel: kube-state-metrics
+      {{- with .Values.monitoring.serviceScrapeConfig.relabelConfigs }}
+      relabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  jobLabel: {{ .Release.Name }}
 {{- end }}

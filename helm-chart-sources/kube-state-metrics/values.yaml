@@ -1,5 +1,6 @@
-kube-state-metrics: {}
-# some values for kube-state-metrics
+kube-state-metrics:
+  enabled: true
+  # some values for kube-state-metrics
 
 monitoring:
   enabled: false
@@ -11,3 +12,5 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+  serviceScrapeConfig:
+    relabelConfigs: []

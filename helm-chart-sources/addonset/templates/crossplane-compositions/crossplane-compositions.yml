@@ -1,0 +1,8 @@
+{{- if .Values.addons.crossplanecompositions.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "crossplane-compositions.addon" . }}
+
+  {{- .Files.Get "files/crossplane-compositions/values.yml" | nindent 0 }}
+
+{{- end }}

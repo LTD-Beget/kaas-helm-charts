@@ -1,0 +1,55 @@
+addons:
+  addonsoperator:
+    enabled: true
+  addonset:
+    enabled: true
+  argocd:
+    enabled: true
+  certificateset:
+    enabled: true
+  certmanager:
+    enabled: true
+  certmanagercsidriver:
+    enabled: true
+  cilium:
+    enabled: true
+  coredns:
+    enabled: true
+  clientkubestatemetrics:
+    enabled: false
+  clientvmscrapeconfig:
+    enabled: false
+  crossplane:
+    enabled: false
+  crossplanecompositions:
+    enabled: false
+  crossplanefunctions:
+    enabled: false
+  etcdbackupsnapshot:
+    enabled: true
+  extraresources:
+    enabled: true
+  incloudwebchart:
+    enabled: true
+  incloudwebresources:
+    enabled: false
+  istiobase:
+    enabled: true
+  istiod:
+    enabled: true
+  istiogw:
+    enabled: true
+  template:
+    enabled: true
+  test:
+    enabled: true
+  trustmanager:
+    enabled: true
+  vmoperator:
+    enabled: true
+  system:
+    enabled: false
+    clickhouseInserter: false
+environment: infra
+clientName: client
+clusterName: infra

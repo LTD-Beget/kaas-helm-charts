@@ -69,7 +69,26 @@ vmAgent:
                 caFile: /etc/ssl/certs/ca.crt
             {{- else }}
                 caFile: /tls/cabundle/ca.crt
-            {{- end }}
+            {{ end }}
+              inlineUrlRelabelConfig:
+                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+                - action: replace
+                  source_labels: [exported_cluster_full_name]
+                  regex: (.+)
+                  target_label: cluster_full_name
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_remotewrite_cluster]
+                  regex: (.+)
+                  target_label: remotewrite_cluster
+                  replacement: $1
+
+                - action: replace
+                  source_labels: [exported_cluster_type]
+                  regex: (.+)
+                  target_label: cluster_type
+                  replacement: $1
           volumeMounts:
             {{- if $systemEnabled }}
             - name: trusted-ca-certs
@@ -145,7 +164,6 @@ vmAgent:
             cluster_type: "infra"
           {{ end }}
           extraArgs:
-            remoteWrite.label: remotewrite_cluster={{ printf "%%s-%%s" $customer $clusterName }}
             remoteWrite.tlsInsecureSkipVerify: "false"
       kubeControllerManager:
         enabled: true

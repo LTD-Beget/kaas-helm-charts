@@ -1,7 +1,7 @@
 {{- define "addons.incloudui" }}
 name: IncloudUi
 debug: false
-path: helm-chart-sources/incloud-ui
+path: helm-chart-sources/incloud-web-chart
 repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 {{- $addonValue := dig "composite" "addons" "incloudui" .Values.composite.addons.common (.Values | toYaml | fromYaml) }}
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
