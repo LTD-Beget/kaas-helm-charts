@@ -20,5 +20,7 @@ spec:
       clusterConfiguration:
         clusterName: "{{ .Values.cluster.name }}"
         controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+        networking:
+          serviceSubnet: "{{ .Values.clientServiceCidr }}"
     rbac:
       authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"

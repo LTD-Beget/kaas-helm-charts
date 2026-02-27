@@ -21,6 +21,8 @@ spec:
         name: parameters
         namespace: beget-system
       extract:
+        - as: clientServiceCidrCoredns
+          jsonPath: .data.clientServiceCidrCoredns
         - as: controlPlaneReplicas
           jsonPath: .data.controlPlaneReplicas
   initDependencies:

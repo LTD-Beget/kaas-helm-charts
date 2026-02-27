@@ -23,6 +23,8 @@ spec:
         name: parameters-client
         namespace: beget-system
       extract:
+        - as: clientServiceCidr
+          jsonPath: .data.clientServiceCidr
         - as: cluster.host
           jsonPath: .data.clusterHost
         - as: cluster.port
