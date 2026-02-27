@@ -10,8 +10,6 @@ default: |
   crossplane:
     args:
       - '--enable-realtime-compositions'
-      - '--enable-composition-webhook-schema-validation'
-      - '--enable-composition-functions'
       - '--enable-usages'
       - '--poll-interval=5s'
       - '--sync-interval=1m'
