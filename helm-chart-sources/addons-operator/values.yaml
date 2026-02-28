@@ -10,9 +10,10 @@
 ##
 
 managerClaim:
+  enable: false
   image:
     repository: controller-claim
-    tag: Latest
+    tag: latest
 
 manager:
   replicas: 1

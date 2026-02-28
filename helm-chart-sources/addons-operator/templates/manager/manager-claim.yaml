@@ -1,3 +1,5 @@
+{{- if .Values.managerClaim.enable -}}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -110,3 +112,4 @@ spec:
                   secret:
                     secretName: webhook-server-cert
                 {{- end }}
+{{- end }}
