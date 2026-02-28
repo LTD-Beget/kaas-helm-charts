@@ -1,0 +1,56 @@
+{{- $needsSelfsigned := false }}
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.enabled }}
+    {{- if and $appValue.issuers.kubernetesCA.enabled (eq $appValue.issuers.kubernetesCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
+    {{- if and $appValue.issuers.frontProxyCA.enabled (eq $appValue.issuers.frontProxyCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
+    {{- if and $appValue.issuers.etcdCA.enabled (eq $appValue.issuers.etcdCA.type "selfsigned") }}
+      {{- $needsSelfsigned = true }}
+    {{- end }}
+
+    #TODO проверить, нужен ли вообще этот issuer
+    {{- if and $needsSelfsigned false }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned
+spec:
+  selfSigned: {}
+    {{- end }}
+    {{- if $appValue.issuers.kubernetesCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: kubernetes-ca
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.kubernetesCA.secretName }}
+    {{- end }}
+    {{- if $appValue.issuers.frontProxyCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: front-proxy-ca
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.frontProxyCA.secretName }}
+    {{- end }}
+    {{- if $appValue.issuers.etcdCA.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: etcd-ca
+spec:
+  ca:
+    secretName: {{ $appValue.issuers.etcdCA.secretName }}
+    {{- end }}
+
+  {{- end }}
+{{- end }}
