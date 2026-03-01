@@ -5,7 +5,6 @@ kind: Addon
 metadata:
   name: cilium
 spec:
-  finalizer: false
   path: "helm-chart-sources/cilium"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
