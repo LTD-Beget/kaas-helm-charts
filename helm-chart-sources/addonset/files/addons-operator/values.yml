@@ -10,13 +10,17 @@ spec:
   values: |
     certManager:
       enable: false
+    managerClaim:
+      image:
+        repository: prorobotech/addons-operator-addonclaim
+        tag: feature-CLOUD-459-579b6587
     manager:
       env:
       - name: ENABLE_WEBHOOKS
         value: false
       image:
         repository: prorobotech/addons-operator
-        tag: feature-CLOUD-459-ee0aed88
+        tag: feature-CLOUD-459-579b6587
         pullPolicy: IfNotPresent
       tolerations:
       - effect: NoExecute

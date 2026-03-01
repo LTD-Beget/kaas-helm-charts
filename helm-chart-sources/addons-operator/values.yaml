@@ -8,6 +8,13 @@
 
 ## Configure the controller manager deployment
 ##
+
+managerClaim:
+  enable: false
+  image:
+    repository: controller-claim
+    tag: latest
+
 manager:
   replicas: 1
   
