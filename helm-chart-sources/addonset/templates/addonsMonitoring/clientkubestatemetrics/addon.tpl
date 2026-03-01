@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/kube-state-metrics"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon" # "HEAD"
+  version: "v0.0.5" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-client-kube-state-metrics"
   variables:

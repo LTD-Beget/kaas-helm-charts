@@ -7,7 +7,7 @@ metadata:
 spec:
   path: "helm-chart-sources/addons-operator"
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "v0.0.5"
   targetCluster: in-cluster
   targetNamespace: "beget-addons-operator"
   backend: 

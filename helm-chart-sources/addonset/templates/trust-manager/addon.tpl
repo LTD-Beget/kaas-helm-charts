@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/trust-manager"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "v0.0.5"
   targetCluster: in-cluster
   targetNamespace: "beget-trust-manager"
   variables:
