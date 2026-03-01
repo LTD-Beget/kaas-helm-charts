@@ -1,0 +1,288 @@
+additionalLabels:
+  in-cloud-metrics: "infra"
+
+vmrules:
+  auditErrors:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      apiserverAudit:
+        enabled: true
+        rules:
+          AuditLogError:
+            enabled: true
+
+  coredns:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      coredns:
+        enabled: true
+        params:
+          extra_label: ["in-cloud_metrics=infra"]
+        rules:
+          CoreDNSDown:
+            enabled: true
+          CoreDNSLatencyHigh:
+            enabled: true
+          CoreDNSErrorsTooHigh:
+            enabled: true
+          CoreDNSErrorsHigh:
+            enabled: true
+
+      coredns_forward:
+        enabled: true
+        params:
+          extra_label: ["in-cloud_metrics=infra"]
+        rules:
+          CoreDNSForwardLatencyHigh:
+            enabled: true
+          CoreDNSForwardErrorsTooHigh:
+            enabled: true
+          CoreDNSForwardErrorsHigh:
+            enabled: true
+          CoreDNSForwardHealthcheckFailureCount:
+            enabled: true
+          CoreDNSForwardHealthcheckBrokenCount:
+            enabled: true
+
+  certManager:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      certManager:
+        enabled: true
+        params:
+          extra_label: ["in-cloud_metrics=infra"]
+        rules:
+          CertManagerAbsent:
+            enabled: true
+      certificates:
+        enabled: true
+        params:
+          extra_label: ["in-cloud_metrics=infra"]
+        rules:
+          CertManagerCertExpirySoon:
+            enabled: true
+          CertManagerCertNotReady:
+            enabled: true
+          CertManagerHittingRateLimits:
+            enabled: true
+
+  etcd:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      etcd:
+        enabled: true
+        params:
+          extra_label: ["in-cloud_metrics=infra"]
+        rules:
+          EtcdHighFsyncDurationsIncreasing:
+            enabled: true
+          EtcdHighFsyncDurations:
+            enabled: true
+          EtcdHighCommitDurations:
+            enabled: true
+          EtcdNoLeader:
+            enabled: true
+          EtcdHighNumberOfLeaderChanges:
+            enabled: true
+          etcdMembersDown:
+            enabled: true
+          etcdDatabaseQuotaLowSpace:
+            enabled: true
+          etcdExcessiveDatabaseGrowth:
+            enabled: true
+          etcdDatabaseHighFragmentationRatio:
+            enabled: true
+
+  clusterMonitoringVictoriaMetrics:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      jobs:
+        enabled: true
+        rules:
+          VMAgentJobAbsent:
+            enabled: true
+          VMAlertJobAbsent:
+            enabled: true
+          VMAlertmanagerJobAbsent:
+            enabled: true
+
+  clusterMonitoringVictoriaMetricsOperator:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      pods:
+        enabled: true
+        rules:
+          ControlPlanePodsRestart:
+            enabled: true
+          ClientControlPlanePodsRestart:
+            enabled: true
+          PodsRestart:
+            enabled: true
+
+  cpuUtilization:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      controlPlaneCpuUtilization:
+        enabled: true
+        rules:
+          HighOverallControlPlaneCPU:
+            enabled: true
+          HighIndividualControlPlaneCPU:
+            enabled: true
+          ExtremelyHighIndividualControlPlaneCPU:
+            enabled: true
+
+  kubeApiServerRequests:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      kubeApiServerRequestsInFlight:
+        enabled: true
+
+  podSecurity:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      PodSecurityViolation:
+        enabled: true
+        rules:
+          PodSecurityViolation:
+            enabled: true
+
+  prometheusK8sPrometheusRules:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      prometheus:
+        enabled: true
+        rules:
+          PrometheusBadConfig:
+            enabled: true
+          PrometheusNotificationQueueRunningFull:
+            enabled: true
+          PrometheusErrorSendingAlertsToSomeAlertmanagers:
+            enabled: true
+          PrometheusNotConnectedToAlertmanagers:
+            enabled: true
+          PrometheusTSDBReloadsFailing:
+            enabled: true
+          PrometheusTSDBCompactionsFailing:
+            enabled: true
+          PrometheusNotIngestingSamples:
+            enabled: true
+          PrometheusDuplicateTimestamps:
+            enabled: true
+          PrometheusOutOfOrderTimestamps:
+            enabled: true
+          PrometheusRemoteStorageFailures:
+            enabled: true
+          PrometheusRemoteWriteBehind:
+            enabled: true
+          PrometheusRemoteWriteDesiredShards:
+            enabled: true
+          VMRuleFailures:
+            enabled: true
+          PrometheusMissingRuleEvaluations:
+            enabled: true
+          PrometheusTargetLimitHit:
+            enabled: true
+          PrometheusLabelLimitHit:
+            enabled: true
+          PrometheusScrapeBodySizeLimitHit:
+            enabled: true
+          PrometheusScrapeSampleLimitHit:
+            enabled: true
+          PrometheusTargetSyncFailure:
+            enabled: true
+  kubernetesResources:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      kubernetesResources:
+        enabled: true
+        rules:
+          KubeCPUOvercommit:
+            enabled: true
+          KubeMemoryOvercommit:
+            enabled: true
+          KubeCPUQuotaOvercommit:
+            enabled: true
+          KubeMemoryQuotaOvercommit:
+            enabled: true
+          KubeQuotaAlmostFull:
+            enabled: true
+          KubeQuotaFullyUsed:
+            enabled: true
+          KubeQuotaExceeded:
+            enabled: true
+          CPUThrottlingHigh:
+            enabled: true
+
+  kubernetesApps:
+    enabled: false
+    additionalLabels:
+      in-cloud-metrics: "infra"
+    groups:
+      kubernetesApps:
+        enabled: true
+        rules:
+          KubePodCrashLooping:
+            enabled: true
+          KubeInfraPodCrashLooping:
+            enabled: true
+          KubePodNotReady:
+            enabled: true
+          KubeDeploymentGenerationMismatch:
+            enabled: true
+          KubeDeploymentReplicasMismatch:
+            enabled: true
+          KubeInfraDeploymentReplicasMismatch:
+            enabled: true
+          KubeDeploymentRolloutStuck:
+            enabled: true
+          KubeInfraDeploymentRolloutStuck:
+            enabled: true
+          KubeStatefulSetReplicasMismatch:
+            enabled: true
+          KubeStatefulSetGenerationMismatch:
+            enabled: true
+          KubeStatefulSetUpdateNotRolledOut:
+            enabled: true
+          KubeDaemonSetRolloutStuck:
+            enabled: true
+          KubeInfraDaemonSetRolloutStuck:
+            enabled: true
+          KubeContainerWaiting:
+            enabled: true
+          KubeDaemonSetNotScheduled:
+            enabled: true
+          KubeDaemonSetMisScheduled:
+            enabled: true
+          KubeJobNotCompleted:
+            enabled: true
+          KubeJobFailed:
+            enabled: true
+          KubeHpaReplicasMismatch:
+            enabled: true
+          KubeHpaMaxedOut:
+            enabled: true
+          KubePdbNotEnoughHealthyPods:
+            enabled: true

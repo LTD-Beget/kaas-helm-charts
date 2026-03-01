@@ -1,0 +1,1744 @@
+auditErrors:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    apiserverAudit:
+      enabled: false
+      rules:
+        AuditLogError:
+          enabled: false
+          spec:
+            alert: "AuditLogError"
+            annotations:
+              description: An API Server had an error writing to an audit log.
+              summary: |-
+                An API Server instance was unable to write audit logs. This could be
+                triggered by the node running out of space, or a malicious actor
+                tampering with the audit logs.
+            expr: |
+              sum by (job, instance)(rate(apiserver_audit_error_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) / sum by (job, instance) (rate(apiserver_audit_event_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) > 0
+            for: 1m
+            labels:
+              severity: warning
+
+coredns:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+
+  groups:
+    coredns:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        CoreDNSDown:
+          enabled: false
+          spec:
+            alert: "CoreDNSDown"
+            annotations:
+              description: CoreDNS Down in cluster {{ $labels.cluster_full_name }}
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
+              summary: CoreDNS has disappeared from Prometheus target discovery.
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info)
+                unless on(cluster_full_name)
+                  up{job="coredns-coredns-metrics"} == 1
+            for: 1m
+            labels:
+              severity: warning
+
+        CoreDNSLatencyHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSLatencyHigh"
+            annotations:
+              description: CoreDNS has 99th percentile latency of {{ $value }} seconds for server {{ $labels.server }} zone {{ $labels.zone }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
+              summary: CoreDNS is experiencing high 99th percentile latency.
+            expr: |
+              histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (instance,pod)) > 4
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSErrorsTooHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSErrorsTooHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
+              summary: CoreDNS is returning SERVFAIL.
+            expr: |
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
+            for: 10m
+            labels:
+              severity: critical
+
+        CoreDNSErrorsHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSErrorsHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
+              summary: CoreDNS is returning SERVFAIL.
+            expr: |
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
+            for: 10m
+            labels:
+              severity: warning
+
+    coredns_forward:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        CoreDNSForwardLatencyHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardLatencyHigh"
+            annotations:
+              description: CoreDNS has 99th percentile latency of {{ $value }} seconds forwarding requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
+              summary: CoreDNS is experiencing high latency forwarding requests.
+            expr: |
+              histogram_quantile(0.99, sum(rate(coredns_forward_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (pod, instance, rcode)) > 4
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardErrorsTooHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardErrorsTooHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
+              summary: CoreDNS is returning SERVFAIL for forward requests.
+            expr: |
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardErrorsHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardErrorsHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
+              summary: CoreDNS is returning SERVFAIL for forward requests.
+            expr: |
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardHealthcheckFailureCount:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardHealthcheckFailureCount"
+            annotations:
+              description: CoreDNS health checks have failed to upstream server {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
+              summary: CoreDNS health checks have failed to upstream server.
+            expr: |
+              sum without (pod, instance) (rate(coredns_forward_healthcheck_failures_total{job="coredns-coredns-metrics"}[5m])) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardHealthcheckBrokenCount:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardHealthcheckBrokenCount"
+            annotations:
+              description: CoreDNS health checks have failed for all upstream servers.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckbrokencount
+              summary: CoreDNS health checks have failed for all upstream servers.
+            expr: |
+              sum without (pod, instance) (rate(coredns_forward_healthcheck_broken_total{job="coredns-coredns-metrics"}[5m])) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+certManager:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    certManager:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        CertManagerAbsent:
+          enabled: false
+          spec:
+            alert: "CertManagerAbsent"
+            annotations:
+              description: |
+                CertManager Down in cluster {{ $labels.cluster_full_name }}. New certificates will not be able to be minted, and existing ones
+                can't be renewed until cert-manager is back.
+              runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
+              summary: Cert Manager has disappeared from Prometheus service discovery.
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info)
+                unless on(cluster_full_name)
+                  up{job="cert-manager"} == 1
+            for: 3m
+            labels:
+              severity: warning
+
+    certificates:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        CertManagerCertExpirySoon:
+          enabled: false
+          spec:
+            alert: "CertManagerCertExpirySoon"
+            annotations:
+              dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
+              description: |
+                The domain that this cert covers will be unavailable after {{ $value | humanizeDuration }}.
+                Clients using endpoints that this cert protects will start to fail in {{ $value | humanizeDuration }}.
+              runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertexpirysoon
+              summary: |
+                The cert {{ $labels.name }} is {{ $value | humanizeDuration }} from
+                expiry, it should have renewed over a week ago.
+            expr: |
+              avg by (exported_namespace, namespace, name) (
+                certmanager_certificate_expiration_timestamp_seconds - time()
+              ) < (21 * 24 * 3600) # 21 days in seconds
+            for: 1h
+            labels:
+              severity: warning
+
+        CertManagerCertNotReady:
+          enabled: false
+          spec:
+            alert: "CertManagerCertNotReady"
+            annotations:
+              dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
+              description: This certificate has not been ready to serve traffic for at least
+                10m. If the cert is being renewed or there is another valid cert, the ingress
+                controller _may_ be able to serve that instead.
+              runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertnotready
+              summary: The cert {{ $labels.name }} is not ready to serve traffic.
+            expr: |
+              max by (name, exported_namespace, namespace, condition) (
+                certmanager_certificate_ready_status{condition!="True"} == 1
+              )
+            for: 10m
+            labels:
+              severity: warning
+
+        CertManagerHittingRateLimits:
+          enabled: false
+          spec:
+            alert: "CertManagerHittingRateLimits"
+            annotations:
+              dashboard_url: https://grafana.example.com/d/TvuRo2iMk/cert-manager
+              description: Depending on the rate limit, cert-manager may be unable to generate
+                certificates for up to a week.
+              runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerhittingratelimits
+              summary: Cert manager hitting LetsEncrypt rate limits.
+            expr: |
+              sum by (host) (
+                rate(certmanager_http_acme_client_request_count{status="429"}[5m])
+              ) > 0
+            for: 5m
+            labels:
+              severity: warning
+
+etcd:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    etcd:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        EtcdHighFsyncDurationsIncreasing:
+          enabled: false
+          spec:
+            alert: "EtcdHighFsyncDurationsIncreasing"
+            annotations:
+              summary: Etcd high deviv fsync durations (instance {{ $labels.instance }})
+              description: |
+                Etcd WAL fsync duration increasing is over 15%
+                  VALUE = {{ $value }}
+                  LABELS = {{ $labels }}
+            expr: (rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m) / rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)) > 1.15
+            for: 2m
+            labels:
+              severity: warning
+
+        EtcdHighFsyncDurations:
+          enabled: false
+          spec:
+            alert: "EtcdHighFsyncDurations"
+            annotations:
+              summary: Etcd high fsync durations (instance {{ $labels.instance }})
+              description: |
+                Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
+                  VALUE = {{ $value }}
+                  LABELS = {{ $labels }}
+            expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) > 0.5
+            for: 2m
+            labels:
+              severity: warning
+
+        EtcdHighCommitDurations:
+          enabled: false
+          spec:
+            alert: "EtcdHighCommitDurations"
+            annotations:
+              summary: Etcd high commit durations (instance {{ $labels.instance }})
+              description: |
+                Etcd commit duration increasing, 99th percentile is over 0.25s
+                  VALUE = {{ $value }}
+                  LABELS = {{ $labels }}
+            expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[1m])) > 0.25
+            for: 2m
+            labels:
+              severity: warning
+
+        EtcdNoLeader:
+          enabled: false
+          spec:
+            alert: "EtcdNoLeader"
+            annotations:
+              summary: Etcd no Leader (instance {{ $labels.instance }})
+              description: |
+                Etcd cluster have no leader
+                  VALUE = {{ $value }}
+                  LABELS = {{ $labels }}
+            expr: etcd_server_has_leader == 0
+            for: 0m
+            labels:
+              severity: warning
+
+        EtcdHighNumberOfLeaderChanges:
+          enabled: false
+          spec:
+            alert: "EtcdHighNumberOfLeaderChanges"
+            annotations:
+              summary: Etcd high number of leader changes (instance {{ $labels.instance }})
+              description: |
+                Etcd leader changed more than 1 times during 5 minutes
+                  VALUE = {{ $value }}
+                  LABELS = {{ $labels }}
+            expr: increase(etcd_server_leader_changes_seen_total[5m]) > 1
+            for: 0m
+            labels:
+              severity: warning
+
+        etcdMembersDown:
+          enabled: false
+          spec:
+            alert: "etcdMembersDown"
+            annotations:
+              description: etcd cluster {{ $labels.job }} - members are down ({{ $value }}).
+              summary: etcd cluster members are down.
+            expr: |
+              max without (endpoint) (
+                sum without (instance) (up{job=~".*etcd.*"} == bool 0)
+              or
+                count without (To) (
+                  sum without (instance) (rate(etcd_network_peer_sent_failures_total{job=~".*etcd.*"}[120s])) > 0.01
+                )
+              )
+              > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        etcdDatabaseQuotaLowSpace:
+          enabled: false
+          spec:
+            alert: "etcdDatabaseQuotaLowSpace"
+            annotations:
+              description: |
+                etcd cluster {{ $labels.job }} - database size exceeds the defined
+                quota on etcd instance {{ $labels.instance }}, please defrag or increase the
+                quota as the writes to etcd will be disabled when it is full.
+              summary: etcd cluster database is running full.
+            expr: |
+              (last_over_time(etcd_mvcc_db_total_size_in_bytes[5m]) / last_over_time(etcd_server_quota_backend_bytes[5m]))*100 > 95
+            for: 10m
+            labels:
+              severity: warning
+
+        etcdExcessiveDatabaseGrowth:
+          enabled: false
+          spec:
+            alert: "etcdExcessiveDatabaseGrowth"
+            annotations:
+              description: |
+                etcd cluster {{ $labels.job }} - Predicting running out of disk
+                space in the next four hours, based on write observations within the past
+                four hours on etcd instance {{ $labels.instance }}, please check as it might
+                be disruptive.
+              summary: etcd cluster database growing very fast.
+            expr: |
+              predict_linear(etcd_mvcc_db_total_size_in_bytes[4h], 4*60*60) > etcd_server_quota_backend_bytes
+            for: 10m
+            labels:
+              severity: warning
+
+        etcdDatabaseHighFragmentationRatio:
+          enabled: false
+          spec:
+            alert: "etcdDatabaseHighFragmentationRatio"
+            annotations:
+              description: |
+                etcd cluster {{ $labels.job }} - database size in use on instance
+                {{ $labels.instance }} is {{ $value | humanizePercentage }} of the actual
+                allocated disk space, please run defragmentation (e.g. etcdctl defrag) to
+                retrieve the unused fragmented disk space.
+              runbook_url: https://etcd.io/docs/v3.5/op-guide/maintenance/#defragmentation
+              summary: etcd database size in use is less than 50% of the actual allocated
+                storage.
+            expr: |
+              (last_over_time(etcd_mvcc_db_total_size_in_use_in_bytes[5m]) / last_over_time(etcd_mvcc_db_total_size_in_bytes[5m])) < 0.5 and etcd_mvcc_db_total_size_in_use_in_bytes > 104857600
+            for: 10m
+            labels:
+              severity: warning
+
+clusterMonitoringVictoriaMetrics:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    jobs:
+      enabled: false
+      rules:
+        VMAgentJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAgentJobAbsent"
+            annotations:
+              description: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
+                unless on(cluster_full_name)
+                  up{job="vmagent",cluster_type="system"} == 1
+            for: 2m
+            labels:
+              severity: critical
+
+        VMAlertJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAlertJobAbsent"
+            annotations:
+              description: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
+                unless on(cluster_full_name)
+                  up{job="vmalert",cluster_type="system"} == 1
+            for: 2m
+            labels:
+              severity: critical
+
+        VMAlertmanagerJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAlertmanagerJobAbsent"
+            annotations:
+              description: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
+                unless on(cluster_full_name)
+                  up{job="vmalertmanager",cluster_type="system"} == 1
+            for: 2m
+            labels:
+              severity: critical
+
+clusterMonitoringVictoriaMetricsOperator:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    pods:
+      enabled: false
+      rules:
+        ControlPlanePodsRestart:
+          enabled: false
+          spec:
+            alert: "ControlPlanePodsRestart"
+            annotations:
+              description: A control-plane pod restarted
+              summary: |-
+                An control plane pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources.
+            expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system"}[10m]) * 600>=1
+            for: 1m
+            labels:
+              severity: critical
+
+        ClientControlPlanePodsRestart:
+          enabled: false
+          spec:
+            alert: "ClientControlPlanePodsRestart"
+            annotations:
+              description: A client control-plane pod restarted
+              summary: |-
+                An client control plane pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources.
+            expr: rate(kube_pod_container_status_restarts_total{namespace="beget-system", container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"}[10m]) * 600>=1
+            for: 1m
+            labels:
+              severity: critical
+
+        PodsRestart:
+          enabled: false
+          spec:
+            alert: "PodsRestart"
+            annotations:
+              description: Pod restarted
+              summary: |-
+                Pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources or incorrect configuration.
+            expr: rate(kube_pod_container_status_restarts_total{namespace=~"beget.*|kube.*"}[10m]) * 600>=1
+            for: 1m
+            labels:
+              severity: warning
+
+cpuUtilization:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    controlPlaneCpuUtilization:
+      enabled: false
+      rules:
+        HighOverallControlPlaneCPU:
+          enabled: false
+          spec:
+            alert: "HighOverallControlPlaneCPU"
+            annotations:
+              description: Given three control plane nodes, the overall CPU utilization
+                may only be about 2/3 of all available capacity. This is because if a single
+                control plane node fails, the remaining two must handle the load of the
+                cluster in order to be HA. If the cluster is using more than 2/3 of all
+                capacity, if one control plane node fails, the remaining two are likely
+                to fail when they take the load. To fix this, increase the CPU and memory
+                on your control plane nodes.
+              runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-kube-apiserver-operator/ExtremelyHighIndividualControlPlaneCPU.md
+              summary: CPU utilization across all three control plane nodes is higher than
+                two control plane nodes can sustain; a single control plane node outage
+                may cause a cascading failure; increase available CPU.
+            expr: |
+              sum(
+                100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)
+                AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+              )
+              /
+              count(kube_node_role{role="control-plane"})
+              > 60
+            for: 10m
+            labels:
+              severity: warning
+
+        HighIndividualControlPlaneCPU:
+          enabled: false
+          spec:
+            alert: "HighIndividualControlPlaneCPU"
+            annotations:
+              description: Extreme CPU pressure can cause slow serialization and poor performance
+                from the kube-apiserver and etcd. When this happens, there is a risk of
+                clients seeing non-responsive API requests which are issued again causing
+                even more CPU pressure. It can also cause failing liveness probes due to
+                slow etcd responsiveness on the backend. If one kube-apiserver fails under
+                this condition, chances are you will experience a cascade as the remaining
+                kube-apiservers are also under-provisioned. To fix this, increase the CPU
+                and memory on your control plane nodes.
+              runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-kube-apiserver-operator/ExtremelyHighIndividualControlPlaneCPU.md
+              summary: CPU utilization on a single control plane node is very high, more
+                CPU pressure is likely to cause a failover; increase available CPU.
+            expr: |
+              100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+            for: 5m
+            labels:
+              severity: warning
+
+        ExtremelyHighIndividualControlPlaneCPU:
+          enabled: false
+          spec:
+            alert: "ExtremelyHighIndividualControlPlaneCPU"
+            annotations:
+              description: Extreme CPU pressure can cause slow serialization and poor performance
+                from the kube-apiserver and etcd. When this happens, there is a risk of
+                clients seeing non-responsive API requests which are issued again causing
+                even more CPU pressure. It can also cause failing liveness probes due to
+                slow etcd responsiveness on the backend. If one kube-apiserver fails under
+                this condition, chances are you will experience a cascade as the remaining
+                kube-apiservers are also under-provisioned. To fix this, increase the CPU
+                and memory on your control plane nodes.
+              runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-kube-apiserver-operator/ExtremelyHighIndividualControlPlaneCPU.md
+              summary: Sustained high CPU utilization on a single control plane node, more
+                CPU pressure is likely to cause a failover; increase available CPU.
+            expr: |
+              100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+            for: 1h
+            labels:
+              severity: critical
+
+kubeApiServerRequests:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubeApiServerRequestsInFlight:
+      enabled: false
+      params:
+        extra_label: ["in-cloud_metrics=infra"]
+      rules:
+        kubeApiServerRequestsInFlight:
+          enabled: false
+          spec:
+            expr: |
+              max_over_time(sum(apiserver_current_inflight_requests) by (request_kind, cluster_full_name)[2m:])
+            record: cluster:apiserver_current_inflight_requests:sum:max_over_time:2m
+
+podSecurity:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    PodSecurityViolation:
+      enabled: false
+      rules:
+        PodSecurityViolation:
+          enabled: false
+          spec:
+            alert: "PodSecurityViolation"
+            annotations:
+              description: |
+                A workload (pod, deployment, deamonset, ...) was created somewhere
+                in the cluster but it did not match the PodSecurity "{{ $labels.policy_level
+                }}" profile defined by its namespace either via the cluster-wide configuration
+                (which triggers on a "restricted" profile violations) or by the namespace
+                local Pod Security labels. Refer to Kubernetes documentation on Pod Security
+                Admission to learn more about these violations.
+              summary: One or more workloads users created in the cluster don't match their
+                Pod Security profile
+            expr: |
+              sum(increase(pod_security_evaluations_total{decision="deny",mode="audit",resource="pod"}[1d])) by (policy_level) > 0
+            labels:
+              severity: info
+
+prometheusK8sPrometheusRules:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    prometheus:
+      enabled: false
+      rules:
+        PrometheusBadConfig:
+          enabled: false
+          spec:
+            alert: "PrometheusBadConfig"
+            annotations:
+              description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to reload its configuration.
+              summary: Failed Prometheus configuration reload.
+            expr: |
+              # Without max_over_time, failed scrapes could create false negatives, see
+              # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+              max_over_time(prometheus_config_last_reload_successful{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) == 0
+            for: 10m
+            labels:
+              severity: warning
+
+        PrometheusNotificationQueueRunningFull:
+          enabled: false
+          spec:
+            alert: "PrometheusNotificationQueueRunningFull"
+            annotations:
+              description: Alert notification queue of Prometheus {{$labels.namespace}}/{{$labels.pod}} is running full.
+              summary: Prometheus alert notification queue predicted to run full in less
+                than 30m.
+            expr: |
+              # Without min_over_time, failed scrapes could create false negatives, see
+              # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+              (
+                predict_linear(prometheus_notifications_queue_length{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m], 60 * 30)
+              >
+                min_over_time(prometheus_notifications_queue_capacity{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusErrorSendingAlertsToSomeAlertmanagers:
+          enabled: false
+          spec:
+            alert: "PrometheusErrorSendingAlertsToSomeAlertmanagers"
+            annotations:
+              description: |
+                {{ printf "%.1f" $value }}% errors while sending alerts from
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} to Alertmanager {{$labels.alertmanager}}.
+              summary: Prometheus has encountered more than 1% errors sending alerts to
+                a specific Alertmanager.
+            expr: |
+              (
+                rate(prometheus_notifications_errors_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              /
+                rate(prometheus_notifications_sent_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              )
+              * 100
+              > 1
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusNotConnectedToAlertmanagers:
+          enabled: false
+          spec:
+            alert: "PrometheusNotConnectedToAlertmanagers"
+            annotations:
+              description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not connected to any Alertmanagers.
+              summary: Prometheus is not connected to any Alertmanagers.
+            expr: |
+              # Without max_over_time, failed scrapes could create false negatives, see
+              # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+              max_over_time(prometheus_notifications_alertmanagers_discovered{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) < 1
+            for: 10m
+            labels:
+              severity: warning
+
+        PrometheusTSDBReloadsFailing:
+          enabled: false
+          spec:
+            alert: "PrometheusTSDBReloadsFailing"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
+                {{$value | humanize}} reload failures over the last 3h.
+              summary: Prometheus has issues reloading blocks from disk.
+            expr: |
+              increase(prometheus_tsdb_reloads_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
+            for: 4h
+            labels:
+              severity: warning
+
+        PrometheusTSDBCompactionsFailing:
+          enabled: false
+          spec:
+            alert: "PrometheusTSDBCompactionsFailing"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
+                {{$value | humanize}} compaction failures over the last 3h.
+              summary: Prometheus has issues compacting blocks.
+            expr: |
+              increase(prometheus_tsdb_compactions_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[3h]) > 0
+            for: 4h
+            labels:
+              severity: warning
+
+        PrometheusNotIngestingSamples:
+          enabled: false
+          spec:
+            alert: "PrometheusNotIngestingSamples"
+            annotations:
+              description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not ingesting samples.
+              summary: Prometheus is not ingesting samples.
+            expr: |
+              (
+                rate(prometheus_tsdb_head_samples_appended_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) <= 0
+              and
+                (
+                  sum without(scrape_job) (prometheus_target_metadata_cache_entries{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}) > 0
+                or
+                  sum without(rule_group) (prometheus_rule_group_rules{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}) > 0
+                )
+              )
+            for: 10m
+            labels:
+              severity: warning
+
+        PrometheusDuplicateTimestamps:
+          enabled: false
+          spec:
+            alert: "PrometheusDuplicateTimestamps"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping
+                {{ printf "%.4g" $value  }} samples/s with different values but duplicated
+                timestamp.
+              summary: Prometheus is dropping samples with duplicate timestamps.
+            expr: |
+              rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 1h
+            labels:
+              severity: warning
+
+        PrometheusOutOfOrderTimestamps:
+          enabled: false
+          spec:
+            alert: "PrometheusOutOfOrderTimestamps"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping
+                {{ printf "%.4g" $value  }} samples/s with timestamps arriving out of order.
+              summary: Prometheus drops samples with out-of-order timestamps.
+            expr: |
+              rate(prometheus_target_scrapes_sample_out_of_order_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 1h
+            labels:
+              severity: warning
+
+        PrometheusRemoteStorageFailures:
+          enabled: false
+          spec:
+            alert: "PrometheusRemoteStorageFailures"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} failed to send
+                {{ printf "%.1f" $value }}% of the samples to {{ $labels.remote_name }}:{{ $labels.url }}
+              summary: Prometheus fails to send samples to remote storage.
+            expr: |
+              (
+                (rate(prometheus_remote_storage_failed_samples_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]))
+              /
+                (
+                  (rate(prometheus_remote_storage_failed_samples_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]))
+                +
+                  (rate(prometheus_remote_storage_succeeded_samples_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) or rate(prometheus_remote_storage_samples_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]))
+                )
+              )
+              * 100
+              > 1
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusRemoteWriteBehind:
+          enabled: false
+          spec:
+            alert: "PrometheusRemoteWriteBehind"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write
+                is {{ printf "%.1f" $value }}s behind for {{ $labels.remote_name}}:{{ $labels.url }}.
+              summary: Prometheus remote write is behind.
+            expr: |
+              # Without max_over_time, failed scrapes could create false negatives, see
+              # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+              (
+                max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              - ignoring(remote_name, url) group_right
+                max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              )
+              > 120
+            for: 15m
+            labels:
+              severity: info
+
+        PrometheusRemoteWriteDesiredShards:
+          enabled: false
+          spec:
+            alert: "PrometheusRemoteWriteDesiredShards"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write
+                desired shards calculation wants to run {{ $value }} shards for queue
+                {{$labels.remote_name}}:{{$labels.url}}, which **may exceed** the configured max.
+                Please review 'prometheus_remote_storage_shards_max' for the corresponding job.
+              summary: Prometheus remote write desired shards calculation wants to run more
+                than configured max shards.
+            expr: |
+              # Without max_over_time, failed scrapes could create false negatives, see
+              # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+              (
+                max_over_time(prometheus_remote_storage_shards_desired{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              >
+                max_over_time(prometheus_remote_storage_shards_max{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m])
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        VMRuleFailures:
+          enabled: false
+          spec:
+            alert: "VMRuleFailures"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to
+                evaluate {{ printf "%.0f" $value }} rules in the last 5m.
+              summary: Prometheus is failing rule evaluations.
+            expr: |
+              increase(prometheus_rule_evaluation_failures_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusMissingRuleEvaluations:
+          enabled: false
+          spec:
+            alert: "PrometheusMissingRuleEvaluations"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has missed {{
+                printf "%.0f" $value }} rule group evaluations in the last 5m.
+              summary: Prometheus is missing rule evaluations due to slow rule group evaluation.
+            expr: |
+              increase(prometheus_rule_group_iterations_missed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusTargetLimitHit:
+          enabled: false
+          spec:
+            alert: "PrometheusTargetLimitHit"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped
+                {{ printf "%.0f" $value }} targets because the number of targets exceeded
+                the configured target_limit.
+              summary: Prometheus has dropped targets because some scrape configs have exceeded
+                the targets limit.
+            expr: |
+              increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusLabelLimitHit:
+          enabled: false
+          spec:
+            alert: "PrometheusLabelLimitHit"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped
+                {{ printf "%.0f" $value }} targets because some samples exceeded the configured
+                label_limit, label_name_length_limit or label_value_length_limit.
+              summary: Prometheus has dropped targets because some scrape configs have exceeded
+                the labels limit.
+            expr: |
+              increase(prometheus_target_scrape_pool_exceeded_label_limits_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusScrapeBodySizeLimitHit:
+          enabled: false
+          spec:
+            alert: "PrometheusScrapeBodySizeLimitHit"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{
+                printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
+                the configured body_size_limit.
+              summary: Prometheus has dropped some targets that exceeded body size limit.
+            expr: |
+              increase(prometheus_target_scrapes_exceeded_body_size_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusScrapeSampleLimitHit:
+          enabled: false
+          spec:
+            alert: "PrometheusScrapeSampleLimitHit"
+            annotations:
+              description: |
+                Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{
+                printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
+                the configured sample_limit.
+              summary: Prometheus has failed scrapes that have exceeded the configured sample
+                limit.
+            expr: |
+              increase(prometheus_target_scrapes_exceeded_sample_limit_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[5m]) > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        PrometheusTargetSyncFailure:
+          enabled: false
+          spec:
+            alert: "PrometheusTargetSyncFailure"
+            annotations:
+              description: |
+                {{ printf "%.0f" $value }} targets in Prometheus {{$labels.namespace}}/{{$labels.pod}}
+                have failed to sync because invalid configuration was supplied.
+              runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-monitoring-operator/PrometheusTargetSyncFailure.md
+              summary: Prometheus has failed to sync targets.
+            expr: |
+              increase(prometheus_target_sync_failed_total{job=~"prometheus-k8s|prometheus|prometheus-user-workload"}[30m]) > 0
+            for: 5m
+            labels:
+              severity: critical
+
+kubernetesResources:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetesResources:
+      enabled: false
+      rules:
+        KubeCPUOvercommit:
+          enabled: false
+          spec:
+            alert: "KubeCPUOvercommit"
+            annotations:
+              description: |
+                Cluster {{ $labels.cluster_full_name }} has overcommitted CPU
+                resource requests for Pods by {{ printf "%.2f" $value }} CPU shares and
+                cannot tolerate node failure.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuovercommit
+              summary: Cluster has overcommitted CPU resource requests.
+            expr: |
+              sum(namespace_cpu:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
+              and
+              (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        KubeMemoryOvercommit:
+          enabled: false
+          spec:
+            alert: "KubeMemoryOvercommit"
+            annotations:
+              description: |
+                Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests
+                for Pods by {{ $value | humanize }} bytes and cannot tolerate node failure.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryovercommit
+              summary: Cluster has overcommitted memory resource requests.
+            expr: |
+              sum(namespace_memory:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
+              and
+              (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        KubeCPUQuotaOvercommit:
+          enabled: false
+          spec:
+            alert: "KubeCPUQuotaOvercommit"
+            annotations:
+              description: |
+                Cluster {{ $labels.cluster_full_name }}  has overcommitted CPU
+                resource requests for Namespaces.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuquotaovercommit
+              summary: Cluster has overcommitted CPU resource requests.
+            expr: |
+              sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(cpu|requests.cpu)"})) by (cluster_full_name)
+                /
+              sum(kube_node_status_allocatable{resource="cpu", job="kube-state-metrics"}) by (cluster_full_name)
+                > 1.5
+            for: 5m
+            labels:
+              severity: critical
+
+        KubeMemoryQuotaOvercommit:
+          enabled: false
+          spec:
+            alert: "KubeMemoryQuotaOvercommit"
+            annotations:
+              description: Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests for Namespaces.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryquotaovercommit
+              summary: Cluster has overcommitted memory resource requests.
+            expr: |
+              sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(memory|requests.memory)"})) by (cluster_full_name)
+                /
+              sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)
+                > 1.5
+            for: 5m
+            labels:
+              severity: warning
+
+        KubeQuotaAlmostFull:
+          enabled: false
+          spec:
+            alert: "KubeQuotaAlmostFull"
+            annotations:
+              description: |
+                Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
+                of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaalmostfull
+              summary: Namespace quota is going to be full.
+            expr: |
+              kube_resourcequota{job="kube-state-metrics", type="used"}
+                / ignoring(instance, job, type)
+              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
+                > 0.9 < 1
+            for: 15m
+            labels:
+              severity: info
+
+        KubeQuotaFullyUsed:
+          enabled: false
+          spec:
+            alert: "KubeQuotaFullyUsed"
+            annotations:
+              description: |
+                Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
+                of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name}}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotafullyused
+              summary: Namespace quota is fully used.
+            expr: |
+              kube_resourcequota{job="kube-state-metrics", type="used"}
+                / ignoring(instance, job, type)
+              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
+                == 1
+            for: 15m
+            labels:
+              severity: info
+
+        KubeQuotaExceeded:
+          enabled: false
+          spec:
+            alert: "KubeQuotaExceeded"
+            annotations:
+              description: |
+                Namespace {{ $labels.namespace }} is using {{ $value | humanizePercentage }}
+                of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaexceeded
+              summary: Namespace quota has exceeded the limits.
+            expr: |
+              kube_resourcequota{job="kube-state-metrics", type="used"}
+                / ignoring(instance, job, type)
+              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
+                > 1
+            for: 15m
+            labels:
+              severity: warning
+
+        CPUThrottlingHigh:
+          enabled: false
+          spec:
+            alert: "CPUThrottlingHigh"
+            annotations:
+              summary: "Elevated CPU throttling"
+              message: >-
+                cluster={{ $labels.cluster_full_name }}
+                ns={{ $labels.namespace }}
+                pod={{ $labels.pod }}
+                container={{ $labels.container }}
+                node={{ $labels.node }}
+                throttling={{ $value | humanizePercentage }}
+              description: |
+                Elevated CPU throttling for 15m.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                Node: {{ $labels.node }}
+                Throttling ratio (5m): {{ $value | humanizePercentage }}
+
+                Hints:
+                - Check CPU limits/requests for the container.
+                - Look for noisy-neighbor workloads on the node.
+            expr: |
+              (
+                sum by (cluster_full_name, namespace, pod, container, node) (
+                  increase(container_cpu_cfs_throttled_periods_total{
+                    container!="",
+                    job="kubelet",
+                    metrics_path="/metrics/cadvisor",
+                    namespace=~"beget.*|kube.*"
+                  }[5m])
+                )
+              /
+                sum by (cluster_full_name, namespace, pod, container, node) (
+                  increase(container_cpu_cfs_periods_total{
+                    container!="",
+                    job="kubelet",
+                    metrics_path="/metrics/cadvisor",
+                    namespace=~"beget.*|kube.*"
+                  }[5m])
+                )
+              ) > 0.25
+              and
+              (
+                sum by (cluster_full_name, namespace, pod, container, node) (
+                  rate(container_cpu_cfs_throttled_seconds_total{
+                    container!="",
+                    job="kubelet",
+                    metrics_path="/metrics/cadvisor",
+                    namespace=~"beget.*|kube.*"
+                  }[5m])
+                )
+              ) > 0.05
+            for: 15m
+            labels:
+              severity: critical
+
+kubernetesApps:
+  enabled: false
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetesApps:
+      enabled: false
+      rules:
+        KubePodCrashLooping:
+          enabled: false
+          spec:
+            alert: "KubePodCrashLooping"
+            annotations:
+              description: |
+                Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
+                (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
+              summary: Pod is crash looping.
+            expr: |
+              max_over_time(
+                kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+              ) >= 1
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeInfraPodCrashLooping:
+          enabled: false
+          spec:
+            alert: "KubeInfraPodCrashLooping"
+            annotations:
+              description: |
+                Infrastructure Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container}}) is in waiting state 
+                (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
+              summary: Infrastructure Pod is crash looping.
+            expr: |
+              max_over_time(
+                kube_pod_container_status_waiting_reason{
+                  reason="CrashLoopBackOff",
+                  job="kube-state-metrics",
+                  namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$"
+                }[5m]
+              ) >= 1
+            for: 15m
+            labels:
+              severity: critical
+
+        KubePodNotReady:
+          enabled: false
+          spec:
+            alert: "KubePodNotReady"
+            annotations:
+              description: |
+                Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
+                state for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodnotready
+              summary: Pod has been in a non-ready state for more than 15 minutes.
+            expr: |-
+              sum by (namespace,pod,cluster_full_name) (
+                max by (namespace,pod,cluster_full_name) (
+                  kube_pod_status_phase{job="kube-state-metrics", namespace=~"beget.*|kube.*|default", phase=~"Pending|Unknown|Failed"}
+                ) * on (namespace,pod,cluster_full_name) group_left(owner_kind) topk by (namespace,pod,cluster_full_name) (
+                  1, max by (namespace,pod,owner_kind,cluster_full_name) (kube_pod_owner{owner_kind!="Job"})
+                )
+              ) > 0
+            for: 15m
+            labels:
+              severity: critical
+
+        KubeDeploymentGenerationMismatch:
+          enabled: false
+          spec:
+            alert: "KubeDeploymentGenerationMismatch"
+            annotations:
+              description: |
+                Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment }}
+                does not match, this indicates that the Deployment has failed but has
+                not been rolled back on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentgenerationmismatch
+              summary: Deployment generation mismatch due to possible roll-back
+            expr: |-
+              kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                !=
+              kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeDeploymentReplicasMismatch:
+          enabled: false
+          spec:
+            alert: "KubeDeploymentReplicasMismatch"
+            annotations:
+              description: |
+                Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
+                not matched the expected number of replicas for longer than 15 minutes on
+                cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
+              summary: Deployment has not matched the expected number of replicas.
+            expr: |-
+              (
+                kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  >
+                kube_deployment_status_replicas_available{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              ) and (
+                changes(kube_deployment_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m])
+                  ==
+                0
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeInfraDeploymentReplicasMismatch:
+          enabled: false
+          spec:
+            alert: "KubeInfraDeploymentReplicasMismatch"
+            annotations:
+              description: |
+                Infrastructure Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has
+                not matched the expected number of replicas for longer than 15 minutes on
+                cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
+              summary: Infrastructure Deployment has not matched the expected number of replicas.
+            expr: |-
+              (
+                kube_deployment_spec_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                  deployment!="client-kube-state-metrics"
+                }
+                  >
+                kube_deployment_status_replicas_available{
+                  job="kube-state-metrics",
+                  namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                  deployment!="client-kube-state-metrics"
+                }
+              ) and (
+                changes(
+                  kube_deployment_status_replicas_updated{
+                    job="kube-state-metrics",
+                    namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                    deployment!="client-kube-state-metrics"
+                  }[10m]
+                ) == 0
+              )
+            for: 15m
+            labels:
+              severity: critical
+
+        KubeDeploymentRolloutStuck:
+          enabled: false
+          spec:
+            alert: "KubeDeploymentRolloutStuck"
+            annotations:
+              description: |
+                Rollout of deployment {{ $labels.namespace }}/{{ $labels.deployment }}
+                is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
+              summary: Deployment rollout is not progressing.
+            expr: |-
+              kube_deployment_status_condition{
+                condition="Progressing",
+                status="false",
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default"
+              } != 0
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeInfraDeploymentRolloutStuck:
+          enabled: false
+          spec:
+            alert: "KubeInfraDeploymentRolloutStuck"
+            annotations:
+              description: |
+                Rollout of infrastructure deployment {{ $labels.namespace }}/{{ $labels.deployment }}
+                is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
+              summary: Infrastructure Deployment rollout is not progressing.
+            expr: |-
+              kube_deployment_status_condition{
+                condition="Progressing",
+                status="false",
+                job="kube-state-metrics",
+                namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                deployment!="client-kube-state-metrics"
+              } != 0
+            for: 15m
+            labels:
+              severity: critical
+
+        KubeStatefulSetReplicasMismatch:
+          enabled: false
+          spec:
+            alert: "KubeStatefulSetReplicasMismatch"
+            annotations:
+              summary: "StatefulSet replicas mismatch"
+              message: |
+                {{ $labels.cluster_full_name }}: Несоответствие количества реплик StatefulSet
+                StatefulSet не соответствует ожидаемому количеству реплик в течение как минимум 15 минут.
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                StatefulSet: {{ $labels.statefulset }}
+
+                Возможные причины и действия:
+                - Проверьте события StatefulSet и статус pod’ов.
+                - Убедитесь, что нет pod’ов в состоянии Pending или CrashLoopBackOff.
+                - Проверьте корректность PVC и доступность хранилища.
+                - Проверьте доступность ресурсов узлов и ограничения планирования.
+              description: |
+                StatefulSet has not matched the expected number of replicas for at least 15m.
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                StatefulSet: {{ $labels.statefulset }}
+                Hints:
+                - Check StatefulSet events and pods status.
+                - Look for Pending/CrashLoopBackOff pods and PVC issues.
+                - Verify node capacity / scheduling constraints.
+              runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
+            expr: |-
+              (
+                kube_statefulset_status_replicas_ready{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  !=
+                kube_statefulset_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              ) and (
+                changes(
+                  kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m]
+                ) == 0
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeStatefulSetGenerationMismatch:
+          enabled: false
+          spec:
+            alert: "KubeStatefulSetGenerationMismatch"
+            annotations:
+              description: |
+                StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset }}
+                does not match, this indicates that the StatefulSet has failed but has
+                not been rolled back on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetgenerationmismatch
+              summary: StatefulSet generation mismatch due to possible roll-back
+            expr: |-
+              kube_statefulset_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                !=
+              kube_statefulset_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeStatefulSetUpdateNotRolledOut:
+          enabled: false
+          spec:
+            alert: "KubeStatefulSetUpdateNotRolledOut"
+            annotations:
+              description: |
+                StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
+                update has not been rolled out on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetupdatenotrolledout
+              summary: StatefulSet update has not been rolled out.
+            expr: |-
+              (
+                max by (namespace,statefulset,job,cluster_full_name) (
+                  kube_statefulset_status_current_revision{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                    unless
+                  kube_statefulset_status_update_revision{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                )
+                  *
+                (
+                  kube_statefulset_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                    !=
+                  kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                )
+              )  and (
+                changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m])
+                  ==
+                0
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeDaemonSetRolloutStuck:
+          enabled: false
+          spec:
+            alert: "KubeDaemonSetRolloutStuck"
+            annotations:
+              description: |
+                DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
+                not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
+              summary: DaemonSet rollout is stuck.
+            expr: |-
+              (
+                (
+                  kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                )
+                or
+                (
+                  kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  != 0
+                )
+                or
+                (
+                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                )
+                or
+                (
+                  kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                )
+              )
+              and
+              (
+                changes(
+                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+                ) == 0
+              )
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeInfraDaemonSetRolloutStuck:
+          enabled: false
+          spec:
+            alert: "KubeInfraDaemonSetRolloutStuck"
+            annotations:
+              description: |
+                Infrastructure DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
+                not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
+              summary: Infrastructure DaemonSet rollout is stuck.
+            expr: |-
+              (
+                (
+                  kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                ) or (
+                  kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  !=
+                  0
+                ) or (
+                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                ) or (
+                  kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                )
+              ) and (
+                changes(kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}[5m])
+                  ==
+                0
+              )
+            for: 15m
+            labels:
+              severity: critical
+
+        KubeContainerWaiting:
+          enabled: false
+          spec:
+            alert: "KubeContainerWaiting"
+            annotations:
+              description: |
+                pod/{{ $labels.pod }} in namespace {{ $labels.namespace }} on
+                container {{ $labels.container}} has been in waiting state for longer than
+                1 hour. (reason: "{{ $labels.reason }}") on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecontainerwaiting
+              summary: Pod container waiting longer than 1 hour
+            expr: |
+              kube_pod_container_status_waiting_reason{
+                reason!="CrashLoopBackOff",
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default"
+              } > 0
+            for: 1h
+            labels:
+              severity: critical
+
+        KubeDaemonSetNotScheduled:
+          enabled: false
+          spec:
+            alert: "KubeDaemonSetNotScheduled"
+            annotations:
+              description: |
+                {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
+                are not scheduled on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetnotscheduled
+              summary: DaemonSet pods are not scheduled.
+            expr: |-
+              kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                -
+              kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        KubeDaemonSetMisScheduled:
+          enabled: false
+          spec:
+            alert: "KubeDaemonSetMisScheduled"
+            annotations:
+              description: |
+                {{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }}
+                are running where they are not supposed to run on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetmisscheduled
+              summary: DaemonSet pods are misscheduled.
+            expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeJobNotCompleted:
+          enabled: false
+          spec:
+            alert: "KubeJobNotCompleted"
+            annotations:
+              description: |
+                Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking
+                more than {{ "43200" | humanizeDuration }} to complete on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobnotcompleted
+              summary: Job did not complete in time
+            expr: |-
+              time()
+                -
+              max by (namespace,job_name,cluster_full_name) (
+                kube_job_status_start_time{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                and
+                kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+              ) > 43200
+            labels:
+              severity: warning
+
+        KubeJobFailed:
+          enabled: false
+          spec:
+            alert: "KubeJobFailed"
+            annotations:
+              description: |
+                Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to
+                complete. Removing failed job after investigation should clear this alert
+                on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobfailed
+              summary: Job failed to complete.
+            expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeHpaReplicasMismatch:
+          enabled: false
+          spec:
+            alert: "KubeHpaReplicasMismatch"
+            annotations:
+              description: |
+                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                has not matched the desired number of replicas for longer than 15 minutes
+                on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpareplicasmismatch
+              summary: HPA has not matched desired number of replicas.
+            expr: |-
+              (kube_horizontalpodautoscaler_status_desired_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                !=
+              kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
+                and
+              (kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                >
+              kube_horizontalpodautoscaler_spec_min_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
+                and
+              (kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                <
+              kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
+                and
+              changes(kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[15m]) == 0
+            for: 15m
+            labels:
+              severity: warning
+
+        KubeHpaMaxedOut:
+          enabled: false
+          spec:
+            alert: "KubeHpaMaxedOut"
+            annotations:
+              description: |
+                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                has been running at max replicas for longer than 15 minutes on cluster {{
+                $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpamaxedout
+              summary: HPA is running at max replicas
+            expr: |-
+              kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                ==
+              kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+            for: 15m
+            labels:
+              severity: warning
+
+        KubePdbNotEnoughHealthyPods:
+          enabled: false
+          spec:
+            alert: "KubePdbNotEnoughHealthyPods"
+            annotations:
+              summary: "PDB does not have enough healthy pods"
+              message: |
+                {{ $labels.cluster_full_name }}: Недостаточно здоровых pod’ов (не хватает: {{ $value | humanize }})
+                PodDisruptionBudget не достигает требуемого количества здоровых pod’ов более 15 минут.
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PDB: {{ $labels.poddisruptionbudget }}
+                Недостающих pod’ов: {{ $value | humanize }}
+
+                Возможные причины и действия:
+                - статус pod’ов (Pending/CrashLoopBackOff)
+                - события StatefulSet/Deployment
+                - доступность узлов и ресурсов
+              description: |
+                PodDisruptionBudget has not met desired healthy pods for 15m.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PDB: {{ $labels.poddisruptionbudget }}
+                Missing healthy pods: {{ $value | humanize }}
+
+                Meaning:
+                - Voluntary disruptions (drain/eviction) may be blocked.
+                - Indicates under-replication or unhealthy pods.
+              runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
+            expr: |-
+              (
+                kube_poddisruptionbudget_status_desired_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                -
+                kube_poddisruptionbudget_status_current_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              ) > 0
+            for: 15m
+            labels:
+              severity: warning
