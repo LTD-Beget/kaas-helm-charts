@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/addonset"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/addon"
+  version: "{{ .Values.addonRevision }}"
   targetCluster: in-cluster
   targetNamespace: "beget-addonset"
   variables:
@@ -25,6 +25,8 @@ spec:
           jsonPath: .data.clusterClientName
         - as: cluster.name
           jsonPath: .data.clusterName
+        - as: addonRevision
+          jsonPath: .data.addonRevision
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

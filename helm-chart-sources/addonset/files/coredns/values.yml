@@ -27,7 +27,7 @@ spec:
         readOnlyRootFilesystem: true
         runAsUser: 0
       service:
-        clusterIP: 29.64.0.10
+        clusterIP: {{ .Values.clientServiceCidrCoredns }}
       serviceAccount:
         create: true
         name: coredns
