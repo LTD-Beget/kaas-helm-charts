@@ -657,7 +657,7 @@ metadata:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: client-cp-control-plane
 spec:
-  values:
+  values: |
     appSpec:
       applications:
         controlPlane:
