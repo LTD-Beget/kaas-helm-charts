@@ -1,0 +1,666 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          csiDriver: true
+          clusterName: "{{ .Variables.clusterName }}"
+          containers:
+            kubeApiserver:
+              image:
+                tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+              extraArgs:
+                advertise-address: "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+                secure-port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                egress-selector-config-file: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
+                service-cluster-ip-range: "{{ .Variables.serviceCidr }}"
+              extraLivenessProbe:
+                httpGet:
+                  port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+              extraReadinessProbe:
+                httpGet:
+                  port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+              extraPorts:
+                https:
+                  containerPort: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+              extraStartupProbe:
+                httpGet:
+                  port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+              certSANs:
+                - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane"
+                - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc"
+                - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+              certIPs:
+                - "{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                - "127.0.0.1"
+              extraVolumeMounts:
+                kas-egress-selector:
+                  volumeMount:
+                    path: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
+                    spec:
+                      subPath: kas-egress-selector
+                      readOnly: true 
+              extraResources:
+                requests:
+                  cpu: 128m
+                  memory: 128Mi
+            kubeControllerManager:
+              image:
+                tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+              extraResources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi 
+            kubeScheduler:
+              image:
+                tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+            konnectivityServer:
+              certIPs:
+                - "{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                - "127.0.0.1"
+              extraArgs:
+                agent-namespace: beget-konnectivity-agent
+                mode: http-connect
+                server-count: "{{ .Variables.controlPlaneReplicas }}"
+          service:
+            enabled: true
+            type: NodePort
+            nodePort: 30000
+            additional:
+              enabled: true
+              type: NodePort
+              ports:
+                - name: agent
+                  port: 8132
+                  targetPort: 8132
+                  protocol: TCP
+                  nodePort: 30132
+          issuers:
+            kubernetesCA:
+              enabled: true
+              type: ca
+              secretName: "{{ .Variables.certificatesCaName }}"
+            etcdCA:
+              enabled: false
+              type: ca
+              secretName: "{{ .Variables.certificatesEtcdName }}"
+          volumes:
+            ca-crt:
+              volume:
+                secretName: "{{ .Variables.certificatesCaName }}"
+            ca-key:
+              volume:
+                secretName: "{{ .Variables.certificatesCaName }}"
+            etcd-crt:
+              volume:
+                secretName: "{{ .Variables.certificatesEtcdName }}"
+            etcd-key:
+              volume:
+                secretName: "{{ .Variables.certificatesEtcdName }}"
+            kas-egress-selector:
+              volume:
+                mode: configMap
+                name: kas-egress-selector
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: apiserver.k8s.io/v1beta1
+                    kind: EgressSelectorConfiguration
+                    egressSelections:
+                      - name: cluster
+                        connection:
+                          proxyProtocol: HTTPConnect
+                          transport:
+                            tcp:
+                              url: https://127.0.0.1:8130
+                              tlsConfig:
+                                caBundle: /etc/kubernetes/pki/ca.crt
+                                clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
+                                clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-nocsi
+  labels:
+    addons.in-cloud.io/values: nocsi
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          csiDriver: false
+          containers:
+            kubeApiserver:
+              extraVolumeMounts:
+                apiserver-kubelet-client-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+                    spec:
+                      subPath: apiserver-kubelet-client.crt
+                      readOnly: true
+                apiserver-kubelet-client-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+                    spec:
+                      subPath: apiserver-kubelet-client.key
+                      readOnly: true
+                apiserver-etcd-client-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver-etcd-client.crt
+                    spec:
+                      subPath: apiserver-etcd-client.crt
+                      readOnly: true
+                apiserver-etcd-client-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver-etcd-client.key
+                    spec:
+                      subPath: apiserver-etcd-client.key
+                      readOnly: true
+                front-proxy-client-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/front-proxy-client.crt
+                    spec:
+                      subPath: front-proxy-client.crt
+                      readOnly: true
+                front-proxy-client-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/front-proxy-client.key
+                    spec:
+                      subPath: front-proxy-client.key
+                      readOnly: true
+                apiserver-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver.crt
+                    spec:
+                      subPath: apiserver.crt
+                      readOnly: true
+                apiserver-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/apiserver.key
+                    spec:
+                      subPath: apiserver.key
+                      readOnly: true
+            kubeControllerManager:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/controller-manager-server.crt
+                tls-private-key-file: /etc/kubernetes/pki/controller-manager-server.key
+              extraVolumeMounts:
+                controller-manager-server-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/controller-manager-server.crt
+                    spec:
+                      subPath: controller-manager-server.crt
+                      readOnly: true
+                controller-manager-server-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/controller-manager-server.key
+                    spec:
+                      subPath: controller-manager-server.key
+                      readOnly: true
+                controller-manager-client-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/controller-manager.crt
+                    spec:
+                      subPath: controller-manager-client.crt
+                      readOnly: true
+                controller-manager-client-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/controller-manager.key
+                    spec:
+                      subPath: controller-manager-client.key
+                      readOnly: true
+            kubeScheduler:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/scheduler-server.crt
+                tls-private-key-file: /etc/kubernetes/pki/scheduler-server.key
+              extraVolumeMounts:
+                scheduler-server-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/scheduler-server.crt
+                    spec:
+                      subPath: scheduler-server.crt
+                      readOnly: true
+                scheduler-server-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/scheduler-server.key
+                    spec:
+                      subPath: scheduler-server.key
+                      readOnly: true
+                scheduler-client-crt:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/scheduler.crt
+                    spec:
+                      subPath: scheduler-client.crt
+                      readOnly: true
+                scheduler-client-key:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/scheduler.key
+                    spec:
+                      subPath: scheduler-client.key
+                      readOnly: true
+          volumes:
+            apiserver-etcd-client-crt:
+              volume:
+                mode: secret
+                secretName: apiserver-etcd-client-tls
+                items:
+                  - key: tls.crt
+                    path: apiserver-etcd-client.crt
+                name: apiserver-etcd-client-crt
+            apiserver-etcd-client-key:
+              volume:
+                mode: secret
+                secretName: apiserver-etcd-client-tls
+                items:
+                  - key: tls.key
+                    path: apiserver-etcd-client.key
+                name: apiserver-etcd-client-key
+            apiserver-kubelet-client-crt:
+              volume:
+                mode: secret
+                secretName: apiserver-kubelet-client-tls
+                items:
+                  - key: tls.crt
+                    path: apiserver-kubelet-client.crt
+                name: apiserver-client-crt
+            apiserver-kubelet-client-key:
+              volume:
+                mode: secret
+                secretName: apiserver-kubelet-client-tls
+                items:
+                  - key: tls.key
+                    path: apiserver-kubelet-client.key
+                name: apiserver-client-key
+            front-proxy-client-crt:
+              volume:
+                mode: secret
+                secretName: front-proxy-client-tls
+                items:
+                  - key: tls.crt
+                    path: front-proxy-client.crt
+                name: front-proxy-crt
+            front-proxy-client-key:
+              volume:
+                mode: secret
+                secretName: front-proxy-client-tls
+                items:
+                  - key: tls.key
+                    path: front-proxy-client.key
+                name: front-proxy-key
+            apiserver-crt:
+              volume:
+                mode: secret
+                secretName: apiserver-tls
+                items:
+                  - key: tls.crt
+                    path: apiserver.crt
+                name: kube-apiserver-crt
+            apiserver-key:
+              volume:
+                mode: secret
+                secretName: apiserver-tls
+                items:
+                  - key: tls.key
+                    path: apiserver.key
+                name: kube-apiserver-key
+            controller-manager-server-crt:
+              volume:
+                mode: secret
+                secretName: controller-manager-server-tls
+                items:
+                  - key: tls.crt
+                    path: controller-manager-server.crt
+                name: controller-manager-server-crt
+            controller-manager-server-key:
+              volume:
+                mode: secret
+                secretName: controller-manager-server-tls
+                items:
+                  - key: tls.key
+                    path: controller-manager-server.key
+                name: controller-manager-server-key
+            controller-manager-client-crt:
+              volume:
+                mode: secret
+                secretName: controller-manager-kubeconfig-client-tls
+                items:
+                  - key: tls.crt
+                    path: controller-manager-client.crt
+                name: controller-manager-client-crt
+            controller-manager-client-key:
+              volume:
+                mode: secret
+                secretName: controller-manager-kubeconfig-client-tls
+                items:
+                  - key: tls.key
+                    path: controller-manager-client.key
+                name: controller-manager-client-key
+            scheduler-server-crt:
+              volume:
+                mode: secret
+                secretName: scheduler-server-tls
+                items:
+                  - key: tls.crt
+                    path: scheduler-server.crt
+                name: scheduler-server-crt
+            scheduler-server-key:
+              volume:
+                mode: secret
+                secretName: scheduler-server-tls
+                items:
+                  - key: tls.key
+                    path: scheduler-server.key
+                name: scheduler-server-key
+            scheduler-client-crt:
+              volume:
+                mode: secret
+                secretName: scheduler-kubeconfig-client-tls
+                items:
+                  - key: tls.crt
+                    path: scheduler-client.crt
+                name: scheduler-client-crt
+            scheduler-client-key:
+              volume:
+                mode: secret
+                secretName: scheduler-kubeconfig-client-tls
+                items:
+                  - key: tls.key
+                    path: scheduler-client.key
+                name: scheduler-client-key
+            controller-manager-kubeconfig:
+              volume:
+                mode: configMap
+                name: controller-manager-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/controller-manager.crt
+                        client-key: /etc/kubernetes/pki/controller-manager.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+            scheduler-kubeconfig:
+              volume:
+                mode: configMap
+                name: scheduler-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/scheduler.crt
+                        client-key: /etc/kubernetes/pki/scheduler.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-csi
+  labels:
+    addons.in-cloud.io/values: csi
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          csiDriver: true
+          containers:
+            kubeApiserver:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/apiserver/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/apiserver/tls.key
+                proxy-client-cert-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.crt
+                proxy-client-key-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.key
+                kubelet-client-certificate: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
+                kubelet-client-key: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
+                etcd-keyfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.key
+                etcd-certfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.crt
+              extraVolumeMounts:
+                apiserver-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver
+                apiserver-kubelet-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver-kubelet-client
+                apiserver-etcd-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver-etcd-client
+                front-proxy-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/front-proxy-client
+            kubeControllerManager:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.key
+              extraVolumeMounts:
+                controller-manager-server-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/controller-manager-server
+                controller-manager-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/controller-manager-client
+            kubeScheduler:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/scheduler-server/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/scheduler-server/tls.key
+              extraVolumeMounts:
+                scheduler-server-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/scheduler-server
+                scheduler-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/scheduler-client
+          volumes:
+            apiserver-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
+            apiserver-kubelet-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver-kubelet-client
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            apiserver-etcd-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver-etcd-client
+                  csi.cert-manager.io/issuer-name: etcd-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            front-proxy-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: front-proxy-client
+                  csi.cert-manager.io/issuer-name: front-proxy-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            controller-manager-server-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-controller-manager-server
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
+            controller-manager-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-controller-manager
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            scheduler-server-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-scheduler-server
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
+            scheduler-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-scheduler
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            controller-manager-kubeconfig:
+              volume:
+                mode: configMap
+                name: controller-manager-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/csi/controller-manager-client/tls.crt
+                        client-key: /etc/kubernetes/pki/csi/controller-manager-client/tls.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+            scheduler-kubeconfig:
+              volume:
+                mode: configMap
+                name: scheduler-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/csi/scheduler-client/tls.crt
+                        client-key: /etc/kubernetes/pki/csi/scheduler-client/tls.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+
+---
+## depends_on {{ .Variables.argocdApplicationControlPlaneValuesAppSpecApplicationsControlPlaneMonitoringEnabled }}
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-monitoring
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values:
+    appSpec:
+      applications:
+        controlPlane:
+          monitoring:
+            enabled: true
+            type: VictoriaMetrics
