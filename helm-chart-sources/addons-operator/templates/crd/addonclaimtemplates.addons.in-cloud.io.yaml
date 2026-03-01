@@ -1,0 +1,145 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: addonclaimtemplates.addons.in-cloud.io
+  labels:
+    cluster.x-k8s.io/v1beta1: v1alpha1
+    cluster.x-k8s.io/v1beta2: v1alpha1
+spec:
+  group: addons.in-cloud.io
+  names:
+    kind: AddonClaimTemplate
+    listKind: AddonClaimTemplateList
+    plural: addonclaimtemplates
+    singular: addonclaimtemplate
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - jsonPath: .spec.addon.name
+          name: Addon
+          type: string
+
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: |-
+            AddonClaimTemplate represents a request to addonClaim.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: AddonClaimTemplateSpec defines the desired state of an AddonClaimTemplate.
+              properties:
+                template:
+                  description: template for AddonClaim.
+                  type: object
+                  properties:
+                    metadata:
+                      x-kubernetes-preserve-unknown-fields: true
+                      description: Metadata for AddonClaim.
+                      type: object
+                    spec:
+                      description: Spec for AddonClaim.
+                      properties:
+                        addon:
+                          description: |-
+                            Addon specifies the identity of the remote Addon resource.
+                            The name is required and immutable — it cannot be changed after creation.
+                            The rendered template's metadata.name is overridden by this value.
+                          properties:
+                            name:
+                              description: Name of the Addon resource in the remote cluster.
+                              maxLength: 253
+                              minLength: 1
+                              type: string
+                          required:
+                            - name
+                          type: object
+                        credentialRef:
+                          description: |-
+                            CredentialRef references the Secret containing the infra cluster kubeconfig.
+                            The Secret must have a "value" key with the kubeconfig data.
+                          properties:
+                            name:
+                              description: 'Name of the Secret containing the kubeconfig (key: "value").'
+                              minLength: 1
+                              type: string
+                          required:
+                            - name
+                          type: object
+                        templateRef:
+                          description: TemplateRef references the AddonTemplate to use for rendering.
+                          properties:
+                            name:
+                              description: Name of the AddonTemplate.
+                              minLength: 1
+                              type: string
+                          required:
+                            - name
+                          type: object
+                        valueLabels:
+                          default: claim
+                          description: |-
+                            ValueLabels overrides the "addons.in-cloud.io/values" label on the generated AddonValue.
+                            Defaults to "claim". Used to match custom valuesSelectors in the rendered Addon.
+                          maxLength: 63
+                          type: string
+                        values:
+                          description: |-
+                            Values provides structured Helm values as a JSON object.
+                            Mutually exclusive with ValuesString — only one may be set.
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                        valuesString:
+                          description: |-
+                            ValuesString provides Helm values as a YAML string.
+                            May contain Go template expressions rendered with the AddonClaim context.
+                            Mutually exclusive with Values — only one may be set.
+                          type: string
+                        variables:
+                          description: |-
+                            Variables provides arbitrary parameters for template rendering.
+                            Accessible in templates as .Vars.<key> (shortcut) or .Values.spec.variables.<key>.
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                        version:
+                          description: cluster version
+                          type: string
+                      required:
+                        - addon
+                        - credentialRef
+                        - templateRef
+                      type: object
+                      x-kubernetes-validations:
+                      - message: values and valuesString are mutually exclusive
+                        rule: '!(has(self.values) && size(self.valuesString) > 0)'
+              type: object
+            status:
+              x-kubernetes-preserve-unknown-fields: true
+              description: AddonClaimStatus defines the observed state of an AddonClaim.
+              type: object
+          required:
+            - spec
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
