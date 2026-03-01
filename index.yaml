@@ -3,6 +3,17 @@ entries:
   addon-operator:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-03-01T22:42:59.497805+03:00"
+    description: A Helm chart to distribute the project addon-operator
+    digest: d4da87e6ea5911d796bb229053d195caaf064517e7d36334f1b6e93bf3dac0c7
+    icon: https://example.com/icon.png
+    name: addon-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-02-26T21:18:26.520794131+03:00"
     description: A Helm chart to distribute the project addon-operator
     digest: 6a6aa3065d9312a5b45d7214361ca3154c1834bb235aefa88b96e2a533ab7405
@@ -183,6 +194,25 @@ entries:
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5.tgz
     version: 1.18.5
+  clickhouse-vmstorage:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-03-01T22:42:59.542174+03:00"
+    dependencies:
+    - name: appSpec
+      repository: ""
+      version: 0.1.1
+    - condition: clickhouse.enabled
+      name: clickhouse
+      repository: ""
+      version: 9.3.x
+    description: A Helm chart for Kubernetes
+    digest: 35ce0ff9b9f59723a0b254490210713c0c12ed7ffefcc1c5126aa225a2ee5410
+    name: clickhouse-vmstorage
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/clickhouse-vmstorage-0.1.0.tgz
+    version: 0.1.0
   common-crds:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -689,6 +719,33 @@ entries:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trust-manager-0.1.0.tgz
     version: 0.1.0
   vault:
+  - annotations:
+      charts.openshift.io/name: HashiCorp Vault
+    apiVersion: v2
+    appVersion: 1.20.1
+    created: "2026-03-01T22:42:59.473308+03:00"
+    description: Official HashiCorp Vault Chart
+    digest: a52b3b16aa9afae2deeb3d63500578a62c3daa777551f2c5eb6c2cd07bfd79cc
+    home: https://www.vaultproject.io
+    icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
+    keywords:
+    - vault
+    - security
+    - encryption
+    - secrets
+    - management
+    - automation
+    - infrastructure
+    kubeVersion: '>= 1.20.0-0'
+    name: vault
+    sources:
+    - https://github.com/hashicorp/vault
+    - https://github.com/hashicorp/vault-helm
+    - https://github.com/hashicorp/vault-k8s
+    - https://github.com/hashicorp/vault-csi-provider
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/garbage/vault-0.30.1.tgz
+    version: 0.30.1
   - apiVersion: v2
     appVersion: 0.30.1
     created: "2026-02-26T21:18:26.63781066+03:00"
@@ -731,6 +788,69 @@ entries:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secrets-0.1.0.tgz
     version: 0.1.0
   victoria-metrics-k8s-stack:
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/changes: |
+        - '**Update note**: This release contains changes to validation webhooks and it requires operator version v0.59.2 or above'
+        - Merge default image params for VMAuth with custom ones. See issue [#2236](https://github.com/VictoriaMetrics/helm-charts/issues/2236).
+        - updates operator to [v0.59.2](https://github.com/VictoriaMetrics/operator/releases/tag/v0.59.2) version
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Sources
+          url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+        - name: Charts repo
+          url: https://victoriametrics.github.io/helm-charts/
+        - name: Docs
+          url: https://docs.victoriametrics.com
+        - name: Changelog
+          url: https://docs.victoriametrics.com/changelog
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v1.119.0
+    created: "2026-03-01T22:42:59.495702+03:00"
+    dependencies:
+    - name: victoria-metrics-common
+      repository: https://victoriametrics.github.io/helm-charts
+      version: 0.0.*
+    - condition: victoria-metrics-operator.enabled
+      name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts
+      version: 0.49.*
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.31.*
+    - condition: prometheus-node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.45.*
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 9.2.*
+    description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics
+      Operator, Grafana dashboards, ServiceScrapes and VMRules
+    digest: 508384faa73c19022e10cf6080bc8b1a910d8dcbec884ebc851c85d8c70ae851
+    home: https://github.com/VictoriaMetrics/helm-charts
+    icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+    keywords:
+    - victoriametrics
+    - operator
+    - monitoring
+    - kubernetes
+    - observability
+    - tsdb
+    - metrics
+    - metricsql
+    - timeseries
+    kubeVersion: '>=1.25.0-0'
+    name: victoria-metrics-k8s-stack
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/garbage/victoria-metrics-k8s-stack-0.52.0.tgz
+    version: 0.52.0
   - annotations:
       artifacthub.io/category: monitoring-logging
       artifacthub.io/license: Apache-2.0
