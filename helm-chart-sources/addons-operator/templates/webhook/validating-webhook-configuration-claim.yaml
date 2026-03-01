@@ -1,0 +1,53 @@
+{{- if .Values.managerClaim.enable -}}
+  {{- if .Values.webhook.enable }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+    annotations:
+        {{- if .Values.certManager.enable }}
+        cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "addon-operator.resourceName" (dict "suffix" "serving-cert" "context" $) }}
+        {{- end }}
+    name: {{ include "addon-operator.resourceName" (dict "suffix" "validating-webhook-configuration-claim" "context" $) }}
+webhooks:
+    - admissionReviewVersions:
+        - v1
+      clientConfig:
+        service:
+            name: {{ include "addon-operator.resourceName" (dict "suffix" "webhook-service-claim" "context" $) }}
+            namespace: {{ .Release.Namespace }}
+            path: /validate-addons-in-cloud-io-v1alpha1-addonclaim
+      failurePolicy: Fail
+      name: vaddonclaim-v1alpha1.kb.io
+      rules:
+        - apiGroups:
+            - addons.in-cloud.io
+          apiVersions:
+            - v1alpha1
+          operations:
+            - CREATE
+            - UPDATE
+          resources:
+            - addonclaims
+      sideEffects: None
+    - admissionReviewVersions:
+        - v1
+      clientConfig:
+        service:
+            name: {{ include "addon-operator.resourceName" (dict "suffix" "webhook-service-claim" "context" $) }}
+            namespace: {{ .Release.Namespace }}
+            path: /validate-addons-in-cloud-io-v1alpha1-addontemplate
+      failurePolicy: Fail
+      name: vaddontemplate-v1alpha1.kb.io
+      rules:
+        - apiGroups:
+            - addons.in-cloud.io
+          apiVersions:
+            - v1alpha1
+          operations:
+            - CREATE
+            - UPDATE
+          resources:
+            - addontemplates
+      sideEffects: None
+  {{- end }}
+{{- end }}

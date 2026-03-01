@@ -34,26 +34,6 @@ webhooks:
         service:
             name: {{ include "addon-operator.resourceName" (dict "suffix" "webhook-service" "context" $) }}
             namespace: {{ .Release.Namespace }}
-            path: /validate-addons-in-cloud-io-v1alpha1-addonclaim
-      failurePolicy: Fail
-      name: vaddonclaim-v1alpha1.kb.io
-      rules:
-        - apiGroups:
-            - addons.in-cloud.io
-          apiVersions:
-            - v1alpha1
-          operations:
-            - CREATE
-            - UPDATE
-          resources:
-            - addonclaims
-      sideEffects: None
-    - admissionReviewVersions:
-        - v1
-      clientConfig:
-        service:
-            name: {{ include "addon-operator.resourceName" (dict "suffix" "webhook-service" "context" $) }}
-            namespace: {{ .Release.Namespace }}
             path: /validate-addons-in-cloud-io-v1alpha1-addonphase
       failurePolicy: Fail
       name: vaddonphase-v1alpha1.kb.io
@@ -67,26 +47,6 @@ webhooks:
             - UPDATE
           resources:
             - addonphases
-      sideEffects: None
-    - admissionReviewVersions:
-        - v1
-      clientConfig:
-        service:
-            name: {{ include "addon-operator.resourceName" (dict "suffix" "webhook-service" "context" $) }}
-            namespace: {{ .Release.Namespace }}
-            path: /validate-addons-in-cloud-io-v1alpha1-addontemplate
-      failurePolicy: Fail
-      name: vaddontemplate-v1alpha1.kb.io
-      rules:
-        - apiGroups:
-            - addons.in-cloud.io
-          apiVersions:
-            - v1alpha1
-          operations:
-            - CREATE
-            - UPDATE
-          resources:
-            - addontemplates
       sideEffects: None
     - admissionReviewVersions:
         - v1

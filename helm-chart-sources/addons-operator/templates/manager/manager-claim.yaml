@@ -16,7 +16,7 @@ spec:
     selector:
         matchLabels:
             app.kubernetes.io/name: {{ include "addon-operator-claim.name" . }}
-            control-plane: controller-manager
+            control-plane: controller-manager-claim
     template:
         metadata:
             annotations:
@@ -26,7 +26,7 @@ spec:
                 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
                 app.kubernetes.io/instance: {{ .Release.Name }}
                 app.kubernetes.io/managed-by: {{ .Release.Service }}
-                control-plane: controller-manager
+                control-plane: controller-manager-claim
         spec:
             {{- with .Values.manager.tolerations }}
             tolerations: {{ toYaml . | nindent 16 }}
@@ -110,6 +110,6 @@ spec:
                 {{- if .Values.certManager.enable }}
                 - name: webhook-certs
                   secret:
-                    secretName: webhook-server-cert
+                    secretName: webhook-server-cert-claim
                 {{- end }}
 {{- end }}
