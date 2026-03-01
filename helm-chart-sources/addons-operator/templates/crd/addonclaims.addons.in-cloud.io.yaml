@@ -116,6 +116,9 @@ spec:
                                     Accessible in templates as .Vars.<key> (shortcut) or .Values.spec.variables.<key>.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                            version:
+                                description: cluster version
+                                type: string
                         required:
                             - addon
                             - credentialRef

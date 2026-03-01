@@ -39,7 +39,7 @@ spec:
                 - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc"
                 - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
               certIPs:
-                - "{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
                 - "127.0.0.1"
               extraVolumeMounts:
                 kas-egress-selector:
@@ -64,7 +64,7 @@ spec:
                 tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
             konnectivityServer:
               certIPs:
-                - "{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
                 - "127.0.0.1"
               extraArgs:
                 agent-namespace: beget-konnectivity-agent
@@ -503,7 +503,7 @@ spec:
                   csi.cert-manager.io/issuer-kind: ClusterIssuer
                   csi.cert-manager.io/duration: 8760h
                   csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
                   csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
                   csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
             apiserver-kubelet-client-csi:
@@ -553,7 +553,7 @@ spec:
                   csi.cert-manager.io/issuer-kind: ClusterIssuer
                   csi.cert-manager.io/duration: 8760h
                   csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
                   csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
                   csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
             controller-manager-client-csi:
@@ -579,7 +579,7 @@ spec:
                   csi.cert-manager.io/issuer-kind: ClusterIssuer
                   csi.cert-manager.io/duration: 8760h
                   csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
                   csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
                   csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
             scheduler-client-csi:
