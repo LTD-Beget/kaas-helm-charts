@@ -341,6 +341,12 @@ etcd:
                 Etcd WAL fsync duration increasing is over 15%
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd WAL fsync duration increasing
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value }}
             expr: (rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m) / rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)) > 1.15
             for: 2m
             labels:
@@ -356,6 +362,12 @@ etcd:
                 Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd WAL fsync 99th percentile above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value }}
             expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) > 0.5
             for: 2m
             labels:
@@ -371,6 +383,12 @@ etcd:
                 Etcd commit duration increasing, 99th percentile is over 0.25s
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd backend commit duration 99th percentile above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value }}
             expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket[1m])) > 0.25
             for: 2m
             labels:
@@ -386,10 +404,15 @@ etcd:
                 Etcd cluster have no leader
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd cluster has no leader
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
             expr: etcd_server_has_leader == 0
             for: 0m
             labels:
-              severity: warning
+              severity: critical
 
         EtcdHighNumberOfLeaderChanges:
           enabled: false
@@ -401,6 +424,12 @@ etcd:
                 Etcd leader changed more than 1 times during 5 minutes
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd leader changes above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value }}
             expr: increase(etcd_server_leader_changes_seen_total[5m]) > 1
             for: 0m
             labels:
@@ -413,6 +442,12 @@ etcd:
             annotations:
               description: etcd cluster {{ $labels.job }} - members are down ({{ $value }}).
               summary: etcd cluster members are down.
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd members down
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Value: {{ $value }}
             expr: |
               max without (endpoint) (
                 sum without (instance) (up{job=~".*etcd.*"} == bool 0)
@@ -436,6 +471,13 @@ etcd:
                 quota on etcd instance {{ $labels.instance }}, please defrag or increase the
                 quota as the writes to etcd will be disabled when it is full.
               summary: etcd cluster database is running full.
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd database quota almost full
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value }}
             expr: |
               (last_over_time(etcd_mvcc_db_total_size_in_bytes[5m]) / last_over_time(etcd_server_quota_backend_bytes[5m]))*100 > 95
             for: 10m
@@ -453,6 +495,12 @@ etcd:
                 four hours on etcd instance {{ $labels.instance }}, please check as it might
                 be disruptive.
               summary: etcd cluster database growing very fast.
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd database growth rate above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: |
               predict_linear(etcd_mvcc_db_total_size_in_bytes[4h], 4*60*60) > etcd_server_quota_backend_bytes
             for: 10m
@@ -470,8 +518,14 @@ etcd:
                 allocated disk space, please run defragmentation (e.g. etcdctl defrag) to
                 retrieve the unused fragmented disk space.
               runbook_url: https://etcd.io/docs/v3.5/op-guide/maintenance/#defragmentation
-              summary: etcd database size in use is less than 50% of the actual allocated
-                storage.
+              summary: etcd database size in use is less than 50% of the actual allocated storage.
+              message: |-
+                {{ $labels.cluster_full_name }}: etcd database fragmentation above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+                Value: {{ $value | humanizePercentage }}
             expr: |
               (last_over_time(etcd_mvcc_db_total_size_in_use_in_bytes[5m]) / last_over_time(etcd_mvcc_db_total_size_in_bytes[5m])) < 0.5 and etcd_mvcc_db_total_size_in_use_in_bytes > 104857600
             for: 10m
