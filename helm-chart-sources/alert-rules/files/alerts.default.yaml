@@ -235,6 +235,10 @@ certManager:
                 can't be renewed until cert-manager is back.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
               summary: Cert Manager has disappeared from Prometheus service discovery.
+              message: |-
+                {{ $labels.cluster_full_name }}: cert-manager target not discovered by Prometheus
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info)
                 unless on(cluster_full_name)
@@ -259,6 +263,13 @@ certManager:
               summary: |
                 The cert {{ $labels.name }} is {{ $value | humanizeDuration }} from
                 expiry, it should have renewed over a week ago.
+              message: |-
+                {{ $labels.cluster_full_name }}: certificate {{ $labels.name }} expiring soon
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Certificate: {{ $labels.name }}
+                TimeToExpiry: {{ $value | humanizeDuration }}
             expr: |
               avg by (exported_namespace, namespace, name) (
                 certmanager_certificate_expiration_timestamp_seconds - time()
@@ -278,6 +289,12 @@ certManager:
                 controller _may_ be able to serve that instead.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertnotready
               summary: The cert {{ $labels.name }} is not ready to serve traffic.
+              message: |-
+                {{ $labels.cluster_full_name }}: certificate {{ $labels.name }} not ready
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Certificate: {{ $labels.name }}
             expr: |
               max by (name, exported_namespace, namespace, condition) (
                 certmanager_certificate_ready_status{condition!="True"} == 1
@@ -296,6 +313,10 @@ certManager:
                 certificates for up to a week.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerhittingratelimits
               summary: Cert manager hitting LetsEncrypt rate limits.
+              message: |-
+                {{ $labels.cluster_full_name }}: cert-manager hitting ACME rate limits
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               sum by (host) (
                 rate(certmanager_http_acme_client_request_count{status="429"}[5m])
