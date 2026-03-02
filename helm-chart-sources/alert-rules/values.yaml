@@ -1,11 +1,8 @@
-additionalLabels:
-  in-cloud-metrics: "infra"
+additionalLabels: {}
 
 vmrules:
   auditErrors:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       apiserverAudit:
         enabled: true
@@ -14,14 +11,10 @@ vmrules:
             enabled: true
 
   coredns:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       coredns:
         enabled: true
-        params:
-          extra_label: ["in-cloud_metrics=infra"]
         rules:
           CoreDNSDown:
             enabled: true
@@ -34,8 +27,6 @@ vmrules:
 
       coredns_forward:
         enabled: true
-        params:
-          extra_label: ["in-cloud_metrics=infra"]
         rules:
           CoreDNSForwardLatencyHigh:
             enabled: true
@@ -49,21 +40,15 @@ vmrules:
             enabled: true
 
   certManager:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       certManager:
         enabled: true
-        params:
-          extra_label: ["in-cloud_metrics=infra"]
         rules:
           CertManagerAbsent:
             enabled: true
       certificates:
         enabled: true
-        params:
-          extra_label: ["in-cloud_metrics=infra"]
         rules:
           CertManagerCertExpirySoon:
             enabled: true
@@ -73,14 +58,10 @@ vmrules:
             enabled: true
 
   etcd:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       etcd:
         enabled: true
-        params:
-          extra_label: ["in-cloud_metrics=infra"]
         rules:
           EtcdHighFsyncDurationsIncreasing:
             enabled: true
@@ -102,9 +83,7 @@ vmrules:
             enabled: true
 
   clusterMonitoringVictoriaMetrics:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       jobs:
         enabled: true
@@ -117,9 +96,7 @@ vmrules:
             enabled: true
 
   clusterMonitoringVictoriaMetricsOperator:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       pods:
         enabled: true
@@ -132,9 +109,7 @@ vmrules:
             enabled: true
 
   cpuUtilization:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       controlPlaneCpuUtilization:
         enabled: true
@@ -147,17 +122,13 @@ vmrules:
             enabled: true
 
   kubeApiServerRequests:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       kubeApiServerRequestsInFlight:
         enabled: true
 
   podSecurity:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       PodSecurityViolation:
         enabled: true
@@ -166,9 +137,7 @@ vmrules:
             enabled: true
 
   prometheusK8sPrometheusRules:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       prometheus:
         enabled: true
@@ -212,9 +181,7 @@ vmrules:
           PrometheusTargetSyncFailure:
             enabled: true
   kubernetesResources:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       kubernetesResources:
         enabled: true
@@ -237,9 +204,7 @@ vmrules:
             enabled: true
 
   kubernetesApps:
-    enabled: false
-    additionalLabels:
-      in-cloud-metrics: "infra"
+    enabled: true
     groups:
       kubernetesApps:
         enabled: true
@@ -286,3 +251,390 @@ vmrules:
             enabled: true
           KubePdbNotEnoughHealthyPods:
             enabled: true
+
+k8s-rules-containercpulimits:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    k8s-rules-containercpulimits:
+      enabled: true
+      rules:
+        "cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits":
+          enabled: true
+        "namespace_cpu:kube_pod_container_resource_limits:sum":
+          enabled: true
+
+k8s-rules-containercpurequests:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    k8s-rules-containercpurequests:
+      enabled: true
+      rules:
+        "cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests":
+          enabled: true
+        "namespace_cpu:kube_pod_container_resource_requests:sum":
+          enabled: true
+
+k8s-rules-containermemorylimits:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    k8s-rules-containermemorylimits:
+      enabled: true
+      rules:
+        "cluster:namespace:pod_memory:active:kube_pod_container_resource_limits":
+          enabled: true
+        "namespace_memory:kube_pod_container_resource_limits:sum":
+          enabled: true
+
+k8s-rules-containermemoryrequests:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    k8s-rules-containermemoryrequests:
+      enabled: true
+      rules:
+        "cluster:namespace:pod_memory:active:kube_pod_container_resource_requests":
+          enabled: true
+        "namespace_memory:kube_pod_container_resource_requests:sum":
+          enabled: true
+
+kube-prometheus-general-rules:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kube-prometheus-general-rules:
+      enabled: true
+      rules:
+        "count:up1":
+          enabled: true
+        "count:up0":
+          enabled: true
+
+kube-state-metrics:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kube-state-metrics:
+      enabled: true
+      rules:
+        KubeStateMetricsListErrors:
+          enabled: true
+        KubeStateMetricsWatchErrors:
+          enabled: true
+        KubeStateMetricsShardingMismatch:
+          enabled: true
+        KubeStateMetricsShardsMissing:
+          enabled: true
+
+kubernetes-storage:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetes-storage:
+      enabled: true
+      rules:
+        KubePersistentVolumeFillingUp:
+          enabled: true
+        KubePersistentVolumeFillingUpAlt:
+          enabled: true
+        KubePersistentVolumeInodesFillingUp:
+          enabled: true
+        KubePersistentVolumeInodesFillingUpAlt:
+          enabled: true
+        KubePersistentVolumeErrors:
+          enabled: true
+
+kubernetes-system:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetes-system:
+      enabled: true
+      rules:
+        KubeVersionMismatch:
+          enabled: true
+        KubeClientErrors:
+          enabled: true
+
+kubernetes-system-apiserver:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetes-system-apiserver:
+      enabled: true
+      rules:
+        KubeClientCertificateExpiration:
+          enabled: true
+        KubeClientCertificateExpirationCritical:
+          enabled: true
+        KubeAggregatedAPIErrors:
+          enabled: true
+        KubeAggregatedAPIDown:
+          enabled: true
+        KubeAPITerminatedRequests:
+          enabled: true
+
+kubernetes-system-kubelet:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    kubernetes-system-kubelet:
+      enabled: true
+      rules:
+        KubeNodeNotReady:
+          enabled: true
+        KubeNodePressure:
+          enabled: true
+        KubeNodeUnreachable:
+          enabled: true
+        KubeletTooManyPods:
+          enabled: true
+        KubeNodeReadinessFlapping:
+          enabled: true
+        KubeNodeEviction:
+          enabled: true
+        KubeletPlegDurationHigh:
+          enabled: true
+        KubeletPodStartUpLatencyHigh:
+          enabled: true
+        KubeletClientCertificateExpiration:
+          enabled: true
+        KubeletClientCertificateExpirationCritical:
+          enabled: true
+        KubeletServerCertificateExpiration:
+          enabled: true
+        KubeletServerCertificateExpirationCritical:
+          enabled: true
+        KubeletClientCertificateRenewalErrors:
+          enabled: true
+        KubeletServerCertificateRenewalErrors:
+          enabled: true
+
+node-exporter:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    node-exporter:
+      enabled: true
+      rules:
+        NodeFilesystemSpaceFillingUp:
+          enabled: true
+        NodeFilesystemSpaceFillingUpCritical:
+          enabled: true
+        NodeFilesystemAlmostOutOfSpace:
+          enabled: true
+        NodeFilesystemAlmostOutOfSpaceCritical:
+          enabled: true
+        NodeFilesystemFilesFillingUp:
+          enabled: true
+        NodeFilesystemFilesFillingUpCritical:
+          enabled: true
+        NodeFilesystemAlmostOutOfFiles:
+          enabled: true
+        NodeFilesystemAlmostOutOfFilesCritical:
+          enabled: true
+        NodeNetworkReceiveErrs:
+          enabled: true
+        NodeNetworkTransmitErrs:
+          enabled: true
+        NodeHighNumberConntrackEntriesUsed:
+          enabled: true
+        NodeTextFileCollectorScrapeError:
+          enabled: true
+        NodeClockSkewDetected:
+          enabled: true
+        NodeClockNotSynchronising:
+          enabled: true
+        NodeRAIDDegraded:
+          enabled: true
+        NodeRAIDDiskFailure:
+          enabled: true
+        NodeFileDescriptorLimit:
+          enabled: true
+        NodeFileDescriptorLimitCritical:
+          enabled: true
+        NodeCPUHighUsage:
+          enabled: true
+        NodeSystemSaturation:
+          enabled: true
+        NodeMemoryMajorPagesFaults:
+          enabled: true
+        NodeMemoryHighUtilization:
+          enabled: true
+        NodeDiskIOSaturation:
+          enabled: true
+        NodeSystemdServiceFailed:
+          enabled: true
+        NodeSystemdServiceCrashlooping:
+          enabled: true
+        NodeBondingDegraded:
+          enabled: true
+
+node-exporter-rules:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    node-exporter-rules:
+      enabled: true
+      rules:
+        "instance:node_num_cpu:sum":
+          enabled: true
+        "instance:node_cpu_utilisation:rate5m":
+          enabled: true
+        "instance:node_load1_per_cpu:ratio":
+          enabled: true
+        "instance:node_memory_utilisation:ratio":
+          enabled: true
+        "instance:node_vmstat_pgmajfault:rate5m":
+          enabled: true
+        "instance_device:node_disk_io_time_seconds:rate5m":
+          enabled: true
+        "instance_device:node_disk_io_time_weighted_seconds:rate5m":
+          enabled: true
+        "instance:node_network_receive_bytes_excluding_lo:rate5m":
+          enabled: true
+        "instance:node_network_transmit_bytes_excluding_lo:rate5m":
+          enabled: true
+        "instance:node_network_receive_drop_excluding_lo:rate5m":
+          enabled: true
+        "instance:node_network_transmit_drop_excluding_lo:rate5m":
+          enabled: true
+
+node-network:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    node-network:
+      enabled: true
+      rules:
+        NodeNetworkInterfaceFlapping:
+          enabled: true
+
+node-rules:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    node-rules:
+      enabled: true
+      rules:
+        "node_namespace_pod:kube_pod_info:":
+          enabled: true
+        "node:node_num_cpu:sum":
+          enabled: true
+        ":node_memory_MemAvailable_bytes:sum":
+          enabled: true
+        "node:node_cpu_utilization:ratio_rate5m":
+          enabled: true
+        "cluster:node_cpu:ratio_rate5m":
+          enabled: true
+
+vm-health:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    vm-health:
+      enabled: true
+      rules:
+        TooManyRestarts:
+          enabled: true
+        ServiceDown:
+          enabled: true
+        ProcessNearFDLimits:
+          enabled: true
+        TooHighMemoryUsage:
+          enabled: true
+        TooHighCPUUsage:
+          enabled: true
+        TooManyLogs:
+          enabled: true
+        TooManyTSIDMisses:
+          enabled: true
+        ConcurrentInsertsHitTheLimit:
+          enabled: true
+        IndexDBRecordsDrop:
+          enabled: true
+        RowsRejectedOnIngestion:
+          enabled: true
+        TooHighQueryLoad:
+          enabled: true
+
+vmagent:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    vmagent:
+      enabled: true
+      rules:
+        PersistentQueueIsDroppingData:
+          enabled: true
+        RejectedRemoteWriteDataBlocksAreDropped:
+          enabled: true
+        TooManyScrapeErrors:
+          enabled: true
+        ScrapePoolHasNoTargets:
+          enabled: true
+        TooManyWriteErrors:
+          enabled: true
+        TooManyRemoteWriteErrors:
+          enabled: true
+        RemoteWriteConnectionIsSaturated:
+          enabled: true
+        PersistentQueueForWritesIsSaturated:
+          enabled: true
+        PersistentQueueForReadsIsSaturated:
+          enabled: true
+        SeriesLimitHourReached:
+          enabled: true
+        SeriesLimitDayReached:
+          enabled: true
+        ConfigurationReloadFailure:
+          enabled: true
+        StreamAggrFlushTimeout:
+          enabled: true
+        StreamAggrDedupFlushTimeout:
+          enabled: true
+
+vmcluster:
+  enabled: true
+  additionalLabels:
+    in-cloud-metrics: "infra"
+  groups:
+    vmcluster:
+      enabled: true
+      rules:
+        DiskRunsOutOfSpaceIn3Days:
+          enabled: true
+        NodeBecomesReadonlyIn3Days:
+          enabled: true
+        DiskRunsOutOfSpace:
+          enabled: true
+        RequestErrorsToAPI:
+          enabled: true
+        RPCErrors:
+          enabled: true
+        TooHighChurnRate:
+          enabled: true
+        TooHighChurnRate24h:
+          enabled: true
+        TooHighSlowInsertsRate:
+          enabled: true
+        VminsertVmstorageConnectionIsSaturated:
+          enabled: true

@@ -3,7 +3,7 @@
 {{- $vmrules := (mergeOverwrite (deepCopy $defaultRules) $.Values.vmrules) -}}
 {{- range $VMRuleName, $VMRule := $vmrules }}
 {{- if $VMRule.enabled }}
-{{- $additionsLabels := deepCopy ($.Values.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
+{{- $additionalLabels := deepCopy ($.Values.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
 
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
@@ -13,7 +13,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "alert-rules.labels" $ | nindent 4 }}
-    {{- with $additionsLabels }}
+    {{- with $additionalLabels }}
     {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
