@@ -14,7 +14,7 @@ auditErrors:
                 An API Server instance was unable to write audit logs. This could be
                 triggered by the node running out of space, or a malicious actor
                 tampering with the audit logs.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: API Server audit log write errors detected (non-zero error rate)
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -40,7 +40,7 @@ coredns:
               description: CoreDNS Down in cluster {{ $labels.cluster_full_name }}
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
               summary: CoreDNS has disappeared from Prometheus target discovery.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS target not discovered by Prometheus
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -60,7 +60,7 @@ coredns:
               description: CoreDNS has 99th percentile latency of {{ $value }} seconds for server {{ $labels.server }} zone {{ $labels.zone }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
               summary: CoreDNS is experiencing high 99th percentile latency.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS 99th percentile latency above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -81,7 +81,7 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
               summary: CoreDNS is returning SERVFAIL.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above critical threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -102,7 +102,7 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
               summary: CoreDNS is returning SERVFAIL.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above warning threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -126,7 +126,7 @@ coredns:
               description: CoreDNS has 99th percentile latency of {{ $value }} seconds forwarding requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
               summary: CoreDNS is experiencing high latency forwarding requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS forward latency above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -146,7 +146,7 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
               summary: CoreDNS is returning SERVFAIL for forward requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -168,7 +168,7 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
               summary: CoreDNS is returning SERVFAIL for forward requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above warning threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -190,7 +190,7 @@ coredns:
               description: CoreDNS health checks have failed to upstream server {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
               summary: CoreDNS health checks have failed to upstream server.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failures detected
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -209,7 +209,7 @@ coredns:
               description: CoreDNS health checks have failed for all upstream servers.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckbrokencount
               summary: CoreDNS health checks have failed for all upstream servers.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failed for all upstream servers
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -235,7 +235,7 @@ certManager:
                 can't be renewed until cert-manager is back.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerabsent
               summary: Cert Manager has disappeared from Prometheus service discovery.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: cert-manager target not discovered by Prometheus
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -263,7 +263,7 @@ certManager:
               summary: |
                 The cert {{ $labels.name }} is {{ $value | humanizeDuration }} from
                 expiry, it should have renewed over a week ago.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: certificate {{ $labels.name }} expiring soon
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -289,7 +289,7 @@ certManager:
                 controller _may_ be able to serve that instead.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagercertnotready
               summary: The cert {{ $labels.name }} is not ready to serve traffic.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: certificate {{ $labels.name }} not ready
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -313,7 +313,7 @@ certManager:
                 certificates for up to a week.
               runbook_url: https://github.com/imusmanmalik/cert-manager-mixin/blob/main/RUNBOOK.md#certmanagerhittingratelimits
               summary: Cert manager hitting LetsEncrypt rate limits.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: cert-manager hitting ACME rate limits
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -341,7 +341,7 @@ etcd:
                 Etcd WAL fsync duration increasing is over 15%
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd WAL fsync duration increasing
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -362,7 +362,7 @@ etcd:
                 Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd WAL fsync 99th percentile above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -383,7 +383,7 @@ etcd:
                 Etcd commit duration increasing, 99th percentile is over 0.25s
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd backend commit duration 99th percentile above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -404,7 +404,7 @@ etcd:
                 Etcd cluster have no leader
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd cluster has no leader
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -424,7 +424,7 @@ etcd:
                 Etcd leader changed more than 1 times during 5 minutes
                   VALUE = {{ $value }}
                   LABELS = {{ $labels }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd leader changes above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -442,7 +442,7 @@ etcd:
             annotations:
               description: etcd cluster {{ $labels.job }} - members are down ({{ $value }}).
               summary: etcd cluster members are down.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd members down
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -471,7 +471,7 @@ etcd:
                 quota on etcd instance {{ $labels.instance }}, please defrag or increase the
                 quota as the writes to etcd will be disabled when it is full.
               summary: etcd cluster database is running full.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd database quota almost full
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -495,7 +495,7 @@ etcd:
                 four hours on etcd instance {{ $labels.instance }}, please check as it might
                 be disruptive.
               summary: etcd cluster database growing very fast.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd database growth rate above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -519,7 +519,7 @@ etcd:
                 retrieve the unused fragmented disk space.
               runbook_url: https://etcd.io/docs/v3.5/op-guide/maintenance/#defragmentation
               summary: etcd database size in use is less than 50% of the actual allocated storage.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: etcd database fragmentation above threshold
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -545,7 +545,7 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: VMAgent is absent for at least 2 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -564,7 +564,7 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: VMAlert is absent for at least 2 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -583,7 +583,7 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: VMAlertmanager is absent for at least 2 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -610,7 +610,7 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 An control plane pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: control-plane pod restarted
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -632,7 +632,7 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 An client control plane pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: client control-plane pod restarted
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -654,7 +654,7 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 Pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources or incorrect configuration.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: pod restarted
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -689,7 +689,7 @@ cpuUtilization:
               summary: CPU utilization across all three control plane nodes is higher than
                 two control plane nodes can sustain; a single control plane node outage
                 may cause a cascading failure; increase available CPU.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: overall control-plane CPU utilization > 60% for 10 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -724,7 +724,7 @@ cpuUtilization:
               summary: |
                 CPU utilization on a single control plane node is very high, more
                 CPU pressure is likely to cause a failover; increase available CPU.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: control-plane node CPU utilization > 90% for 5 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -754,7 +754,7 @@ cpuUtilization:
               summary: |
                 Sustained high CPU utilization on a single control plane node, more
                 CPU pressure is likely to cause a failover; increase available CPU.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: control-plane node CPU utilization > 90% for 1 hour
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -800,7 +800,7 @@ podSecurity:
               summary: |
                 One or more workloads users created in the cluster don't match their
                 Pod Security profile
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: workload violates PodSecurity profile "{{ $labels.policy_level }}"
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -824,7 +824,7 @@ prometheusK8sPrometheusRules:
             annotations:
               description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to reload its configuration.
               summary: Failed Prometheus configuration reload.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus failed to reload configuration for 10 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -845,7 +845,7 @@ prometheusK8sPrometheusRules:
             annotations:
               description: Alert notification queue of Prometheus {{$labels.namespace}}/{{$labels.pod}} is running full.
               summary: Prometheus alert notification queue predicted to run full in less than 30m.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus notification queue predicted to run full within 30 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -872,7 +872,7 @@ prometheusK8sPrometheusRules:
                 {{ printf "%.1f" $value }}% errors while sending alerts from
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} to Alertmanager {{$labels.alertmanager}}.
               summary: Prometheus has encountered more than 1% errors sending alerts to a specific Alertmanager.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus alert delivery errors > 1% for 15 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -899,7 +899,7 @@ prometheusK8sPrometheusRules:
             annotations:
               description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not connected to any Alertmanagers.
               summary: Prometheus is not connected to any Alertmanagers.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus not connected to any Alertmanagers for 10 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -922,7 +922,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
                 {{$value | humanize}} reload failures over the last 3h.
               summary: Prometheus has issues reloading blocks from disk.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus TSDB reload failures detected over last 3 hours
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -944,7 +944,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected
                 {{$value | humanize}} compaction failures over the last 3h.
               summary: Prometheus has issues compacting blocks.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus TSDB compaction failures detected over last 3 hours (active for 4 hours)
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -964,7 +964,7 @@ prometheusK8sPrometheusRules:
             annotations:
               description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is not ingesting samples.
               summary: Prometheus is not ingesting samples.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus not ingesting samples for 10 minutes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -994,7 +994,7 @@ prometheusK8sPrometheusRules:
                 {{ printf "%.4g" $value  }} samples/s with different values but duplicated
                 timestamp.
               summary: Prometheus is dropping samples with duplicate timestamps.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus is dropping samples with duplicate timestamps
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1016,7 +1016,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping
                 {{ printf "%.4g" $value  }} samples/s with timestamps arriving out of order.
               summary: Prometheus drops samples with out-of-order timestamps.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus is dropping samples with out-of-order timestamps
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1038,7 +1038,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} failed to send
                 {{ printf "%.1f" $value }}% of the samples to {{ $labels.remote_name }}:{{ $labels.url }}
               summary: Prometheus fails to send samples to remote storage.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus failed to send samples to remote storage {{ $labels.remote_name }}:{{ $labels.url }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1072,7 +1072,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write
                 is {{ printf "%.1f" $value }}s behind for {{ $labels.remote_name}}:{{ $labels.url }}.
               summary: Prometheus remote write is behind.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus remote write is behind for {{ $labels.remote_name}}:{{ $labels.url }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1107,7 +1107,7 @@ prometheusK8sPrometheusRules:
               summary: |
                 Prometheus remote write desired shards calculation wants to run more
                 than configured max shards.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus remote write desired shards exceeds configured max
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1137,7 +1137,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to
                 evaluate {{ printf "%.0f" $value }} rules in the last 5m.
               summary: Prometheus is failing rule evaluations.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus is failing rule evaluations
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1159,7 +1159,7 @@ prometheusK8sPrometheusRules:
                 Prometheus {{$labels.namespace}}/{{$labels.pod}} has missed {{
                 printf "%.0f" $value }} rule group evaluations in the last 5m.
               summary: Prometheus is missing rule evaluations due to slow rule group evaluation.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus is missing rule group evaluations due to slow evaluation
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1184,7 +1184,7 @@ prometheusK8sPrometheusRules:
               summary: |
                 Prometheus has dropped targets because some scrape configs have exceeded
                 the targets limit.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus dropped targets because configured target_limit was exceeded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1209,7 +1209,7 @@ prometheusK8sPrometheusRules:
               summary: |
                 Prometheus has dropped targets because some scrape configs have exceeded
                 the labels limit.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus dropped targets due to label limits
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1232,7 +1232,7 @@ prometheusK8sPrometheusRules:
                 printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
                 the configured body_size_limit.
               summary: Prometheus has dropped some targets that exceeded body size limit.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus scrapes failed because body_size_limit was exceeded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1255,7 +1255,7 @@ prometheusK8sPrometheusRules:
                 printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded
                 the configured sample_limit.
               summary: Prometheus has failed scrapes that have exceeded the configured sample limit.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus scrapes failed because sample_limit was exceeded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1278,7 +1278,7 @@ prometheusK8sPrometheusRules:
                 have failed to sync because invalid configuration was supplied.
               runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-monitoring-operator/PrometheusTargetSyncFailure.md
               summary: Prometheus has failed to sync targets.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Prometheus failed to sync targets because invalid configuration was supplied
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1308,7 +1308,7 @@ kubernetesResources:
                 cannot tolerate node failure.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuovercommit
               summary: Cluster has overcommitted CPU resource requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted CPU resource requests for Pods
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1332,7 +1332,7 @@ kubernetesResources:
                 for Pods by {{ $value | humanize }} bytes and cannot tolerate node failure.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryovercommit
               summary: Cluster has overcommitted memory resource requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted memory resource requests for Pods
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1356,7 +1356,7 @@ kubernetesResources:
                 resource requests for Namespaces.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuquotaovercommit
               summary: Cluster has overcommitted CPU resource requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted CPU resource requests for Namespaces
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1378,7 +1378,7 @@ kubernetesResources:
               description: Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests for Namespaces.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryquotaovercommit
               summary: Cluster has overcommitted memory resource requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted memory resource requests for Namespaces
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1402,7 +1402,7 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaalmostfull
               summary: Namespace quota is going to be full.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Namespace quota is close to full
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1429,7 +1429,7 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name}}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotafullyused
               summary: Namespace quota is fully used.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Namespace quota is fully used
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1456,7 +1456,7 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaexceeded
               summary: Namespace quota has exceeded the limits.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Namespace quota has exceeded the limits
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1488,7 +1488,7 @@ kubernetesResources:
                 Container: {{ $labels.container }}
                 Node: {{ $labels.node }}
                 Throttling ratio (5m): {{ $value | humanizePercentage }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Elevated CPU throttling
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -1548,7 +1548,7 @@ kubernetesApps:
                 (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
               summary: Pod is crash looping.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Pod is crash looping (CrashLoopBackOff)
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2100,7 +2100,7 @@ kubernetesApps:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpareplicasmismatch
               summary: HPA has not matched desired number of replicas.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: HPA replicas mismatch
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2135,7 +2135,7 @@ kubernetesApps:
                 $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpamaxedout
               summary: HPA is running at max replicas
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: HPA running at max replicas
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2163,7 +2163,7 @@ kubernetesApps:
                 PDB: {{ $labels.poddisruptionbudget }}
                 Missing healthy pods: {{ $value | humanize }}
               runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PDB does not have enough healthy pods
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2267,6 +2267,7 @@ k8s-rules-containermemorylimits:
               )
             labels: {}
             record: cluster:namespace:pod_memory:active:kube_pod_container_resource_limits
+
         "namespace_memory:kube_pod_container_resource_limits:sum":
           enabled: false
           spec:
@@ -2301,6 +2302,7 @@ k8s-rules-containermemoryrequests:
               )
             labels: {}
             record: cluster:namespace:pod_memory:active:kube_pod_container_resource_requests
+
         "namespace_memory:kube_pod_container_resource_requests:sum":
           enabled: false
           spec:
@@ -2369,6 +2371,7 @@ kube-state-metrics:
             for: 15m
             labels:
               severity: critical
+
         KubeStateMetricsWatchErrors:
           enabled: false
           spec:
@@ -2393,6 +2396,7 @@ kube-state-metrics:
             for: 15m
             labels:
               severity: critical
+
         KubeStateMetricsShardingMismatch:
           enabled: false
           spec:
@@ -2404,7 +2408,7 @@ kube-state-metrics:
                 not exposed at all.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricsshardingmismatch
               summary: kube-state-metrics sharding is misconfigured.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: kube-state-metrics sharding mismatch detected
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2413,6 +2417,7 @@ kube-state-metrics:
             for: 15m
             labels:
               severity: critical
+
         KubeStateMetricsShardsMissing:
           enabled: false
           spec:
@@ -2422,7 +2427,7 @@ kube-state-metrics:
                 are not being exposed.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricsshardsmissing
               summary: kube-state-metrics shards are missing.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: kube-state-metrics shards missing
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2452,7 +2457,7 @@ kubernetes-storage:
                 on Cluster {{ . }} {{- end }} is only {{ $value | humanizePercentage }} free.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumefillingup
               summary: PersistentVolume is filling up.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PersistentVolume critically low on space
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2474,6 +2479,7 @@ kubernetes-storage:
             for: 1m
             labels:
               severity: critical
+
         KubePersistentVolumeFillingUp:
           enabled: false
           spec:
@@ -2487,7 +2493,7 @@ kubernetes-storage:
                 is available.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumefillingup
               summary: PersistentVolume is filling up.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PersistentVolume predicted to fill within 4 days
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2511,6 +2517,7 @@ kubernetes-storage:
             for: 1h
             labels:
               severity: warning
+
         KubePersistentVolumeInodesFillingUpCritical:
           enabled: false
           spec:
@@ -2523,7 +2530,7 @@ kubernetes-storage:
                 free inodes.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeinodesfillingup
               summary: PersistentVolumeInodes are filling up.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PersistentVolume critically low on inodes
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2545,6 +2552,7 @@ kubernetes-storage:
             for: 1m
             labels:
               severity: critical
+
         KubePersistentVolumeInodesFillingUp:
           enabled: false
           spec:
@@ -2558,7 +2566,7 @@ kubernetes-storage:
                 {{ $value | humanizePercentage }} of its inodes are free.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeinodesfillingup
               summary: PersistentVolumeInodes are filling up.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PersistentVolume inodes predicted to exhaust within 4 days
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2582,6 +2590,7 @@ kubernetes-storage:
             for: 1h
             labels:
               severity: warning
+
         KubePersistentVolumeErrors:
           enabled: false
           spec:
@@ -2592,7 +2601,7 @@ kubernetes-storage:
                 on Cluster {{ . }} {{- end }} has status {{ $labels.phase }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeerrors
               summary: PersistentVolume is having issues with provisioning.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: PersistentVolume in problematic phase
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2620,17 +2629,19 @@ kubernetes-system:
                 components running on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeversionmismatch
               summary: Different semantic versions of Kubernetes components running.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubernetes version mismatch detected
 
                 Cluster: {{ $labels.cluster_full_name }}
                 VersionsCount: {{ $value }}
-            expr: count by (cluster_full_name) (count by (git_version,cluster_full_name)
+            expr: |
+              count by (cluster_full_name) (count by (git_version,cluster_full_name)
               (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"},"git_version","$1","git_version","(v[0-9]*.[0-9]*).*")))
               > 1
             for: 15m
             labels:
               severity: warning
+
         KubeClientErrors:
           enabled: false
           spec:
@@ -2641,7 +2652,7 @@ kubernetes-system:
                 experiencing {{ $value | humanizePercentage }} errors on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeclienterrors
               summary: Kubernetes API server client is experiencing errors.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Elevated Kubernetes API client error rate
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2673,7 +2684,7 @@ kubernetes-system-apiserver:
                 is expiring in less than 7.0 days on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeclientcertificateexpiration
               summary: Client certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubernetes client certificate expiring in <7 days
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2684,6 +2695,7 @@ kubernetes-system-apiserver:
             for: 5m
             labels:
               severity: warning
+
         KubeClientCertificateExpirationCritical:
           enabled: false
           spec:
@@ -2694,7 +2706,7 @@ kubernetes-system-apiserver:
                 is expiring in less than 24.0 hours on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeclientcertificateexpiration
               summary: Client certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubernetes client certificate expiring in <24h
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2705,6 +2717,7 @@ kubernetes-system-apiserver:
             for: 5m
             labels:
               severity: critical
+
         KubeAggregatedAPIErrors:
           enabled: false
           spec:
@@ -2715,7 +2728,7 @@ kubernetes-system-apiserver:
                 has reported {{ $labels.reason }} errors on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeaggregatedapierrors
               summary: Kubernetes aggregated API has reported errors.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Aggregated API reporting errors
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2726,6 +2739,7 @@ kubernetes-system-apiserver:
             for: 10m
             labels:
               severity: warning
+
         KubeAggregatedAPIDown:
           enabled: false
           spec:
@@ -2737,7 +2751,7 @@ kubernetes-system-apiserver:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeaggregatedapidown
               summary: Kubernetes aggregated API is down.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Aggregated API availability degraded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2748,6 +2762,7 @@ kubernetes-system-apiserver:
             for: 5m
             labels:
               severity: warning
+
         KubeAPITerminatedRequests:
           enabled: false
           spec:
@@ -2760,7 +2775,7 @@ kubernetes-system-apiserver:
               summary: |
                 The kubernetes apiserver has terminated 
                 {{ $value | humanizePercentage }} of its incoming requests.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Elevated API request termination rate
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2789,7 +2804,7 @@ kubernetes-system-kubelet:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodenotready
               summary: Node is not ready.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node NotReady >15m
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2813,7 +2828,7 @@ kubernetes-system-kubelet:
                 usage exceeding eviction thresholds.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodepressure
               summary: Node has as active Condition.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node under resource pressure
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2837,7 +2852,7 @@ kubernetes-system-kubelet:
                 rescheduled on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodeunreachable
               summary: Node is unreachable.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node unreachable
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2859,7 +2874,7 @@ kubernetes-system-kubelet:
                 of its Pod capacity on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubelettoomanypods
               summary: Kubelet is running at capacity.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node nearing pod capacity
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2893,7 +2908,7 @@ kubernetes-system-kubelet:
                 {{ $value }} times in the last 15 minutes on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodereadinessflapping
               summary: Node readiness status is flapping.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node readiness flapping
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2919,7 +2934,7 @@ kubernetes-system-kubelet:
                 RAM/ephemeral-storage limits.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodeeviction
               summary: Node is evicting pods.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node evicting pods
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2946,7 +2961,7 @@ kubernetes-system-kubelet:
                 {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletplegdurationhigh
               summary: Kubelet Pod Lifecycle Event Generator is taking too long to relist.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet PLEG relist latency high
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2967,7 +2982,7 @@ kubernetes-system-kubelet:
                 seconds on node {{ $labels.node }} on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletpodstartuplatencyhigh
               summary: Kubelet Pod startup latency is too high.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Pod startup latency high
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -2991,7 +3006,7 @@ kubernetes-system-kubelet:
                 in {{ $value | humanizeDuration }} on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletclientcertificateexpiration
               summary: Kubelet client certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet client certificate expiring
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3011,7 +3026,7 @@ kubernetes-system-kubelet:
                 in {{ $value | humanizeDuration }} on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletclientcertificateexpiration
               summary: Kubelet client certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet client certificate expiring <24h
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3031,7 +3046,7 @@ kubernetes-system-kubelet:
                 in {{ $value | humanizeDuration }} on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletservercertificateexpiration
               summary: Kubelet server certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet server certificate expiring
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3051,7 +3066,7 @@ kubernetes-system-kubelet:
                 in {{ $value | humanizeDuration }} on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletservercertificateexpiration
               summary: Kubelet server certificate is about to expire.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet server certificate expiring <24h
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3072,7 +3087,7 @@ kubernetes-system-kubelet:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletclientcertificaterenewalerrors
               summary: Kubelet has failed to renew its client certificate.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet client certificate renewal errors
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3095,7 +3110,7 @@ kubernetes-system-kubelet:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeletservercertificaterenewalerrors
               summary: Kubelet has failed to renew its server certificate.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kubelet server certificate renewal errors
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3123,7 +3138,7 @@ node-exporter:
                 space left and is filling up.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemspacefillingup
               summary: Filesystem is predicted to run out of space within the next 24 hours.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem is predicted to run out of space within the next 24 hours
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3154,7 +3169,7 @@ node-exporter:
                 space left and is filling up fast.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemspacefillingup
               summary: Filesystem is predicted to run out of space within the next 4 hours.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem is predicted to run out of space within the next 4 hours
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3185,7 +3200,7 @@ node-exporter:
                 space left.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemalmostoutofspace
               summary: Filesystem has less than 5% space left.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem has less than 5% space left
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3214,7 +3229,7 @@ node-exporter:
                 space left.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemalmostoutofspace
               summary: Filesystem has less than 3% space left.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem has less than 3% space left
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3243,7 +3258,7 @@ node-exporter:
                 inodes left and is filling up.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemfilesfillingup
               summary: Filesystem is predicted to run out of inodes within the next 24 hours.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem is predicted to run out of inodes within the next 24 hours
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3274,7 +3289,7 @@ node-exporter:
                 inodes left and is filling up fast.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemfilesfillingup
               summary: Filesystem is predicted to run out of inodes within the next 4 hours.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem is predicted to run out of inodes within the next 4 hours
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3305,7 +3320,7 @@ node-exporter:
                 inodes left.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemalmostoutoffiles
               summary: Filesystem has less than 5% inodes left.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem has less than 5% inodes left
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3334,7 +3349,7 @@ node-exporter:
                 inodes left.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefilesystemalmostoutoffiles
               summary: Filesystem has less than 3% inodes left.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Filesystem has less than 3% inodes left
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3363,7 +3378,7 @@ node-exporter:
                 minutes.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodenetworkreceiveerrs
               summary: Network interface is reporting many receive errors.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Network interface is reporting many receive errors
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3386,7 +3401,7 @@ node-exporter:
                 minutes.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodenetworktransmiterrs
               summary: Network interface is reporting many transmit errors.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Network interface is reporting many transmit errors
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3408,7 +3423,7 @@ node-exporter:
                 conntrack entries are used.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodehighnumberconntrackentriesused
               summary: Number of conntrack are getting close to the limit.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Number of conntrack are getting close to the limit
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3428,7 +3443,7 @@ node-exporter:
                 failed to scrape.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodetextfilecollectorscrapeerror
               summary: Node Exporter text file collector failed to scrape.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Node Exporter text file collector failed to scrape
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3447,7 +3462,7 @@ node-exporter:
                 0.05s. Ensure NTP is configured correctly on this host.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodeclockskewdetected
               summary: Clock skew detected.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Clock skew detected
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3479,7 +3494,7 @@ node-exporter:
                 NTP is configured on this host.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodeclocknotsynchronising
               summary: Clock not synchronising.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Clock not synchronising
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3503,7 +3518,7 @@ node-exporter:
                 drives is insufficient to fix issue automatically.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/noderaiddegraded
               summary: RAID Array is degraded.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: RAID Array is degraded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3528,7 +3543,7 @@ node-exporter:
                 swap.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/noderaiddiskfailure
               summary: Failed device in RAID array.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Failed device in RAID array
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3548,7 +3563,7 @@ node-exporter:
                 at {{ printf "%.2f" $value }}%.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefiledescriptorlimit
               summary: Kernel is predicted to exhaust file descriptors limit soon.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kernel is predicted to exhaust file descriptors limit soon
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3572,7 +3587,7 @@ node-exporter:
                 at {{ printf "%.2f" $value }}%.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodefiledescriptorlimit
               summary: Kernel is predicted to exhaust file descriptors limit soon.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Kernel is predicted to exhaust file descriptors limit soon
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3595,7 +3610,7 @@ node-exporter:
                 CPU usage at {{ $labels.instance }} has been above 90% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}%.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodecpuhighusage
               summary: High CPU usage.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: High CPU usage
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3618,7 +3633,7 @@ node-exporter:
                 This might indicate this instance resources saturation and can cause it becoming unresponsive.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodesystemsaturation
               summary: System saturated, load per core is very high.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: System saturated, load per core is very high
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3641,7 +3656,7 @@ node-exporter:
                 Please check that there is enough memory available at this instance.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememorymajorpagesfaults
               summary: Memory major page faults are occurring at very high rate.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Memory major page faults are occurring at very high rate
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3662,7 +3677,7 @@ node-exporter:
                 the last 15 minutes, is currently at {{ printf "%.2f" $value }}%.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
               summary: Host is running out of memory.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Host is running out of memory
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3684,7 +3699,7 @@ node-exporter:
                 This symptom might indicate disk saturation.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodediskiosaturation
               summary: Disk IO queue is high.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Disk IO queue is high
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3707,7 +3722,7 @@ node-exporter:
                 at {{ $labels.instance }}
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodesystemdservicefailed
               summary: Systemd service has entered failed state.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Systemd service has entered failed state
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3729,7 +3744,7 @@ node-exporter:
                 if service is crash looping.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodesystemdservicecrashlooping
               summary: Systemd service keeps restaring, possibly crash looping.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Systemd service keeps restaring, possibly crash looping
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3750,7 +3765,7 @@ node-exporter:
                 is in degraded state due to one or more slave failures.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodebondingdegraded
               summary: Bonding interface is degraded
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Bonding interface is degraded
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3901,7 +3916,7 @@ node-network:
                 often on node-exporter {{ $labels.namespace }}/{{ $labels.pod }}
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/general/nodenetworkinterfaceflapping
               summary: Network interface is often changing its status
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Network interface is often changing its status
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -3997,7 +4012,7 @@ vm-health:
                 more than twice in the last 15 minutes. It might be crashlooping.
               summary: |
                 {{ $labels.job }} too many restarts (instance {{ $labels.instance }})
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many restarts for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4019,7 +4034,7 @@ vm-health:
                 {{ $labels.instance }} of job {{ $labels.job }} has been down
                 for more than 2 minutes.
               summary: Service {{ $labels.job }} is down on {{ $labels.instance }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Service down for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4042,7 +4057,7 @@ vm-health:
                 Consider to increase the limit as fast as possible.
               summary: |
                 Number of free file descriptors is less than 100 for "{{ $labels.job }}"("{{ $labels.instance }}") for the last 5m
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Low number of free file descriptors for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4063,7 +4078,7 @@ vm-health:
                 Consider to either increase available memory or decrease the load on the process.
               summary: |
                 It is more than 80% of memory used by "{{ $labels.job }}"("{{ $labels.instance }}")
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: High memory usage for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4084,7 +4099,7 @@ vm-health:
                 Consider to either increase available CPU resources or decrease the load on the process.
               summary: |
                 More than 90% of CPU is used by "{{ $labels.job }}"("{{ $labels.instance }}") during the last 5m
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: High CPU usage for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4104,7 +4119,7 @@ vm-health:
                 Logging rate for job \"{{ $labels.job }}\" ({{ $labels.instance }}) is {{ $value }} 
                 for last 15m. Worth to check logs for specific error messages.
               summary: Too many logs printed for job "{{ $labels.job }}" ({{ $labels.instance }})
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many error logs for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4126,7 +4141,7 @@ vm-health:
                 Make sure you're running VictoriaMetrics of v1.85.3 or higher.
                 Related issue https://github.com/VictoriaMetrics/VictoriaMetrics/issues/3502
               summary: Too many TSID misses for job "{{ $labels.job }}" ({{ $labels.instance }})
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many TSID misses for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4152,7 +4167,7 @@ vm-health:
               summary: |
                 {{ $labels.job }} on instance {{ $labels.instance }} is constantly
                 hitting concurrent inserts limit'
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Concurrent inserts limit is being hit for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4175,7 +4190,7 @@ vm-health:
                 Or enforce these limits via `-maxLabelsPerTimeseries` and `-maxLabelValueLen` command-line flags.
               summary: |
                 IndexDB skipped registering items during data ingestion with reason={{ $labels.reason }}.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: IndexDB dropped items during ingestion (reason {{ $labels.reason }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4195,7 +4210,7 @@ vm-health:
                 Ingested rows on instance "{{ $labels.instance }}" are rejected
                 due to the following reason: "{{ $labels.reason }}"
               summary: Some rows are rejected on "{{ $labels.instance }}" on ingestion attempt
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Rows are rejected on ingestion (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4223,7 +4238,7 @@ vm-health:
                 * adjust limits `-search.maxConcurrentRequests` and `-search.maxQueueDuration`.
                 See more at https://docs.victoriametrics.com/victoriametrics/troubleshooting/#slow-queries.
               summary: Read queries fail with timeout for {{ $labels.job }} on instance {{ $labels.instance }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Read queries fail with timeout for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4252,7 +4267,7 @@ vmagent:
                 Vmagent dropped {{ $value | humanize1024 }} from persistent
                 queue on instance {{ $labels.instance }} for the last 10m.
               summary: Instance {{ $labels.instance }} is dropping data from persistent queue
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Instance {{ $labels.instance }} is dropping data from persistent queue
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4274,7 +4289,7 @@ vmagent:
                 drops the rejected by remote-write server data blocks. Check the logs
                 to find the reason for rejects.
               summary: Vmagent is dropping data blocks that are rejected by remote storage
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Vmagent is dropping data blocks rejected by remote storage
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4295,7 +4310,7 @@ vmagent:
                 Job "{{ $labels.job }}" on instance {{ $labels.instance }}
                 fails to scrape targets for last 15m
               summary: Vmagent fails to scrape one or more targets
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Vmagent fails to scrape targets for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4317,7 +4332,7 @@ vmagent:
                 follow https://docs.victoriametrics.com/victoriametrics/vmagent/#debugging-scrape-targets
                 to troubleshoot the scraping config.
               summary: Vmagent has scrape_pool with 0 configured/discovered targets
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Vmagent has scrape_pool with 0 discovered targets (job {{ $labels.job }}; scrape_pool {{ $labels.scrape_job }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4339,7 +4354,7 @@ vmagent:
                 Job "{{ $labels.job }}" on instance {{ $labels.instance }}
                 responds with errors to write requests for last 15m.
               summary: Vmagent responds with too many errors on data ingestion protocols
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many write errors for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4353,7 +4368,7 @@ vmagent:
             labels:
               severity: warning
 
-       VMAgentTooManyRemoteWriteErrors:
+        VMAgentTooManyRemoteWriteErrors:
           enabled: false
           spec:
             alert: VMAgentTooManyRemoteWriteErrors
@@ -4365,7 +4380,7 @@ vmagent:
               summary: |
                 Job "{{ $labels.job }}" on instance {{ $labels.instance }} fails
                 to push to remote storage
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Remote write retries/errors for job {{ $labels.job }} (instance {{ $labels.instance }}) to {{ $labels.url }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4392,7 +4407,7 @@ vmagent:
               summary: |
                 Remote write connection from "{{ $labels.job }}" (instance {{ $labels.instance }}) 
                 to {{ $labels.url }} is saturated
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Remote write connection is saturated for job {{ $labels.job }} (instance {{ $labels.instance }}) to {{ $labels.url }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4417,7 +4432,7 @@ vmagent:
                 be able to keep up with flushing data on disk. In this case, consider
                 to decrease load on the vmagent or improve the disk throughput.
               summary: Persistent queue writes for instance {{ $labels.instance }} are saturated
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Persistent queue writes are saturated for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4440,7 +4455,7 @@ vmagent:
                 be able to keep up with reading data from the disk. In this case, consider
                 to decrease load on the vmagent or improve the disk throughput.
               summary: Persistent queue reads for instance {{ $labels.instance }} are saturated
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Persistent queue reads are saturated for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4462,7 +4477,7 @@ vmagent:
                 is close to reaching the max value. Then samples for new time series will
                 be dropped instead of sending them to remote storage systems.
               summary: Instance {{ $labels.instance }} reached 90% of the limit
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Hourly series limit is close to max on instance {{ $labels.instance }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4482,7 +4497,7 @@ vmagent:
                 close to reaching the max value. Then samples for new time series will
                 be dropped instead of sending them to remote storage systems.
               summary: Instance {{ $labels.instance }} reached 90% of the limit
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Daily series limit is close to max on instance {{ $labels.instance }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4500,7 +4515,7 @@ vmagent:
                 Configuration hot-reload failed for vmagent on instance {{
                 $labels.instance }}. Check vmagent's logs for detailed error message.
               summary: Configuration reload failed for vmagent instance {{ $labels.instance }}
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Configuration hot-reload failed for vmagent instance {{ $labels.instance }}
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4525,7 +4540,7 @@ vmagent:
               summary: |
                 Streaming aggregation at "{{ $labels.job }}" (instance {{ $labels.instance }}) 
                 can't be finished within the configured aggregation interval.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Stream aggregation flush timeouts for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4549,7 +4564,7 @@ vmagent:
               summary: |
                 Deduplication "{{ $labels.job }}" (instance {{ $labels.instance }}) 
                 can't be finished within configured deduplication interval.
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Deduplication flush timeouts for job {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4577,7 +4592,7 @@ vmcluster:
                 Taking into account current ingestion rate, free disk space will be enough only for {{ $value | humanizeDuration }} on instance {{ $labels.instance }}.
                 Consider to limit the ingestion rate, decrease retention or scale the disk space up if possible.
               summary: Instance {{ $labels.instance }} will run out of disk space in 3 days
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Instance {{ $labels.instance }} will run out of disk space in 3 days
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4610,7 +4625,7 @@ vmcluster:
                 Taking into account current ingestion rate, free disk space and -storage.minFreeDiskSpaceBytes instance {{ $labels.instance }} will remain writable for {{ $value | humanizeDuration }}.
                 Consider to limit the ingestion rate, decrease retention or scale the disk space up if possible.
               summary: Instance {{ $labels.instance }} will become read-only in 3 days
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Instance {{ $labels.instance }} will become read-only in 3 days
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4645,7 +4660,7 @@ vmcluster:
               summary: |
                 Instance {{ $labels.instance }} (job={{ $labels.job }}) will run
                 out of disk space soon
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Instance {{ $labels.instance }} (job={{ $labels.job }}) will run out of disk space soon
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4673,7 +4688,7 @@ vmcluster:
               summary: |
                 Too many errors served for {{ $labels.job }} path 
                 {{ $labels.path }} (instance {{ $labels.instance }})
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many errors served for {{ $labels.job }} path {{ $labels.path }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4696,7 +4711,7 @@ vmcluster:
                 RPC errors are interconnection errors between cluster components.
                 Possible reasons for errors are misconfiguration, overload, network blips or unreachable components.
               summary: Too many RPC errors for {{ $labels.job }} (instance {{ $labels.instance }})
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too many RPC errors for {{ $labels.job }} (instance {{ $labels.instance }})
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4726,7 +4741,7 @@ vmcluster:
                 This effect is known as Churn Rate.
                 High Churn Rate tightly connected with database performance and may result in unexpected OOM's or slow queries.
               summary: Churn rate is more than 10% for the last 15m
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Churn rate is more than 10% for the last 15m
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4752,7 +4767,7 @@ vmcluster:
                 This effect is known as Churn Rate.
                 High Churn Rate tightly connected with database performance and may result in unexpected OOM's or slow queries.
               summary: Too high number of new series created over last 24h
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Too high number of new series created over last 24h
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4776,7 +4791,7 @@ vmcluster:
                 for the current load. It is likely more RAM is needed for optimal handling
                 of the current number of active time series. See also https://github.com/VictoriaMetrics/VictoriaMetrics/issues/3976#issuecomment-1476883183
               summary: Percentage of slow inserts is more than 5% for the last 15m
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Percentage of slow inserts is more than 5% for the last 15m
 
                 Cluster: {{ $labels.cluster_full_name }}
@@ -4803,7 +4818,7 @@ vmcluster:
               summary: |
                 Connection between vminsert on {{ $labels.instance }} and vmstorage
                 on {{ $labels.addr }} is saturated
-              message: |-
+              message: |
                 {{ $labels.cluster_full_name }}: Connection between vminsert on {{ $labels.instance }} and vmstorage on {{ $labels.addr }} is saturated
 
                 Cluster: {{ $labels.cluster_full_name }}
