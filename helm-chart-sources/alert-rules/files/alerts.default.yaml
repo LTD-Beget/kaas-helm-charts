@@ -4242,74 +4242,109 @@ vmagent:
       concurrency: 2
       interval: 30s
       rules:
-        PersistentQueueIsDroppingData:
+        VMAgentPersistentQueueIsDroppingData:
           enabled: false
           spec:
-            alert: PersistentQueueIsDroppingData
+            alert: VMAgentPersistentQueueIsDroppingData
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=49&var-instance={{ $labels.instance }}
-              description: Vmagent dropped {{ $value | humanize1024 }} from persistent
+              description: |
+                Vmagent dropped {{ $value | humanize1024 }} from persistent
                 queue on instance {{ $labels.instance }} for the last 10m.
-              summary: Instance {{ $labels.instance }} is dropping data from persistent
-                queue
-            expr: sum(increase(vm_persistentqueue_bytes_dropped_total[5m])) without (path)
-              > 0
+              summary: Instance {{ $labels.instance }} is dropping data from persistent queue
+              message: |-
+                {{ $labels.cluster_full_name }}: Instance {{ $labels.instance }} is dropping data from persistent queue
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                Dropped (10m): {{ $value | humanize1024 }}
+            expr: sum(increase(vm_persistentqueue_bytes_dropped_total[5m])) without (path) > 0
             for: 10m
             labels:
               severity: critical
-        RejectedRemoteWriteDataBlocksAreDropped:
+
+        VMAgentRejectedRemoteWriteDataBlocksAreDropped:
           enabled: false
           spec:
-            alert: RejectedRemoteWriteDataBlocksAreDropped
+            alert: VMAgentRejectedRemoteWriteDataBlocksAreDropped
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=79&var-instance={{ $labels.instance }}
-              description: Job "{{ $labels.job }}" on instance {{ $labels.instance }}
+              description: |
+                Job "{{ $labels.job }}" on instance {{ $labels.instance }}
                 drops the rejected by remote-write server data blocks. Check the logs
                 to find the reason for rejects.
               summary: Vmagent is dropping data blocks that are rejected by remote storage
-            expr: sum(increase(vmagent_remotewrite_packets_dropped_total[5m])) without
-              (url) > 0
+              message: |-
+                {{ $labels.cluster_full_name }}: Vmagent is dropping data blocks rejected by remote storage
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+            expr: sum(increase(vmagent_remotewrite_packets_dropped_total[5m])) without (url) > 0
             for: 15m
             labels:
               severity: warning
-        TooManyScrapeErrors:
+
+        VMAgentTooManyScrapeErrors:
           enabled: false
           spec:
-            alert: TooManyScrapeErrors
+            alert: VMAgentTooManyScrapeErrors
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=31&var-instance={{ $labels.instance }}
-              description: Job "{{ $labels.job }}" on instance {{ $labels.instance }}
+              description: |
+                Job "{{ $labels.job }}" on instance {{ $labels.instance }}
                 fails to scrape targets for last 15m
               summary: Vmagent fails to scrape one or more targets
+              message: |-
+                {{ $labels.cluster_full_name }}: Vmagent fails to scrape targets for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: increase(vm_promscrape_scrapes_failed_total[5m]) > 0
             for: 15m
             labels:
               severity: warning
-        ScrapePoolHasNoTargets:
+
+        VMAgentScrapePoolHasNoTargets:
           enabled: false
           spec:
-            alert: ScrapePoolHasNoTargets
+            alert: VMAgentScrapePoolHasNoTargets
             annotations:
               description: |
-                Vmagent "{{ $labels.job }}" has scrape_pool "{{ $labels.scrape_job
-                }}" with 0 discovered targets. It is likely a misconfiguration. Please
+                Vmagent "{{ $labels.job }}" has scrape_pool "{{ $labels.scrape_job }}" 
+                with 0 discovered targets. It is likely a misconfiguration. Please
                 follow https://docs.victoriametrics.com/victoriametrics/vmagent/#debugging-scrape-targets
                 to troubleshoot the scraping config.
               summary: Vmagent has scrape_pool with 0 configured/discovered targets
+              message: |-
+                {{ $labels.cluster_full_name }}: Vmagent has scrape_pool with 0 discovered targets (job {{ $labels.job }}; scrape_pool {{ $labels.scrape_job }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Scrape pool: {{ $labels.scrape_job }}
             expr: sum(vm_promscrape_scrape_pool_targets) without (status, instance, pod)
               == 0
             for: 30m
             labels:
               severity: warning
-        TooManyWriteErrors:
+
+        VMAgentTooManyWriteErrors:
           enabled: false
           spec:
-            alert: TooManyWriteErrors
+            alert: VMAgentTooManyWriteErrors
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=77&var-instance={{ $labels.instance }}
-              description: Job "{{ $labels.job }}" on instance {{ $labels.instance }}
+              description: |
+                Job "{{ $labels.job }}" on instance {{ $labels.instance }}
                 responds with errors to write requests for last 15m.
               summary: Vmagent responds with too many errors on data ingestion protocols
+              message: |-
+                {{ $labels.cluster_full_name }}: Too many write errors for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: |-
               (sum(increase(vm_ingestserver_request_errors_total[5m])) without (name,net,type)
               +
@@ -4317,140 +4352,209 @@ vmagent:
             for: 15m
             labels:
               severity: warning
-        TooManyRemoteWriteErrors:
+
+       VMAgentTooManyRemoteWriteErrors:
           enabled: false
           spec:
-            alert: TooManyRemoteWriteErrors
+            alert: VMAgentTooManyRemoteWriteErrors
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=61&var-instance={{ $labels.instance }}
               description: |-
                 Vmagent fails to push data via remote write protocol to destination "{{ $labels.url }}"
                 Ensure that destination is up and reachable.
-              summary: Job "{{ $labels.job }}" on instance {{ $labels.instance }} fails
+              summary: |
+                Job "{{ $labels.job }}" on instance {{ $labels.instance }} fails
                 to push to remote storage
+              message: |-
+                {{ $labels.cluster_full_name }}: Remote write retries/errors for job {{ $labels.job }} (instance {{ $labels.instance }}) to {{ $labels.url }}
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+                Remote URL: {{ $labels.url }}
             expr: rate(vmagent_remotewrite_retries_count_total[5m]) > 0
             for: 15m
             labels:
               severity: warning
-        RemoteWriteConnectionIsSaturated:
+
+        VMAgentRemoteWriteConnectionIsSaturated:
           enabled: false
           spec:
-            alert: RemoteWriteConnectionIsSaturated
+            alert: VMAgentRemoteWriteConnectionIsSaturated
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=84&var-instance={{ $labels.instance }}
               description: |-
-                The remote write connection between vmagent "{{ $labels.job }}" (instance {{ $labels.instance }}) and destination "{{ $labels.url }}" is saturated by more than 90% and vmagent won't be able to keep up.
+                The remote write connection between vmagent "{{ $labels.job }}" (instance {{ $labels.instance }}) 
+                and destination "{{ $labels.url }}" is saturated by more than 90% and vmagent won't be able to keep up.
                 There could be the following reasons for this:
                 * vmagent can't send data fast enough through the existing network connections. Increase `-remoteWrite.queues` cmd-line flag value to establish more connections per destination.
                 * remote destination can't accept data fast enough. Check if remote destination has enough resources for processing.
-              summary: Remote write connection from "{{ $labels.job }}" (instance {{ $labels.instance
-                }}) to {{ $labels.url }} is saturated
+              summary: |
+                Remote write connection from "{{ $labels.job }}" (instance {{ $labels.instance }}) 
+                to {{ $labels.url }} is saturated
+              message: |-
+                {{ $labels.cluster_full_name }}: Remote write connection is saturated for job {{ $labels.job }} (instance {{ $labels.instance }}) to {{ $labels.url }}
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+                Remote URL: {{ $labels.url }}
             expr: "(\n rate(vmagent_remotewrite_send_duration_seconds_total[5m])\n / \n
               vmagent_remotewrite_queues\n) > 0.9"
             for: 15m
             labels:
               severity: warning
-        PersistentQueueForWritesIsSaturated:
+
+        VMAgentPersistentQueueForWritesIsSaturated:
           enabled: false
           spec:
-            alert: PersistentQueueForWritesIsSaturated
+            alert: VMAgentPersistentQueueForWritesIsSaturated
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=98&var-instance={{ $labels.instance }}
-              description: Persistent queue writes for vmagent "{{ $labels.job }}" (instance
+              description: |
+                Persistent queue writes for vmagent "{{ $labels.job }}" (instance
                 {{ $labels.instance }}) are saturated by more than 90% and vmagent won't
                 be able to keep up with flushing data on disk. In this case, consider
                 to decrease load on the vmagent or improve the disk throughput.
-              summary: Persistent queue writes for instance {{ $labels.instance }} are
-                saturated
+              summary: Persistent queue writes for instance {{ $labels.instance }} are saturated
+              message: |-
+                {{ $labels.cluster_full_name }}: Persistent queue writes are saturated for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: rate(vm_persistentqueue_write_duration_seconds_total[5m]) > 0.9
             for: 15m
             labels:
               severity: warning
-        PersistentQueueForReadsIsSaturated:
+
+        VMAgentPersistentQueueForReadsIsSaturated:
           enabled: false
           spec:
-            alert: PersistentQueueForReadsIsSaturated
+            alert: VMAgentPersistentQueueForReadsIsSaturated
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=99&var-instance={{ $labels.instance }}
-              description: Persistent queue reads for vmagent "{{ $labels.job }}" (instance
+              description: |
+                Persistent queue reads for vmagent "{{ $labels.job }}" (instance
                 {{ $labels.instance }}) are saturated by more than 90% and vmagent won't
                 be able to keep up with reading data from the disk. In this case, consider
                 to decrease load on the vmagent or improve the disk throughput.
-              summary: Persistent queue reads for instance {{ $labels.instance }} are
-                saturated
+              summary: Persistent queue reads for instance {{ $labels.instance }} are saturated
+              message: |-
+                {{ $labels.cluster_full_name }}: Persistent queue reads are saturated for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: rate(vm_persistentqueue_read_duration_seconds_total[5m]) > 0.9
             for: 15m
             labels:
               severity: warning
-        SeriesLimitHourReached:
+
+        VMAgentSeriesLimitHourReached:
           enabled: false
           spec:
-            alert: SeriesLimitHourReached
+            alert: VMAgentSeriesLimitHourReached
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=88&var-instance={{ $labels.instance }}
-              description: Max series limit set via -remoteWrite.maxHourlySeries flag
+              description: |
+                Max series limit set via -remoteWrite.maxHourlySeries flag
                 is close to reaching the max value. Then samples for new time series will
                 be dropped instead of sending them to remote storage systems.
               summary: Instance {{ $labels.instance }} reached 90% of the limit
-            expr: (vmagent_hourly_series_limit_current_series / vmagent_hourly_series_limit_max_series)
-              > 0.9
+              message: |-
+                {{ $labels.cluster_full_name }}: Hourly series limit is close to max on instance {{ $labels.instance }}
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+            expr: (vmagent_hourly_series_limit_current_series / vmagent_hourly_series_limit_max_series) > 0.9
             labels:
               severity: critical
-        SeriesLimitDayReached:
+
+        VMAgentSeriesLimitDayReached:
           enabled: false
           spec:
-            alert: SeriesLimitDayReached
+            alert: VMAgentSeriesLimitDayReached
             annotations:
               dashboard: /d/G7Z9GzMGz?viewPanel=90&var-instance={{ $labels.instance }}
-              description: Max series limit set via -remoteWrite.maxDailySeries flag is
+              description: |
+                Max series limit set via -remoteWrite.maxDailySeries flag is
                 close to reaching the max value. Then samples for new time series will
                 be dropped instead of sending them to remote storage systems.
               summary: Instance {{ $labels.instance }} reached 90% of the limit
-            expr: (vmagent_daily_series_limit_current_series / vmagent_daily_series_limit_max_series)
-              > 0.9
+              message: |-
+                {{ $labels.cluster_full_name }}: Daily series limit is close to max on instance {{ $labels.instance }}
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+            expr: (vmagent_daily_series_limit_current_series / vmagent_daily_series_limit_max_series) > 0.9
             labels:
               severity: critical
-        ConfigurationReloadFailure:
+
+        VMAgentConfigurationReloadFailure:
           enabled: false
           spec:
-            alert: ConfigurationReloadFailure
+            alert: VMAgentConfigurationReloadFailure
             annotations:
-              description: Configuration hot-reload failed for vmagent on instance {{
+              description: |
+                Configuration hot-reload failed for vmagent on instance {{
                 $labels.instance }}. Check vmagent's logs for detailed error message.
-              summary: Configuration reload failed for vmagent instance {{ $labels.instance
-                }}
+              summary: Configuration reload failed for vmagent instance {{ $labels.instance }}
+              message: |-
+                {{ $labels.cluster_full_name }}: Configuration hot-reload failed for vmagent instance {{ $labels.instance }}
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
             expr: |-
               vm_promscrape_config_last_reload_successful != 1
               or
               vmagent_relabel_config_last_reload_successful != 1
             labels:
               severity: warning
-        StreamAggrFlushTimeout:
+
+        VMAgentStreamAggrFlushTimeout:
           enabled: false
           spec:
-            alert: StreamAggrFlushTimeout
+            alert: VMAgentStreamAggrFlushTimeout
             annotations:
-              description: 'Stream aggregation process can''t keep up with the load and
+              description: |
+                Stream aggregation process can't keep up with the load and
                 might produce incorrect aggregation results. Check logs for more details.
                 Possible solutions: increase aggregation interval; aggregate smaller number
-                of series; reduce samples'' ingestion rate to stream aggregation.'
-              summary: Streaming aggregation at "{{ $labels.job }}" (instance {{ $labels.instance
-                }}) can't be finished within the configured aggregation interval.
+                of series; reduce samples ingestion rate to stream aggregation.
+              summary: |
+                Streaming aggregation at "{{ $labels.job }}" (instance {{ $labels.instance }}) 
+                can't be finished within the configured aggregation interval.
+              message: |-
+                {{ $labels.cluster_full_name }}: Stream aggregation flush timeouts for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: increase(vm_streamaggr_flush_timeouts_total[5m]) > 0
             labels:
               severity: warning
-        StreamAggrDedupFlushTimeout:
+
+        VMAgentStreamAggrDedupFlushTimeout:
           enabled: false
           spec:
-            alert: StreamAggrDedupFlushTimeout
+            alert: VMAgentStreamAggrDedupFlushTimeout
             annotations:
-              description: 'Deduplication process can''t keep up with the load and might
+              description: |
+                Deduplication process can''t keep up with the load and might
                 produce incorrect results. Check docs https://docs.victoriametrics.com/victoriametrics/stream-aggregation/#deduplication
                 and logs for more details. Possible solutions: increase deduplication
                 interval; deduplicate smaller number of series; reduce samples'' ingestion
-                rate.'
-              summary: Deduplication "{{ $labels.job }}" (instance {{ $labels.instance
-                }}) can't be finished within configured deduplication interval.
+                rate.
+              summary: |
+                Deduplication "{{ $labels.job }}" (instance {{ $labels.instance }}) 
+                can't be finished within configured deduplication interval.
+              message: |-
+                {{ $labels.cluster_full_name }}: Deduplication flush timeouts for job {{ $labels.job }} (instance {{ $labels.instance }})
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: increase(vm_streamaggr_dedup_flush_timeouts_total[5m]) > 0
             labels:
               severity: warning
