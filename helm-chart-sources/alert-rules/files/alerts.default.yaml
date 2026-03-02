@@ -3882,7 +3882,7 @@ node-exporter-rules:
         "instance:node_network_receive_drop_excluding_lo:rate5m":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               sum without (device) (
                 rate(node_network_receive_drop_total{job="node-exporter", device!="lo"}[5m])
@@ -3892,7 +3892,7 @@ node-exporter-rules:
         "instance:node_network_transmit_drop_excluding_lo:rate5m":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               sum without (device) (
                 rate(node_network_transmit_drop_total{job="node-exporter", device!="lo"}[5m])
@@ -3945,10 +3945,11 @@ node-rules:
               ))
             labels: {}
             record: 'node_namespace_pod:kube_pod_info:'
+
         "node:node_num_cpu:sum":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               count by (node,cluster_full_name) (
                 node_cpu_seconds_total{mode="idle",job="node-exporter"}
@@ -3957,10 +3958,11 @@ node-rules:
               )
             labels: {}
             record: node:node_num_cpu:sum
+
         ":node_memory_MemAvailable_bytes:sum":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               sum(
                 node_memory_MemAvailable_bytes{job="node-exporter"} or
@@ -3973,10 +3975,11 @@ node-rules:
               ) by (cluster_full_name)
             labels: {}
             record: :node_memory_MemAvailable_bytes:sum
+
         "node:node_cpu_utilization:ratio_rate5m":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               avg by (node,cluster_full_name) (
                 sum without (mode) (
@@ -3985,10 +3988,11 @@ node-rules:
               )
             labels: {}
             record: node:node_cpu_utilization:ratio_rate5m
+
         "cluster:node_cpu:ratio_rate5m":
           enabled: false
           spec:
-          - annotations: {}
+            annotations: {}
             expr: |-
               avg by (cluster_full_name) (
                 node:node_cpu_utilization:ratio_rate5m

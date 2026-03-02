@@ -28,7 +28,7 @@ spec:
         - expr: |
             {{ $ruleSpec.expr | nindent 12 }}
           {{- if $ruleSpec.record }}
-          record: {{ $ruleSpec.record }}
+          record: {{ $ruleSpec.record | quote }}
           {{- else }}
           alert: "{{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}"
           {{- end }}
