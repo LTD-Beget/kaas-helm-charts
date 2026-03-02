@@ -14,6 +14,12 @@ auditErrors:
                 An API Server instance was unable to write audit logs. This could be
                 triggered by the node running out of space, or a malicious actor
                 tampering with the audit logs.
+              message: |-
+                {{ $labels.cluster_full_name }}: API Server audit log write errors detected (non-zero error rate)
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
             expr: |
               sum by (job, instance)(rate(apiserver_audit_error_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) / sum by (job, instance) (rate(apiserver_audit_event_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) > 0
             for: 1m
@@ -22,7 +28,6 @@ auditErrors:
 
 coredns:
   enabled: false
-
   groups:
     coredns:
       enabled: false
@@ -35,6 +40,10 @@ coredns:
               description: CoreDNS Down in cluster {{ $labels.cluster_full_name }}
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
               summary: CoreDNS has disappeared from Prometheus target discovery.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS target not discovered by Prometheus
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info)
                 unless on(cluster_full_name)
@@ -51,20 +60,32 @@ coredns:
               description: CoreDNS has 99th percentile latency of {{ $value }} seconds for server {{ $labels.server }} zone {{ $labels.zone }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
               summary: CoreDNS is experiencing high 99th percentile latency.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS 99th percentile latency above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Server: {{ $labels.server }}
+                Zone: {{ $labels.zone }}
+                Value: {{ $value }}
             expr: |
               histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (instance,pod)) > 4
             for: 10m
             labels:
               severity: warning
 
-        CoreDNSErrorsTooHigh:
+        CoreDNSErrorsHighCritical:
           enabled: false
           spec:
-            alert: "CoreDNSErrorsTooHigh"
+            alert: "CoreDNSErrorsHighCritical"
             annotations:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
               summary: CoreDNS is returning SERVFAIL.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above critical threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Value: {{ $value | humanizePercentage }}
             expr: |
               sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
                 /
@@ -81,6 +102,11 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
               summary: CoreDNS is returning SERVFAIL.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above warning threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Value: {{ $value | humanizePercentage }}
             expr: |
               sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
                 /
@@ -100,6 +126,12 @@ coredns:
               description: CoreDNS has 99th percentile latency of {{ $value }} seconds forwarding requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
               summary: CoreDNS is experiencing high latency forwarding requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS forward latency above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value }}
             expr: |
               histogram_quantile(0.99, sum(rate(coredns_forward_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (pod, instance, rcode)) > 4
             for: 10m
@@ -114,6 +146,12 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
               summary: CoreDNS is returning SERVFAIL for forward requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value | humanizePercentage }}
             expr: |
               sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
                 /
@@ -130,6 +168,12 @@ coredns:
               description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
               summary: CoreDNS is returning SERVFAIL for forward requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above warning threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value | humanizePercentage }}
             expr: |
               sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
                 /
@@ -146,6 +190,11 @@ coredns:
               description: CoreDNS health checks have failed to upstream server {{ $labels.to }}.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
               summary: CoreDNS health checks have failed to upstream server.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failures detected
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
             expr: |
               sum without (pod, instance) (rate(coredns_forward_healthcheck_failures_total{job="coredns-coredns-metrics"}[5m])) > 0
             for: 10m
@@ -160,6 +209,10 @@ coredns:
               description: CoreDNS health checks have failed for all upstream servers.
               runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckbrokencount
               summary: CoreDNS health checks have failed for all upstream servers.
+              message: |-
+                {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failed for all upstream servers
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               sum without (pod, instance) (rate(coredns_forward_healthcheck_broken_total{job="coredns-coredns-metrics"}[5m])) > 0
             for: 10m
@@ -1947,10 +2000,10 @@ kubernetes-storage:
     kubernetes-storage:
       enabled: false
       rules:
-        KubePersistentVolumeFillingUp:
+        KubePersistentVolumeFillingUpCritical:
           enabled: false
           spec:
-            alert: KubePersistentVolumeFillingUp
+            alert: KubePersistentVolumeFillingUpCritical
             annotations:
               description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
                 }} in Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name
@@ -1973,10 +2026,10 @@ kubernetes-storage:
             for: 1m
             labels:
               severity: critical
-        KubePersistentVolumeFillingUpAlt:
+        KubePersistentVolumeFillingUp:
           enabled: false
           spec:
-            alert: KubePersistentVolumeFillingUpAlt
+            alert: KubePersistentVolumeFillingUp
             annotations:
               description: Based on recent sampling, the PersistentVolume claimed by {{
                 $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
@@ -2002,10 +2055,10 @@ kubernetes-storage:
             for: 1h
             labels:
               severity: warning
-        KubePersistentVolumeInodesFillingUp:
+        KubePersistentVolumeInodesFillingUpCritical:
           enabled: false
           spec:
-            alert: KubePersistentVolumeInodesFillingUp
+            alert: KubePersistentVolumeInodesFillingUpCritical
             annotations:
               description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
                 }} in Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name
@@ -2028,10 +2081,10 @@ kubernetes-storage:
             for: 1m
             labels:
               severity: critical
-        KubePersistentVolumeInodesFillingUpAlt:
+        KubePersistentVolumeInodesFillingUp:
           enabled: false
           spec:
-            alert: KubePersistentVolumeInodesFillingUpAlt
+            alert: KubePersistentVolumeInodesFillingUp
             annotations:
               description: Based on recent sampling, the PersistentVolume claimed by {{
                 $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
