@@ -126,6 +126,9 @@ vmrules:
     groups:
       kubeApiServerRequestsInFlight:
         enabled: true
+        rules:
+          kubeApiServerRequestsInFlight:
+            enabled: true
 
   podSecurity:
     enabled: true

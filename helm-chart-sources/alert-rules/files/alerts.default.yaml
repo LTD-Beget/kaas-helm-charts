@@ -1,7 +1,5 @@
 auditErrors:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     apiserverAudit:
       enabled: false
@@ -24,14 +22,10 @@ auditErrors:
 
 coredns:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
 
   groups:
     coredns:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         CoreDNSDown:
           enabled: false
@@ -97,8 +91,6 @@ coredns:
 
     coredns_forward:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         CoreDNSForwardLatencyHigh:
           enabled: false
@@ -176,13 +168,9 @@ coredns:
 
 certManager:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     certManager:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         CertManagerAbsent:
           enabled: false
@@ -204,8 +192,6 @@ certManager:
 
     certificates:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         CertManagerCertExpirySoon:
           enabled: false
@@ -267,13 +253,9 @@ certManager:
 
 etcd:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     etcd:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         EtcdHighFsyncDurationsIncreasing:
           enabled: false
@@ -424,8 +406,6 @@ etcd:
 
 clusterMonitoringVictoriaMetrics:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     jobs:
       enabled: false
@@ -477,8 +457,6 @@ clusterMonitoringVictoriaMetrics:
 
 clusterMonitoringVictoriaMetricsOperator:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     pods:
       enabled: false
@@ -527,8 +505,6 @@ clusterMonitoringVictoriaMetricsOperator:
 
 cpuUtilization:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     controlPlaneCpuUtilization:
       enabled: false
@@ -607,13 +583,9 @@ cpuUtilization:
 
 kubeApiServerRequests:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubeApiServerRequestsInFlight:
       enabled: false
-      params:
-        extra_label: ["in-cloud_metrics=infra"]
       rules:
         kubeApiServerRequestsInFlight:
           enabled: false
@@ -624,8 +596,6 @@ kubeApiServerRequests:
 
 podSecurity:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     PodSecurityViolation:
       enabled: false
@@ -651,8 +621,6 @@ podSecurity:
 
 prometheusK8sPrometheusRules:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     prometheus:
       enabled: false
@@ -997,8 +965,6 @@ prometheusK8sPrometheusRules:
 
 kubernetesResources:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetesResources:
       enabled: false
@@ -1196,8 +1162,6 @@ kubernetesResources:
 
 kubernetesApps:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetesApps:
       enabled: false
@@ -1745,8 +1709,6 @@ kubernetesApps:
 
 k8s-rules-containercpulimits:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     k8s-rules-containercpulimits:
       enabled: false
@@ -1782,8 +1744,6 @@ k8s-rules-containercpulimits:
 
 k8s-rules-containercpurequests:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     k8s-rules-containercpurequests:
       enabled: false
@@ -1819,8 +1779,6 @@ k8s-rules-containercpurequests:
 
 k8s-rules-containermemorylimits:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     k8s-rules-containermemorylimits:
       enabled: false
@@ -1855,8 +1813,6 @@ k8s-rules-containermemorylimits:
 
 k8s-rules-containermemoryrequests:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     k8s-rules-containermemoryrequests:
       enabled: false
@@ -1891,8 +1847,6 @@ k8s-rules-containermemoryrequests:
 
 kube-prometheus-general-rules:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kube-prometheus-general-rules:
       enabled: false
@@ -1914,8 +1868,6 @@ kube-prometheus-general-rules:
 
 kube-state-metrics:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kube-state-metrics:
       enabled: false
@@ -1991,8 +1943,6 @@ kube-state-metrics:
 
 kubernetes-storage:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetes-storage:
       enabled: false
@@ -2125,8 +2075,6 @@ kubernetes-storage:
 
 kubernetes-system:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetes-system:
       enabled: false
@@ -2167,8 +2115,6 @@ kubernetes-system:
 
 kubernetes-system-apiserver:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetes-system-apiserver:
       enabled: false
@@ -2257,8 +2203,6 @@ kubernetes-system-apiserver:
 
 kubernetes-system-kubelet:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     kubernetes-system-kubelet:
       enabled: false
@@ -2491,8 +2435,6 @@ kubernetes-system-kubelet:
 
 node-exporter:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     node-exporter:
       enabled: false
@@ -2934,8 +2876,6 @@ node-exporter:
 
 node-exporter-rules:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     node-exporter-rules:
       enabled: false
@@ -3060,8 +3000,6 @@ node-exporter-rules:
 
 node-network:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     node-network:
       enabled: false
@@ -3083,8 +3021,6 @@ node-network:
 
 node-rules:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     node-rules:
       enabled: false
@@ -3153,8 +3089,6 @@ node-rules:
 
 vm-health:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     vm-health:
       enabled: false
@@ -3341,8 +3275,6 @@ vm-health:
 
 vmagent:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     vmagent:
       enabled: false
@@ -3564,8 +3496,6 @@ vmagent:
 
 vmcluster:
   enabled: false
-  additionalLabels:
-    in-cloud-metrics: "infra"
   groups:
     vmcluster:
       enabled: false
