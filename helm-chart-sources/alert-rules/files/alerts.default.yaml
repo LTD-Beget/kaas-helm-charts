@@ -2351,11 +2351,17 @@ kube-state-metrics:
           spec:
             alert: KubeStateMetricsListErrors
             annotations:
-              description: kube-state-metrics is experiencing errors at an elevated rate
+              description: |
+                kube-state-metrics is experiencing errors at an elevated rate
                 in list operations. This is likely causing it to not be able to expose
                 metrics about Kubernetes objects correctly or at all.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricslisterrors
               summary: kube-state-metrics is experiencing errors in list operations.
+              message: |
+                {{ $labels.cluster_full_name }}: kube-state-metrics elevated list errors rate
+
+                Cluster: {{ $labels.cluster_full_name }}
+                ErrorRate: {{ $value | humanizePercentage }}
             expr: |-
               (sum(rate(kube_state_metrics_list_total{job="kube-state-metrics",result="error"}[5m])) by (cluster_full_name)
                 /
@@ -2369,11 +2375,17 @@ kube-state-metrics:
           spec:
             alert: KubeStateMetricsWatchErrors
             annotations:
-              description: kube-state-metrics is experiencing errors at an elevated rate
+              description: |
+                kube-state-metrics is experiencing errors at an elevated rate
                 in watch operations. This is likely causing it to not be able to expose
                 metrics about Kubernetes objects correctly or at all.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricswatcherrors
               summary: kube-state-metrics is experiencing errors in watch operations.
+              message: |
+                {{ $labels.cluster_full_name }}: kube-state-metrics elevated watch errors rate
+
+                Cluster: {{ $labels.cluster_full_name }}
+                ErrorRate: {{ $value | humanizePercentage }}
             expr: |-
               (sum(rate(kube_state_metrics_watch_total{job="kube-state-metrics",result="error"}[5m])) by (cluster_full_name)
                 /
@@ -2387,11 +2399,16 @@ kube-state-metrics:
           spec:
             alert: KubeStateMetricsShardingMismatch
             annotations:
-              description: kube-state-metrics pods are running with different --total-shards
+              description: |
+                kube-state-metrics pods are running with different --total-shards
                 configuration, some Kubernetes objects may be exposed multiple times or
                 not exposed at all.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricsshardingmismatch
               summary: kube-state-metrics sharding is misconfigured.
+              message: |-
+                {{ $labels.cluster_full_name }}: kube-state-metrics sharding mismatch detected
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: stdvar (kube_state_metrics_total_shards{job="kube-state-metrics"}) by
               (cluster_full_name) != 0
             for: 15m
@@ -2406,6 +2423,10 @@ kube-state-metrics:
                 are not being exposed.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kube-state-metrics/kubestatemetricsshardsmissing
               summary: kube-state-metrics shards are missing.
+              message: |-
+                {{ $labels.cluster_full_name }}: kube-state-metrics shards missing
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |-
               2^max(kube_state_metrics_total_shards{job="kube-state-metrics"}) by (cluster_full_name) - 1
                 -
