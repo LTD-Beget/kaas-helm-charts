@@ -545,6 +545,10 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+              message: |-
+                {{ $labels.cluster_full_name }}: VMAgent is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                 unless on(cluster_full_name)
@@ -560,6 +564,10 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+              message: |-
+                {{ $labels.cluster_full_name }}: VMAlert is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                 unless on(cluster_full_name)
@@ -575,6 +583,10 @@ clusterMonitoringVictoriaMetrics:
             annotations:
               description: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
               summary: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+              message: |-
+                {{ $labels.cluster_full_name }}: VMAlertmanager is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
             expr: |
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
                 unless on(cluster_full_name)
@@ -598,6 +610,14 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 An control plane pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources.
+              message: |-
+                {{ $labels.cluster_full_name }}: control-plane pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
             expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system"}[10m]) * 600>=1
             for: 1m
             labels:
@@ -612,6 +632,14 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 An client control plane pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources.
+              message: |-
+                {{ $labels.cluster_full_name }}: client control-plane pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
             expr: rate(kube_pod_container_status_restarts_total{namespace="beget-system", container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"}[10m]) * 600>=1
             for: 1m
             labels:
@@ -626,6 +654,14 @@ clusterMonitoringVictoriaMetricsOperator:
               summary: |-
                 Pod restarted.
                 This may be caused by updates in the cluster, or it may be a lack of resources or incorrect configuration.
+              message: |-
+                {{ $labels.cluster_full_name }}: pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
             expr: rate(kube_pod_container_status_restarts_total{namespace=~"beget.*|kube.*"}[10m]) * 600>=1
             for: 1m
             labels:
@@ -653,6 +689,11 @@ cpuUtilization:
               summary: CPU utilization across all three control plane nodes is higher than
                 two control plane nodes can sustain; a single control plane node outage
                 may cause a cascading failure; increase available CPU.
+              message: |-
+                {{ $labels.cluster_full_name }}: overall control-plane CPU utilization > 60% for 10 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+                ControlPlaneNodes: {{ $value | humanize }}
             expr: |
               sum(
                 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)
@@ -670,7 +711,8 @@ cpuUtilization:
           spec:
             alert: "HighIndividualControlPlaneCPU"
             annotations:
-              description: Extreme CPU pressure can cause slow serialization and poor performance
+              description: |
+                Extreme CPU pressure can cause slow serialization and poor performance
                 from the kube-apiserver and etcd. When this happens, there is a risk of
                 clients seeing non-responsive API requests which are issued again causing
                 even more CPU pressure. It can also cause failing liveness probes due to
@@ -679,8 +721,15 @@ cpuUtilization:
                 kube-apiservers are also under-provisioned. To fix this, increase the CPU
                 and memory on your control plane nodes.
               runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-kube-apiserver-operator/ExtremelyHighIndividualControlPlaneCPU.md
-              summary: CPU utilization on a single control plane node is very high, more
+              summary: |
+                CPU utilization on a single control plane node is very high, more
                 CPU pressure is likely to cause a failover; increase available CPU.
+              message: |-
+                {{ $labels.cluster_full_name }}: control-plane node CPU utilization > 90% for 5 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                CPUUsagePercent: {{ $value | humanize }}
             expr: |
               100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
             for: 5m
@@ -692,7 +741,8 @@ cpuUtilization:
           spec:
             alert: "ExtremelyHighIndividualControlPlaneCPU"
             annotations:
-              description: Extreme CPU pressure can cause slow serialization and poor performance
+              description: |
+                Extreme CPU pressure can cause slow serialization and poor performance
                 from the kube-apiserver and etcd. When this happens, there is a risk of
                 clients seeing non-responsive API requests which are issued again causing
                 even more CPU pressure. It can also cause failing liveness probes due to
@@ -701,8 +751,15 @@ cpuUtilization:
                 kube-apiservers are also under-provisioned. To fix this, increase the CPU
                 and memory on your control plane nodes.
               runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-kube-apiserver-operator/ExtremelyHighIndividualControlPlaneCPU.md
-              summary: Sustained high CPU utilization on a single control plane node, more
+              summary: |
+                Sustained high CPU utilization on a single control plane node, more
                 CPU pressure is likely to cause a failover; increase available CPU.
+              message: |-
+                {{ $labels.cluster_full_name }}: control-plane node CPU utilization > 90% for 1 hour
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Instance: {{ $labels.instance }}
+                CPUUsagePercent: {{ $value | humanize }}
             expr: |
               100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
             for: 1h
