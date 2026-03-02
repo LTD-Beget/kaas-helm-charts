@@ -2447,12 +2447,19 @@ kubernetes-storage:
           spec:
             alert: KubePersistentVolumeFillingUpCritical
             annotations:
-              description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
-                }} in Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name
-                -}} on Cluster {{ . }} {{- end }} is only {{ $value | humanizePercentage
-                }} free.
+              description: |
+                The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in 
+                Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name -}} 
+                on Cluster {{ . }} {{- end }} is only {{ $value | humanizePercentage }} free.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumefillingup
               summary: PersistentVolume is filling up.
+              message: |-
+                {{ $labels.cluster_full_name }}: PersistentVolume critically low on space
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PVC: {{ $labels.persistentvolumeclaim }}
+                FreeSpace: {{ $value | humanizePercentage }}
             expr: |-
               (
                 kubelet_volume_stats_available_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
@@ -2473,13 +2480,21 @@ kubernetes-storage:
           spec:
             alert: KubePersistentVolumeFillingUp
             annotations:
-              description: Based on recent sampling, the PersistentVolume claimed by {{
-                $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
+              description: |
+                Based on recent sampling, the PersistentVolume claimed by 
+                {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
                 {{ with $labels.cluster_full_name -}} on Cluster {{ . }} {{- end }} is
-                expected to fill up within four days. Currently {{ $value | humanizePercentage
-                }} is available.
+                expected to fill up within four days. Currently {{ $value | humanizePercentage }} 
+                is available.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumefillingup
               summary: PersistentVolume is filling up.
+              message: |-
+                {{ $labels.cluster_full_name }}: PersistentVolume predicted to fill within 4 days
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PVC: {{ $labels.persistentvolumeclaim }}
+                FreeSpace: {{ $value | humanizePercentage }}
             expr: |-
               (
                 kubelet_volume_stats_available_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
@@ -2502,12 +2517,20 @@ kubernetes-storage:
           spec:
             alert: KubePersistentVolumeInodesFillingUpCritical
             annotations:
-              description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
-                }} in Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name
-                -}} on Cluster {{ . }} {{- end }} only has {{ $value | humanizePercentage
-                }} free inodes.
+              description: |
+                The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} 
+                in Namespace {{ $labels.namespace }} {{ with $labels.cluster_full_name -}} 
+                on Cluster {{ . }} {{- end }} only has {{ $value | humanizePercentage }} 
+                free inodes.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeinodesfillingup
               summary: PersistentVolumeInodes are filling up.
+              message: |-
+                {{ $labels.cluster_full_name }}: PersistentVolume critically low on inodes
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PVC: {{ $labels.persistentvolumeclaim }}
+                FreeInodes: {{ $value | humanizePercentage }}
             expr: |-
               (
                 kubelet_volume_stats_inodes_free{job="kubelet", namespace=~".*", metrics_path="/metrics"}
@@ -2528,13 +2551,21 @@ kubernetes-storage:
           spec:
             alert: KubePersistentVolumeInodesFillingUp
             annotations:
-              description: Based on recent sampling, the PersistentVolume claimed by {{
-                $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
+              description: |
+                Based on recent sampling, the PersistentVolume claimed by 
+                {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }}
                 {{ with $labels.cluster_full_name -}} on Cluster {{ . }} {{- end }} is
-                expected to run out of inodes within four days. Currently {{ $value |
-                humanizePercentage }} of its inodes are free.
+                expected to run out of inodes within four days. Currently 
+                {{ $value | humanizePercentage }} of its inodes are free.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeinodesfillingup
               summary: PersistentVolumeInodes are filling up.
+              message: |-
+                {{ $labels.cluster_full_name }}: PersistentVolume inodes predicted to exhaust within 4 days
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PVC: {{ $labels.persistentvolumeclaim }}
+                FreeInodes: {{ $value | humanizePercentage }}
             expr: |-
               (
                 kubelet_volume_stats_inodes_free{job="kubelet", namespace=~".*", metrics_path="/metrics"}
@@ -2557,11 +2588,17 @@ kubernetes-storage:
           spec:
             alert: KubePersistentVolumeErrors
             annotations:
-              description: The persistent volume {{ $labels.persistentvolume }} {{ with
-                $labels.cluster_full_name -}} on Cluster {{ . }} {{- end }} has status
-                {{ $labels.phase }}.
+              description: |
+                The persistent volume {{ $labels.persistentvolume }} {{ with $labels.cluster_full_name -}} 
+                on Cluster {{ . }} {{- end }} has status {{ $labels.phase }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeerrors
               summary: PersistentVolume is having issues with provisioning.
+              message: |-
+                {{ $labels.cluster_full_name }}: PersistentVolume in problematic phase
+
+                Cluster: {{ $labels.cluster_full_name }}
+                PersistentVolume: {{ $labels.persistentvolume }}
+                Phase: {{ $labels.phase }}
             expr: kube_persistentvolume_status_phase{phase=~"Failed|Pending",job="kube-state-metrics"}
               > 0
             for: 5m
