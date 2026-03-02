@@ -1309,6 +1309,12 @@ kubernetesResources:
                 cannot tolerate node failure.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuovercommit
               summary: Cluster has overcommitted CPU resource requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: Cluster has overcommitted CPU resource requests for Pods
+
+                Cluster: {{ $labels.cluster_full_name }}
+                OvercommitCPU: {{ printf "%.2f" $value }}
+
             expr: |
               sum(namespace_cpu:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
               and
@@ -1327,6 +1333,12 @@ kubernetesResources:
                 for Pods by {{ $value | humanize }} bytes and cannot tolerate node failure.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryovercommit
               summary: Cluster has overcommitted memory resource requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: Cluster has overcommitted memory resource requests for Pods
+
+                Cluster: {{ $labels.cluster_full_name }}
+                OvercommitMemory: {{ $value | humanize }}
+
             expr: |
               sum(namespace_memory:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
               and
@@ -1345,6 +1357,11 @@ kubernetesResources:
                 resource requests for Namespaces.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuquotaovercommit
               summary: Cluster has overcommitted CPU resource requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: Cluster has overcommitted CPU resource requests for Namespaces
+
+                Cluster: {{ $labels.cluster_full_name }}
+
             expr: |
               sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(cpu|requests.cpu)"})) by (cluster_full_name)
                 /
@@ -1362,6 +1379,11 @@ kubernetesResources:
               description: Cluster {{ $labels.cluster_full_name }} has overcommitted memory resource requests for Namespaces.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubememoryquotaovercommit
               summary: Cluster has overcommitted memory resource requests.
+              message: |-
+                {{ $labels.cluster_full_name }}: Cluster has overcommitted memory resource requests for Namespaces
+
+                Cluster: {{ $labels.cluster_full_name }}
+
             expr: |
               sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(memory|requests.memory)"})) by (cluster_full_name)
                 /
@@ -1381,6 +1403,14 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaalmostfull
               summary: Namespace quota is going to be full.
+              message: |-
+                {{ $labels.cluster_full_name }}: Namespace quota is close to full
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Resource: {{ $labels.resource }}
+                Usage: {{ $value | humanizePercentage }}
+
             expr: |
               kube_resourcequota{job="kube-state-metrics", type="used"}
                 / ignoring(instance, job, type)
@@ -1400,6 +1430,14 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name}}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotafullyused
               summary: Namespace quota is fully used.
+              message: |-
+                {{ $labels.cluster_full_name }}: Namespace quota is fully used
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Resource: {{ $labels.resource }}
+                Usage: {{ $value | humanizePercentage }}
+
             expr: |
               kube_resourcequota{job="kube-state-metrics", type="used"}
                 / ignoring(instance, job, type)
@@ -1419,6 +1457,14 @@ kubernetesResources:
                 of its {{ $labels.resource }} quota on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubequotaexceeded
               summary: Namespace quota has exceeded the limits.
+              message: |-
+                {{ $labels.cluster_full_name }}: Namespace quota has exceeded the limits
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Resource: {{ $labels.resource }}
+                Usage: {{ $value | humanizePercentage }}
+
             expr: |
               kube_resourcequota{job="kube-state-metrics", type="used"}
                 / ignoring(instance, job, type)
@@ -1433,14 +1479,7 @@ kubernetesResources:
           spec:
             alert: "CPUThrottlingHigh"
             annotations:
-              summary: "Elevated CPU throttling"
-              message: >-
-                cluster={{ $labels.cluster_full_name }}
-                ns={{ $labels.namespace }}
-                pod={{ $labels.pod }}
-                container={{ $labels.container }}
-                node={{ $labels.node }}
-                throttling={{ $value | humanizePercentage }}
+              summary: Elevated CPU throttling
               description: |
                 Elevated CPU throttling for 15m.
 
@@ -1450,10 +1489,15 @@ kubernetesResources:
                 Container: {{ $labels.container }}
                 Node: {{ $labels.node }}
                 Throttling ratio (5m): {{ $value | humanizePercentage }}
+              message: |-
+                {{ $labels.cluster_full_name }}: Elevated CPU throttling
 
-                Hints:
-                - Check CPU limits/requests for the container.
-                - Look for noisy-neighbor workloads on the node.
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                Node: {{ $labels.node }}
+                Throttling: {{ $value | humanizePercentage }}
             expr: |
               (
                 sum by (cluster_full_name, namespace, pod, container, node) (
@@ -1505,6 +1549,13 @@ kubernetesApps:
                 (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
               summary: Pod is crash looping.
+              message: |-
+                {{ $labels.cluster_full_name }}: Pod is crash looping (CrashLoopBackOff)
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
             expr: |
               max_over_time(
                 kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
@@ -1523,6 +1574,13 @@ kubernetesApps:
                 (reason: "CrashLoopBackOff") on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping
               summary: Infrastructure Pod is crash looping.
+              message: |
+                {{ $labels.cluster_full_name }}: Infrastructure Pod is crash looping (CrashLoopBackOff)
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
             expr: |
               max_over_time(
                 kube_pod_container_status_waiting_reason{
@@ -1545,6 +1603,12 @@ kubernetesApps:
                 state for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodnotready
               summary: Pod has been in a non-ready state for more than 15 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Pod has been in a non-ready state for more than 15 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
             expr: |-
               sum by (namespace,pod,cluster_full_name) (
                 max by (namespace,pod,cluster_full_name) (
@@ -1568,6 +1632,12 @@ kubernetesApps:
                 not been rolled back on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentgenerationmismatch
               summary: Deployment generation mismatch due to possible roll-back
+              message: |
+                {{ $labels.cluster_full_name }}: Deployment generation mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Deployment: {{ $labels.deployment }}
             expr: |-
               kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 !=
@@ -1587,6 +1657,12 @@ kubernetesApps:
                 cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
               summary: Deployment has not matched the expected number of replicas.
+              message: |
+                {{ $labels.cluster_full_name }}: Deployment replicas mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Deployment: {{ $labels.deployment }}
             expr: |-
               (
                 kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
@@ -1612,6 +1688,12 @@ kubernetesApps:
                 cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentreplicasmismatch
               summary: Infrastructure Deployment has not matched the expected number of replicas.
+              message: |
+                {{ $labels.cluster_full_name }}: Infrastructure Deployment replicas mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Deployment: {{ $labels.deployment }}
             expr: |-
               (
                 kube_deployment_spec_replicas{
@@ -1648,6 +1730,12 @@ kubernetesApps:
                 is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
               summary: Deployment rollout is not progressing.
+              message: |
+                {{ $labels.cluster_full_name }}: Deployment rollout is not progressing
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Deployment: {{ $labels.deployment }}
             expr: |-
               kube_deployment_status_condition{
                 condition="Progressing",
@@ -1669,6 +1757,12 @@ kubernetesApps:
                 is not progressing for longer than 15 minutes on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedeploymentrolloutstuck
               summary: Infrastructure Deployment rollout is not progressing.
+              message: |
+                {{ $labels.cluster_full_name }}: Infrastructure Deployment rollout is not progressing
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Deployment: {{ $labels.deployment }}
             expr: |-
               kube_deployment_status_condition{
                 condition="Progressing",
@@ -1687,28 +1781,18 @@ kubernetesApps:
             alert: "KubeStatefulSetReplicasMismatch"
             annotations:
               summary: "StatefulSet replicas mismatch"
-              message: |
-                {{ $labels.cluster_full_name }}: Несоответствие количества реплик StatefulSet
-                StatefulSet не соответствует ожидаемому количеству реплик в течение как минимум 15 минут.
-                Cluster: {{ $labels.cluster_full_name }}
-                Namespace: {{ $labels.namespace }}
-                StatefulSet: {{ $labels.statefulset }}
-
-                Возможные причины и действия:
-                - Проверьте события StatefulSet и статус pod’ов.
-                - Убедитесь, что нет pod’ов в состоянии Pending или CrashLoopBackOff.
-                - Проверьте корректность PVC и доступность хранилища.
-                - Проверьте доступность ресурсов узлов и ограничения планирования.
               description: |
                 StatefulSet has not matched the expected number of replicas for at least 15m.
                 Cluster: {{ $labels.cluster_full_name }}
                 Namespace: {{ $labels.namespace }}
                 StatefulSet: {{ $labels.statefulset }}
-                Hints:
-                - Check StatefulSet events and pods status.
-                - Look for Pending/CrashLoopBackOff pods and PVC issues.
-                - Verify node capacity / scheduling constraints.
               runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
+              message: |
+                {{ $labels.cluster_full_name }}: StatefulSet replicas mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                StatefulSet: {{ $labels.statefulset }}
             expr: |-
               (
                 kube_statefulset_status_replicas_ready{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
@@ -1734,6 +1818,12 @@ kubernetesApps:
                 not been rolled back on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetgenerationmismatch
               summary: StatefulSet generation mismatch due to possible roll-back
+              message: |
+                {{ $labels.cluster_full_name }}: StatefulSet generation mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                StatefulSet: {{ $labels.statefulset }}
             expr: |-
               kube_statefulset_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 !=
@@ -1752,6 +1842,12 @@ kubernetesApps:
                 update has not been rolled out on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubestatefulsetupdatenotrolledout
               summary: StatefulSet update has not been rolled out.
+              message: |
+                {{ $labels.cluster_full_name }}: StatefulSet update not rolled out
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                StatefulSet: {{ $labels.statefulset }}
             expr: |-
               (
                 max by (namespace,statefulset,job,cluster_full_name) (
@@ -1784,6 +1880,12 @@ kubernetesApps:
                 not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
               summary: DaemonSet rollout is stuck.
+              message: |
+                {{ $labels.cluster_full_name }}: DaemonSet rollout is stuck
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                DaemonSet: {{ $labels.daemonset }}
             expr: |-
               (
                 (
@@ -1829,6 +1931,12 @@ kubernetesApps:
                 not finished or progressed for at least 15m on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetrolloutstuck
               summary: Infrastructure DaemonSet rollout is stuck.
+              message: |
+                {{ $labels.cluster_full_name }}: Infrastructure DaemonSet rollout is stuck
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                DaemonSet: {{ $labels.daemonset }}
             expr: |-
               (
                 (
@@ -1868,6 +1976,14 @@ kubernetesApps:
                 1 hour. (reason: "{{ $labels.reason }}") on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecontainerwaiting
               summary: Pod container waiting longer than 1 hour
+              message: |
+                {{ $labels.cluster_full_name }}: Container in waiting state > 1h
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                Reason: {{ $labels.reason }}
             expr: |
               kube_pod_container_status_waiting_reason{
                 reason!="CrashLoopBackOff",
@@ -1888,6 +2004,13 @@ kubernetesApps:
                 are not scheduled on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetnotscheduled
               summary: DaemonSet pods are not scheduled.
+              message: |
+                {{ $labels.cluster_full_name }}: DaemonSet pods are not scheduled
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                DaemonSet: {{ $labels.daemonset }}
+                NotScheduledPods: {{ $value }}
             expr: |-
               kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 -
@@ -1906,6 +2029,13 @@ kubernetesApps:
                 are running where they are not supposed to run on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubedaemonsetmisscheduled
               summary: DaemonSet pods are misscheduled.
+              message: |
+                {{ $labels.cluster_full_name }}: DaemonSet pods are misscheduled
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                DaemonSet: {{ $labels.daemonset }}
+                MisScheduledPods: {{ $value }}
             expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
             for: 15m
             labels:
@@ -1921,6 +2051,12 @@ kubernetesApps:
                 more than {{ "43200" | humanizeDuration }} to complete on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobnotcompleted
               summary: Job did not complete in time
+              message: |
+                {{ $labels.cluster_full_name }}: Job running longer than expected
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Job: {{ $labels.job_name }}
             expr: |-
               time()
                 -
@@ -1943,6 +2079,12 @@ kubernetesApps:
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubejobfailed
               summary: Job failed to complete.
+              message: |
+                {{ $labels.cluster_full_name }}: Job failed
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Job: {{ $labels.job_name }}
             expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
             for: 15m
             labels:
@@ -1954,11 +2096,17 @@ kubernetesApps:
             alert: "KubeHpaReplicasMismatch"
             annotations:
               description: |
-                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler }}
                 has not matched the desired number of replicas for longer than 15 minutes
                 on cluster {{ $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpareplicasmismatch
               summary: HPA has not matched desired number of replicas.
+              message: |-
+                {{ $labels.cluster_full_name }}: HPA replicas mismatch
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                HPA: {{ $labels.horizontalpodautoscaler }}
             expr: |-
               (kube_horizontalpodautoscaler_status_desired_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 !=
@@ -1983,11 +2131,17 @@ kubernetesApps:
             alert: "KubeHpaMaxedOut"
             annotations:
               description: |
-                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler  }}
+                HPA {{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler }}
                 has been running at max replicas for longer than 15 minutes on cluster {{
                 $labels.cluster_full_name }}.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubehpamaxedout
               summary: HPA is running at max replicas
+              message: |-
+                {{ $labels.cluster_full_name }}: HPA running at max replicas
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                HPA: {{ $labels.horizontalpodautoscaler }}
             expr: |-
               kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
                 ==
@@ -2002,18 +2156,6 @@ kubernetesApps:
             alert: "KubePdbNotEnoughHealthyPods"
             annotations:
               summary: "PDB does not have enough healthy pods"
-              message: |
-                {{ $labels.cluster_full_name }}: Недостаточно здоровых pod’ов (не хватает: {{ $value | humanize }})
-                PodDisruptionBudget не достигает требуемого количества здоровых pod’ов более 15 минут.
-                Cluster: {{ $labels.cluster_full_name }}
-                Namespace: {{ $labels.namespace }}
-                PDB: {{ $labels.poddisruptionbudget }}
-                Недостающих pod’ов: {{ $value | humanize }}
-
-                Возможные причины и действия:
-                - статус pod’ов (Pending/CrashLoopBackOff)
-                - события StatefulSet/Deployment
-                - доступность узлов и ресурсов
               description: |
                 PodDisruptionBudget has not met desired healthy pods for 15m.
 
@@ -2021,11 +2163,14 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 PDB: {{ $labels.poddisruptionbudget }}
                 Missing healthy pods: {{ $value | humanize }}
-
-                Meaning:
-                - Voluntary disruptions (drain/eviction) may be blocked.
-                - Indicates under-replication or unhealthy pods.
               runbook_url: https://confluence.beget.ru/display/ADM/%5BWIP%5D+K8S_SVC_SIGNALILO#{{ $labels.alertname }}
+              message: |-
+                {{ $labels.cluster_full_name }}: PDB does not have enough healthy pods
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                PDB: {{ $labels.poddisruptionbudget }}
+                MissingHealthyPods: {{ $value | humanize }}
             expr: |-
               (
                 kube_poddisruptionbudget_status_desired_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
