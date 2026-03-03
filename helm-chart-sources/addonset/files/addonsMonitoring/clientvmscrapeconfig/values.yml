@@ -184,3 +184,51 @@ spec:
               replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
             - targetLabel: cluster_type
               replacement: client
+
+      # Scrape-config for api-server grafana-dashboards
+      clientClusterKubeApiserver:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kube-apiserver
+          namespace: beget-vmagent
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+          path: /metrics
+
+          staticConfigs:
+            - targets:
+                - {{ .Values.cluster.host }}:{{ .Values.cluster.port }}
+              labels:
+                job: kube-apiserver
+                cluster_full_name: {{ .Values.cluster.name }}
+                remotewrite_cluster: {{ .Values.cluster.name }}
+                client_cluster: {{ .Values.cluster.name }}
+
+          tlsConfig:
+            ca:
+              secret:
+                name: monitoring-client
+                key: ca.crt
+            cert:
+              secret:
+                name: monitoring-client
+                key: tls.crt
+            keySecret:
+              name: monitoring-client
+              key: tls.key
+            insecureSkipVerify: false
+
+          relabelConfigs:
+            - targetLabel: instance
+              replacement: external-apiserver
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
