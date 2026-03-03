@@ -347,7 +347,12 @@ etcd:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Value: {{ $value }}
-            expr: (rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m) / rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)) > 1.15
+            expr: |
+              (
+                rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m])
+              /
+                rate(etcd_disk_wal_fsync_duration_seconds_count{job="kube-etcd"}[10m] offset 10m)
+              ) > 1.15
             for: 2m
             labels:
               severity: warning
@@ -1092,7 +1097,7 @@ prometheusK8sPrometheusRules:
               > 120
             for: 15m
             labels:
-              severity: info
+              severity: warning
 
         PrometheusRemoteWriteDesiredShards:
           enabled: false
@@ -1390,7 +1395,7 @@ kubernetesResources:
                 > 1.5
             for: 5m
             labels:
-              severity: warning
+              severity: critical
 
         KubeQuotaAlmostFull:
           enabled: false
@@ -1444,7 +1449,7 @@ kubernetesResources:
                 == 1
             for: 15m
             labels:
-              severity: info
+              severity: warning
 
         KubeQuotaExceeded:
           enabled: false
@@ -3621,7 +3626,7 @@ node-exporter:
               mode!~"idle|iowait"}[2m]))) * 100 > 90
             for: 15m
             labels:
-              severity: info
+              severity: warning
 
         NodeSystemSaturation:
           enabled: false
