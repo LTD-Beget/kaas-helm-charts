@@ -202,7 +202,7 @@ spec:
             - targets:
                 - {{ .Values.cluster.host }}:{{ .Values.cluster.port }}
               labels:
-                job: kube-apiserver
+                job: kubernetes-apiserver
                 cluster_full_name: {{ .Values.cluster.name }}
                 remotewrite_cluster: {{ .Values.cluster.name }}
                 client_cluster: {{ .Values.cluster.name }}
