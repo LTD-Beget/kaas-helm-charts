@@ -11,18 +11,8 @@ default: |
       ingress:
         enabled: false
       config:
-        global:
-          resolve_timeout: 5m
-        route:
-          receiver: blackhole
-          routes:
-            - receiver: blackhole
-              matchers:
-                - alertname="Watchdog"
-        receivers:
-          - name: 'blackhole'
       monzoTemplate:
-        enabled: true
+        enabled: false
       spec:
         selectAllByDefault: false
         priorityClassName: system-cluster-critical

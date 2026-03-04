@@ -4,6 +4,43 @@ victoria-metrics-k8s-stack:
 
   alertmanager:
     enabled: false
+    config:
+      global:
+        resolve_timeout: 5m
+
+      route:
+        receiver: blackhole
+        group_by: ["cluster_full_name", "alertname", "severity"]
+        group_wait: 10s
+        group_interval: 30s
+        repeat_interval: 3h
+
+        routes:
+          - matchers:
+              - alertname="Watchdog"
+            receiver: blackhole
+          - matchers:
+              - severity="critical"
+            receiver: telegram-critical
+            continue: true
+          - matchers:
+              - severity="critical"
+            receiver: signalilo-critical
+            continue: true
+
+      receivers:
+        - name: blackhole
+        - name: telegram-critical
+          telegram_configs:
+            - bot_token: "123456789:AAExampleTokenHere"
+              chat_id: -1001234567890
+              parse_mode: 'HTML'
+              send_resolved: true
+              message: '{{ template "tg.message" . }}'
+        - name: signalilo-critical
+          webhook_configs:
+            - url: "http://signalilo.beget-signalilo.svc/webhook?token=HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
+              send_resolved: true
 
   vmagent:
     enabled: false
@@ -12,6 +49,9 @@ victoria-metrics-k8s-stack:
     enabled: false
 
   clickhouseIserter:
+    enabled: false
+
+  vmcluster:
     enabled: false
 
 monitoring:
