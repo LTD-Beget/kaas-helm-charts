@@ -1,25 +1,49 @@
 {{- range $appName, $appValue := .Values.applications }}
   {{- if $appValue.enabled }}
     {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+    {{- $defaultServerName := "client-cp-scheduler" }}
+    {{- $serverName := "" }}
+    {{- if $appValue.csiDriver }}
+    {{- $serverName = ((dig "volumes" "scheduler-server-csi" "volume" "volumeAttributes" "csi.cert-manager.io/dns-names" $defaultServerName $appValue) | split ",")._0 }}
+    {{- else }}
+    {{- $serverName = ((dig "containers" "kubeScheduler" "certSANs" list $appValue) | first | default $defaultServerName) }}
+    {{- end }}
+
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: scheduler-client
-  namespace: beget-system
+  name: "{{ $.Release.Name }}-scheduler"
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpoints:
     - port: https-metrics
       scheme: "https"
       tlsConfig:
-        serverName: {{ $.Release.Name }}-scheduler
+        serverName: "{{ $serverName }}"
         ca:
           secret:
-            name: {{ $appValue.clusterName }}-ca
+            name: "{{ $.Release.Name }}-monitoring-client"
             key: ca.crt
+        cert:
+          secret:
+            name: "{{ $.Release.Name }}-monitoring-client"
+            key: tls.crt
+        keySecret:
+          name: "{{ $.Release.Name }}-monitoring-client"
+          key: tls.key
+      relabelConfigs:
+        - targetLabel: cluster_full_name
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: remotewrite_cluster
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: client_cluster
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: cluster_type
+          replacement: client
   selector:
     matchLabels:
-      component: kube-scheduler-client
+      monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
   jobLabel: jobLabel
     {{- end }}
   {{- end }}
