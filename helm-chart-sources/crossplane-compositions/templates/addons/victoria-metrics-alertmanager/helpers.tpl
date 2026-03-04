@@ -10,7 +10,6 @@ default: |
     alertmanager:
       ingress:
         enabled: false
-      config:
       monzoTemplate:
         enabled: false
       spec:
