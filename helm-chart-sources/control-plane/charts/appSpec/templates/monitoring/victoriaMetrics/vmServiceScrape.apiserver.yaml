@@ -1,6 +1,14 @@
 {{- range $appName, $appValue := .Values.applications }}
   {{- if $appValue.enabled }}
     {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+    {{- $defaultServerName := "client-cp-control-plane" }}
+    {{- $serverName := "" }}
+    {{- if $appValue.csiDriver }}
+    {{- $serverName = index (split (dig "controlPlane" "volumes" "apiserver-csi" "volume" "volumeAttributes" "csi.cert-manager.io/dns-names" $defaultServerName $appValue) ",") 0 }}
+    {{- else }}
+    {{- $serverName = dig "controlPlane" "containers" "kubeApiserver" "certSANs" 0 $defaultServerName $appValue }}
+    {{- end }}
+
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
@@ -12,7 +20,7 @@ spec:
     - port: https-metrics
       scheme: "https"
       tlsConfig:
-        serverName: "{{ $.Release.Name }}-apiserver-monitoring"
+        serverName: "{{ $serverName }}"
         ca:
           secret:
             name: "{{ $appValue.clusterName }}-ca"

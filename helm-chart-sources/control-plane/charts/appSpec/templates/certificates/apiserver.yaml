@@ -12,7 +12,6 @@ spec:
   renewBefore: 1460h
   commonName: kube-apiserver
   dnsNames:
-    - "{{ $.Release.Name }}-apiserver-monitoring"
     {{- range $dns := $appValue.containers.kubeApiserver.certSANs }}
     - {{ tpl $dns $ }}
     {{- end }}

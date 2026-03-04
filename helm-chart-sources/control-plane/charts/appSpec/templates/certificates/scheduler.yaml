@@ -12,7 +12,6 @@ spec:
   renewBefore: 1460h
   commonName: system:kube-scheduler-server
   dnsNames:
-    - "{{ $.Release.Name }}-scheduler-monitoring"
     {{- range $dns := $appValue.containers.kubeScheduler.certSANs }}
     - {{ tpl $dns $ }}
     {{- end }}

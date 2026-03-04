@@ -12,7 +12,6 @@ spec:
   renewBefore: 1460h
   commonName: system:kube-controller-manager-server
   dnsNames:
-    - "{{ $.Release.Name }}-controller-manager-monitoring"
     {{- range $dns := $appValue.containers.kubeControllerManager.certSANs }}
     - {{ tpl $dns $ }}
     {{- end }}
