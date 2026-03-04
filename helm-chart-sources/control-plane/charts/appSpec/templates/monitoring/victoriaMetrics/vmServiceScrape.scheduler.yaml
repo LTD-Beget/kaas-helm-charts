@@ -32,6 +32,15 @@ spec:
         keySecret:
           name: "{{ $.Release.Name }}-monitoring-client"
           key: tls.key
+      relabelConfigs:
+        - targetLabel: cluster_full_name
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: remotewrite_cluster
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: client_cluster
+          replacement: "{{ $appValue.clusterCustomer }}-{{ $appValue.clusterName }}"
+        - targetLabel: cluster_type
+          replacement: client
   selector:
     matchLabels:
       monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
