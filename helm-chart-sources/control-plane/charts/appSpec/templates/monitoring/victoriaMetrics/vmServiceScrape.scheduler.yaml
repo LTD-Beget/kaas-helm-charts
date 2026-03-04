@@ -44,7 +44,7 @@ spec:
   selector:
     matchLabels:
       monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
-  jobLabel: scheduler
+  jobLabel: jobLabel
     {{- end }}
   {{- end }}
 {{- end }}

@@ -9,6 +9,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
+    jobLabel: scheduler
 spec:
   ports:
     - name: https-metrics

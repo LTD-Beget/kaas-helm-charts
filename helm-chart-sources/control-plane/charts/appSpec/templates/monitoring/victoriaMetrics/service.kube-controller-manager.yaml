@@ -9,6 +9,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     monitoring.in-cloud.io/service: "{{ $.Release.Name }}-controller-manager-monitoring"
+    jobLabel: controller-manager
 spec:
   ports:
     - name: https-metrics

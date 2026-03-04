@@ -44,7 +44,7 @@ spec:
   selector:
     matchLabels:
       monitoring.in-cloud.io/service: "{{ $.Release.Name }}-apiserver-monitoring"
-  jobLabel: apiserver
+  jobLabel: jobLabel
     {{- end }}
   {{- end }}
 {{- end }}
