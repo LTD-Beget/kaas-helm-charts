@@ -12,6 +12,9 @@ spec:
   renewBefore: 1460h
   commonName: kube-apiserver
   dnsNames:
+    {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+    - "{{ $.Release.Name }}-apiserver-monitoring"
+    {{- end }}
     {{- range $dns := $appValue.containers.kubeApiserver.certSANs }}
     - {{ tpl $dns $ }}
     {{- end }}

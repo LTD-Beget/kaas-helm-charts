@@ -12,6 +12,9 @@ spec:
   renewBefore: 1460h
   commonName: system:kube-controller-manager-server
   dnsNames:
+    {{- if and $appValue.monitoring.enabled (eq $appValue.monitoring.type "VictoriaMetrics") }}
+    - "{{ $.Release.Name }}-controller-manager-monitoring"
+    {{- end }}
     {{- range $dns := $appValue.containers.kubeControllerManager.certSANs }}
     - {{ tpl $dns $ }}
     {{- end }}

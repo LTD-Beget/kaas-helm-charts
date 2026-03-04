@@ -5,21 +5,21 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: scheduler-client
-  namespace: beget-system
+  name: "{{ $.Release.Name }}-scheduler"
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpoints:
     - port: https-metrics
       scheme: "https"
       tlsConfig:
-        serverName: {{ $.Release.Name }}-scheduler
+        serverName: "{{ $.Release.Name }}-scheduler-monitoring"
         ca:
           secret:
-            name: {{ $appValue.clusterName }}-ca
+            name: "{{ $appValue.clusterName }}-ca"
             key: ca.crt
   selector:
     matchLabels:
-      component: kube-scheduler-client
+      monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
   jobLabel: jobLabel
     {{- end }}
   {{- end }}
