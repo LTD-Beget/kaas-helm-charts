@@ -9,8 +9,6 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     monitoring.in-cloud.io/service: "{{ $.Release.Name }}-controller-manager-monitoring"
-    component: kube-controller-manager-client
-    jobLabel: kube-controller-manager-client
 spec:
   ports:
     - name: https-metrics

@@ -9,8 +9,6 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     monitoring.in-cloud.io/service: "{{ $.Release.Name }}-apiserver-monitoring"
-    component: kube-apiserver-client
-    jobLabel: kube-apiserver-client
 spec:
   ports:
     - name: https-metrics
