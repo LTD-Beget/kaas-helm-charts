@@ -23,8 +23,15 @@ spec:
         serverName: "{{ $serverName }}"
         ca:
           secret:
-            name: "{{ $appValue.clusterName }}-ca"
+            name: "{{ $.Release.Name }}-monitoring-client"
             key: ca.crt
+        cert:
+          secret:
+            name: "{{ $.Release.Name }}-monitoring-client"
+            key: tls.crt
+        keySecret:
+          name: "{{ $.Release.Name }}-monitoring-client"
+          key: tls.key
   selector:
     matchLabels:
       monitoring.in-cloud.io/service: "{{ $.Release.Name }}-apiserver-monitoring"
