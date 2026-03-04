@@ -4,9 +4,9 @@
     {{- $defaultServerName := "client-cp-controller-manager" }}
     {{- $serverName := "" }}
     {{- if $appValue.csiDriver }}
-    {{- $serverName = index (split (dig "controlPlane" "volumes" "controller-manager-server-csi" "volume" "volumeAttributes" "csi.cert-manager.io/dns-names" $defaultServerName $appValue) ",") 0 }}
+    {{- $serverName = ((dig "volumes" "controller-manager-server-csi" "volume" "volumeAttributes" "csi.cert-manager.io/dns-names" $defaultServerName $appValue) | split ",")._0 }}
     {{- else }}
-    {{- $serverName = dig "controlPlane" "containers" "kubeControllerManager" "certSANs" 0 $defaultServerName $appValue }}
+    {{- $serverName = ((dig "containers" "kubeControllerManager" "certSANs" list $appValue) | first | default $defaultServerName) }}
     {{- end }}
 
 ---
