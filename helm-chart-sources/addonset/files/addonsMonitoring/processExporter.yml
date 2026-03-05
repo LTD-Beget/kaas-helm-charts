@@ -49,9 +49,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: process-exporter-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: process-exporter
@@ -93,9 +90,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: process-exporter-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: process-exporter
@@ -115,9 +109,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: process-exporter-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: process-exporter
@@ -136,9 +127,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: process-exporter-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: process-exporter
@@ -152,9 +140,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: process-exporter-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueProcessExporterSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: process-exporter
@@ -185,9 +170,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseProcessExporter
-    gotemplating.fn.crossplane.io/ready: "True"
   name: process-exporter
 spec:
   rules:

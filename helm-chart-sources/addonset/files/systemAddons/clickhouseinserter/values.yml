@@ -3,9 +3,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: clickhouse-inserter-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueClickhouseInserterDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: clickhouse-inserter
@@ -119,9 +116,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: clickhouse-inserter-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueClickhouseInserterCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: clickhouse-inserter

@@ -1,24 +1,21 @@
-{{- define "crossplane-functions.addon" }}
+{{- define "clickhousevmstorage.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: crossplane-functions
+  name: clickhouse-vmstorage
 spec:
-  path: "helm-chart-sources/crossplane-functions"
+  chart: ""
+  path: "helm-chart-sources/clickhouse-vmstorage"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-crossplane"
+  targetNamespace: "beget-clickhouse-vmstorage"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: crossplane
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
+  valuesSources: []
+  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -26,6 +23,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -38,10 +36,5 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: crossplane-functions
-    - name: immutable
-      priority: 99
-      matchLabels:
-        addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: crossplane-functions
+        addons.in-cloud.io/addon: clickhouse-vmstorage
 {{- end }}

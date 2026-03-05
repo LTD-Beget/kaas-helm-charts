@@ -4,9 +4,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: clickhouse-inserter
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonClickhouseInserter
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   chart: ""
   path: "helm-chart-sources/victoria-metrics-k8s-stack"
@@ -19,16 +16,17 @@ spec:
     cluster_name: in-cluster
   valuesSources: []
   initDependencies:
-    # - name: vm-operator
-    #   criteria:
-    #     - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-    #       operator: Equal
-    #       value: "True"
-    - name: vm-cluster #TODO
+    - name: vm-operator
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
+    #TODO
+    # - name: vm-cluster 
+    #   criteria:
+    #     - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+    #       operator: Equal
+    #       value: "True"
     - name: clickhouse-vmstorage
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
@@ -54,10 +52,5 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: clickhouse-inserter
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
         addons.in-cloud.io/addon: clickhouse-inserter
 {{- end }}

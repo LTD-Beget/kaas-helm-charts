@@ -3,9 +3,6 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseClickhouseInserter
-    gotemplating.fn.crossplane.io/ready: "True"
   name: clickhouse-inserter
 spec:
   rules:

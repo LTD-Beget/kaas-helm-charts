@@ -49,9 +49,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: kube-state-metrics-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: kube-state-metrics
@@ -76,9 +73,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: kube-state-metrics-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: kube-state-metrics
@@ -98,9 +92,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: kube-state-metrics-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: kube-state-metrics
@@ -119,9 +110,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: kube-state-metrics-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKubeStateMetricsVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: kube-state-metrics
@@ -134,9 +122,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseKubeStateMetrics
-    gotemplating.fn.crossplane.io/ready: "True"
   name: kube-state-metrics
 spec:
   rules:
