@@ -1,5 +1,15 @@
 vault: {}
 
+prepareJob:
+  enabled: false
+  initialize:
+    enabled: true
+  unseal:
+    enabled: true
+    secretName: vault-keys
+    secretKey: UNSEAL_KEYS
+  # configureKubernetesAuthAndPolicies: true
+  # configureMonitoring: true
 
 monitoring:
   enabled: false

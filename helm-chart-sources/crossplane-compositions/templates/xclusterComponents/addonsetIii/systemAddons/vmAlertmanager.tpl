@@ -13,6 +13,9 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
+          templates:
+            - key: telegram_alerts.tmpl
+              name: vmalertmanager-alertmanager-alert-templates
           serviceSpec:
             metadata:
               name: vmalertmanager
@@ -73,9 +76,7 @@ vmAlertmanager:
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
-          configSelector:
-            matchLabels:
-              in-cloud-metrics: "infra"
+          configSecret: vmalertmanager-config
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
               operator: "Exists"
@@ -87,6 +88,54 @@ vmAlertmanager:
             tls_server_config:
               cert_file: "/app/config/alertmanager/web/tls/tls.crt"
               key_file: "/app/config/alertmanager/web/tls/tls.key"
+
+    alertmanagerConfig:
+      enabled: true
+      config:
+        global:
+          resolve_timeout: 5m
+
+        route:
+          receiver: blackhole
+          group_by: ["cluster_full_name", "alertname", "severity"]
+          group_wait: 10s
+          group_interval: 30s
+          repeat_interval: 3h
+
+          routes:
+            blackhole:
+              matchers:
+                - alertname="Watchdog"
+              receiver: blackhole
+            telegram:
+              matchers:
+                - severity="critical"
+              receiver: telegram-critical
+              continue: true
+            signalilo:
+              matchers:
+                - severity="critical"
+              receiver: signalilo-critical
+              continue: true
+
+        receivers:
+          blackhole: {}
+          telegram-critical:
+            type: telegram_configs
+            configs:
+              criticalAlertGroup:
+                bot_token: "123456789:AAExampleTokenHere"
+                chat_id: -1001234567890
+                parse_mode: 'HTML'
+                send_resolved: true
+                message: '{{ template "tg.message" . }}'
+          signalilo-critical:
+            type: webhook_configs
+            configs:
+              mainSignaliloInstance:
+                url: "http://signalilo.beget-signalilo.svc/webhook?token=HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
+                send_resolved: true
+
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
@@ -111,5 +160,5 @@ vmAlertmanager:
             - "vmalertmanager-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
-  ` }}
+  `}}
 {{- end -}}

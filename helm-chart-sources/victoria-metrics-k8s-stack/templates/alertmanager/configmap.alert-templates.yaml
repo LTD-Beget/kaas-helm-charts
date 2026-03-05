@@ -1,0 +1,86 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if $vmstack.alertmanager.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-alertmanager-alert-templates"
+  namespace: {{ .Release.Namespace }}
+data:
+  telegram_alerts.tmpl: |
+    {{`
+    {{ define "emoji.status" -}}
+    {{- if eq .Status "firing" -}}🚨{{- else if eq .Status "resolved" -}}✅{{- else -}}❔{{- end -}}
+    {{- end }}
+
+    {{ define "title" -}}
+    {{ template "emoji.status" . }} <b>{{ index .CommonLabels "alertname" }}</b>
+    {{- end }}
+
+    {{ define "status.human" -}}
+    {{- if eq .Status "firing" -}}<code>firing</code>{{- else if eq .Status "resolved" -}}<code>resolved</code>{{- else -}}<code>{{ .Status }}</code>{{- end -}}
+    {{- end }}
+
+    {{ define "tg.message" -}}
+    {{ template "title" . }}
+
+    <b>Cluster:</b> <code>{{ index .CommonLabels "cluster_full_name" }}</code>
+    <b>Severity:</b> <code>{{ index .CommonLabels "severity" }}</code>
+    <b>Status:</b> {{ template "status.human" . }}
+    {{- if .CommonAnnotations.summary }}
+    <b>Summary:</b> {{ .CommonAnnotations.summary }}
+    {{- end }}
+    {{- if .CommonAnnotations.runbook_url }}
+    <b>Runbook:</b> {{ .CommonAnnotations.runbook_url }}
+    {{- end }}
+
+    <b>Alerts [{{ len .Alerts }}]:</b>
+    {{ range .Alerts -}}
+    ⚠️ ──────────
+    {{- if .Annotations.description }}
+    {{ .Annotations.description }}
+    {{- end }}
+
+    <b>startsAt:</b> <code>{{ .StartsAt }}</code>
+    {{- if eq $.Status "resolved" }}
+    <b>endsAt:</b> <code>{{ .EndsAt }}</code>
+    {{- end }}
+
+    {{- if or (index .Labels "nodename") (index .Labels "node") }}
+    <b>nodename:</b> <code>{{- if (index .Labels "nodename") -}}{{ index .Labels "nodename" }}{{- else -}}{{ index .Labels "node" }}{{- end -}}</code>
+    {{- end }}
+    {{- if (index .Labels "namespace") }}
+    <b>namespace:</b> <code>{{ index .Labels "namespace" }}</code>
+    {{- end }}
+    {{- if (index .Labels "daemonset") }}
+    <b>daemonset:</b> <code>{{ index .Labels "daemonset" }}</code>
+    {{- end }}
+    {{- if (index .Labels "statefulset") }}
+    <b>statefulset:</b> <code>{{ index .Labels "statefulset" }}</code>
+    {{- end }}
+    {{- if (index .Labels "deployment") }}
+    <b>deployment:</b> <code>{{ index .Labels "deployment" }}</code>
+    {{- end }}
+    {{- if (index .Labels "replicaset") }}
+    <b>replicaset:</b> <code>{{ index .Labels "replicaset" }}</code>
+    {{- end }}
+    {{- if (index .Labels "horizontalpodautoscaler") }}
+    <b>horizontalpodautoscaler:</b> <code>{{ index .Labels "horizontalpodautoscaler" }}</code>
+    {{- end }}
+    {{- if (index .Labels "pod") }}
+    <b>pod:</b> <code>{{ index .Labels "pod" }}</code>
+    {{- end }}
+    {{- if (index .Labels "container") }}
+    <b>container:</b> <code>{{ index .Labels "container" }}</code>
+    {{- end }}
+
+    <b>labels:</b>
+    {{- range $k, $v := .Labels }}
+    {{ $k }}: <code>{{ $v }}</code>
+    {{- end }}
+
+    {{ end -}}
+    {{- end }}
+    `}}
+{{- end }}

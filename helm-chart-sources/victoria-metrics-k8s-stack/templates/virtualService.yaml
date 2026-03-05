@@ -1,0 +1,27 @@
+{{- range $name, $vs := .Values.istioVirtualService }}
+{{- if $vs.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  gateways:
+    {{ toYaml $vs.gateways | nindent 4 }}
+  hosts:
+    {{ toYaml $vs.hosts | nindent 4 }}
+  http:
+    - name: {{ $vs.http.name }}
+      match:
+        - uri:
+            exact: {{ $vs.path }}
+        - uri:
+            prefix: "{{ $vs.path }}/"
+      route:
+        - destination:
+            host: {{ $vs.http.route.host }}
+            port:
+              number: {{ $vs.http.route.port }}
+{{- end }}
+{{- end }}

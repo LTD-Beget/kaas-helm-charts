@@ -1,17 +1,19 @@
-{{- $vmrules := .Values.alertRules }}
-{{- range $VMRuleName, $VMRule := $vmrules.vmrules }}
+
+{{- $defaultRules := .Files.Get "files/alerts.default.yaml"  | fromYaml -}}
+{{- $vmrules := (mergeOverwrite (deepCopy $defaultRules) $.Values.vmrules) -}}
+{{- range $VMRuleName, $VMRule := $vmrules }}
 {{- if $VMRule.enabled }}
-{{- $additionsLabels := deepCopy ($vmrules.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
+{{- $additionalLabels := deepCopy ($.Values.additionalLabels | default dict) | mergeOverwrite ($VMRule.additionalLabels | default dict) }}
 
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMRule
 metadata:
-  name: {{ include "victoria-metrics-k8s-stack.fullname" $ }}-{{ $VMRuleName | kebabcase }}
+  name: {{ include "alert-rules.fullname" $ }}-{{ $VMRuleName | kebabcase }}
   namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "victoria-metrics-k8s-stack.labels" $ | nindent 4 }}
-    {{- with $additionsLabels }}
+    {{- include "alert-rules.labels" $ | nindent 4 }}
+    {{- with $additionalLabels }}
     {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
@@ -26,9 +28,9 @@ spec:
         - expr: |
             {{ $ruleSpec.expr | nindent 12 }}
           {{- if $ruleSpec.record }}
-          record: {{ $ruleSpec.record }}
+          record: {{ $ruleSpec.record | quote }}
           {{- else }}
-          alert: {{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}
+          alert: "{{ $ruleSpec.alert | default ((printf "%s_%s" $VMRuleName $ruleName) | camelcase | quote ) }}"
           {{- end }}
           {{- with $ruleSpec.annotations }}
           annotations:
