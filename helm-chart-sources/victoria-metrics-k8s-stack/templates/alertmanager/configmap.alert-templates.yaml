@@ -75,11 +75,6 @@ data:
     <b>container:</b> <code>{{ index .Labels "container" }}</code>
     {{- end }}
 
-    <b>labels:</b>
-    {{- range $k, $v := .Labels }}
-    {{ $k }}: <code>{{ $v }}</code>
-    {{- end }}
-
     {{ end -}}
     {{- end }}
     `}}
