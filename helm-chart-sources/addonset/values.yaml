@@ -27,6 +27,8 @@ addons:
     enabled: false
   crossplanefunctions:
     enabled: false
+  dex:
+    enabled: false
   etcdbackupsnapshot:
     enabled: true
   extraresources:
@@ -49,6 +51,8 @@ addons:
     enabled: true
   vmoperator:
     enabled: true
+  vault:
+    enabled: false
   system:
     enabled: false
     clickhouseInserter: false

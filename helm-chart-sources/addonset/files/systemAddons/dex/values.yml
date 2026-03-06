@@ -1,0 +1,25 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    dex:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: dex
+spec:
+  values: ""
