@@ -1,5 +1,16 @@
-# автоансил
-# автоинит, если нет секрета с ключами.
-# кубавторизация
-# полиси на чтение секретов
-# полиси на чтение метрик
+{{- $prepare := .Values.prepareJob -}}
+
+{{- if $prepare.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prepare
+  namespace: {{ .Release.Namespace }}
+data:
+  prepare-vault.sh: |
+    #!/bin/sh
+
+    # TODO: initialiaze
+    # TODO: auto-unseal
+{{- end }}

@@ -5,24 +5,17 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: "{{ $.Release.Name }}-scheduler-monitoring"
+  namespace: {{ $.Release.Namespace }}
   labels:
-    component: kube-scheduler-client
-    jobLabel: kube-scheduler-client
-  name: vmagent-kube-scheduler-client
-  namespace: beget-system
+    monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
+    jobLabel: scheduler
 spec:
-  clusterIP: None
-  clusterIPs:
-  - None
-  internalTrafficPolicy: Cluster
-  ipFamilies:
-  - IPv4
-  ipFamilyPolicy: SingleStack
   ports:
-  - name: https-metrics
-    port: {{ index $appValue.containers.kubeScheduler.extraArgs "secure-port" | default "20259" }}
-    protocol: TCP
-    targetPort: {{ index $appValue.containers.kubeScheduler.extraArgs "secure-port" | default "20259" }}
+    - name: https-metrics
+      port: {{ index $appValue.containers.kubeScheduler.extraArgs "secure-port" | default "20259" }}
+      protocol: TCP
+      targetPort: {{ index $appValue.containers.kubeScheduler.extraArgs "secure-port" | default "20259" }}
   selector:
     app.kubernetes.io/name: control-plane
   type: ClusterIP

@@ -12,6 +12,7 @@ spec:
         controlPlane:
           csiDriver: true
           clusterName: "{{ .Variables.clusterName }}"
+          clusterCustomer: "{{ .Variables.customer }}"
           containers:
             kubeApiserver:
               image:
