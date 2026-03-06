@@ -2,10 +2,10 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: grafanaoperator-default
+  name: grafana-operator-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: grafanaoperator
+    addons.in-cloud.io/addon: grafana-operator
 spec:
   values: |
     grafana-operator:
@@ -30,10 +30,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: grafanaoperator-immutable
+  name: grafana-operator-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: grafanaoperator
+    addons.in-cloud.io/addon: grafana-operator
 spec:
   values: ""
 
@@ -41,10 +41,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: grafanaoperator-cert-manager
+  name: grafana-operator-cert-manager
   labels:
     addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: grafanaoperator
+    addons.in-cloud.io/addon: grafana-operator
 spec:
   values: |
     argocdPlugins:
@@ -59,10 +59,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: grafanaoperator-vm-operator
+  name: grafana-operator-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: grafanaoperator
+    addons.in-cloud.io/addon: grafana-operator
 spec:
   values: |
     monitoring:

@@ -1,0 +1,69 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: grafana-dashboards-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: grafana-dashboards
+spec:
+  values: |
+    grafanaDashboards:
+      argocd:
+        enabled: true
+      ciliumAgent:
+        enabled: true
+      cpu:
+        enabled: true
+      crossplaneCustom:
+        enabled: true
+      dockerRegistry:
+        enabled: true
+      processLA:
+        enabled: true
+      processExporter:
+        enabled: true
+      metallb:
+        enabled: false
+      vector:
+        enabled: false
+      vmagent:
+        enabled: true
+      vmalert:
+        enabled: true
+      vmcluster:
+        enabled: true
+      vmoperator:
+        enabled: true
+      clickhouseTSDBNodegroups:
+        enabled: true
+      clickhouseTSDBNodes:
+        enabled: true
+      clickhouseTSDBPods:
+        enabled: true
+      k8s:
+        coredns:
+          enabled: true
+        etcd:
+          enabled: true
+        timex:
+          enabled: true
+        viewsGlobal:
+          enabled: true
+        viewsNamespaces:
+          enabled: true
+        viewsNodes:
+          enabled: true
+        viewsPods:
+          enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: grafana-dashboards-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: grafana-dashboards
+spec:
+  values: ""

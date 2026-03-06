@@ -1,21 +1,26 @@
-{{- define "grafanaoperator.addon" }}
+{{- define "grafanadashboards.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: grafana-operator
+  name: grafana-dashboards
 spec:
   chart: ""
-  path: "helm-chart-sources/grafana-operator"
+  path: "helm-chart-sources/grafana-dashboards"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-grafana-operator"
+  targetNamespace: "beget-grafana"
   variables:
     cluster_name: in-cluster
   valuesSources: []
-  initDependencies: []
+  initDependencies:
+    - name: grafana-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -36,10 +41,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: grafana-operator
+        addons.in-cloud.io/addon: grafana-dashboards
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: grafana-operator
+        addons.in-cloud.io/addon: grafana-dashboards
 {{- end }}

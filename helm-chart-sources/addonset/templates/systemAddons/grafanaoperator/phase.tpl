@@ -3,7 +3,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: grafanaoperator
+  name: grafana-operator
 spec:
   rules:
     - name: cert-manager
@@ -20,7 +20,7 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: grafanaoperator
+          addons.in-cloud.io/addon: grafana-operator
     - name: vm-operator
       criteria:
         - source:
@@ -35,5 +35,5 @@ spec:
         priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: grafanaoperator
+          addons.in-cloud.io/addon: grafana-operator
 {{- end }}
