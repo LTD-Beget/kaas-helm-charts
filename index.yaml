@@ -3,7 +3,7 @@ entries:
   addon-operator:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-03-02T20:59:37.822871+03:00"
+    created: "2026-03-08T02:52:09.272323+03:00"
     description: A Helm chart to distribute the project addon-operator
     digest: d4da87e6ea5911d796bb229053d195caaf064517e7d36334f1b6e93bf3dac0c7
     icon: https://example.com/icon.png
@@ -14,7 +14,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-03-02T20:59:37.81764+03:00"
+    created: "2026-03-08T02:52:09.271302+03:00"
     description: A Helm chart to distribute the project addon-operator
     digest: 6a6aa3065d9312a5b45d7214361ca3154c1834bb235aefa88b96e2a533ab7405
     icon: https://example.com/icon.png
@@ -26,13 +26,24 @@ entries:
   addonset:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-02T20:59:37.825259+03:00"
+    created: "2026-03-08T02:52:09.27335+03:00"
     description: A Helm chart for Kubernetes
-    digest: 13500073f5a48c4dd9c74673fd5cc456f5d0fd45af685fecece0b9a296a0523a
+    digest: c81db78f50334b6242d5bf25dbf4a041bf0f4fd9d399d3c97c5ebf1fa12d1e4b
     name: addonset
     type: application
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-0.1.0.tgz
+    version: 0.1.0
+  alert-rules:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-03-08T02:52:09.275648+03:00"
+    description: A Helm chart for Kubernetes
+    digest: 6cc296f253d0880387e635bbec5e819f095bed77291baeaac3a21774433f0395
+    name: alert-rules
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.0.tgz
     version: 0.1.0
   argo-cd:
   - annotations:
@@ -44,7 +55,7 @@ entries:
         url: https://argoproj.github.io/argo-helm/pgp_keys.asc
     apiVersion: v2
     appVersion: 7.8.26
-    created: "2026-03-02T20:59:37.870837+03:00"
+    created: "2026-03-08T02:52:09.302833+03:00"
     dependencies:
     - name: argo-cd
       repository: file://charts
@@ -78,14 +89,14 @@ entries:
         url: https://argoproj.github.io/argo-helm/pgp_keys.asc
     apiVersion: v2
     appVersion: 7.8.26
-    created: "2026-03-02T20:59:37.850528+03:00"
+    created: "2026-03-08T02:52:09.288746+03:00"
     dependencies:
     - name: argo-cd
       repository: file://charts
       version: 7.8.26
     description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
       tool for Kubernetes.
-    digest: 6c03d58b4074c99062e0c057581630aee3023eed22b442b059655797fd2ea5fa
+    digest: 223e6176c1726239987378c5616749bd430e566eee50d3429bc315d01ed42fd4
     home: https://github.com/argoproj/argo-helm
     icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
     keywords:
@@ -106,7 +117,7 @@ entries:
   capi:
   - apiVersion: v2
     appVersion: v1.12.1
-    created: "2026-03-02T20:59:37.875111+03:00"
+    created: "2026-03-08T02:52:09.30764+03:00"
     description: A Helm chart for Kubernetes
     digest: e4d9c2e98cdf78869049cb55f15e17fac4389bb977fb7ae65235b7177669b2ea
     name: capi
@@ -117,7 +128,7 @@ entries:
   capi-kubeadm-bootstrap:
   - apiVersion: v2
     appVersion: v1.12.1
-    created: "2026-03-02T20:59:37.880985+03:00"
+    created: "2026-03-08T02:52:09.313112+03:00"
     description: A Helm chart for Kubernetes
     digest: c926a40d8417c672ff8aeab07445b9b9e59ad116367ea6bfa2b8b18560705c6e
     name: capi-kubeadm-bootstrap
@@ -127,7 +138,7 @@ entries:
     version: 1.2.0
   - apiVersion: v2
     appVersion: v1.12.1
-    created: "2026-03-02T20:59:37.878372+03:00"
+    created: "2026-03-08T02:52:09.310174+03:00"
     description: A Helm chart for Kubernetes
     digest: 1323a8d23cff7cf4b2b8eeb390b90088f3a97358d5295036a85e438374a5e16e
     name: capi-kubeadm-bootstrap
@@ -138,7 +149,7 @@ entries:
   capi-kubeadm-control-plane:
   - apiVersion: v2
     appVersion: v1.12.1
-    created: "2026-03-02T20:59:37.886781+03:00"
+    created: "2026-03-08T02:52:09.319667+03:00"
     description: A Helm chart for Kubernetes
     digest: 814260ae042f010810c329743e78c7e018ab523ba3612acef3a890942b0399f4
     name: capi-kubeadm-control-plane
@@ -148,7 +159,7 @@ entries:
     version: 1.2.0
   - apiVersion: v2
     appVersion: v1.12.1
-    created: "2026-03-02T20:59:37.884095+03:00"
+    created: "2026-03-08T02:52:09.316023+03:00"
     description: A Helm chart for Kubernetes
     digest: 2b34154a9320502067a817d977ebd9f259d84ee8df846deb8a2fd0518910a3bc
     name: capi-kubeadm-control-plane
@@ -162,7 +173,7 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: v1.17.1
-    created: "2026-03-02T20:59:37.897009+03:00"
+    created: "2026-03-08T02:52:09.330145+03:00"
     dependencies:
     - name: cert-manager
       repository: https://charts.jetstack.io
@@ -191,13 +202,13 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: v1.17.1
-    created: "2026-03-02T20:59:37.892703+03:00"
+    created: "2026-03-08T02:52:09.325644+03:00"
     dependencies:
     - name: cert-manager
       repository: https://charts.jetstack.io
       version: v1.17.1
     description: A Helm chart for cert-manager
-    digest: ba59ab6b2f45ed2ff3d3805fd7629bfcdc7e4a8b201f7341a14f0b2d9845a45f
+    digest: be58fcdf14584e7ed0f84de213b530ab87589ef07ba070b827cdbeb7f7464478
     home: https://cert-manager.io
     icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
     keywords:
@@ -226,7 +237,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
     apiVersion: v2
     appVersion: 0.10.4
-    created: "2026-03-02T20:59:37.888762+03:00"
+    created: "2026-03-08T02:52:09.321138+03:00"
     dependencies:
     - name: cert-manager-csi-driver
       repository: https://charts.jetstack.io
@@ -260,14 +271,14 @@ entries:
         - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
     apiVersion: v2
     appVersion: 0.10.4
-    created: "2026-03-02T20:59:37.887485+03:00"
+    created: "2026-03-08T02:52:09.320319+03:00"
     dependencies:
     - name: cert-manager-csi-driver
       repository: https://charts.jetstack.io
       version: 0.10.4
     description: cert-manager csi-driver enables issuing secretless X.509 certificates
       for pods using cert-manager
-    digest: c87dff4bd2fa053f55eeea81ddd1d2f46542858244e53e8bc24cf0ecfac02310
+    digest: 903eb9855f84374adc87891ff27989d3d25cdfcf1fe2afd2173d1a09dd647741
     home: https://cert-manager.io/docs/usage/csi-driver
     icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
     keywords:
@@ -287,7 +298,7 @@ entries:
   cilium:
   - apiVersion: v2
     appVersion: 1.18.5
-    created: "2026-03-02T20:59:37.917268+03:00"
+    created: "2026-03-08T02:52:09.347945+03:00"
     dependencies:
     - name: cilium
       repository: https://helm.cilium.io
@@ -313,13 +324,13 @@ entries:
     version: 1.18.5
   - apiVersion: v2
     appVersion: 1.18.5
-    created: "2026-03-02T20:59:37.908401+03:00"
+    created: "2026-03-08T02:52:09.338892+03:00"
     dependencies:
     - name: cilium
       repository: https://helm.cilium.io
       version: 1.18.5
     description: eBPF-based Networking, Security, and Observability
-    digest: 942fe67a02847f62e3d557794c711e72ca71d0101d584cc1292d9249cf505387
+    digest: 361006b12c37eee3df30c76338be8153feb3b71b77f7aafaa2b84990604e88e2
     home: https://cilium.io/
     icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
     keywords:
@@ -340,7 +351,7 @@ entries:
   clickhouse-vmstorage:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-02T20:59:37.921618+03:00"
+    created: "2026-03-08T02:52:09.352918+03:00"
     dependencies:
     - name: appSpec
       repository: ""
@@ -359,7 +370,7 @@ entries:
   common-crds:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-03-02T20:59:37.954424+03:00"
+    created: "2026-03-08T02:52:09.375292+03:00"
     description: A Helm chart for Kubernetes
     digest: 5a654cca5a80293da1f03d1f6baf1c9c9b2af4a11440487968064df716dd4875
     name: common-crds
@@ -370,7 +381,7 @@ entries:
   control-plane:
   - apiVersion: v2
     appVersion: v0.1.0
-    created: "2026-03-02T20:59:37.96266+03:00"
+    created: "2026-03-08T02:52:09.381636+03:00"
     dependencies:
     - name: appSpec
       repository: file://charts/appspec
@@ -384,7 +395,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: v0.1.0
-    created: "2026-03-02T20:59:37.959085+03:00"
+    created: "2026-03-08T02:52:09.378037+03:00"
     dependencies:
     - name: appSpec
       repository: file://charts/appspec
@@ -399,7 +410,7 @@ entries:
   coredns:
   - apiVersion: v2
     appVersion: 1.28.0
-    created: "2026-03-02T20:59:37.965056+03:00"
+    created: "2026-03-08T02:52:09.383945+03:00"
     dependencies:
     - name: coredns
       repository: https://coredns.github.io/helm
@@ -427,14 +438,14 @@ entries:
     version: 1.28.0
   - apiVersion: v2
     appVersion: 1.28.0
-    created: "2026-03-02T20:59:37.963793+03:00"
+    created: "2026-03-08T02:52:09.382676+03:00"
     dependencies:
     - name: coredns
       repository: https://coredns.github.io/helm
       version: 1.28.0
     description: CoreDNS is a DNS server that chains plugins and provides Kubernetes
       DNS Services
-    digest: c9ba0f54c3c095dcf16ba43b1a2e830c06c594ddd56d9d2de5f9cb6c9b87612d
+    digest: e21f110a59d8596d7aced98d48aa01859fae85de2cb382496991f4e5deeade71
     home: https://coredns.io
     icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
     keywords:
@@ -456,11 +467,11 @@ entries:
   crossplane:
   - apiVersion: v1
     appVersion: 2.2.0
-    created: "2026-03-02T20:59:37.96708+03:00"
+    created: "2026-03-08T02:52:09.385648+03:00"
     description: Crossplane is an open source Kubernetes add-on that enables platform
       teams to assemble infrastructure from multiple vendors, and expose higher level
       self-service APIs for application teams to consume.
-    digest: e4bbc5585d4b96fd8630d306abc95a42dcc21d8fdc00876efce40ba27dd562bb
+    digest: 2ed6ab79c19bc5c329a2414d90f7abe9fbb798d19b15a9eb6a69156e2e803af1
     home: https://crossplane.io
     icon: https://docs.crossplane.io/android-chrome-192x192.png
     keywords:
@@ -495,7 +506,7 @@ entries:
     version: 2.2.0-1
   - apiVersion: v1
     appVersion: 0.0.1
-    created: "2026-03-02T20:59:37.965997+03:00"
+    created: "2026-03-08T02:52:09.384895+03:00"
     description: Crossplane is an open source Kubernetes add-on that enables platform
       teams to assemble infrastructure from multiple vendors, and expose higher level
       self-service APIs for application teams to consume.
@@ -532,12 +543,23 @@ entries:
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/crossplane-0.0.1.tgz
     version: 0.0.1
+  crossplane-compositions:
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-03-08T02:52:09.387645+03:00"
+    description: A Helm chart for Kubernetes
+    digest: 534040e9f465507d0fb930ebbeda494e2b075354f361b29a898dcf0bafcf712d
+    name: crossplane-compositions
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/crossplane-compositions-0.1.2.tgz
+    version: 0.1.2
   crossplane-functions:
   - apiVersion: v2
     appVersion: v0.1.0
-    created: "2026-03-02T20:59:37.969623+03:00"
+    created: "2026-03-08T02:52:09.388089+03:00"
     description: A Helm chart for Kubernetes
-    digest: 8187e8382fe91a534d0a10d1c614f35dc01d50c024b1c62137f7a631ac0758aa
+    digest: 77c9b0046d8f7f7a5492d77daab6407e9f5d166e22a5d22a30cbc22f01bd8133
     name: crossplane-functions
     type: application
     urls:
@@ -546,14 +568,14 @@ entries:
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
-    created: "2026-03-02T20:59:37.971863+03:00"
+    created: "2026-03-08T02:52:09.390036+03:00"
     dependencies:
     - name: dex
       repository: https://charts.dexidp.io
       version: 0.23.0
     description: OpenID Connect (OIDC) identity and OAuth 2.0 provider with pluggable
       connectors.
-    digest: 3d6ff2282b94cf94ce27824bcf100ba1335f9a7d3d69c9b23c7bc5f037a8eb4f
+    digest: 776dd8b521140bafea65423b6f57573491327aa24dce09b4c9838ba523b440e6
     home: https://dexidp.io/
     icon: https://dexidp.io/favicons/favicon.png
     keywords:
@@ -572,7 +594,7 @@ entries:
     version: 0.23.0-1
   - apiVersion: v2
     appVersion: 0.23.0
-    created: "2026-03-02T20:59:37.971022+03:00"
+    created: "2026-03-08T02:52:09.38923+03:00"
     dependencies:
     - name: dex
       repository: https://charts.dexidp.io
@@ -599,9 +621,9 @@ entries:
   docker-registry:
   - apiVersion: v1
     appVersion: 3.0.0
-    created: "2026-03-02T20:59:37.973135+03:00"
+    created: "2026-03-08T02:52:09.391346+03:00"
     description: A Helm chart for Docker Registry
-    digest: d3c54ecb1a468eaafabb108a1ea8530ec958ea4758e695f62b06a3129159e136
+    digest: 5dbd6e3b728e14016aa7d4810aa40b2d4a6f4bfcd84f66ef19cc701902db76a0
     home: https://hub.docker.com/_/registry/
     icon: https://helm.twun.io/docker-registry.png
     maintainers:
@@ -617,7 +639,7 @@ entries:
   etcd-backup-snapshot:
   - apiVersion: v2
     appVersion: 0.36.3
-    created: "2026-03-02T20:59:37.973505+03:00"
+    created: "2026-03-08T02:52:09.391898+03:00"
     description: Helm chart for the etcd-backup-snapshot
     digest: 1c3528b1024a88974b96b234abbc94f8b05f013649ce730f5e68ee76dbd46886
     name: etcd-backup-snapshot
@@ -628,13 +650,13 @@ entries:
   gateway:
   - apiVersion: v2
     appVersion: 1.26.0
-    created: "2026-03-02T20:59:37.974945+03:00"
+    created: "2026-03-08T02:52:09.393389+03:00"
     dependencies:
     - name: gateway
       repository: https://istio-release.storage.googleapis.com/charts
       version: 1.26.0
     description: Helm chart for deploying Istio gateways
-    digest: 2252c06c7bfbc0a49c23c6ed010fced3befb24bd98963941c44d83fdfa8ba30f
+    digest: 8b40a3dd964c2d73f78bb3ba15843460ce4e3880dfc84c96f0a670fda050d5fd
     icon: https://istio.io/latest/favicons/android-192x192.png
     keywords:
     - istio
@@ -648,7 +670,7 @@ entries:
     version: 1.26.0-1
   - apiVersion: v2
     appVersion: 1.26.0
-    created: "2026-03-02T20:59:37.974258+03:00"
+    created: "2026-03-08T02:52:09.392743+03:00"
     dependencies:
     - name: gateway
       repository: https://istio-release.storage.googleapis.com/charts
@@ -669,7 +691,7 @@ entries:
   grafana:
   - apiVersion: v2
     appVersion: 11.3.0
-    created: "2026-03-02T20:59:37.975245+03:00"
+    created: "2026-03-08T02:52:09.39372+03:00"
     description: Helm chart for the Grafana
     digest: 4c6c4c9d0e110441aac466bf83a4dca8d4cbb384234b478bd5b89591a95b26c8
     name: grafana
@@ -680,7 +702,7 @@ entries:
   grafana-dashboards:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-03-02T20:59:37.978734+03:00"
+    created: "2026-03-08T02:52:09.397493+03:00"
     description: Helm chart for the Grafana Dashboards
     digest: 673947acdc161ddd47cba37a45ebe8955aa20db6672712fe9287994c0396826f
     name: grafana-dashboards
@@ -691,7 +713,7 @@ entries:
   grafana-operator:
   - apiVersion: v2
     appVersion: 5.18.0
-    created: "2026-03-02T20:59:37.985363+03:00"
+    created: "2026-03-08T02:52:09.402621+03:00"
     dependencies:
     - name: grafana-operator
       repository: https://grafana.github.io/helm-charts
@@ -705,13 +727,13 @@ entries:
     version: 5.18.0
   - apiVersion: v2
     appVersion: 5.18.0
-    created: "2026-03-02T20:59:37.981469+03:00"
+    created: "2026-03-08T02:52:09.399699+03:00"
     dependencies:
     - name: grafana-operator
       repository: https://grafana.github.io/helm-charts
       version: 5.18.0
     description: Helm chart for the Grafana Operator
-    digest: b30759ff1c180ec374d43137c03afe149b58d193be3fe8d75a34f4ff81867bd3
+    digest: 1fc9c725e77c24f0b5a8da1777fe7c3a0845b6999890dfdde9ed906ea156e9c0
     name: grafana-operator
     type: application
     urls:
@@ -720,7 +742,7 @@ entries:
   helm-inserter:
   - apiVersion: v1
     appVersion: 0.2.3
-    created: "2026-03-02T20:59:37.985683+03:00"
+    created: "2026-03-08T02:52:09.402905+03:00"
     deprecated: true
     description: Add raw kuberntes resources to helm chart
     digest: 45bb64f9b8b88a1bc1ff32fd624bc8c48bfdc74c1ca2a6e39d9c177259f643fe
@@ -732,13 +754,13 @@ entries:
   incloud-web-chart:
   - apiVersion: v2
     appVersion: 1.3.0
-    created: "2026-03-02T20:59:38.011791+03:00"
+    created: "2026-03-08T02:52:09.429235+03:00"
     dependencies:
     - name: incloud-web-chart
       repository: oci://registry-1.docker.io/prorobotech
       version: 1.3.0-9b1cdc4
     description: Chart for configuring Kubernetes Web UI InCloud
-    digest: 364461fc451fd6e60a54715a43a1fbdbb12241fdc8cc77bcae45c0ef4e698c2c
+    digest: b1a8901e4eeeee8cddb7dac014663f23b265db0dcc02a35ac87ffe8dfcf52db1
     keywords:
     - incloud
     - openapi-ui
@@ -754,7 +776,7 @@ entries:
     version: 1.3.0-1
   - apiVersion: v2
     appVersion: 1.3.0
-    created: "2026-03-02T20:59:37.998892+03:00"
+    created: "2026-03-08T02:52:09.416121+03:00"
     dependencies:
     - name: incloud-web-chart
       repository: oci://registry-1.docker.io/prorobotech
@@ -777,7 +799,7 @@ entries:
   incloud-web-resources:
   - apiVersion: v2
     appVersion: 1.2.0
-    created: "2026-03-02T20:59:38.01785+03:00"
+    created: "2026-03-08T02:52:09.43623+03:00"
     dependencies:
     - name: incloud-web-resources
       repository: oci://registry-1.docker.io/prorobotech
@@ -799,7 +821,7 @@ entries:
     version: 1.2.0-1
   - apiVersion: v2
     appVersion: 1.2.0
-    created: "2026-03-02T20:59:38.015187+03:00"
+    created: "2026-03-08T02:52:09.43281+03:00"
     dependencies:
     - name: incloud-web-resources
       repository: oci://registry-1.docker.io/prorobotech
@@ -822,13 +844,13 @@ entries:
   istiod:
   - apiVersion: v2
     appVersion: 1.26.0
-    created: "2026-03-02T20:59:38.020887+03:00"
+    created: "2026-03-08T02:52:09.439122+03:00"
     dependencies:
     - name: istiod
       repository: https://istio-release.storage.googleapis.com/charts
       version: 1.26.0
     description: Helm chart for istio control plane
-    digest: 83b00a9972ef213deb546e1c22a7f86149319d4d8de51459a18a3dd104e2ea62
+    digest: 1d73af42caadc4f1ee7172703591f9bb660ecb6448a4067ebb039d02e9366125
     icon: https://istio.io/latest/favicons/android-192x192.png
     keywords:
     - istio
@@ -842,7 +864,7 @@ entries:
     version: 1.26.0-1
   - apiVersion: v2
     appVersion: 1.26.0
-    created: "2026-03-02T20:59:38.019233+03:00"
+    created: "2026-03-08T02:52:09.437851+03:00"
     dependencies:
     - name: istiod
       repository: https://istio-release.storage.googleapis.com/charts
@@ -863,7 +885,7 @@ entries:
   konnectivity-agent:
   - apiVersion: v2
     appVersion: 0.31.0
-    created: "2026-03-02T20:59:38.021443+03:00"
+    created: "2026-03-08T02:52:09.439515+03:00"
     description: Konnectivity proxy-agent as a DaemonSet
     digest: bd415af94017bf7d6b968cdba2a3c4619020eb52dd79bb64b1b5db96e4e89f92
     name: konnectivity-agent
@@ -874,7 +896,7 @@ entries:
   konnectivity-server:
   - apiVersion: v2
     appVersion: 0.31.0
-    created: "2026-03-02T20:59:38.021954+03:00"
+    created: "2026-03-08T02:52:09.440078+03:00"
     description: Konnectivity proxy-server as a DaemonSet
     digest: 0c21a0d997c7b19204624f82afd71d7e81abc709fb06bdb8abc31b9659e25a1a
     name: konnectivity-server
@@ -885,7 +907,7 @@ entries:
   kube-state-metrics:
   - apiVersion: v2
     appVersion: 6.1.0
-    created: "2026-03-02T20:59:38.024171+03:00"
+    created: "2026-03-08T02:52:09.4422+03:00"
     dependencies:
     - condition: kube-state-metrics.enabled
       name: kube-state-metrics
@@ -908,14 +930,14 @@ entries:
     version: 6.1.0
   - apiVersion: v2
     appVersion: v2.16.0
-    created: "2026-03-02T20:59:38.02292+03:00"
+    created: "2026-03-08T02:52:09.441075+03:00"
     dependencies:
     - condition: kube-state-metrics.enabled
       name: kube-state-metrics
       repository: https://prometheus-community.github.io/helm-charts
       version: 6.1.0
     description: Install kube-state-metrics to generate and expose cluster-level metrics
-    digest: d6a829303bf86d98c867c29459bc721b764a0927a79c85f192eb00316243e6b6
+    digest: 89e2369da35c8d3f4cec8b1fa566385439e774ec970b18094af57714bfc48172
     home: https://github.com/kubernetes/kube-state-metrics/
     keywords:
     - metric
@@ -931,7 +953,7 @@ entries:
     version: 6.1.0-1
   kubeadm-resources-client-cp:
   - apiVersion: v2
-    created: "2026-03-02T20:59:38.024631+03:00"
+    created: "2026-03-08T02:52:09.442952+03:00"
     description: Deploys kubeadm-resources-client-cp
     digest: 7b52b3334909d1cbdc49f137e979d0451db1e276743cbed3642bd8b64b696399
     name: kubeadm-resources-client-cp
@@ -942,7 +964,7 @@ entries:
   metallb:
   - apiVersion: v2
     appVersion: 0.15.2
-    created: "2026-03-02T20:59:38.029001+03:00"
+    created: "2026-03-08T02:52:09.446876+03:00"
     dependencies:
     - name: metallb
       repository: https://metallb.github.io/metallb
@@ -960,7 +982,7 @@ entries:
     version: 0.15.2
   - apiVersion: v2
     appVersion: 0.15.2
-    created: "2026-03-02T20:59:38.026194+03:00"
+    created: "2026-03-08T02:52:09.444978+03:00"
     dependencies:
     - name: metallb
       repository: https://metallb.github.io/metallb
@@ -979,7 +1001,7 @@ entries:
   metrics-server:
   - apiVersion: v2
     appVersion: 3.13.0
-    created: "2026-03-02T20:59:38.030705+03:00"
+    created: "2026-03-08T02:52:09.448963+03:00"
     dependencies:
     - name: metrics-server
       repository: https://kubernetes-sigs.github.io/metrics-server/
@@ -1002,7 +1024,7 @@ entries:
     version: 3.13.0
   - apiVersion: v2
     appVersion: 0.8.0
-    created: "2026-03-02T20:59:38.029778+03:00"
+    created: "2026-03-08T02:52:09.448021+03:00"
     dependencies:
     - name: metrics-server
       repository: https://kubernetes-sigs.github.io/metrics-server/
@@ -1026,13 +1048,13 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: 27.10.0
-    created: "2026-03-02T20:59:38.036776+03:00"
+    created: "2026-03-08T02:52:09.454011+03:00"
     dependencies:
     - name: prometheus
       repository: https://prometheus-community.github.io/helm-charts
       version: 27.10.0
     description: Prometheus is a monitoring system and time series database.
-    digest: d89ad01c0fade307634586c66b83ad70e765ecdda0e4cf87729ca875f95411bb
+    digest: 7ccd33079258c16dbbda65e21436e6719deea96112dc110a5dc7704d79e67de5
     home: https://prometheus.io/
     icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
     kubeVersion: '>=1.19.0-0'
@@ -1049,7 +1071,7 @@ entries:
   prometheus-node-exporter:
   - apiVersion: v2
     appVersion: 4.47.2
-    created: "2026-03-02T20:59:38.038725+03:00"
+    created: "2026-03-08T02:52:09.456091+03:00"
     dependencies:
     - name: prometheus-node-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -1070,13 +1092,13 @@ entries:
     version: 4.47.2
   - apiVersion: v2
     appVersion: 1.9.1
-    created: "2026-03-02T20:59:38.037685+03:00"
+    created: "2026-03-08T02:52:09.454952+03:00"
     dependencies:
     - name: prometheus-node-exporter
       repository: https://prometheus-community.github.io/helm-charts
       version: 4.47.2
     description: A Helm chart for prometheus node-exporter
-    digest: 1c08ae78c3caa2af8f5e5e2d276c7004dc02eca8b6e0d235ff66d84c65c9bc4c
+    digest: 1d5148650b96af2f820004d6a8bbd849fd8d38936eb0e77e2b46d4c5af8749f3
     home: https://github.com/prometheus/node_exporter/
     keywords:
     - node-exporter
@@ -1092,7 +1114,7 @@ entries:
   prometheus-process-exporter:
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2026-03-02T20:59:38.039684+03:00"
+    created: "2026-03-08T02:52:09.45714+03:00"
     dependencies:
     - name: prometheus-process-exporter
       repository: https://mumoshu.github.io/prometheus-process-exporter
@@ -1106,28 +1128,49 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.8.1
-    created: "2026-03-02T20:59:38.03916+03:00"
+    created: "2026-03-08T02:52:09.456536+03:00"
     dependencies:
     - name: prometheus-process-exporter
       repository: https://mumoshu.github.io/prometheus-process-exporter
       version: 0.5.0
     description: Install prometheus-process-exporter to generate and expose process
       metrics
-    digest: 86a03b6c90dcd1a722ad9aab73e9d4cd0c4fbfee86761abb75e2874d04ff08c1
+    digest: 4f4088cbccf8c1335a1ab44e4a8d04d95c0d03510625bc648b9597adf2b70acd
     name: prometheus-process-exporter
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-process-exporter-0.5.0-1.tgz
     version: 0.5.0-1
+  signalilo:
+  - apiVersion: v1
+    appVersion: v0.14.0
+    created: "2026-03-08T02:52:09.457771+03:00"
+    description: Alertmanager to Icinga2 bridge
+    digest: dbb49cecbc221d2d18c24d313166f2e631c04c1d5aacd4d70b60efc034e8fcf9
+    home: https://git.vshn.net/vshn/signalilo
+    keywords:
+    - prometheus
+    - alertmanager
+    - webhook
+    - icinga2
+    maintainers:
+    - email: info@appuio.ch
+      name: APPUiO Team
+    name: signalilo
+    sources:
+    - https://git.vshn.net/vshn/signalilo
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/signalilo-0.12.1.tgz
+    version: 0.12.1
   trivy-operator:
   - apiVersion: v2
     appVersion: 0.27.0
-    created: "2026-03-02T20:59:38.044161+03:00"
+    created: "2026-03-08T02:52:09.462343+03:00"
     dependencies:
     - name: trivy-operator
       repository: https://aquasecurity.github.io/helm-charts/
       version: 0.29.0
     description: Keeps security report resources updated
-    digest: d95c53779580de87559f7e4cd3f5afb7ccc9fb16b954d74ae0438f273ed89ed6
+    digest: 43c28173367cd615e7f60a26071751e9901b3e87ed096e18c7d30b7e9984fcb3
     keywords:
     - aquasecurity
     - trivyoperator
@@ -1141,7 +1184,7 @@ entries:
     version: 0.29.0-1
   - apiVersion: v2
     appVersion: 0.29.0
-    created: "2026-03-02T20:59:38.041864+03:00"
+    created: "2026-03-08T02:52:09.460454+03:00"
     dependencies:
     - name: trivy-operator
       repository: https://aquasecurity.github.io/helm-charts/
@@ -1162,14 +1205,14 @@ entries:
   trust-manager:
   - apiVersion: v2
     appVersion: 0.16.0
-    created: "2026-03-02T20:59:38.045965+03:00"
+    created: "2026-03-08T02:52:09.464318+03:00"
     dependencies:
     - name: trust-manager
       repository: https://charts.jetstack.io
       version: 0.16.0
     description: trust-manager is the easiest way to manage TLS trust bundles in Kubernetes
       and OpenShift clusters
-    digest: c60bfd97f4c0e49909d22062f7fcf00dd100fd07423fa5b9bc1cca2f12138d40
+    digest: d287be11b14fe3c9701b332978793d7c72d68273214f732cadf41773e06cdc98
     home: https://cert-manager.io/docs/trust/trust-manager
     icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
     keywords:
@@ -1187,7 +1230,7 @@ entries:
     version: 0.16.0-1
   - apiVersion: v2
     appVersion: 0.16.0
-    created: "2026-03-02T20:59:38.045092+03:00"
+    created: "2026-03-08T02:52:09.463509+03:00"
     dependencies:
     - name: trust-manager
       repository: https://charts.jetstack.io
@@ -1213,7 +1256,7 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: 1.20.1
-    created: "2026-03-02T20:59:38.050868+03:00"
+    created: "2026-03-08T02:52:09.469539+03:00"
     dependencies:
     - name: vault
       repository: https://helm.releases.hashicorp.com
@@ -1243,7 +1286,7 @@ entries:
     version: 0.30.1-1
   - apiVersion: v2
     appVersion: 0.30.1
-    created: "2026-03-02T20:59:38.048366+03:00"
+    created: "2026-03-08T02:52:09.467122+03:00"
     dependencies:
     - name: vault
       repository: https://helm.releases.hashicorp.com
@@ -1274,7 +1317,7 @@ entries:
   vault-secrets:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-03-02T20:59:38.051236+03:00"
+    created: "2026-03-08T02:52:09.469809+03:00"
     description: A Helm chart for Kubernetes
     digest: 76b3c824be82ccf0db9e7dcf54d596034af243030370263b8b806ba6cc8fd34a
     name: vault-secrets
@@ -1298,7 +1341,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v1.127.0
-    created: "2026-03-02T20:59:38.092866+03:00"
+    created: "2026-03-08T02:52:09.509064+03:00"
     dependencies:
     - name: victoria-metrics-k8s-stack
       repository: https://victoriametrics.github.io/helm-charts/
@@ -1341,7 +1384,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v1.119.0
-    created: "2026-03-02T20:59:38.073399+03:00"
+    created: "2026-03-08T02:52:09.490757+03:00"
     dependencies:
     - name: victoria-metrics-k8s-stack
       repository: https://victoriametrics.github.io/helm-charts/
@@ -1385,7 +1428,7 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.63.0
-    created: "2026-03-02T20:59:38.137855+03:00"
+    created: "2026-03-08T02:52:09.534834+03:00"
     dependencies:
     - name: victoria-metrics-operator
       repository: https://victoriametrics.github.io/helm-charts/
@@ -1428,13 +1471,13 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.60.0
-    created: "2026-03-02T20:59:38.122793+03:00"
+    created: "2026-03-08T02:52:09.522718+03:00"
     dependencies:
     - name: victoria-metrics-operator
       repository: https://victoriametrics.github.io/helm-charts/
       version: 0.52.0
     description: VictoriaMetrics Operator
-    digest: 8b71675e8323cb890623fafcb80ed4c796a47a896f5d381f121421aaa3794be5
+    digest: aacf56235be6853731664a54b5ce9819531c39dbf8496009e8cc34ef3695ba43
     home: https://github.com/VictoriaMetrics/operator
     icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
     keywords:
@@ -1456,4 +1499,4 @@ entries:
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-1.tgz
     version: 0.52.0-1
-generated: "2026-03-02T20:59:37.815912+03:00"
+generated: "2026-03-08T02:52:09.26973+03:00"
