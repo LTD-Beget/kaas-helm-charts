@@ -14,7 +14,7 @@ deploymentTemplate:
       spec:
         containers:
           - name: rbac-proxy
-            image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
             args:
               - --secure-listen-address=0.0.0.0:{{ $securePort }}
               - --upstream=http://127.0.0.1:{{ $upstreamPort }}

@@ -4,9 +4,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: crossplane-functions
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonCrossplaneFunctions
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/crossplane-functions"
   pluginName: helm-with-values

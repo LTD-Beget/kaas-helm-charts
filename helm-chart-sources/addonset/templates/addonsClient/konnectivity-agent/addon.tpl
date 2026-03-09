@@ -4,9 +4,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: konnectivity-agent
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/konnectivity-agent"
   pluginName: helm-with-values

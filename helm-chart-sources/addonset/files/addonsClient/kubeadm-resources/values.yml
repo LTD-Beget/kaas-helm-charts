@@ -3,9 +3,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: kubeadm-resources-client
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueKonnectivityAgentClient
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: client
     addons.in-cloud.io/addon: kubeadm-resources

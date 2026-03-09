@@ -4,9 +4,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: kubeadm-resources
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonKonnectivityAgent
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/kubeadm-resources-client-cp"
   pluginName: helm-with-values

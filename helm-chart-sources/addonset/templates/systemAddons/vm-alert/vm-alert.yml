@@ -1,0 +1,9 @@
+{{- if .Values.addons.vmalert.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "vmalert.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/vmalert/values.yml" | nindent 0 }}
+
+  {{- include "vmalert.phase" . }}
+{{- end }}
