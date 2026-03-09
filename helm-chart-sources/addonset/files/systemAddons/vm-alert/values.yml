@@ -208,7 +208,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-alert-cert-manager
+  name: vm-alert-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: vm-alert
@@ -221,7 +221,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-alert-cert-manager
+  name: vm-alert-vm-alertmanager
   labels:
     addons.in-cloud.io/values: vm-alertmanager
     addons.in-cloud.io/addon: vm-alert
@@ -242,7 +242,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-alert-cert-manager
+  name: vm-alert-istio-gw
   labels:
     addons.in-cloud.io/values: istio-gw
     addons.in-cloud.io/addon: vm-alert
