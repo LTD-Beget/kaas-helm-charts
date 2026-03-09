@@ -2,20 +2,84 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: clickhouse-inserter-default
+  name: vm-alert-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: clickhouse-inserter
+    addons.in-cloud.io/addon: vm-alert
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: clickhouse-inserter
+      fullnameOverride: "vmalert"
+      vmalert:
+        spec:
+          serviceSpec:
+            metadata:
+              name: vmalert
+              labels:
+                monitoring.in-cloud.io/service: vmalert
+            spec:
+              ports:
+                - name: http
+                  port: 8080
+                  protocol: TCP
+                  targetPort: 8080
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          externalLabels:
+            in-cloud-metrics: "infra"
+          extraArgs:
+            external.url: "https://{{ .Variables.systemIstioGwVip }}"
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: "4"
+          podMetadata:
+            labels:
+              in-cloud-metrics: "infra"
+          evaluationInterval: 60s
+          selectAllByDefault: false
+          ruleNamespaceSelector: {}
+          ruleSelector:
+            matchLabels:
+              in-cloud-metrics: "infra"
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '100m'
+              memory: 128Mi
+          replicaCount: 1
+          updateStrategy: RollingUpdate
+          rollingUpdate:
+            maxSurge: 10%
+            maxUnavailable: 0
+          remoteWrite:
+            url: "http://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+          remoteRead:
+            url: "http://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
+          datasource:
+            url: "http://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
       alertmanager:
         enabled: false
       defaultRules:
         create: false
-      clickhouseIserter:
-        enabled: true
       prometheus-node-exporter:
         enabled: false
       serviceAccount:
@@ -26,64 +90,6 @@ spec:
         enabled: false
       vmalert:
         enabled: true
-        spec:
-          serviceSpec:
-            metadata:
-              name: clickhouse-inserter
-              labels:
-                monitoring.in-cloud.io/service: clickhouse-inserter
-            spec:
-              ports:
-                - name: http
-                  port: 8080
-                  protocol: TCP
-                  targetPort: 8080
-          extraArgs:
-            'notifier.blackhole': "true"
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          externalLabels:
-            in-cloud-metrics: "clickhouse"
-          podMetadata:
-            labels:
-              in-cloud-metrics: "clickhouse"
-          evaluationInterval: 60s
-          selectAllByDefault: false
-          ruleNamespaceSelector: {}
-          ruleSelector:
-            matchLabels:
-              in-cloud-metrics: "clickhouse"
-          resources:
-            limits:
-              cpu: 1
-              memory: 1Gi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-          replicaCount: 1
-          updateStrategy: RollingUpdate
-          extraEnvs:
-            - name: GOMAXPROCS
-              value: "4"
-          remoteWrite:
-            url: "http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/promrw"
-            concurrency: 4
-            basicAuth:
-              username:
-                name: clickhouse-credentials
-                key: username
-              password:
-                name: clickhouse-credentials
-                key: password
-          remoteRead:
-            url: "http://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
-          datasource:
-            url: "http://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
       vmcluster:
         enabled: false
       vmsingle:
@@ -115,15 +121,14 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: clickhouse-inserter-cert-manager
+  name: vm-alert-cert-manager
   labels:
     addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: clickhouse-inserter
+    addons.in-cloud.io/addon: vm-alert
 spec:
   values: |
     victoria-metrics-k8s-stack:
       vmalert:
-        enabled: true
         spec:
           serviceSpec:
             spec:
@@ -167,10 +172,18 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: clickhouse-inserter-monitoring-svc-tls
+                secretName: vmalert-monitoring-svc-tls
             - name: trusted-ca-certs
               configMap:
                 name: ca
+          remoteWrite:
+            url: "https://vminsert.beget-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+            concurrency: 4
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
           remoteRead:
             url: "https://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"
             tlsConfig:
@@ -185,10 +198,66 @@ spec:
                 configMap:
                   name: ca
                   key: ca.crt
-
     monitoring:
-      enabled: true
       secureService:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-cert-manager
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-cert-manager
+  labels:
+    addons.in-cloud.io/values: vm-alertmanager
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmalert:
+        spec:
+          notifiers:
+            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-cert-manager
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    istioVirtualService:
+      vmalert:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        path: "/vmalert"
+        http:
+          name: vmalert
+          route:
+            host: vmalert
+            port: 8080

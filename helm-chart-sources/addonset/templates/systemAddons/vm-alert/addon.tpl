@@ -11,23 +11,12 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-clickhouse-vmstorage"
+  targetNamespace: "beget-vmalert"
   variables:
-    cluster_name: in-cluster
+    systemIstioGwVip: ""
   valuesSources: []
   initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-    #TODO
-    # - name: vm-cluster 
-    #   criteria:
-    #     - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-    #       operator: Equal
-    #       value: "True"
-    - name: clickhouse-vmstorage
+    - name: vm-cluster 
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
@@ -52,5 +41,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: clickhouse-inserter
+        addons.in-cloud.io/addon: vm-alert
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-alert
 {{- end }}
