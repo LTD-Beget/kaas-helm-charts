@@ -16,7 +16,7 @@ spec:
     systemIstioGwVip: ""
   valuesSources: []
   initDependencies:
-    - name: vm-cluster 
+    - name: vm-cluster
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal

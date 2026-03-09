@@ -1,9 +1,9 @@
-{{- define "clickhouseinserter.addon" }}
+{{- define "vmcluster.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: clickhouse-inserter
+  name: vm-cluster
 spec:
   chart: ""
   path: "helm-chart-sources/victoria-metrics-k8s-stack"
@@ -11,22 +11,17 @@ spec:
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
-  targetNamespace: "beget-clickhouse-vmstorage"
+  targetNamespace: "beget-vmcluster"
   variables:
-    cluster_name: in-cluster
+    systemIstioGwVip: ""
   valuesSources: []
   initDependencies:
-    - name: vm-cluster
+    - name: vm-operator 
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-    - name: clickhouse-vmstorage
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend: 
+  backend:
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
@@ -46,5 +41,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: clickhouse-inserter
+        addons.in-cloud.io/addon: vm-cluster
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-cluster
 {{- end }}

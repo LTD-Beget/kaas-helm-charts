@@ -20,7 +20,6 @@ victoria-metrics-k8s-stack:
 monitoring:
   enabled: false
   type: VictoriaMetrics
-  namespace: default
   secureService:
     enabled: false
     # Create a secret containing both 'tls.crt' and 'tls.key' fields
