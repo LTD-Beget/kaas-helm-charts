@@ -49,9 +49,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: metrics-server-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: metrics-server
@@ -73,9 +70,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: metrics-server-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: metrics-server
@@ -95,9 +89,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: metrics-server-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: metrics-server
@@ -114,9 +105,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: metrics-server-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMetricsServerVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: metrics-server
@@ -129,9 +117,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseMetricsServer
-    gotemplating.fn.crossplane.io/ready: "True"
   name: metrics-server
 spec:
   rules:

@@ -84,9 +84,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: istiod-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueIstiodVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: istiod

@@ -49,9 +49,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: prometheus-node-exporter-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: prometheus-node-exporter
@@ -80,9 +77,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: prometheus-node-exporter-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: prometheus-node-exporter
@@ -102,9 +96,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: prometheus-node-exporter-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: prometheus-node-exporter
@@ -123,9 +114,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: prometheus-node-exporter-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: prometheus-node-exporter
@@ -139,9 +127,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: prometheus-node-exporter-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValuePrometheusNodeExporterSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: prometheus-node-exporter
@@ -172,9 +157,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhasePrometheusNodeExporter
-    gotemplating.fn.crossplane.io/ready: "True"
   name: prometheus-node-exporter
 spec:
   rules:

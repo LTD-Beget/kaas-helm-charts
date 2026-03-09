@@ -2,9 +2,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: must-replace
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonMustReplace
-    gotemplating.fn.crossplane.io/ready: "True"
 spec:
   path: "helm-chart-sources/must-replace"
   pluginName: helm-with-values
@@ -83,9 +80,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: must-replace
@@ -98,9 +92,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-immutable
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceImmutable
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: must-replace
@@ -113,9 +104,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: initialized
     addons.in-cloud.io/addon: must-replace
@@ -131,9 +119,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: must-replace
@@ -150,9 +135,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: must-replace
@@ -166,9 +148,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-istio-base
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceIstioBase
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: istio-base
     addons.in-cloud.io/addon: must-replace
@@ -200,9 +179,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: must-replace
@@ -216,9 +192,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: must-replace-system-and-initialized
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueMustReplaceSystemAndInitialized
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system-and-initialized
     addons.in-cloud.io/addon: must-replace
@@ -230,9 +203,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseMustReplace
-    gotemplating.fn.crossplane.io/ready: "True"
   name: must-replace
 spec:
   rules:
