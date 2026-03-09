@@ -20,6 +20,13 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
+{{- if .Values.clientClusterEnabled }}
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+{{- end }}
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

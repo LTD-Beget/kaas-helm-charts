@@ -14,12 +14,6 @@ spec:
   targetNamespace: "beget-cert-manager"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: cilium
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

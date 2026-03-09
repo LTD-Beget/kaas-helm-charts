@@ -1,17 +1,27 @@
+{{- define "kubeadm-resources.addon" }}
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: konnectivity-agent
+  name: kubeadm-resources
 spec:
-  path: "helm-chart-sources/konnectivity-agent"
+  path: "helm-chart-sources/kubeadm-resources-client-cp"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
   version: "HEAD"
-  releaseName: konnectivity-agent
+  releaseName: kubeadm-resources
   targetCluster: {{ .Values.clientName }}
-  targetNamespace: "beget-konnectivity-agent"
+  targetNamespace: "beget-kubeadm-resources"
   variables:
     cluster_name: {{ .Values.clientName }}
+{{- if .Values.clientClusterEnabled }}
+  initDependencies:
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+{{- end }}
   valuesSources:
     - name: parameters
       sourceRef:
@@ -20,10 +30,23 @@ spec:
         name: parameters-client
         namespace: beget-system
       extract:
+        - as: clientServiceCidr
+          jsonPath: .data.clientServiceCidr
         - as: cluster.host
           jsonPath: .data.clusterHost
+        - as: cluster.port
+          jsonPath: .data.clusterPort
         - as: cluster.name
           jsonPath: .data.clusterName
+    - name: clientca
+      sourceRef:
+        apiVersion: v1
+        kind: Secret
+        name: {{ .Values.clientName }}-ca
+        namespace: beget-system
+      extract:
+        - as: cluster.kubeCaCrtBase64
+          jsonPath: .data["tls.crt"]
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -43,4 +66,5 @@ spec:
       priority: 10
       matchLabels:
         addons.in-cloud.io/values: client
-        addons.in-cloud.io/addon: konnectivity-agent
+        addons.in-cloud.io/addon: kubeadm-resources
+{{- end }}

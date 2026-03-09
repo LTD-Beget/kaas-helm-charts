@@ -12,6 +12,14 @@ spec:
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
+{{- if .Values.clientClusterEnabled }}
+  initDependencies:
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+{{- end }}
   backend: 
     type: "argocd"
     ignoreDifferences:
