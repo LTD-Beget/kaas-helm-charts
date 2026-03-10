@@ -42,6 +42,14 @@ spec:
               - key: "node-role.kubernetes.io/vm-data"
                 operator: "Exists"
                 effect: "NoSchedule"
+            volumeMounts:
+              - mountPath: /opt/monitoring/data
+                name: vmstorage-data
+            volumes:
+              - hostPath:	
+                  path: /var/lib/victoria-metrics	
+                  type: DirectoryOrCreate	
+                name: vmstorage-data
             serviceSpec:
               metadata:
                 name: vmstorage
@@ -287,9 +295,6 @@ spec:
                     subPath: ca.crt
                     name: trusted-ca-certs
                     readOnly: true
-            volumeMounts:
-              - mountPath: /opt/monitoring/data
-                name: vmstorage-data
             volumes:
               - name: rbac-proxy-tls
                 secret:
