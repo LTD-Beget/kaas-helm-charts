@@ -17,7 +17,7 @@ vmCluster:
           retentionPeriod: "1"
           replicationFactor: 2
           vmstorage:
-            replicaCount: 3
+            replicaCount: 5
             containers:
               - name: rbac-proxy
                 image: quay.io/brancz/kube-rbac-proxy:v0.21.0
