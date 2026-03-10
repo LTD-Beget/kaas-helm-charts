@@ -178,7 +178,7 @@ spec:
                   mountPath: /app/config/alertmanager/web/tls
                   readOnly: true
             - name: rbac-proxy
-              image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
               args:
                 - --secure-listen-address=0.0.0.0:11043
                 - --upstream=https://127.0.0.1:9093
