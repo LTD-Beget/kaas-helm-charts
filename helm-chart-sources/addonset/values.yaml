@@ -5,6 +5,8 @@ addons:
     enabled: true
   argocd:
     enabled: true
+  begetcmprovider:
+    enabled: false
   certificateset:
     enabled: true
   certmanager:
@@ -19,6 +21,14 @@ addons:
     enabled: false
   clientvmscrapeconfig:
     enabled: false
+  capi:
+    enabled: false
+  capiclusterclass:
+    enabled: false
+  capikubeadmbootstrap:
+    enabled: false
+  capikubeadmcontrolplane:
+    enabled: false
   controlplane:
     enabled: true
   crossplane:
@@ -27,12 +37,18 @@ addons:
     enabled: false
   crossplanefunctions:
     enabled: false
+  crossplanexcluster:
+    enabled: false
   dex:
+    enabled: false
+  dockerregistry:
     enabled: false
   etcdbackupsnapshot:
     enabled: true
   extraresources:
     enabled: true
+  helminserter:
+    enabled: false
   incloudwebchart:
     enabled: true
   incloudwebresources:
@@ -43,12 +59,16 @@ addons:
     enabled: true
   istiogw:
     enabled: true
+  secretcopyoperator:
+    enabled: false
   template:
     enabled: true
   test:
     enabled: true
   trustmanager:
     enabled: true
+  trivyoperator:
+    enabled: false
   vmoperator:
     enabled: true
   vault:

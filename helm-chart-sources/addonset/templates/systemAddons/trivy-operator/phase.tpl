@@ -1,11 +1,25 @@
-{{- define "dex.phase" }}
+{{- define "trivy-operator.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: dex{{ if eq .Values.environment "client" }}-client{{ end }}
+  name: trivy-operator{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: trivy-operator
     - name: system
       criteria:
         - source:
@@ -21,7 +35,7 @@ spec:
         priority: 15
         matchLabels:
           addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: dex
+          addons.in-cloud.io/addon: trivy-operator
     - name: vm-operator
       criteria:
         - source:
@@ -36,27 +50,5 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: dex
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: istio-base
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: dex
+          addons.in-cloud.io/addon: trivy-operator
 {{- end }}

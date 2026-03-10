@@ -1,0 +1,9 @@
+{{- if and .Values.addons.capikubeadmbootstrap.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "capi-kubeadm-bootstrap.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/capi-kubeadm-bootstrap/values.yml" | nindent 0 }}
+
+  {{- include "capi-kubeadm-bootstrap.phase" . }}
+{{- end }}

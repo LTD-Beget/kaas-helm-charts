@@ -1,0 +1,62 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: |
+    resources:
+      namespaceCustomer:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: {{ .Values.systemNamespace }}
+          labels:
+            in-cloud.io/clusterName: {{ .Values.cluster.name }}
+      appProjectCustomer:
+        apiVersion: argoproj.io/v1alpha1
+        kind: AppProject
+        metadata:
+          annotations:
+            argocd.argoproj.io/compare-options: "IgnoreExtraneous"
+            argocd.argoproj.io/tracking-id: {{ .Values.tackingID }}
+          name: {{ .Values.xcluster }}
+          namespace: beget-argocd
+        spec:
+          clusterResourceWhitelist:
+          - group: '*'
+            kind: '*'
+          destinations:
+          - namespace: {{ .Values.systemNamespace }}
+            server: '*'
+          - namespace: '*'
+            name: {{ .Values.cluster.name }}
+          sourceRepos:
+          - '*'
+          sourceNamespaces:
+          - '*'

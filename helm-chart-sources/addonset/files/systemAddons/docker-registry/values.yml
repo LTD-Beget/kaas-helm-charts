@@ -1,0 +1,186 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: ""
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: |
+    internalTLS:
+      certSource: certmanager
+      certmanager:
+        existingIssuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+    default:
+      metrics:
+        secureEndpoint: true
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: |
+    default:
+      metrics:
+        scrape:
+          enabled: true
+      
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: |
+    expose:
+      resourceType: istio
+      istio:
+        gateway:
+          enabled: false
+          name: beget-istio-gw/default
+    default:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      serviceAccount:
+        create: true
+      image:
+        repository: ghcr.io/distribution/distribution
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 400m
+          memory: 512Mi
+      metrics:
+        enabled: true
+      config:
+        log:
+          level: info
+    mainRegistryName: registry-beget-ru
+    proxies:
+      registry-1-docker-io:
+        enabled: true
+        extraEnvVars:
+          - name: OTEL_TRACES_EXPORTER
+            value: none
+          - name: REGISTRY_PROXY_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: docker-io-creds
+                key: username
+          - name: REGISTRY_PROXY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: docker-io-creds
+                key: password
+        config:
+          proxy:
+            remoteurl: https://registry-1.docker.io
+
+      europe-docker-pkg-dev:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://europe-docker.pkg.dev
+
+      gcr-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://gcr.io
+
+      ghcr-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://ghcr.io
+
+      mirror-gcr-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://mirror.gcr.io
+
+      public-ecr-aws:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://public.ecr.aws
+
+      quay-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://quay.io
+
+      registry-k8s-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://registry.k8s.io
+
+      xpkg-crossplane-io:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://xpkg.crossplane.io
+
+      registry-beget-ru:
+        enabled: true
+        config:
+          proxy:
+            remoteurl: https://registry.beget.ru
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: |
+    expose:
+      enabled: true

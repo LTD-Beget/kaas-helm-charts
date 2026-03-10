@@ -1,0 +1,51 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: capi-kubeadm-control-plane-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: capi-kubeadm-control-plane  
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: capi-kubeadm-control-plane-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: capi-kubeadm-control-plane
+spec:
+  values: |
+    monitoring:
+      vmServiceScrape:
+        enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: capi-kubeadm-control-plane-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: capi-kubeadm-control-plane
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: capi-kubeadm-control-plane-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: capi-kubeadm-control-plane
+spec:
+  values: |
+    fullnameOverride: "capi-kcp"
+    certificates:
+      useExternalIssuer: true
+      externalIssuer:
+        name: selfsigned-cluster-issuer

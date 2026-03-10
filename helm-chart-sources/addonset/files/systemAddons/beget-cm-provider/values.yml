@@ -1,0 +1,67 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: beget-cm-provider-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: beget-cm-provider  
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: beget-cm-provider-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: beget-cm-provider
+spec:
+  values: |
+    monitoring:
+      vmServiceScrape:
+        enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: beget-cm-provider-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: beget-cm-provider
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: beget-cm-provider-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: beget-cm-provider
+spec:
+  values: |
+    certificates:
+      useExternalIssuer: true
+      externalIssuer:
+        name: selfsigned-cluster-issuer
+    appSpec:
+      applications:
+        providerBegetControllerManager:
+          containers:
+            manager:
+              image:
+                pullPolicy: Always
+                tag: beget-cm-provider-migrate
+          enabled: true
+          tolerations:
+          - effect: NoExecute
+            operator: Exists
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+          imagePullSecrets:
+            - name: regcred

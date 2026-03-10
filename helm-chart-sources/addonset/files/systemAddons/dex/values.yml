@@ -23,3 +23,46 @@ metadata:
     addons.in-cloud.io/addon: dex
 spec:
   values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - beget-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          name: dex
+          route:
+            host: dex
+            port: 5554
+      destinationRule:
+        enabled: true
+        host: dex
+        trafficPolicy:
+          tls:
+            mode: SIMPLE
+            insecureSkipVerify: true
