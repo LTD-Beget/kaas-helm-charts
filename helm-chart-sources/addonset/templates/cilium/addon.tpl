@@ -25,6 +25,10 @@ spec:
           jsonPath: .data.clusterName
         - as: cluster.port
           jsonPath: .data.clusterPort #tmp need change -> clusterPort for prod-ready (infra) or clusterClientPort
+        - as: podCidr
+          jsonPath: .data.podCidr
+        - as: podCidrMaskSize
+          jsonPath: .data.podCidrMaskSize
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
