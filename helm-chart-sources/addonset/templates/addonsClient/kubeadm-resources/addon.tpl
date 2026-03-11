@@ -38,6 +38,10 @@ spec:
           jsonPath: .data.clusterPort
         - as: cluster.name
           jsonPath: .data.clusterName
+        - as: cluster.domain
+          jsonPath: .data.clusterDomain
+        - as: cluster.version
+          jsonPath: .data.clusterVersion
     - name: clientca
       sourceRef:
         apiVersion: v1

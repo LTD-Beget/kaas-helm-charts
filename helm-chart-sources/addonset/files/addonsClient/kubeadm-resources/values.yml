@@ -19,5 +19,7 @@ spec:
         controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
         networking:
           serviceSubnet: "{{ .Values.clientServiceCidr }}"
+          dnsDomain: "{{ .Values.cluster.domain }}"
+        kubernetesVersion: "{{ .Values.cluster.version }}"
     rbac:
       authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"
