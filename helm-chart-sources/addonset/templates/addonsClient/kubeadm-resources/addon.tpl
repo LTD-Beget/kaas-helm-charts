@@ -8,7 +8,7 @@ spec:
   path: "helm-chart-sources/kubeadm-resources-client-cp"
   pluginName: helm-with-values
   repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "feat/updateargs"
+  version: "HEAD"
   releaseName: kubeadm-resources
   targetCluster: {{ .Values.clientName }}
   targetNamespace: "beget-kubeadm-resources"
