@@ -55,6 +55,10 @@ spec:
     cilium:
       k8sServiceHost: "{{ .Values.cluster.host }}"
       k8sServicePort: "{{ .Values.cluster.port }}"
+      ipam:
+        operator:
+          clusterPoolIPv4MaskSize: "{{ .Values.podCidrMaskSize }}"
+          clusterPoolIPv4PodCIDRList: [ "{{ .Values.podCidr }}" ]
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
