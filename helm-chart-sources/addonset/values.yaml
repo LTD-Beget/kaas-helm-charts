@@ -17,6 +17,10 @@ addons:
     enabled: true
   coredns:
     enabled: true
+  clickhouseinserter:
+    enabled: false
+  clickhousevmstorage:
+    enabled: false
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
@@ -47,7 +51,15 @@ addons:
     enabled: true
   extraresources:
     enabled: true
+<<<<<<< HEAD
   helminserter:
+=======
+  grafana:
+    enabled: false
+  grafanadashboards:
+    enabled: false
+  grafanaoperator:
+>>>>>>> master
     enabled: false
   incloudwebchart:
     enabled: true
@@ -60,6 +72,8 @@ addons:
   istiogw:
     enabled: true
   secretcopyoperator:
+    enabled: true
+  signalilo:
     enabled: false
   template:
     enabled: true
@@ -76,7 +90,18 @@ addons:
   system:
     enabled: false
     clickhouseInserter: false
+  vmalert:
+    enabled: false
+  vmalertmanager:
+    enabled: false
+  vmalertrules:
+    enabled: false
+  vmcluster:
+    enabled: false
+  vmoperator:
+    enabled: true
 environment: infra
 clientName: client
 clusterName: infra
 addonRevision: HEAD
+clientClusterEnabled: true

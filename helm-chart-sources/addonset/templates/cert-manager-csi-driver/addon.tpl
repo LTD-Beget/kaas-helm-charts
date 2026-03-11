@@ -13,12 +13,6 @@ spec:
   targetNamespace: "beget-cert-manager-csi-driver"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

@@ -68,9 +68,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-default
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentDefault
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: vm-agent
@@ -203,9 +200,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-infra
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentInfra
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: vm-agent
@@ -320,9 +314,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-immutable
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentImmutable
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: vm-agent
@@ -361,9 +352,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-cert-manager
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentCertManager
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: vm-agent
@@ -388,7 +376,7 @@ spec:
                 readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false
             - name: rbac-proxy
-              image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
               args:
                 - --secure-listen-address=0.0.0.0:11043
                 - --upstream=http://127.0.0.1:8429
@@ -453,9 +441,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-vm-operator
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentVmOperator
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: vm-agent
@@ -469,9 +454,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: vm-agent-system
-  annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonValueVmAgentSystem
-    gotemplating.fn.crossplane.io/ready: "True"
   labels:
     addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: vm-agent
@@ -498,8 +480,6 @@ apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   annotations:
-    gotemplating.fn.crossplane.io/composition-resource-name: addonPhaseVmAgent
-    gotemplating.fn.crossplane.io/ready: "True"
   name: vm-agent
 spec:
   rules:

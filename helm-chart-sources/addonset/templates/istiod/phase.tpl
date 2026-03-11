@@ -61,6 +61,7 @@ spec:
           jsonPath: $.data.controlPlaneReplicas
           operator: GreaterThan
           value: 1
+          keep: false
       selector:
         name: multi-control-plane
         priority: 30

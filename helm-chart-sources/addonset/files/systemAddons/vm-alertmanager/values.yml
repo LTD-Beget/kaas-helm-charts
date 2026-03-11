@@ -1,0 +1,282 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        ingress:
+          enabled: false
+        monzoTemplate:
+          enabled: false
+        spec:
+          templates:
+            - key: telegram_alerts.tmpl
+              name: vmalertmanager-alertmanager-alert-templates
+          serviceSpec:
+            metadata:
+              name: vmalertmanager
+              labels:
+                monitoring.in-cloud.io/service: vmalertmanager
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+          selectAllByDefault: false
+          priorityClassName: system-cluster-critical
+          configSelector: {}
+          configNamespaceSelector: {}
+          configSecret: vmalertmanager-config
+          resources:
+            requests:
+              cpu: '100m'
+              memory: 128Mi
+            limits:
+              cpu: '500m'
+              memory: 512Mi
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: '1'
+          podMetadata:
+            labels:
+              in-cloud-metrics: "infra"
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+
+    monitoring:
+      enabled: true
+
+    alertmanagerConfig:
+      enabled: true
+      config:
+        global:
+          resolve_timeout: 5m
+
+        route:
+          receiver: blackhole
+          group_by: ["cluster_full_name", "alertname", "severity"]
+          group_wait: 10s
+          group_interval: 30s
+          repeat_interval: 3h
+
+          routes:
+            blackhole:
+              matchers:
+                - alertname="Watchdog"
+              receiver: blackhole
+            telegram:
+              matchers:
+                - severity="critical"
+              receiver: telegram-critical
+              continue: true
+
+        receivers:
+          blackhole: {}
+          telegram-critical:
+            type: telegram_configs
+            configs:
+              criticalAlertGroup:
+                bot_token: "{{ .Variables.telegramToken }}"
+                chat_id: "{{ .Variables.telegramChatId }}"
+                parse_mode: 'HTML'
+                send_resolved: true
+                message: '{{ template "tg.message" . }}'
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: true
+      defaultRules:
+        create: false
+      defaultDashboards:
+        enabled: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: false
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "alertmanager"
+      alertmanager:
+        spec:
+          serviceSpec:
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+          containers:
+            - name: alertmanager
+              volumeMounts:
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
+            - name: rbac-proxy
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=https://127.0.0.1:9093
+                - --upstream-ca-file=/app/config/alertmanager/web/tls/ca.crt
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
+          volumes:
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vmalertmanager-monitoring-svc-tls
+            - name: alertmanager-tls
+              secret:
+                defaultMode: 420
+                secretName: alertmanager
+          webConfig:
+            tls_server_config:
+              cert_file: "/app/config/alertmanager/web/tls/tls.crt"
+              key_file: "/app/config/alertmanager/web/tls/tls.key"
+
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      alertmanager:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: alertmanager
+          secretName: alertmanager
+          commonName: alertmanager
+          dnsNames:
+            - "vmalertmanager-alertmanager"
+            - "vmalertmanager-alertmanager.beget-alertmanager"
+            - "vmalertmanager-alertmanager.beget-alertmanager.svc"
+          ipAddresses:
+            - 127.0.0.1
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-signalilo
+  labels:
+    addons.in-cloud.io/values: signalilo
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    alertmanagerConfig:
+      config:
+        route:
+          routes:
+            signalilo:
+              matchers:
+                - severity="critical"
+              receiver: signalilo-critical
+              continue: true
+
+        receivers:
+          signalilo-critical:
+            type: webhook_configs
+            configs:
+              mainSignaliloInstance:
+                url: "http://signalilo.beget-signalilo.svc/webhook?token={{ .Variables.signaliloAlertmanagerToken }}"
+                send_resolved: true

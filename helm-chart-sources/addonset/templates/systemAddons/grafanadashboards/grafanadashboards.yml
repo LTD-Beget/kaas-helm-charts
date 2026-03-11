@@ -1,0 +1,9 @@
+{{- if .Values.addons.grafanadashboards.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "grafanadashboards.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/grafanadashboards/values.yml" | nindent 0 }}
+
+  {{- include "grafanadashboards.phase" . }}
+{{- end }}

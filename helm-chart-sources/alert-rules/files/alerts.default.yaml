@@ -87,9 +87,22 @@ coredns:
                 Cluster: {{ $labels.cluster_full_name }}
                 Value: {{ $value | humanizePercentage }}
             expr: |
-              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
-                /
-              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
+              sum without (pod, instance, server, zone, view, rcode, plugin) (
+                rate(
+                  coredns_dns_responses_total{
+                    job="coredns-coredns-metrics",
+                    rcode="SERVFAIL"
+                  }[5m]
+                )
+              )
+              /
+              sum without (pod, instance, server, zone, view, rcode, plugin) (
+                rate(
+                  coredns_dns_responses_total{
+                    job="coredns-coredns-metrics"
+                  }[5m]
+                )
+              ) > 0.03
             for: 10m
             labels:
               severity: critical
@@ -623,7 +636,7 @@ clusterMonitoringVictoriaMetricsOperator:
                 Pod: {{ $labels.pod }}
                 Container: {{ $labels.container }}
                 RestartsCountIn1m: {{ $value | humanize }}
-            expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system"}[10m]) * 600>=1
+            expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system",cluster_type!="client"}[10m]) * 600>=1
             for: 1m
             labels:
               severity: critical
@@ -645,7 +658,13 @@ clusterMonitoringVictoriaMetricsOperator:
                 Pod: {{ $labels.pod }}
                 Container: {{ $labels.container }}
                 RestartsCountIn1m: {{ $value | humanize }}
-            expr: rate(kube_pod_container_status_restarts_total{namespace="beget-system", container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"}[10m]) * 600>=1
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace="beget-system",
+                  container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"
+                }[10m]
+              ) * 600>=1
             for: 1m
             labels:
               severity: critical
@@ -667,7 +686,13 @@ clusterMonitoringVictoriaMetricsOperator:
                 Pod: {{ $labels.pod }}
                 Container: {{ $labels.container }}
                 RestartsCountIn1m: {{ $value | humanize }}
-            expr: rate(kube_pod_container_status_restarts_total{namespace=~"beget.*|kube.*"}[10m]) * 600>=1
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace=~"beget.*|kube.*",
+                  cluster_type!="client"
+                }[10m]
+              ) * 600>=1
             for: 1m
             labels:
               severity: warning
@@ -701,12 +726,34 @@ cpuUtilization:
                 ControlPlaneNodes: {{ $value | humanize }}
             expr: |
               sum(
-                100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)
-                AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+                100 - (
+                  avg by (instance) (
+                    rate(
+                      node_cpu_seconds_total{
+                        mode="idle",
+                        cluster_type!="client"
+                      }[1m]
+                    )
+                  ) * 100
+                )
+                AND on (instance) label_replace(
+                  kube_node_role{
+                    role="control-plane",
+                    cluster_type!="client"
+                  },
+                  "instance",
+                  "$1",
+                  "node",
+                  "(.+)"
+                )
               )
               /
-              count(kube_node_role{role="control-plane"})
-              > 60
+              count(
+                kube_node_role{
+                  role="control-plane",
+                  cluster_type!="client"
+                }
+              ) > 60
             for: 10m
             labels:
               severity: warning
@@ -736,7 +783,27 @@ cpuUtilization:
                 Instance: {{ $labels.instance }}
                 CPUUsagePercent: {{ $value | humanize }}
             expr: |
-              100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+              100 - (
+                avg by (instance) (
+                  rate(
+                    node_cpu_seconds_total{
+                      mode="idle",
+                      cluster_type!="client"
+                    }[1m]
+                  )
+                ) * 100
+              ) > 90
+              AND
+              on (instance) label_replace(
+                kube_node_role{
+                  role="control-plane",
+                  cluster_type!="client"
+                },
+                "instance",
+                "$1",
+                "node",
+                "(.+)"
+              )
             for: 5m
             labels:
               severity: warning
@@ -766,7 +833,25 @@ cpuUtilization:
                 Instance: {{ $labels.instance }}
                 CPUUsagePercent: {{ $value | humanize }}
             expr: |
-              100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90 AND on (instance) label_replace( kube_node_role{role="control-plane"}, "instance", "$1", "node", "(.+)" )
+              100 - (
+                avg by (instance) (
+                  rate(
+                    node_cpu_seconds_total{
+                      mode="idle"
+                    }[1m]
+                  )
+                ) * 100
+              ) > 90 
+              AND
+              on (instance) label_replace(
+                kube_node_role{
+                  role="control-plane"
+                },
+                "instance",
+                "$1",
+                "node",
+                "(.+)"
+              )
             for: 1h
             labels:
               severity: critical
@@ -1318,11 +1403,45 @@ kubernetesResources:
 
                 Cluster: {{ $labels.cluster_full_name }}
                 OvercommitCPU: {{ printf "%.2f" $value }}
-
             expr: |
-              sum(namespace_cpu:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
+              sum(
+                namespace_cpu:kube_pod_container_resource_requests:sum{}
+              ) by (cluster_full_name)
+              -
+              (
+                sum(
+                  kube_node_status_allocatable{
+                    job="kube-state-metrics",
+                    resource="cpu",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+                -
+                max(
+                  kube_node_status_allocatable{
+                    job="kube-state-metrics",
+                    resource="cpu",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)) > 0
               and
-              (sum(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name) - max(kube_node_status_allocatable{job="kube-state-metrics",resource="cpu"}) by (cluster_full_name)) > 0
+              (
+                sum(
+                  kube_node_status_allocatable{
+                    job="kube-state-metrics",
+                    resource="cpu",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+                -
+                max(
+                  kube_node_status_allocatable{
+                    job="kube-state-metrics",
+                    resource="cpu",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+              ) > 0
             for: 10m
             labels:
               severity: warning
@@ -1342,11 +1461,46 @@ kubernetesResources:
 
                 Cluster: {{ $labels.cluster_full_name }}
                 OvercommitMemory: {{ $value | humanize }}
-
             expr: |
-              sum(namespace_memory:kube_pod_container_resource_requests:sum{}) by (cluster_full_name) - (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
+              sum(
+                namespace_memory:kube_pod_container_resource_requests:sum{}
+              ) by (cluster_full_name)
+              -
+              (
+                sum(
+                  kube_node_status_allocatable{
+                    resource="memory",
+                    job="kube-state-metrics",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+                -
+                max(
+                  kube_node_status_allocatable{
+                    resource="memory",
+                    job="kube-state-metrics",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+              ) > 0
               and
-              (sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name) - max(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)) > 0
+              (
+                sum(
+                  kube_node_status_allocatable{
+                    resource="memory",
+                    job="kube-state-metrics",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+                -
+                max(
+                  kube_node_status_allocatable{
+                    resource="memory",
+                    job="kube-state-metrics",
+                    cluster_type!="client"
+                  }
+                ) by (cluster_full_name)
+              ) > 0
             for: 10m
             labels:
               severity: warning
@@ -1365,12 +1519,25 @@ kubernetesResources:
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted CPU resource requests for Namespaces
 
                 Cluster: {{ $labels.cluster_full_name }}
-
             expr: |
-              sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(cpu|requests.cpu)"})) by (cluster_full_name)
-                /
-              sum(kube_node_status_allocatable{resource="cpu", job="kube-state-metrics"}) by (cluster_full_name)
-                > 1.5
+              sum(
+                min without(resource) (
+                  kube_resourcequota{
+                    job="kube-state-metrics",
+                    type="hard",
+                    resource=~"(cpu|requests.cpu)",
+                    cluster_type!="client"
+                  }
+                )
+              ) by (cluster_full_name)
+              /
+              sum(
+                kube_node_status_allocatable{
+                  resource="cpu",
+                  job="kube-state-metrics",
+                  cluster_type!="client"
+                }
+              ) by (cluster_full_name) > 1.5
             for: 5m
             labels:
               severity: critical
@@ -1387,12 +1554,25 @@ kubernetesResources:
                 {{ $labels.cluster_full_name }}: Cluster has overcommitted memory resource requests for Namespaces
 
                 Cluster: {{ $labels.cluster_full_name }}
-
             expr: |
-              sum(min without(resource) (kube_resourcequota{job="kube-state-metrics", type="hard", resource=~"(memory|requests.memory)"})) by (cluster_full_name)
-                /
-              sum(kube_node_status_allocatable{resource="memory", job="kube-state-metrics"}) by (cluster_full_name)
-                > 1.5
+              sum(
+                min without(resource) (
+                  kube_resourcequota{
+                    job="kube-state-metrics",
+                    type="hard",
+                    resource=~"(memory|requests.memory)",
+                    cluster_type!="client"
+                  }
+                )
+              ) by (cluster_full_name)
+              /
+              sum(
+                kube_node_status_allocatable{
+                  resource="memory",
+                  job="kube-state-metrics",
+                  cluster_type!="client"
+                }
+              ) by (cluster_full_name) > 1.5
             for: 5m
             labels:
               severity: critical
@@ -1416,10 +1596,19 @@ kubernetesResources:
                 Usage: {{ $value | humanizePercentage }}
 
             expr: |
-              kube_resourcequota{job="kube-state-metrics", type="used"}
-                / ignoring(instance, job, type)
-              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
-                > 0.9 < 1
+              kube_resourcequota{
+                job="kube-state-metrics",
+                type="used",
+                cluster_type!="client"
+              }
+              /
+              ignoring(instance, job, type) (
+                kube_resourcequota{
+                  job="kube-state-metrics",
+                  type="hard",
+                  cluster_type!="client"
+                } > 0
+              ) > 0.9 < 1
             for: 15m
             labels:
               severity: info
@@ -1443,10 +1632,19 @@ kubernetesResources:
                 Usage: {{ $value | humanizePercentage }}
 
             expr: |
-              kube_resourcequota{job="kube-state-metrics", type="used"}
-                / ignoring(instance, job, type)
-              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
-                == 1
+              kube_resourcequota{
+                job="kube-state-metrics",
+                type="used",
+                cluster_type!="client"
+              }
+              /
+              ignoring(instance, job, type) (
+                kube_resourcequota{
+                  job="kube-state-metrics",
+                  type="hard",
+                  cluster_type!="client"
+                } > 0
+                ) == 1
             for: 15m
             labels:
               severity: warning
@@ -1470,10 +1668,19 @@ kubernetesResources:
                 Usage: {{ $value | humanizePercentage }}
 
             expr: |
-              kube_resourcequota{job="kube-state-metrics", type="used"}
-                / ignoring(instance, job, type)
-              (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
-                > 1
+              kube_resourcequota{
+                job="kube-state-metrics",
+                type="used",
+                cluster_type!="client"
+              }
+              /
+              ignoring(instance, job, type) (
+                kube_resourcequota{
+                  job="kube-state-metrics",
+                  type="hard",
+                  cluster_type!="client"
+                } > 0
+              ) > 1
             for: 15m
             labels:
               severity: warning
@@ -1509,7 +1716,8 @@ kubernetesResources:
                     container!="",
                     job="kubelet",
                     metrics_path="/metrics/cadvisor",
-                    namespace=~"beget.*|kube.*"
+                    namespace=~"beget.*|kube.*",
+                    cluster_type!="client"
                   }[5m])
                 )
               /
@@ -1518,7 +1726,8 @@ kubernetesResources:
                     container!="",
                     job="kubelet",
                     metrics_path="/metrics/cadvisor",
-                    namespace=~"beget.*|kube.*"
+                    namespace=~"beget.*|kube.*",
+                    cluster_type!="client"
                   }[5m])
                 )
               ) > 0.25
@@ -1529,7 +1738,8 @@ kubernetesResources:
                     container!="",
                     job="kubelet",
                     metrics_path="/metrics/cadvisor",
-                    namespace=~"beget.*|kube.*"
+                    namespace=~"beget.*|kube.*",
+                    cluster_type!="client"
                   }[5m])
                 )
               ) > 0.05
@@ -1562,7 +1772,12 @@ kubernetesApps:
                 Container: {{ $labels.container }}
             expr: |
               max_over_time(
-                kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+                kube_pod_container_status_waiting_reason{
+                  reason="CrashLoopBackOff",
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }[5m]
               ) >= 1
             for: 15m
             labels:
@@ -1590,7 +1805,8 @@ kubernetesApps:
                 kube_pod_container_status_waiting_reason{
                   reason="CrashLoopBackOff",
                   job="kube-state-metrics",
-                  namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$"
+                  namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
+                  cluster_type!="client"
                 }[5m]
               ) >= 1
             for: 15m
@@ -1616,7 +1832,12 @@ kubernetesApps:
             expr: |-
               sum by (namespace,pod,cluster_full_name) (
                 max by (namespace,pod,cluster_full_name) (
-                  kube_pod_status_phase{job="kube-state-metrics", namespace=~"beget.*|kube.*|default", phase=~"Pending|Unknown|Failed"}
+                  kube_pod_status_phase{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    phase=~"Pending|Unknown|Failed",
+                    cluster_type!="client"
+                  }
                 ) * on (namespace,pod,cluster_full_name) group_left(owner_kind) topk by (namespace,pod,cluster_full_name) (
                   1, max by (namespace,pod,owner_kind,cluster_full_name) (kube_pod_owner{owner_kind!="Job"})
                 )
@@ -1643,9 +1864,17 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 Deployment: {{ $labels.deployment }}
             expr: |-
-              kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                !=
-              kube_deployment_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              kube_deployment_status_observed_generation{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
+              !=
+              kube_deployment_metadata_generation{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
             for: 15m
             labels:
               severity: warning
@@ -1669,13 +1898,27 @@ kubernetesApps:
                 Deployment: {{ $labels.deployment }}
             expr: |-
               (
-                kube_deployment_spec_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  >
-                kube_deployment_status_replicas_available{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-              ) and (
-                changes(kube_deployment_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m])
-                  ==
-                0
+                kube_deployment_spec_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+                >
+                kube_deployment_status_replicas_available{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+              )
+              and
+              (
+                changes(
+                  kube_deployment_status_replicas_updated{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }[10m]
+                ) == 0
               )
             for: 15m
             labels:
@@ -1703,20 +1946,23 @@ kubernetesApps:
                 kube_deployment_spec_replicas{
                   job="kube-state-metrics",
                   namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
-                  deployment!="client-kube-state-metrics"
+                  deployment!="client-kube-state-metrics",
+                  cluster_type!="client"
                 }
                   >
                 kube_deployment_status_replicas_available{
                   job="kube-state-metrics",
                   namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
-                  deployment!="client-kube-state-metrics"
+                  deployment!="client-kube-state-metrics",
+                  cluster_type!="client"
                 }
               ) and (
                 changes(
                   kube_deployment_status_replicas_updated{
                     job="kube-state-metrics",
                     namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
-                    deployment!="client-kube-state-metrics"
+                    deployment!="client-kube-state-metrics",
+                    cluster_type!="client"
                   }[10m]
                 ) == 0
               )
@@ -1745,7 +1991,8 @@ kubernetesApps:
                 condition="Progressing",
                 status="false",
                 job="kube-state-metrics",
-                namespace=~"beget.*|kube.*|default"
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
               } != 0
             for: 15m
             labels:
@@ -1773,7 +2020,8 @@ kubernetesApps:
                 status="false",
                 job="kube-state-metrics",
                 namespace=~"^(beget-cilium|beget-argocd|beget-cert-manager|beget-cert-manager-csi-driver|beget-vmagent|beget-trust-manager|beget-system|kube-system)$",
-                deployment!="client-kube-state-metrics"
+                deployment!="client-kube-state-metrics",
+                cluster_type!="client"
               } != 0
             for: 15m
             labels:
@@ -1799,12 +2047,26 @@ kubernetesApps:
                 StatefulSet: {{ $labels.statefulset }}
             expr: |-
               (
-                kube_statefulset_status_replicas_ready{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  !=
-                kube_statefulset_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-              ) and (
+                kube_statefulset_status_replicas_ready{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+                !=
+                kube_statefulset_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+              )
+              and
+              (
                 changes(
-                  kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[10m]
+                  kube_statefulset_status_replicas_updated{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }[10m]
                 ) == 0
               )
             for: 15m
@@ -1829,9 +2091,17 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 StatefulSet: {{ $labels.statefulset }}
             expr: |-
-              kube_statefulset_status_observed_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                !=
-              kube_statefulset_metadata_generation{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              kube_statefulset_status_observed_generation{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
+              !=
+              kube_statefulset_metadata_generation{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
             for: 15m
             labels:
               severity: warning
@@ -1855,20 +2125,42 @@ kubernetesApps:
             expr: |-
               (
                 max by (namespace,statefulset,job,cluster_full_name) (
-                  kube_statefulset_status_current_revision{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                    unless
-                  kube_statefulset_status_update_revision{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_statefulset_status_current_revision{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
+                  unless
+                  kube_statefulset_status_update_revision{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                 )
-                  *
+                *
                 (
-                  kube_statefulset_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                    !=
-                  kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_statefulset_replicas{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
+                  !=
+                  kube_statefulset_status_replicas_updated{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                 )
-              )  and (
-                changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m])
-                  ==
-                0
+              )
+              and
+              (
+                changes(
+                  kube_statefulset_status_replicas_updated{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }[5m]
+                ) == 0
               )
             for: 15m
             labels:
@@ -1893,32 +2185,63 @@ kubernetesApps:
             expr: |-
               (
                 (
-                  kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_current_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                   !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                 )
                 or
                 (
-                  kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                  != 0
+                  kube_daemonset_status_number_misscheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  } != 0
                 )
                 or
                 (
-                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_updated_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                   !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                 )
                 or
                 (
-                  kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_number_available{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                   !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }
                 )
               )
               and
               (
                 changes(
-                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[5m]
+                  kube_daemonset_status_updated_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget.*|kube.*|default",
+                    cluster_type!="client"
+                  }[5m]
                 ) == 0
               )
             for: 15m
@@ -1944,26 +2267,64 @@ kubernetesApps:
             expr: |-
               (
                 (
-                  kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  kube_daemonset_status_current_number_scheduled{
+                    job="kube-state-metrics", 
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
                   !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
-                ) or (
-                  kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
-                  !=
-                  0
-                ) or (
-                  kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
-                  !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
-                ) or (
-                  kube_daemonset_status_number_available{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
-                  !=
-                  kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
                 )
-              ) and (
-                changes(kube_daemonset_status_updated_number_scheduled{job="kube-state-metrics", namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system"}[5m])
-                  ==
-                0
+                or
+                (
+                  kube_daemonset_status_number_misscheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  } != 0
+                )
+                or
+                (
+                  kube_daemonset_status_updated_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
+                )
+                or
+                (
+                  kube_daemonset_status_number_available{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
+                  !=
+                  kube_daemonset_status_desired_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                  }
+                )
+              )
+              and
+              (
+                changes(
+                  kube_daemonset_status_updated_number_scheduled{
+                    job="kube-state-metrics",
+                    namespace=~"beget-cert-manager-csi-driver|beget-cilium|beget-system",
+                    cluster_type!="client"
+                    }[5m]
+                ) == 0
               )
             for: 15m
             labels:
@@ -1992,7 +2353,8 @@ kubernetesApps:
               kube_pod_container_status_waiting_reason{
                 reason!="CrashLoopBackOff",
                 job="kube-state-metrics",
-                namespace=~"beget.*|kube.*|default"
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
               } > 0
             for: 1h
             labels:
@@ -2016,9 +2378,17 @@ kubernetesApps:
                 DaemonSet: {{ $labels.daemonset }}
                 NotScheduledPods: {{ $value }}
             expr: |-
-              kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                -
-              kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+              kube_daemonset_status_desired_number_scheduled{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
+              -
+              kube_daemonset_status_current_number_scheduled{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              } > 0
             for: 10m
             labels:
               severity: warning
@@ -2040,7 +2410,12 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 DaemonSet: {{ $labels.daemonset }}
                 MisScheduledPods: {{ $value }}
-            expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+            expr: |
+              kube_daemonset_status_number_misscheduled{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              } > 0
             for: 15m
             labels:
               severity: warning
@@ -2065,9 +2440,17 @@ kubernetesApps:
               time()
                 -
               max by (namespace,job_name,cluster_full_name) (
-                kube_job_status_start_time{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                kube_job_status_start_time{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
                 and
-                kube_job_status_active{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+                kube_job_status_active{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                } > 0
               ) > 43200
             labels:
               severity: warning
@@ -2089,7 +2472,12 @@ kubernetesApps:
                 Cluster: {{ $labels.cluster_full_name }}
                 Namespace: {{ $labels.namespace }}
                 Job: {{ $labels.job_name }}
-            expr: kube_job_failed{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"} > 0
+            expr: |
+              kube_job_failed{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              } > 0
             for: 15m
             labels:
               severity: warning
@@ -2112,19 +2500,55 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 HPA: {{ $labels.horizontalpodautoscaler }}
             expr: |-
-              (kube_horizontalpodautoscaler_status_desired_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              (
+                kube_horizontalpodautoscaler_status_desired_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
                 !=
-              kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
-                and
-              (kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                kube_horizontalpodautoscaler_status_current_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+              )
+              and
+              (
+                kube_horizontalpodautoscaler_status_current_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
                 >
-              kube_horizontalpodautoscaler_spec_min_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
-                and
-              (kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                kube_horizontalpodautoscaler_spec_min_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+              )
+              and
+              (
+                kube_horizontalpodautoscaler_status_current_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
                 <
-              kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"})
-                and
-              changes(kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}[15m]) == 0
+                kube_horizontalpodautoscaler_spec_max_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
+              )
+              and
+              changes(
+                kube_horizontalpodautoscaler_status_current_replicas{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }[15m]
+              ) == 0
             for: 15m
             labels:
               severity: warning
@@ -2147,9 +2571,17 @@ kubernetesApps:
                 Namespace: {{ $labels.namespace }}
                 HPA: {{ $labels.horizontalpodautoscaler }}
             expr: |-
-              kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
-                ==
-              kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+              kube_horizontalpodautoscaler_status_current_replicas{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
+              ==
+              kube_horizontalpodautoscaler_spec_max_replicas{
+                job="kube-state-metrics",
+                namespace=~"beget.*|kube.*|default",
+                cluster_type!="client"
+              }
             for: 15m
             labels:
               severity: warning
@@ -2177,9 +2609,17 @@ kubernetesApps:
                 MissingHealthyPods: {{ $value | humanize }}
             expr: |-
               (
-                kube_poddisruptionbudget_status_desired_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                kube_poddisruptionbudget_status_desired_healthy{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
                 -
-                kube_poddisruptionbudget_status_current_healthy{job="kube-state-metrics", namespace=~"beget.*|kube.*|default"}
+                kube_poddisruptionbudget_status_current_healthy{
+                  job="kube-state-metrics",
+                  namespace=~"beget.*|kube.*|default",
+                  cluster_type!="client"
+                }
               ) > 0
             for: 15m
             labels:
@@ -2369,9 +2809,26 @@ kube-state-metrics:
                 Cluster: {{ $labels.cluster_full_name }}
                 ErrorRate: {{ $value | humanizePercentage }}
             expr: |-
-              (sum(rate(kube_state_metrics_list_total{job="kube-state-metrics",result="error"}[5m])) by (cluster_full_name)
+              (
+                sum(
+                  rate(
+                    kube_state_metrics_list_total{
+                      job="kube-state-metrics",
+                      result="error",
+                      cluster_type!="client"
+                    }[5m]
+                  )
+                ) by (cluster_full_name)
                 /
-              sum(rate(kube_state_metrics_list_total{job="kube-state-metrics"}[5m])) by (cluster_full_name))
+                sum(
+                  rate(
+                    kube_state_metrics_list_total{
+                      job="kube-state-metrics",
+                      cluster_type!="client"
+                    }[5m]
+                  )
+                ) by (cluster_full_name)
+              )
               > 0.01
             for: 15m
             labels:
@@ -2394,9 +2851,26 @@ kube-state-metrics:
                 Cluster: {{ $labels.cluster_full_name }}
                 ErrorRate: {{ $value | humanizePercentage }}
             expr: |-
-              (sum(rate(kube_state_metrics_watch_total{job="kube-state-metrics",result="error"}[5m])) by (cluster_full_name)
+              (
+                sum(
+                  rate(
+                    kube_state_metrics_watch_total{
+                      job="kube-state-metrics",
+                      result="error",
+                      cluster_type!="client"
+                    }[5m]
+                  )
+                ) by (cluster_full_name)
                 /
-              sum(rate(kube_state_metrics_watch_total{job="kube-state-metrics"}[5m])) by (cluster_full_name))
+                sum(
+                  rate(
+                    kube_state_metrics_watch_total{
+                      job="kube-state-metrics",
+                      cluster_type!="client"
+                    }[5m]
+                  )
+                ) by (cluster_full_name)
+              )
               > 0.01
             for: 15m
             labels:
@@ -2417,8 +2891,13 @@ kube-state-metrics:
                 {{ $labels.cluster_full_name }}: kube-state-metrics sharding mismatch detected
 
                 Cluster: {{ $labels.cluster_full_name }}
-            expr: stdvar (kube_state_metrics_total_shards{job="kube-state-metrics"}) by
-              (cluster_full_name) != 0
+            expr: |
+              stdvar (
+                kube_state_metrics_total_shards{
+                  job="kube-state-metrics",
+                  cluster_type!="client"
+                }
+              ) by (cluster_full_name) != 0
             for: 15m
             labels:
               severity: critical
@@ -2437,10 +2916,21 @@ kube-state-metrics:
 
                 Cluster: {{ $labels.cluster_full_name }}
             expr: |-
-              2^max(kube_state_metrics_total_shards{job="kube-state-metrics"}) by (cluster_full_name) - 1
-                -
-              sum( 2 ^ max by (shard_ordinal,cluster_full_name) (kube_state_metrics_shard_ordinal{job="kube-state-metrics"}) ) by (cluster_full_name)
-              != 0
+              2^max(
+                kube_state_metrics_total_shards{
+                  job="kube-state-metrics",
+                  cluster_type!="client"
+                }
+              ) by (cluster_full_name) - 1
+              -
+              sum(
+                2 ^ max by (shard_ordinal,cluster_full_name) (
+                  kube_state_metrics_shard_ordinal{
+                    job="kube-state-metrics",
+                    cluster_type!="client"
+                  }
+                )
+              ) by (cluster_full_name) != 0
             for: 15m
             labels:
               severity: critical
@@ -2471,14 +2961,29 @@ kubernetes-storage:
                 FreeSpace: {{ $value | humanizePercentage }}
             expr: |-
               (
-                kubelet_volume_stats_available_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
-                  /
-                kubelet_volume_stats_capacity_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+                kubelet_volume_stats_available_bytes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
+                /
+                kubelet_volume_stats_capacity_bytes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
               ) < 0.03
               and
-              kubelet_volume_stats_used_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"} > 0
+              kubelet_volume_stats_used_bytes{
+                job="kubelet",
+                namespace=~".*",
+                metrics_path="/metrics",
+                cluster_type!="client"
+              } > 0
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
-              kube_persistentvolumeclaim_access_mode{ access_mode="ReadOnlyMany"} == 1
+              kube_persistentvolumeclaim_access_mode{access_mode="ReadOnlyMany"} == 1
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
               kube_persistentvolumeclaim_labels{label_excluded_from_alerts="true"} == 1
             for: 1m
@@ -2507,16 +3012,37 @@ kubernetes-storage:
                 FreeSpace: {{ $value | humanizePercentage }}
             expr: |-
               (
-                kubelet_volume_stats_available_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
-                  /
-                kubelet_volume_stats_capacity_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+                kubelet_volume_stats_available_bytes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
+                /
+                kubelet_volume_stats_capacity_bytes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
               ) < 0.15
               and
-              kubelet_volume_stats_used_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"} > 0
+              kubelet_volume_stats_used_bytes{
+                job="kubelet",
+                namespace=~".*",
+                metrics_path="/metrics",
+                cluster_type!="client"
+              } > 0
               and
-              predict_linear(kubelet_volume_stats_available_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}[6h], 4 * 24 * 3600) < 0
+              predict_linear(
+                kubelet_volume_stats_available_bytes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }[6h], 4 * 24 * 3600) < 0
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
-              kube_persistentvolumeclaim_access_mode{ access_mode="ReadOnlyMany"} == 1
+              kube_persistentvolumeclaim_access_mode{access_mode="ReadOnlyMany"} == 1
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
               kube_persistentvolumeclaim_labels{label_excluded_from_alerts="true"} == 1
             for: 1h
@@ -2544,12 +3070,27 @@ kubernetes-storage:
                 FreeInodes: {{ $value | humanizePercentage }}
             expr: |-
               (
-                kubelet_volume_stats_inodes_free{job="kubelet", namespace=~".*", metrics_path="/metrics"}
-                  /
-                kubelet_volume_stats_inodes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+                kubelet_volume_stats_inodes_free{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
+                /
+                kubelet_volume_stats_inodes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
               ) < 0.03
               and
-              kubelet_volume_stats_inodes_used{job="kubelet", namespace=~".*", metrics_path="/metrics"} > 0
+              kubelet_volume_stats_inodes_used{
+                job="kubelet",
+                namespace=~".*",
+                metrics_path="/metrics",
+                cluster_type!="client"
+              } > 0
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
               kube_persistentvolumeclaim_access_mode{ access_mode="ReadOnlyMany"} == 1
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
@@ -2580,16 +3121,38 @@ kubernetes-storage:
                 FreeInodes: {{ $value | humanizePercentage }}
             expr: |-
               (
-                kubelet_volume_stats_inodes_free{job="kubelet", namespace=~".*", metrics_path="/metrics"}
-                  /
-                kubelet_volume_stats_inodes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+                kubelet_volume_stats_inodes_free{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
+                /
+                kubelet_volume_stats_inodes{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }
               ) < 0.15
               and
-              kubelet_volume_stats_inodes_used{job="kubelet", namespace=~".*", metrics_path="/metrics"} > 0
+              kubelet_volume_stats_inodes_used{
+                job="kubelet",
+                namespace=~".*",
+                metrics_path="/metrics",
+                cluster_type!="client"
+              } > 0
               and
-              predict_linear(kubelet_volume_stats_inodes_free{job="kubelet", namespace=~".*", metrics_path="/metrics"}[6h], 4 * 24 * 3600) < 0
+              predict_linear(
+                kubelet_volume_stats_inodes_free{
+                  job="kubelet",
+                  namespace=~".*",
+                  metrics_path="/metrics",
+                  cluster_type!="client"
+                }[6h], 4 * 24 * 3600
+              ) < 0
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
-              kube_persistentvolumeclaim_access_mode{ access_mode="ReadOnlyMany"} == 1
+              kube_persistentvolumeclaim_access_mode{access_mode="ReadOnlyMany"} == 1
               unless on (namespace,persistentvolumeclaim,cluster_full_name)
               kube_persistentvolumeclaim_labels{label_excluded_from_alerts="true"} == 1
             for: 1h
@@ -2612,8 +3175,12 @@ kubernetes-storage:
                 Cluster: {{ $labels.cluster_full_name }}
                 PersistentVolume: {{ $labels.persistentvolume }}
                 Phase: {{ $labels.phase }}
-            expr: kube_persistentvolume_status_phase{phase=~"Failed|Pending",job="kube-state-metrics"}
-              > 0
+            expr: |
+              kube_persistentvolume_status_phase{
+                phase=~"Failed|Pending",
+                job="kube-state-metrics",
+                cluster_type!="client"
+              } > 0
             for: 5m
             labels:
               severity: critical
@@ -2640,9 +3207,19 @@ kubernetes-system:
                 Cluster: {{ $labels.cluster_full_name }}
                 VersionsCount: {{ $value }}
             expr: |
-              count by (cluster_full_name) (count by (git_version,cluster_full_name)
-              (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"},"git_version","$1","git_version","(v[0-9]*.[0-9]*).*")))
-              > 1
+              count by (cluster_full_name) (
+                count by (git_version,cluster_full_name) (
+                  label_replace(
+                    kubernetes_build_info{
+                      job!~"kube-dns|coredns"
+                    },
+                    "git_version",
+                    "$1",
+                    "git_version",
+                    "(v[0-9]*.[0-9]*).*"
+                  )
+                )
+              ) > 1
             for: 15m
             labels:
               severity: warning
@@ -2665,10 +3242,24 @@ kubernetes-system:
                 Instance: {{ $labels.instance }}
                 ErrorRate: {{ $value | humanizePercentage }}
             expr: |-
-              (sum(rate(rest_client_requests_total{job="apiserver",code=~"5.."}[5m])) by (instance,job,namespace,cluster_full_name)
+              (
+                sum(
+                  rate(
+                    rest_client_requests_total{
+                      job="apiserver",
+                      code=~"5.."
+                    }[5m]
+                  )
+                ) by (instance,job,namespace,cluster_full_name)
                 /
-              sum(rate(rest_client_requests_total{job="apiserver"}[5m])) by (instance,job,namespace,cluster_full_name))
-              > 0.01
+                sum(
+                  rate(
+                    rest_client_requests_total{
+                      job="apiserver"
+                    }[5m]
+                  )
+                ) by (instance,job,namespace,cluster_full_name)
+              ) > 0.01
             for: 15m
             labels:
               severity: warning
@@ -2694,9 +3285,22 @@ kubernetes-system-apiserver:
 
                 Cluster: {{ $labels.cluster_full_name }}
             expr: |-
-              histogram_quantile(0.01, sum without (namespace, service, endpoint) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 604800
+              histogram_quantile(
+                0.01,
+                sum without (namespace, service, endpoint) (
+                  rate(
+                    apiserver_client_certificate_expiration_seconds_bucket{
+                      job="apiserver"
+                    }[5m]
+                  )
+                )
+              ) < 604800
               and
-              on (job,instance,cluster_full_name) apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0
+              on (job,instance,cluster_full_name) (
+                apiserver_client_certificate_expiration_seconds_count{
+                  job="apiserver"
+                }
+              ) > 0
             for: 5m
             labels:
               severity: warning
@@ -2716,9 +3320,22 @@ kubernetes-system-apiserver:
 
                 Cluster: {{ $labels.cluster_full_name }}
             expr: |-
-              histogram_quantile(0.01, sum without (namespace, service, endpoint) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 86400
+              histogram_quantile(
+                0.01,
+                sum without (namespace, service, endpoint) (
+                  rate(
+                    apiserver_client_certificate_expiration_seconds_bucket{
+                      job="apiserver"
+                    }[5m]
+                  )
+                )
+              ) < 86400
               and
-              on (job,instance,cluster_full_name) apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0
+              on (job,instance,cluster_full_name) (
+                apiserver_client_certificate_expiration_seconds_count{
+                  job="apiserver"
+                }
+              ) > 0
             for: 5m
             labels:
               severity: critical
@@ -2740,7 +3357,14 @@ kubernetes-system-apiserver:
                 Instance: {{ $labels.instance }}
                 APIService: {{ $labels.name }}
                 Reason: {{ $labels.reason }}
-            expr: sum by (instance,name,reason,cluster_full_name)(increase(aggregator_unavailable_apiservice_total{job="apiserver"}[1m])) > 0
+            expr: |
+              sum by (instance,name,reason,cluster_full_name)(
+                increase(
+                  aggregator_unavailable_apiservice_total{
+                    job="apiserver"
+                  }[1m]
+                )
+              ) > 0
             for: 10m
             labels:
               severity: warning
@@ -2763,7 +3387,16 @@ kubernetes-system-apiserver:
                 APIService: {{ $labels.name }}
                 Namespace: {{ $labels.namespace }}
                 Availability: {{ $value | humanize }}%
-            expr: (1 - max by (name,namespace,cluster_full_name)(avg_over_time(aggregator_unavailable_apiservice{job="apiserver"}[10m]))) * 100 < 85
+            expr: |
+              (
+                1 - max by (name,namespace,cluster_full_name) (
+                  avg_over_time(
+                    aggregator_unavailable_apiservice{
+                      job="apiserver"
+                    }[10m]
+                  )
+                )
+              ) * 100 < 85
             for: 5m
             labels:
               severity: warning
@@ -2785,9 +3418,31 @@ kubernetes-system-apiserver:
 
                 Cluster: {{ $labels.cluster_full_name }}
                 TerminatedRate: {{ $value | humanizePercentage }}
-            expr: sum by (cluster_full_name) (rate(apiserver_request_terminations_total{job="apiserver"}[10m]))
-              / ( sum by (cluster_full_name) (rate(apiserver_request_total{job="apiserver"}[10m]))
-              + sum by (cluster_full_name) (rate(apiserver_request_terminations_total{job="apiserver"}[10m]))
+            expr: |
+              sum by (cluster_full_name) (
+                rate(
+                  apiserver_request_terminations_total{
+                    job="apiserver"
+                  }[10m]
+                )
+              )
+              /
+              (
+                sum by (cluster_full_name) (
+                  rate(
+                    apiserver_request_total{
+                      job="apiserver"
+                    }[10m]
+                  )
+                )
+                +
+                sum by (cluster_full_name) (
+                  rate(
+                    apiserver_request_terminations_total{
+                      job="apiserver"
+                    }[10m]
+                  )
+                )
               ) > 0.20
             for: 5m
             labels:
@@ -3153,11 +3808,32 @@ node-exporter:
                 Available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 15
-              and
-                predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""}[6h], 24*60*60) < 0
-              and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_avail_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                }
+                /
+                node_filesystem_size_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } * 100 < 15
+                and
+                predict_linear(
+                  node_filesystem_avail_bytes{
+                    job="prometheus-node-exporter",
+                    fstype!="",
+                    mountpoint!=""
+                  }[6h]
+                  , 24*60*60
+                ) < 0
+                and
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } == 0
               )
             for: 1h
             labels:
@@ -3184,11 +3860,34 @@ node-exporter:
                 Available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 10
+                node_filesystem_avail_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                }
+                /
+                node_filesystem_size_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } * 100 < 10
               and
-                predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""}[6h], 4*60*60) < 0
+                predict_linear(
+                  node_filesystem_avail_bytes{
+                    job="prometheus-node-exporter",
+                    fstype!="",
+                    mountpoint!="",
+                  cluster_type!="client"
+                    }[6h], 4*60*60) < 0
               and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } == 0
               )
             for: 1h
             labels:
@@ -3215,9 +3914,23 @@ node-exporter:
                 Available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 5
-              and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_avail_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                }
+                /
+                node_filesystem_size_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } * 100 < 5
+                and
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } == 0
               )
             for: 30m
             labels:
@@ -3244,9 +3957,26 @@ node-exporter:
                 Available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_avail_bytes{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 3
+                node_filesystem_avail_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                }
+                /
+                node_filesystem_size_bytes{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } * 100 < 3
               and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } == 0
               )
             for: 30m
             labels:
@@ -3273,11 +4003,21 @@ node-exporter:
                 Inodes available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_files{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 40
+                node_filesystem_files_free{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                }
+                /
+                node_filesystem_files{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } * 100 < 40
+                and
+                predict_linear(node_filesystem_files_free{job="prometheus-node-exporter",fstype!="",mountpoint!=""}[6h], 24*60*60) < 0
               and
-                predict_linear(node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""}[6h], 24*60*60) < 0
-              and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_readonly{job="prometheus-node-exporter",fstype!="",mountpoint!=""} == 0
               )
             for: 1h
             labels:
@@ -3304,11 +4044,35 @@ node-exporter:
                 Inodes available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_files{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 20
+                node_filesystem_files_free{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                }
+                /
+                node_filesystem_files{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } * 100 < 20
               and
-                predict_linear(node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""}[6h], 4*60*60) < 0
+                predict_linear(
+                  node_filesystem_files_free{
+                    job="prometheus-node-exporter",
+                    fstype!="",
+                    mountpoint!="",
+                    cluster_type!="client"
+                  }[6h], 4*60*60
+                ) < 0
               and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } == 0
               )
             for: 1h
             labels:
@@ -3335,9 +4099,23 @@ node-exporter:
                 Inodes available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_files{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 5
-              and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_files_free{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                }
+                /
+                node_filesystem_files{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } * 100 < 5
+                and
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!=""
+                } == 0
               )
             for: 1h
             labels:
@@ -3364,9 +4142,26 @@ node-exporter:
                 Inodes available: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filesystem_files_free{job="node-exporter",fstype!="",mountpoint!=""} / node_filesystem_files{job="node-exporter",fstype!="",mountpoint!=""} * 100 < 3
+                node_filesystem_files_free{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                }
+                /
+                node_filesystem_files{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } * 100 < 3
               and
-                node_filesystem_readonly{job="node-exporter",fstype!="",mountpoint!=""} == 0
+                node_filesystem_readonly{
+                  job="prometheus-node-exporter",
+                  fstype!="",
+                  mountpoint!="",
+                  cluster_type!="client"
+                } == 0
               )
             for: 1h
             labels:
@@ -3390,7 +4185,18 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 Interface: {{ $labels.device }}
                 Receive errors: {{ printf "%.0f" $value }}
-            expr: rate(node_network_receive_errs_total{job="node-exporter"}[2m]) / rate(node_network_receive_packets_total{job="node-exporter"}[2m]) > 0.01
+            expr: |
+              rate(
+                node_network_receive_errs_total{
+                  job="prometheus-node-exporter"
+                }[2m]
+              )
+              /
+              rate(
+                node_network_receive_packets_total{
+                  job="prometheus-node-exporter"
+                }[2m]
+              ) > 0.01
             for: 1h
             labels:
               severity: warning
@@ -3413,7 +4219,18 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 Interface: {{ $labels.device }}
                 Transmit errors: {{ printf "%.0f" $value }}
-            expr: rate(node_network_transmit_errs_total{job="node-exporter"}[2m]) / rate(node_network_transmit_packets_total{job="node-exporter"}[2m]) > 0.01
+            expr: |
+              rate(
+                node_network_transmit_errs_total{
+                  job="prometheus-node-exporter"
+                }[2m]
+              )
+              /
+              rate(
+                node_network_transmit_packets_total{
+                  job="prometheus-node-exporter"
+                }[2m]
+              ) > 0.01
             for: 1h
             labels:
               severity: warning
@@ -3434,7 +4251,14 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Conntrack used: {{ $value | humanizePercentage }}
-            expr: (node_nf_conntrack_entries{job="node-exporter"} / node_nf_conntrack_entries_limit) > 0.75
+            expr: |
+              (
+                node_nf_conntrack_entries{
+                  job="prometheus-node-exporter"
+                }
+                /
+                node_nf_conntrack_entries_limit
+              ) > 0.75
             labels:
               severity: warning
 
@@ -3453,7 +4277,10 @@ node-exporter:
 
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
-            expr: node_textfile_scrape_error{job="node-exporter"} == 1
+            expr: |
+              node_textfile_scrape_error{
+                job="prometheus-node-exporter"
+              } == 1
             labels:
               severity: warning
 
@@ -3475,15 +4302,27 @@ node-exporter:
                 Offset: {{ $value }}s
             expr: |-
               (
-                node_timex_offset_seconds{job="node-exporter"} > 0.05
-              and
-                deriv(node_timex_offset_seconds{job="node-exporter"}[5m]) >= 0
+                node_timex_offset_seconds{
+                  job="prometheus-node-exporter"
+                } > 0.05
+                and
+                deriv(
+                  node_timex_offset_seconds{
+                    job="prometheus-node-exporter"
+                  }[5m]
+                ) >= 0
               )
               or
               (
-                node_timex_offset_seconds{job="node-exporter"} < -0.05
-              and
-                deriv(node_timex_offset_seconds{job="node-exporter"}[5m]) <= 0
+                node_timex_offset_seconds{
+                  job="prometheus-node-exporter"
+                } < -0.05
+                and
+                deriv(
+                  node_timex_offset_seconds{
+                    job="prometheus-node-exporter"
+                  }[5m]
+                ) <= 0
               )
             for: 10m
             labels:
@@ -3505,9 +4344,15 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
             expr: |-
-              min_over_time(node_timex_sync_status{job="node-exporter"}[5m]) == 0
+              min_over_time(
+                node_timex_sync_status{
+                  job="prometheus-node-exporter"
+                }[5m]
+              ) == 0
               and
-              node_timex_maxerror_seconds{job="node-exporter"} >= 16
+              node_timex_maxerror_seconds{
+                job="prometheus-node-exporter"
+              } >= 16
             for: 10m
             labels:
               severity: warning
@@ -3530,9 +4375,18 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 RAID device: {{ $labels.device }}
             expr: |
-              node_md_disks_required{job="node-exporter",device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"}
-              - ignoring (state) (node_md_disks{state="active",job="node-exporter",device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"})
-              > 0
+              node_md_disks_required{
+                job="prometheus-node-exporter",
+                device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+              }
+              -
+              ignoring (state) (
+                node_md_disks{
+                  state="active",
+                  job="prometheus-node-exporter",
+                  device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+                }
+              ) > 0
             for: 15m
             labels:
               severity: critical
@@ -3554,7 +4408,12 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 RAID device: {{ $labels.device }}
-            expr: node_md_disks{state="failed",job="node-exporter",device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"} > 0
+            expr: |
+              node_md_disks{
+                state="failed",
+                job="prometheus-node-exporter",
+                device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+              } > 0
             labels:
               severity: warning
 
@@ -3576,7 +4435,13 @@ node-exporter:
                 FD usage: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filefd_allocated{job="node-exporter"} * 100 / node_filefd_maximum{job="node-exporter"} > 70
+                node_filefd_allocated{
+                  job="prometheus-node-exporter"
+                } * 100
+                /
+                node_filefd_maximum{
+                  job="prometheus-node-exporter"
+                } > 70
               )
             for: 15m
             labels:
@@ -3600,7 +4465,15 @@ node-exporter:
                 FD usage: {{ printf "%.2f" $value }}%
             expr: |-
               (
-                node_filefd_allocated{job="node-exporter"} * 100 / node_filefd_maximum{job="node-exporter"} > 90
+                node_filefd_allocated{
+                  job="prometheus-node-exporter",
+                  cluster_type!="client"
+                } * 100
+                /
+                node_filefd_maximum{
+                  job="prometheus-node-exporter",
+                  cluster_type!="client"
+                } > 90
               )
             for: 15m
             labels:
@@ -3622,8 +4495,16 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 CPU usage: {{ printf "%.2f" $value }}%
             expr: |
-              sum without(mode) (avg without (cpu) (rate(node_cpu_seconds_total{job="node-exporter",
-              mode!~"idle|iowait"}[2m]))) * 100 > 90
+              sum without(mode) (
+                avg without (cpu) (
+                  rate(
+                    node_cpu_seconds_total{
+                      job="prometheus-node-exporter",
+                      mode!~"idle|iowait"
+                    }[2m]
+                  )
+                )
+              ) * 100 > 90
             for: 15m
             labels:
               severity: warning
@@ -3645,8 +4526,16 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 Load per core: {{ printf "%.2f" $value }}
             expr: |-
-              node_load1{job="node-exporter"}
-              / count without (cpu, mode) (node_cpu_seconds_total{job="node-exporter", mode="idle"}) > 2
+              node_load1{
+                job="prometheus-node-exporter"
+              }
+              /
+              count without (cpu, mode) (
+                node_cpu_seconds_total{
+                  job="prometheus-node-exporter",
+                  mode="idle"
+                }
+              ) > 2
             for: 15m
             labels:
               severity: warning
@@ -3667,7 +4556,12 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Major page faults rate: {{ printf "%.2f" $value }}
-            expr: rate(node_vmstat_pgmajfault{job="node-exporter"}[5m]) > 500
+            expr: |
+              rate(
+                node_vmstat_pgmajfault{
+                  job="prometheus-node-exporter"
+                }[5m]
+              ) > 500
             for: 15m
             labels:
               severity: warning
@@ -3689,7 +4583,15 @@ node-exporter:
                 Instance: {{ $labels.instance }}
                 Memory utilization: {{ printf "%.2f" $value }}%
             expr: |
-              100 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"} * 100) > 90
+              100 - (
+                node_memory_MemAvailable_bytes{
+                  job="prometheus-node-exporter"
+                }
+                /
+                node_memory_MemTotal_bytes{
+                  job="prometheus-node-exporter"
+                } * 100
+              ) > 90
             for: 15m
             labels:
               severity: warning
@@ -3700,7 +4602,8 @@ node-exporter:
             alert: NodeDiskIOSaturation
             annotations:
               description: |
-                Disk IO queue (aqu-sq) is high on {{ $labels.device }} at {{ $labels.instance }}, has been above 10 for the last 30 minutes, is currently at {{ printf "%.2f" $value }}.
+                Disk IO queue (aqu-sq) is high on {{ $labels.device }} at {{ $labels.instance }},
+                has been above 10 for the last 30 minutes, is currently at {{ printf "%.2f" $value }}.
                 This symptom might indicate disk saturation.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodediskiosaturation
               summary: Disk IO queue is high.
@@ -3712,7 +4615,12 @@ node-exporter:
                 Device: {{ $labels.device }}
                 aqu-sq: {{ printf "%.2f" $value }}
             expr: |
-              rate(node_disk_io_time_weighted_seconds_total{job="node-exporter", device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"}[5m]) > 10
+              rate(
+                node_disk_io_time_weighted_seconds_total{
+                  job="prometheus-node-exporter",
+                  device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+                }[5m]
+              ) > 10
             for: 30m
             labels:
               severity: warning
@@ -3733,7 +4641,11 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Service: {{ $labels.name }}
-            expr: node_systemd_unit_state{job="node-exporter", state="failed"} == 1
+            expr: |
+              node_systemd_unit_state{
+                job="prometheus-node-exporter",
+                state="failed"
+              } == 1
             for: 5m
             labels:
               severity: warning
@@ -3755,7 +4667,12 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Service: {{ $labels.name }}
-            expr: increase(node_systemd_service_restart_total{job="node-exporter"}[5m]) > 2
+            expr: |
+              increase(
+                node_systemd_service_restart_total{
+                  job="prometheus-node-exporter"
+                }[5m]
+              ) > 2
             for: 15m
             labels:
               severity: warning
@@ -3776,7 +4693,12 @@ node-exporter:
                 Cluster: {{ $labels.cluster_full_name }}
                 Instance: {{ $labels.instance }}
                 Bond master: {{ $labels.master }}
-            expr: (node_bonding_slaves - node_bonding_active) != 0
+            expr: |
+              (
+                node_bonding_slaves
+                -
+                node_bonding_active
+              ) != 0
             for: 5m
             labels:
               severity: warning
@@ -3793,7 +4715,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               count without (cpu, mode) (
-                node_cpu_seconds_total{job="node-exporter",mode="idle"}
+                node_cpu_seconds_total{job="prometheus-node-exporter",mode="idle"}
               )
             labels: {}
             record: instance:node_num_cpu:sum
@@ -3803,7 +4725,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               1 - avg without (cpu) (
-                sum without (mode) (rate(node_cpu_seconds_total{job="node-exporter", mode=~"idle|iowait|steal"}[5m]))
+                sum without (mode) (rate(node_cpu_seconds_total{job="prometheus-node-exporter", mode=~"idle|iowait|steal"}[5m]))
               )
             labels: {}
             record: instance:node_cpu_utilisation:rate5m
@@ -3813,9 +4735,9 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               (
-                node_load1{job="node-exporter"}
+                node_load1{job="prometheus-node-exporter"}
               /
-                instance:node_num_cpu:sum{job="node-exporter"}
+                instance:node_num_cpu:sum{job="prometheus-node-exporter"}
               )
             labels: {}
             record: instance:node_load1_per_cpu:ratio
@@ -3826,20 +4748,20 @@ node-exporter-rules:
             expr: |-
               1 - (
                 (
-                  node_memory_MemAvailable_bytes{job="node-exporter"}
+                  node_memory_MemAvailable_bytes{job="prometheus-node-exporter"}
                   or
                   (
-                    node_memory_Buffers_bytes{job="node-exporter"}
+                    node_memory_Buffers_bytes{job="prometheus-node-exporter"}
                     +
-                    node_memory_Cached_bytes{job="node-exporter"}
+                    node_memory_Cached_bytes{job="prometheus-node-exporter"}
                     +
-                    node_memory_MemFree_bytes{job="node-exporter"}
+                    node_memory_MemFree_bytes{job="prometheus-node-exporter"}
                     +
-                    node_memory_Slab_bytes{job="node-exporter"}
+                    node_memory_Slab_bytes{job="prometheus-node-exporter"}
                   )
                 )
               /
-                node_memory_MemTotal_bytes{job="node-exporter"}
+                node_memory_MemTotal_bytes{job="prometheus-node-exporter"}
               )
             labels: {}
             record: instance:node_memory_utilisation:ratio
@@ -3847,21 +4769,33 @@ node-exporter-rules:
           enabled: false
           spec:
             annotations: {}
-            expr: rate(node_vmstat_pgmajfault{job="node-exporter"}[5m])
+            expr: rate(node_vmstat_pgmajfault{job="prometheus-node-exporter"}[5m])
             labels: {}
             record: instance:node_vmstat_pgmajfault:rate5m
         "instance_device:node_disk_io_time_seconds:rate5m":
           enabled: false
           spec:
             annotations: {}
-            expr: rate(node_disk_io_time_seconds_total{job="node-exporter", device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"}[5m])
+            expr: |
+              rate(
+                node_disk_io_time_seconds_total{
+                  job="prometheus-node-exporter",
+                  device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+                }[5m]
+              )
             labels: {}
             record: instance_device:node_disk_io_time_seconds:rate5m
         "instance_device:node_disk_io_time_weighted_seconds:rate5m":
           enabled: false
           spec:
             annotations: {}
-            expr: rate(node_disk_io_time_weighted_seconds_total{job="node-exporter", device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"}[5m])
+            expr: |
+              rate(
+                node_disk_io_time_weighted_seconds_total{
+                  job="prometheus-node-exporter",
+                  device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"
+                }[5m]
+              )
             labels: {}
             record: instance_device:node_disk_io_time_weighted_seconds:rate5m
         "instance:node_network_receive_bytes_excluding_lo:rate5m":
@@ -3870,7 +4804,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               sum without (device) (
-                rate(node_network_receive_bytes_total{job="node-exporter", device!="lo"}[5m])
+                rate(node_network_receive_bytes_total{job="prometheus-node-exporter", device!="lo"}[5m])
               )
             labels: {}
             record: instance:node_network_receive_bytes_excluding_lo:rate5m
@@ -3880,7 +4814,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               sum without (device) (
-                rate(node_network_transmit_bytes_total{job="node-exporter", device!="lo"}[5m])
+                rate(node_network_transmit_bytes_total{job="prometheus-node-exporter", device!="lo"}[5m])
               )
             labels: {}
             record: instance:node_network_transmit_bytes_excluding_lo:rate5m
@@ -3890,7 +4824,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               sum without (device) (
-                rate(node_network_receive_drop_total{job="node-exporter", device!="lo"}[5m])
+                rate(node_network_receive_drop_total{job="prometheus-node-exporter", device!="lo"}[5m])
               )
             labels: {}
             record: instance:node_network_receive_drop_excluding_lo:rate5m
@@ -3900,7 +4834,7 @@ node-exporter-rules:
             annotations: {}
             expr: |-
               sum without (device) (
-                rate(node_network_transmit_drop_total{job="node-exporter", device!="lo"}[5m])
+                rate(node_network_transmit_drop_total{job="prometheus-node-exporter", device!="lo"}[5m])
               )
             labels: {}
             record: instance:node_network_transmit_drop_excluding_lo:rate5m
@@ -3928,7 +4862,13 @@ node-network:
                 Namespace: {{ $labels.namespace }}
                 Pod: {{ $labels.pod }}
                 Interface: {{ $labels.device }}
-            expr: changes(node_network_up{job="node-exporter",device!~"veth.+"}[2m]) > 2
+            expr: |
+              changes(
+                node_network_up{
+                  job="prometheus-node-exporter",
+                  device!~"veth.+"
+                }[2m]
+              ) > 2
             for: 2m
             labels:
               severity: warning
@@ -3957,7 +4897,7 @@ node-rules:
             annotations: {}
             expr: |-
               count by (node,cluster_full_name) (
-                node_cpu_seconds_total{mode="idle",job="node-exporter"}
+                node_cpu_seconds_total{mode="idle",job="prometheus-node-exporter"}
                 * on (namespace,pod,cluster_full_name) group_left(node)
                 topk by (namespace,pod,cluster_full_name) (1, node_namespace_pod:kube_pod_info:)
               )
@@ -3970,12 +4910,12 @@ node-rules:
             annotations: {}
             expr: |-
               sum(
-                node_memory_MemAvailable_bytes{job="node-exporter"} or
+                node_memory_MemAvailable_bytes{job="prometheus-node-exporter"} or
                 (
-                  node_memory_Buffers_bytes{job="node-exporter"} +
-                  node_memory_Cached_bytes{job="node-exporter"} +
-                  node_memory_MemFree_bytes{job="node-exporter"} +
-                  node_memory_Slab_bytes{job="node-exporter"}
+                  node_memory_Buffers_bytes{job="prometheus-node-exporter"} +
+                  node_memory_Cached_bytes{job="prometheus-node-exporter"} +
+                  node_memory_MemFree_bytes{job="prometheus-node-exporter"} +
+                  node_memory_Slab_bytes{job="prometheus-node-exporter"}
                 )
               ) by (cluster_full_name)
             labels: {}
@@ -3988,7 +4928,7 @@ node-rules:
             expr: |-
               avg by (node,cluster_full_name) (
                 sum without (mode) (
-                  rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal",job="node-exporter"}[5m])
+                  rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal",job="prometheus-node-exporter"}[5m])
                 )
               )
             labels: {}
@@ -4029,7 +4969,9 @@ vm-health:
                 Instance: {{ $labels.instance }}
             expr: |
               changes(
-                process_start_time_seconds{job=~".*(victoriametrics|vmselect|vminsert|vmstorage|vmagent|vmalert|vmsingle|vmalertmanager|vmauth|victorialogs|vlstorage|vlselect|vlinsert).*"}[15m]
+                process_start_time_seconds{
+                  job=~".*(victoriametrics|vmselect|vminsert|vmstorage|vmagent|vmalert|vmsingle|vmalertmanager|vmauth|victorialogs|vlstorage|vlselect|vlinsert).*"
+                }[15m]
               ) > 2
             labels:
               severity: critical
@@ -4050,7 +4992,9 @@ vm-health:
                 Job: {{ $labels.job }}
                 Instance: {{ $labels.instance }}
             expr: |
-              up{job=~".*(victoriametrics|vmselect|vminsert|vmstorage|vmagent|vmalert|vmsingle|vmalertmanager|vmauth|victorialogs|vlstorage|vlselect|vlinsert).*"} == 0
+              up{
+                job=~".*(victoriametrics|vmselect|vminsert|vmstorage|vmagent|vmalert|vmsingle|vmalertmanager|vmauth|victorialogs|vlstorage|vlselect|vlinsert).*"
+              } == 0
             for: 2m
             labels:
               severity: critical
@@ -4346,8 +5290,13 @@ vmagent:
                 Cluster: {{ $labels.cluster_full_name }}
                 Job: {{ $labels.job }}
                 Scrape pool: {{ $labels.scrape_job }}
-            expr: sum(vm_promscrape_scrape_pool_targets) without (status, instance, pod)
-              == 0
+            expr: |
+              # TODO: Добавить условие, что у кластера есть хотяб одна нода
+              sum(
+                vm_promscrape_scrape_pool_targets{
+                  scrape_job!~"scrapeConfig/beget-vmagent/(client-cluster-kubelet-cadvisor|client-cluster-kubelet-resource)"
+                }
+              ) without (status, instance, pod) == 0
             for: 30m
             labels:
               severity: warning

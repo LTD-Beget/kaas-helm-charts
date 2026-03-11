@@ -90,7 +90,7 @@ spec:
               type: ca
               secretName: "{{ .Variables.certificatesCaName }}"
             etcdCA:
-              enabled: false
+              enabled: true
               type: ca
               secretName: "{{ .Variables.certificatesEtcdName }}"
           volumes:

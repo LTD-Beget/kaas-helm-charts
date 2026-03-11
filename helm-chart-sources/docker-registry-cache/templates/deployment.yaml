@@ -132,7 +132,7 @@ spec:
             {{- end }}
         {{- if and $metrics.enabled $metrics.secureEndpoint (or $tls (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret")) }}
         - name: rbac-proxy
-          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+          image: quay.io/brancz/kube-rbac-proxy:v0.21.0
           args:
             - --secure-listen-address=0.0.0.0:{{ $metrics.port }}
             - --upstream=http://127.0.0.1:21001

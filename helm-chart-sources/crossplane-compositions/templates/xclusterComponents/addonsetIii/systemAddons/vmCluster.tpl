@@ -17,10 +17,10 @@ vmCluster:
           retentionPeriod: "1"
           replicationFactor: 2
           vmstorage:
-            replicaCount: 3
+            replicaCount: 5
             containers:
               - name: rbac-proxy
-                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                image: quay.io/brancz/kube-rbac-proxy:v0.21.0
                 args:
                   - --secure-listen-address=0.0.0.0:11043
                   - --upstream=http://127.0.0.1:8482
@@ -125,7 +125,7 @@ vmCluster:
             replicaCount: 3
             containers:
               - name: rbac-proxy
-                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                image: quay.io/brancz/kube-rbac-proxy:v0.21.0
                 args:
                   - --secure-listen-address=0.0.0.0:11043
                   - --upstream=https://127.0.0.1:8481
@@ -241,7 +241,7 @@ vmCluster:
             replicaCount: 3
             containers:
               - name: rbac-proxy
-                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.14.4
+                image: quay.io/brancz/kube-rbac-proxy:v0.21.0
                 args:
                   - --secure-listen-address=0.0.0.0:11043
                   - --upstream=https://127.0.0.1:8480
