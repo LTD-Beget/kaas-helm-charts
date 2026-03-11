@@ -33,7 +33,7 @@ spec:
           externalLabels:
             in-cloud-metrics: "infra"
           extraArgs:
-            external.url: "https://{{ .Variables.systemIstioGwVip }}"
+            external.url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget"
           extraEnvs:
             - name: GOMAXPROCS
               value: "4"

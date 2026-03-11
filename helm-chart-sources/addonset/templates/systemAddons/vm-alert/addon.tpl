@@ -11,10 +11,30 @@ spec:
   version: "0.52.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert"
-  variables:
-    systemIstioGwVip: ""
-  valuesSources: []
+  variables: {}
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.customer
+          jsonPath: .data.customer
   initDependencies:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
     - name: vm-cluster
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status

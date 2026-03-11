@@ -15,6 +15,16 @@ spec:
     cluster_name: in-cluster
   valuesSources: []
   initDependencies:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
     - name: vm-cluster
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status

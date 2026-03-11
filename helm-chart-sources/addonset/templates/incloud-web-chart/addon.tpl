@@ -25,8 +25,10 @@ spec:
           jsonPath: .data.clusterName
         - as: incloudUICookieSecret
           jsonPath: .data.incloudUICookieSecret
-        - as: system.istioGwVip
-          jsonPath: .data.systemIstioGwVip
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.customer
+          jsonPath: .data.customer
   initDependencies:
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane

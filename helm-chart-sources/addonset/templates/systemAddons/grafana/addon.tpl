@@ -14,9 +14,29 @@ spec:
   variables:
     oidcClientID: ""
     oidcClientSecret: ""
-    systemIstioGwVip: ""
-  valuesSources: []
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-client
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.customer
+          jsonPath: .data.customer
   initDependencies:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
     - name: grafana-operator
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status

@@ -72,7 +72,7 @@ vmAlert:
           externalLabels:
             in-cloud-metrics: "infra"
           extraArgs:
-            external.url: "https://{{ $systemIstioGwVip }}"
+            external.url: "{{ $internalClusterEndpoint }}"
           podMetadata:
             labels:
               in-cloud-metrics: "infra"

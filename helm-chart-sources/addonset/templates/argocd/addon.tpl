@@ -25,8 +25,10 @@ spec:
           jsonPath: .data.argocdServerAdminPassword
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
-        - as: istioGwVip
-          jsonPath: .data.systemIstioGwVip
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.customer
+          jsonPath: .data.customer
   initDependencies:
     - name: cilium
       criteria:

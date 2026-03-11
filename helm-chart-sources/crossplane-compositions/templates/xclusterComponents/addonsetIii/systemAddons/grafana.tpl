@@ -40,9 +40,9 @@ grafana:
               contains(email, 'admin@beget.ru') && 'Admin' || 'Viewer'
             role_attribute_strict: 'true'
             tls_skip_verify_insecure: "true"
-            auth_url: {{ printf "https://%%s/auth" $systemIstioGwVip }}
-            token_url: {{ printf "https://%%s/token" $systemIstioGwVip }}
-            api_url: {{ printf "https://%%s/userinfo" $systemIstioGwVip }}
+            auth_url: {{ printf "https://%%s/auth" $internalClusterEndpoint }}
+            token_url: {{ printf "https://%%s/token" $internalClusterEndpoint }}
+            api_url: {{ printf "https://%%s/userinfo" $internalClusterEndpoint }}
         deployment:
           spec:
             template:

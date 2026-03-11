@@ -419,7 +419,7 @@ spec:
           url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
           oidc.config: |
             name: Dex
-            issuer: {{ printf "https://%%s" .Values.istioGwVip }}
+            issuer: {{ printf "https://%%s-%%s.k8s.beget" .Values.cluster.customer .Values.cluster.name }}
             clientID: argocd
             clientSecret: argo-cd-super-secret
             requestedScopes: ["openid","profile","email","groups"]
@@ -617,7 +617,7 @@ spec:
     argo-cd:
       configs:
         cm:
-          url: {{ printf "https://%%s/argocd" .Values.istioGwVip }}
+          url: {{ printf "https://%%s-%%s.k8s.beget/argocd" .Values.cluster.customer .Values.cluster.name }}
       repoServer:
         envFrom:
           - secretRef:

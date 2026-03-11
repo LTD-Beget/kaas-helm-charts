@@ -465,9 +465,6 @@ spec:
             - "vminsert"
             - "vminsert.beget-vmcluster"
             - "vminsert.beget-vmcluster.svc"
-          ipAddresses:
-            - 127.0.0.1
-            - {{ .Variables.systemIstioGwVip }}
       vmSelect:
         enabled: true
         issuer:

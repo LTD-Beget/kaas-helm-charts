@@ -78,6 +78,7 @@ spec:
 
 {{- $infraClusterEndpoint := printf "https://%%s:%%v" $clusterHost $clusterPort }}
 {{- $clientClusterEndpoint := printf "https://%%s:2%%v" $clusterHost $clusterPort }}
+{{- $internalClusterEndpoint := printf "https://%%s-%%s.k8s.beget" $systemNamespace $clusterName }}
 
 ---
 apiVersion: kubernetes.crossplane.io/v1alpha2
