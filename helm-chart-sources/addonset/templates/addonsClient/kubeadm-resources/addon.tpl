@@ -39,9 +39,9 @@ spec:
         - as: cluster.name
           jsonPath: .data.clusterName
         - as: cluster.domain
-          jsonPath: .data.clusterDomain
+          jsonPath: .data.clientClusterDomain
         - as: cluster.version
-          jsonPath: .data.clusterVersion
+          jsonPath: .data.clientVersion
     - name: clientca
       sourceRef:
         apiVersion: v1
