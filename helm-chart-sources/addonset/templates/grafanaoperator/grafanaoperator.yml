@@ -3,7 +3,7 @@
 
   {{- include "grafanaoperator.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/grafanaoperator/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/grafanaoperator/values.yml" | nindent 0 }}
 
   {{- include "grafanaoperator.phase" . }}
 {{- end }}

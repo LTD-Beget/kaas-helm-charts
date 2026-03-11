@@ -3,7 +3,7 @@
 
   {{- include "vmalertrules.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/vm-alertrules/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/vm-alertrules/values.yml" | nindent 0 }}
 
   {{- include "vmalertrules.phase" . }}
 {{- end }}

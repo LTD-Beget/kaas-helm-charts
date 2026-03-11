@@ -3,7 +3,7 @@
 
   {{- include "clientvmscrapeconfig.addon" . }}
 
-  {{- .Files.Get "files/addonsMonitoring/clientvmscrapeconfig/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/clientvmscrapeconfig/values.yml" | nindent 0 }}
 
   {{- include "clientvmscrapeconfig.phase" . }}
 {{- end }}

@@ -3,7 +3,7 @@
 
   {{- include "clickhouseinserter.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/clickhouseinserter/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/clickhouseinserter/values.yml" | nindent 0 }}
 
   {{- include "clickhouseinserter.phase" . }}
 {{- end }}

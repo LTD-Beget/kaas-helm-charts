@@ -3,7 +3,7 @@
 
   {{- include "clientkubestatemetrics.addon" . }}
 
-  {{- .Files.Get "files/addonsMonitoring/clientkubestatemetrics/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/clientkubestatemetrics/values.yml" | nindent 0 }}
 
   {{- include "clientkubestatemetrics.phase" . }}
 {{- end }}

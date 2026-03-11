@@ -3,7 +3,7 @@
 
   {{- include "grafanadashboards.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/grafanadashboards/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/grafanadashboards/values.yml" | nindent 0 }}
 
   {{- include "grafanadashboards.phase" . }}
 {{- end }}

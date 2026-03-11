@@ -3,7 +3,7 @@
 
   {{- include "grafana.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/grafana/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/grafana/values.yml" | nindent 0 }}
 
   {{- include "grafana.phase" . }}
 {{- end }}

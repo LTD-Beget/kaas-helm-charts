@@ -3,7 +3,7 @@
 
   {{- include "vmcluster.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/vmcluster/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/vmcluster/values.yml" | nindent 0 }}
 
   {{- include "vmcluster.phase" . }}
 {{- end }}

@@ -3,7 +3,7 @@
 
   {{- include "vmalertmanager.addon" . }}
 
-  {{- .Files.Get "files/systemAddons/vmalertmanager/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/vmalertmanager/values.yml" | nindent 0 }}
 
   {{- include "vmalertmanager.phase" . }}
 {{- end }}
