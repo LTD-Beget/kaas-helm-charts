@@ -57,7 +57,7 @@ spec:
       k8sServicePort: "{{ .Values.cluster.port }}"
       ipam:
         operator:
-          clusterPoolIPv4MaskSize: "{{ .Values.podCidrMaskSize }}"
+          clusterPoolIPv4MaskSize: {{ .Values.podCidrMaskSize }}
           clusterPoolIPv4PodCIDRList: [ "{{ .Values.podCidr }}" ]
 
 ---
