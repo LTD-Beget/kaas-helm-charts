@@ -5787,10 +5787,7 @@ vmcluster:
               severity: warning
               show_at: dashboard
 
-
-
-
-argocdApps:
+argocd:
   enabled: false
   groups:
     argocdApps:
@@ -5880,33 +5877,6 @@ argocdApps:
             labels:
               severity: warning
 
-
-
-
-        ArgoCdNotificationDeliveryFailed:
-          enabled: false
-          spec:
-            alert: ArgoCdNotificationDeliveryFailed
-            annotations:
-              summary: "ArgoCD Notification Delivery Failed."
-              description: |
-                The notification job {{ $labels.job }} has failed to deliver to
-                {{ $labels.exported_service }} for the past 10m.
-            expr: |
-              sum(
-                round(
-                  increase(
-                    argocd_notifications_deliveries_total{
-                      succeeded!="true",
-                      dest_namespace=~"beget.*"
-                    }[10m]
-                  )
-                )
-              ) by (cluster_full_name, job, exported_service, succeeded) > 0
-            for: 1m
-            labels:
-              severity: warning
-
         ArgoCdAppControllerHighReconciliationDuration:
           enabled: false
           spec:
@@ -5922,9 +5892,7 @@ argocdApps:
                 0.95,
                 sum(
                   rate(
-                    argocd_app_reconcile_bucket{
-                      dest_namespace=~"beget.*"
-                    }[10m]
+                    argocd_app_reconcile_bucket{}[10m]
                   )
                 ) by (cluster_full_name, namespace, le)
               ) > 60
@@ -5932,6 +5900,9 @@ argocdApps:
             labels:
               severity: warning
 
+    argocd:
+      enabled: false
+      rules:
         ArgoCdRepoServerPendingRequests:
           enabled: false
           spec:
@@ -5943,9 +5914,7 @@ argocdApps:
                 requests for the past 5m. The repo server may be overloaded and need scaling.
             expr: |
               sum(
-                argocd_repo_pending_request_total{
-                  dest_namespace=~"beget.*"
-                }
+                argocd_repo_pending_request_total{}
               ) by (cluster_full_name, namespace) > 50
             for: 5m
             labels:
@@ -5966,9 +5935,7 @@ argocdApps:
                 0.95,
                 sum(
                   rate(
-                    argocd_git_request_duration_seconds_bucket{
-                      dest_namespace=~"beget.*"
-                    }[10m]
+                    argocd_git_request_duration_seconds_bucket{}[10m]
                   )
                 ) by (cluster_full_name, namespace, le)
               ) > 30
@@ -5986,7 +5953,7 @@ argocdApps:
                 ArgoCD in {{ $labels.namespace }} cannot connect to cluster {{ $labels.server }}
                 for the past 5m. Check cluster credentials and network connectivity.
             expr: |
-              argocd_cluster_connection_status{job=~".*"} < 1
+              argocd_cluster_connection_status{} < 1
             for: 5m
             labels:
               severity: warning
@@ -6005,7 +5972,7 @@ argocdApps:
               sum(
                 round(
                   increase(
-                    argocd_git_fetch_fail_total{job=~".*"}[5m]
+                    argocd_git_fetch_fail_total{}[5m]
                   )
                 )
               ) by (cluster_full_name, namespace, repo) > 0
