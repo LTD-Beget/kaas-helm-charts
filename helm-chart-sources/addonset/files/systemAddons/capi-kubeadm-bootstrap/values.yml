@@ -44,7 +44,7 @@ metadata:
     addons.in-cloud.io/addon: capi-kubeadm-bootstrap
 spec:
   values: |
-    fullnameOverride: "capi-kcp"
+    fullnameOverride: "capi-kubeadm-bootstrap"
     certificates:
       useExternalIssuer: true
       externalIssuer:
