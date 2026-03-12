@@ -1,5 +1,7 @@
-
-{{- $defaultRules := .Files.Get "files/alerts.default.yaml"  | fromYaml -}}
+{{- $defaultRules := dict -}}
+{{- range $path, $_ := .Files.Glob "files/defaults/*.yaml" }}
+  {{- $defaultRules = merge $defaultRules (($.Files.Get $path) | fromYaml) -}}
+{{- end -}}
 {{- $vmrules := (mergeOverwrite (deepCopy $defaultRules) $.Values.vmrules) -}}
 {{- range $VMRuleName, $VMRule := $vmrules }}
 {{- if $VMRule.enabled }}
