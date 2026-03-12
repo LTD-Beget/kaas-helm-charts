@@ -20,7 +20,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
