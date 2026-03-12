@@ -608,3 +608,31 @@ vmrules:
             enabled: true
           VminsertVmstorageConnectionIsSaturated:
             enabled: true
+
+argocd:
+  enabled: true
+  groups:
+    argocdApps:
+      enabled: true
+      rules:
+        ArgoCdAppSyncFailed:
+          enabled: true
+        ArgoCdAppUnhealthy:
+          enabled: true
+        ArgoCdAppOutOfSync:
+          enabled: true
+        ArgoCdAppAutoSyncDisabled:
+          enabled: true
+        ArgoCdAppControllerHighReconciliationDuration:
+          enabled: true
+    argocd:
+      enabled: true
+      rules:
+        ArgoCdRepoServerPendingRequests:
+          enabled: true
+        ArgoCdRepoServerHighGitRequestDuration:
+          enabled: true
+        ArgoCdClusterConnectionError:
+          enabled: true
+        ArgoCdGitRequestErrors:
+          enabled: true
