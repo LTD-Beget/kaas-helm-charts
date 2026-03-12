@@ -92,9 +92,9 @@ appSpec:
             bind-address: 0.0.0.0
             cert-dir: /var/run/kubernetes
             client-ca-file: /etc/kubernetes/pki/ca.crt
-            # cloud-provider: external
-            # cloud-provider-gce-l7lb-src-cidrs: 130.211.0.0/22,35.191.0.0/16
-            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16
+            # cloud-provider: external  # депрекейтед аргумент в кластерах с v1.34+
+            # cloud-provider-gce-l7lb-src-cidrs: 130.211.0.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
+            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
             contention-profiling: false
             default-not-ready-toleration-seconds: 300
             default-unreachable-toleration-seconds: 300
@@ -331,7 +331,7 @@ appSpec:
             cidr-allocator-type: RangeAllocator
             client-ca-file: /etc/kubernetes/pki/ca.crt
             cloud-provider: external
-            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16
+            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
             cluster-name: cluster.local
             cluster-signing-cert-file: /etc/kubernetes/pki/ca.crt
             cluster-signing-duration: 720h0m0s
@@ -368,12 +368,12 @@ appSpec:
             feature-gates: RotateKubeletServerCertificate=true
             help: false
             horizontal-pod-autoscaler-cpu-initialization-period: 5m0s
-            # horizontal-pod-autoscaler-downscale-delay: 5m0s
+            # horizontal-pod-autoscaler-downscale-delay: 5m0s # депрекейтед аргумент в кластерах с v1.34+
             horizontal-pod-autoscaler-downscale-stabilization: 5m0s
             horizontal-pod-autoscaler-initial-readiness-delay: 30s
             horizontal-pod-autoscaler-sync-period: 30s
             horizontal-pod-autoscaler-tolerance: 0.1
-            # horizontal-pod-autoscaler-upscale-delay: 3m0s
+            # horizontal-pod-autoscaler-upscale-delay: 3m0s # депрекейтед аргумент в кластерах с v1.34+
             http2-max-streams-per-connection: 0
             kube-api-burst: 120
             kube-api-content-type: application/vnd.kubernetes.protobuf
@@ -431,7 +431,7 @@ appSpec:
             use-service-account-credentials: true
             v: 2
             version: false
-            # volume-host-allow-local-loopback: true
+            # volume-host-allow-local-loopback: true # депрекейтед аргумент в кластерах с v1.34+
 
           extraCommand:
           - kube-controller-manager

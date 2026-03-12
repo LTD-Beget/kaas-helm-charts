@@ -83,6 +83,7 @@ kubeletConfig:
     volumeStatsAggPeriod: 0s
     featureGates:
       RotateKubeletServerCertificate: true
+      # APIPriorityAndFairness:         true # депрекейтед аргумент в кластерах с v1.34+
     tlsCipherSuites:
       - "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
       - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
