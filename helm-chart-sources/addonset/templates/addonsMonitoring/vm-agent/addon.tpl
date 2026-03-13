@@ -1,20 +1,39 @@
-{{- define "kube-state-metrics.addon" }}
+{{- define "vm-agent.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: kube-state-metrics
+  name: vm-agent
 spec:
-  path: "kube-state-metrics"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "6.1.0-1"
-  releaseName: kube-state-metrics
+  version: "0.52.0-1"
   targetCluster: in-cluster
-  targetNamespace: "beget-kube-state-metrics"
+  targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
     dependency: "True"
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: customer.name
+          jsonPath: .data.customer
+        - as: system.vmInsertVIP
+          jsonPath: .data.systemVmInsertVIP
+  initDependencies:
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -22,7 +41,6 @@ spec:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -35,10 +53,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: kube-state-metrics
+        addons.in-cloud.io/addon: vm-agent
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: kube-state-metrics
+        addons.in-cloud.io/addon: vm-agent
 {{- end }}

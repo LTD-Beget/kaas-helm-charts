@@ -1,0 +1,84 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      prometheusScrape: false
+      metricLabelsAllowlist:
+        - nodes=[node-group.beget.com/name]
+      customLabels:
+        in-cloud.io/clusterName: ""
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    monitoring:
+      enabled: true

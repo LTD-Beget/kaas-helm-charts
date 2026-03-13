@@ -1,10 +1,11 @@
+{{- define "vm-agent-additional-rbac.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: helm-inserter-vm-agent-additional-rbac
 spec:
-  path: "helm-inserter"
+  chart: "helm-inserter"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "0.2.5"
@@ -37,10 +38,14 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: infra
+    - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
-
-{{ .Files.Get "files/addonsMonitoring/vmAgentAdditionalRbac.yml" }}
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+{{- end }}

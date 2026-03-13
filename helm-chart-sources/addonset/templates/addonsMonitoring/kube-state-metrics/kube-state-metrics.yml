@@ -3,7 +3,7 @@
 
   {{- include "kube-state-metrics.addon" . }}
 
-  {{- .Files.Get "files/kube-state-metrics/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/addonsMonitoring/kube-state-metrics/values.yml" | nindent 0 }}
 
   {{- include "kube-state-metrics.phase" . }}
 
