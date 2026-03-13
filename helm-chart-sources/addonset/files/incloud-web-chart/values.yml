@@ -31,14 +31,14 @@ spec:
             cookieSecret: "{{ .Values.incloudUICookieSecret }}"
           extraArgs:
             upstream: "http://incloud-web-chart-incloud-web-chart.beget-incloud-web-chart.svc:8081"
-            redirect-url: "https://{{ .Values.system.istioGwVip }}/oauth2/callback"
-            oidc-issuer-url: "https://{{ .Values.system.istioGwVip }}/dex"
+            redirect-url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget/oauth2/callback"
+            oidc-issuer-url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget/dex"
             insecure-oidc-skip-issuer-verification: true
-            login-url: "https://{{ .Values.system.istioGwVip }}/dex/auth"
+            login-url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget/dex/auth"
             proxy-prefix: "/oauth2"
             skip-oidc-discovery: true
-            oidc-jwks-url: "https://{{ .Values.system.istioGwVip }}/keys"
-            redeem-url: "https://{{ .Values.system.istioGwVip }}/token"
+            oidc-jwks-url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget/keys"
+            redeem-url: "https://{{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget/token"
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
               operator: "Exists"
@@ -163,7 +163,7 @@ spec:
           description: default
           tenant: dev
           scheme: http
-          api: {{ .Values.system.istioGwVip }}
+          api: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}.k8s.beget
         - name: cluster2
           description: cluster2
           tenant: dev

@@ -1,9 +1,0 @@
-{{- if .Values.addons.signalilo.enabled }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-
-  {{- include "signalilo.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/signalilo/values.yml" | nindent 0 }}
-
-  {{- include "signalilo.phase" . }}
-{{- end }}

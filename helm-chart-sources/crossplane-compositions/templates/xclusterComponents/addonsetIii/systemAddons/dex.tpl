@@ -15,7 +15,7 @@ dex:
   {{ end }}
     dex:
       config:
-        issuer: {{ printf "https://%%s" $systemIstioGwVip }}
+        issuer: {{ printf "https://%%s" $internalClusterEndpoint }}
         storage:
           type: kubernetes
           config: { inCluster: true }
@@ -43,13 +43,13 @@ dex:
             name: incloud-ui-oauth2-proxy
             secret: incloud-ui-super-secret
             redirectURIs:
-              - {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
+              - {{ printf "https://%%s/oauth2/callback" $internalClusterEndpoint }}
               - "https://localhost/oauth2/callback"
           - id: argocd
             name: Argocd
             secret: argo-cd-super-secret
             redirectURIs:
-              - {{ printf "https://%%s/argocd/auth/callback" $systemIstioGwVip }}
+              - {{ printf "https://%%s/argocd/auth/callback" $internalClusterEndpoint }}
               - "https://localhost/argocd/auth/callback"
           - id: apiserver
             name: apiserver

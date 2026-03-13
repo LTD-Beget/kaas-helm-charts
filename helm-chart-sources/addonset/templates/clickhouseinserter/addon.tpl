@@ -1,36 +1,36 @@
-{{- define "argocd.addon" }}
+{{- define "clickhouseinserter.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: argocd
+  name: clickhouse-inserter
 spec:
-  chart: "argo-cd"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "7.8.26-1"
+  version: "0.52.0-1"
   targetCluster: in-cluster
-  targetNamespace: "beget-argocd"
+  targetNamespace: "beget-clickhouse-vmstorage"
   variables:
     cluster_name: in-cluster
-  valuesSources:
-    - name: parameters
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: argocdServerAdminPassword
-          jsonPath: .data.argocdServerAdminPassword
-        - as: dataCreationTimestamp
-          jsonPath: .metadata.creationTimestamp
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: cluster.customer
-          jsonPath: .data.customer
+  valuesSources: []
   initDependencies:
-    - name: cilium
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+    - name: vm-cluster
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+    - name: clickhouse-vmstorage
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
@@ -42,6 +42,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -54,10 +55,5 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: argocd
-    - name: immutable
-      priority: 99
-      matchLabels:
-        addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: argocd
+        addons.in-cloud.io/addon: clickhouse-inserter
 {{- end }}

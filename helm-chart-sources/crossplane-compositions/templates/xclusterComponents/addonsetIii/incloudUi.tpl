@@ -25,14 +25,14 @@ incloudUi:
           cookieSecret: "{{ $argsIncloudUICookieSecret }}"
         extraArgs:
           upstream: "http://incloud-ui-incloud-web-chart.beget-incloud-ui.svc:8081"
-          redirect-url: {{ printf "https://%%s/oauth2/callback" $systemIstioGwVip }}
-          oidc-issuer-url: {{ printf "https://%%s/dex" $systemIstioGwVip }}
+          redirect-url: {{ printf "https://%%s/oauth2/callback" $internalClusterEndpoint }}
+          oidc-issuer-url: {{ printf "https://%%s/dex" $internalClusterEndpoint }}
           insecure-oidc-skip-issuer-verification: true
-          login-url: {{ printf "https://%%s/dex/auth" $systemIstioGwVip }}
+          login-url: {{ printf "https://%%s/dex/auth" $internalClusterEndpoint }}
           proxy-prefix: "/oauth2"
           skip-oidc-discovery: true
-          oidc-jwks-url: {{ printf "https://%%s/keys" $systemIstioGwVip }}
-          redeem-url: {{ printf "https://%%s/token" $systemIstioGwVip }}
+          oidc-jwks-url: {{ printf "https://%%s/keys" $internalClusterEndpoint }}
+          redeem-url: {{ printf "https://%%s/token" $internalClusterEndpoint }}
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
             operator: "Exists"
@@ -62,7 +62,7 @@ incloudUi:
           tenant: dev
           scheme: http
         {{ if $systemEnabled }}
-          api: {{ $systemIstioGwVip }}
+          api: {{ $internalClusterEndpoint }}
         {{ else }}
           api: 127.0.0.1
         {{ end }}

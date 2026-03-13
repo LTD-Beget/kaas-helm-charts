@@ -1,9 +1,0 @@
-{{- if .Values.addons.vmcluster.enabled }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-
-  {{- include "vmcluster.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/vmcluster/values.yml" | nindent 0 }}
-
-  {{- include "vmcluster.phase" . }}
-{{- end }}

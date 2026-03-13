@@ -49,13 +49,13 @@ argocd:
       configs:
         cm:
           {{ if $systemEnabled }}
-          url: {{ printf "https://%%s/argocd" $systemIstioGwVip }}
+          url: {{ printf "https://%%s/argocd" $internalClusterEndpoint }}
           {{ else }}
           url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
           {{ end }}
           oidc.config: |
             name: Dex
-            issuer: {{ printf "https://%%s" $systemIstioGwVip }}
+            issuer: {{ printf "https://%%s" $internalClusterEndpoint }}
             clientID: argocd
             clientSecret: argo-cd-super-secret
             requestedScopes: ["openid","profile","email","groups"]

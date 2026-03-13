@@ -1,9 +1,0 @@
-{{- if .Values.addons.vmalertrules.enabled }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-
-  {{- include "vmalertrules.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/vm-alertrules/values.yml" | nindent 0 }}
-
-  {{- include "vmalertrules.phase" . }}
-{{- end }}

@@ -1,0 +1,9 @@
+{{- if .Values.addons.clickhouseinserter.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "clickhouseinserter.addon" . }}
+
+  {{- .Files.Get "files/clickhouseinserter/values.yml" | nindent 0 }}
+
+  {{- include "clickhouseinserter.phase" . }}
+{{- end }}

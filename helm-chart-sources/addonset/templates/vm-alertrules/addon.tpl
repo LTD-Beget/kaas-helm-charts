@@ -1,36 +1,30 @@
-{{- define "argocd.addon" }}
+{{- define "vmalertrules.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: argocd
+  name: vm-alertrules
 spec:
-  chart: "argo-cd"
+  chart: "alert-rules"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "7.8.26-1"
+  version: "0.1.0"
   targetCluster: in-cluster
-  targetNamespace: "beget-argocd"
-  variables:
-    cluster_name: in-cluster
-  valuesSources:
-    - name: parameters
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: argocdServerAdminPassword
-          jsonPath: .data.argocdServerAdminPassword
-        - as: dataCreationTimestamp
-          jsonPath: .metadata.creationTimestamp
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: cluster.customer
-          jsonPath: .data.customer
+  targetNamespace: "beget-vmalert-rules"
+  variables: {}
+  valuesSources: []
   initDependencies:
-    - name: cilium
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+    - name: vm-operator 
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
@@ -42,10 +36,11 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
+          in-cloud.io/clusterName: system
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
@@ -54,10 +49,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: argocd
+        addons.in-cloud.io/addon: vm-alertrules
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: argocd
+        addons.in-cloud.io/addon: vm-alertrules
 {{- end }}

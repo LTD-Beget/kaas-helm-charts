@@ -27,6 +27,8 @@ spec:
           jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
+        - as: cluster.customer
+          jsonPath: .data.customer
         - as: cluster.port
           jsonPath: .data.clusterPort
         - as: controlPlaneReplicas
@@ -43,8 +45,6 @@ spec:
           jsonPath: .data.etcdbackupS3SecretAccessKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
-        - as: istioGwVip
-          jsonPath: .data.systemIstioGwVip
         - as: xcluster
           jsonPath: .data.xcluster
   initDependencies:

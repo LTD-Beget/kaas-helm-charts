@@ -1,47 +1,45 @@
-{{- define "argocd.addon" }}
+{{- define "vmalertmanager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: argocd
+  name: vm-alertmanager
 spec:
-  chart: "argo-cd"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "7.8.26-1"
+  version: "0.52.0-1"
   targetCluster: in-cluster
-  targetNamespace: "beget-argocd"
+  targetNamespace: "beget-alertmanager"
   variables:
-    cluster_name: in-cluster
-  valuesSources:
-    - name: parameters
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters
-        namespace: beget-system
-      extract:
-        - as: argocdServerAdminPassword
-          jsonPath: .data.argocdServerAdminPassword
-        - as: dataCreationTimestamp
-          jsonPath: .metadata.creationTimestamp
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: cluster.customer
-          jsonPath: .data.customer
+    telegramToken: ""
+    telegramChatId: ""
+    signaliloAlertmanagerToken: ""
+  valuesSources: []
   initDependencies:
-    - name: cilium
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "True"
+    - name: vm-operator 
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -53,11 +51,11 @@ spec:
     - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: argocd
+        addons.in-cloud.io/values: cert-manager
+        addons.in-cloud.io/addon: vm-alertmanager
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: argocd
+        addons.in-cloud.io/addon: vm-alertmanager
 {{- end }}

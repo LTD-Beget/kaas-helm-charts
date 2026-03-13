@@ -66,12 +66,15 @@ istioGW:
         commonName: infra-gateway
         dnsNames:
           - "*"
+        {{- if $systemEnabled }}
+          - "*.k8s.beget"
+        {{- end }}
         ipAddresses:
           - 127.0.0.1
-        {{ if $systemEnabled }}
+        {{- if $systemEnabled }}
           - {{ $clusterHost }}
-          - {{ $systemIstioGwVip }}
-        {{ end }}
+          - {{ $systemIstioGwVip }} # TODO: Удалить после переезда на домены
+        {{- end }}
       issuer:
         kind: ClusterIssuer
         name: selfsigned-cluster-issuer

@@ -1,0 +1,9 @@
+{{- if .Values.addons.grafana.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "grafana.addon" . }}
+
+  {{- .Files.Get "files/grafana/values.yml" | nindent 0 }}
+
+  {{- include "grafana.phase" . }}
+{{- end }}
