@@ -51,15 +51,13 @@ addons:
     enabled: true
   extraresources:
     enabled: true
-<<<<<<< HEAD
   helminserter:
-=======
+    enabled: true
   grafana:
     enabled: false
   grafanadashboards:
     enabled: false
   grafanaoperator:
->>>>>>> master
     enabled: false
   incloudwebchart:
     enabled: true
@@ -87,9 +85,6 @@ addons:
     enabled: true
   vault:
     enabled: false
-  system:
-    enabled: false
-    clickhouseInserter: false
   vmalert:
     enabled: false
   vmalertmanager:
@@ -98,8 +93,9 @@ addons:
     enabled: false
   vmcluster:
     enabled: false
-  vmoperator:
-    enabled: true
+  system:
+    enabled: false
+    clickhouseInserter: false
 environment: infra
 clientName: client
 clusterName: infra
