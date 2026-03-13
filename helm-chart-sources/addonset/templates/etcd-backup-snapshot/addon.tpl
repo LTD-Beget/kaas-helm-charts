@@ -33,6 +33,7 @@ spec:
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
 {{- if .Values.clientClusterEnabled }}
+  initDependencies:
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed

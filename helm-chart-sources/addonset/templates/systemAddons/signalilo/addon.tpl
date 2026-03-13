@@ -14,9 +14,9 @@ spec:
   variables:
     uuid: "da4c0b1d-da4c-4f3b-9e5d-c23f5fcd751a"
     icingaUrl: "https://1.2.3.4:25665"
-    icingaHostname: "signalilo"
-    icingaUsername: "signalilo"
-    icingaPassword: "signalilo"
+    icingaHostname: "K8SSIGNALILO"
+    icingaUsername: "k8ssignalilo"
+    icingaPassword: ""
     alertmanagerSignaliloPort: 8888
     alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
   valuesSources: []

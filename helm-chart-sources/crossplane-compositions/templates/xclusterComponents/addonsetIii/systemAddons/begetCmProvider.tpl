@@ -24,7 +24,7 @@ begetCmProvider:
             manager:
               image:
                 pullPolicy: Always
-                tag: v2.0.0
+                tag: v2.1.0
           enabled: true
           tolerations:
           - effect: NoExecute

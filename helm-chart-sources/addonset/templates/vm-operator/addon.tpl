@@ -8,7 +8,7 @@ spec:
   chart: "victoria-metrics-operator"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "v0.0.5" # "HEAD"
+  version: "0.52.0-1" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-vm-operator"
   variables:
