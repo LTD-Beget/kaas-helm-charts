@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   initDependencies:
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane

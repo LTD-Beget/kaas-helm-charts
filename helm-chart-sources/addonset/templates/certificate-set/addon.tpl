@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-certificate-set"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   initDependencies:
     - name: cilium
       criteria:

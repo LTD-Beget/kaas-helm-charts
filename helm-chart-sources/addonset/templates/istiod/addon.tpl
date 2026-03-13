@@ -14,6 +14,7 @@ spec:
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:

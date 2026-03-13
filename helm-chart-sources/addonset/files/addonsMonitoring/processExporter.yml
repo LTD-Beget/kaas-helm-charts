@@ -11,6 +11,7 @@ spec:
   targetNamespace: "beget-process-exporter"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

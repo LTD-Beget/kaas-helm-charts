@@ -14,6 +14,7 @@ spec:
   targetNamespace: "beget-cert-manager"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

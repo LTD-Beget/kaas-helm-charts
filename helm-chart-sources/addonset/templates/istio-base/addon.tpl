@@ -12,6 +12,7 @@ spec:
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
 {{- if .Values.clientClusterEnabled }}
   initDependencies:
     - name: client-cp-control-plane
