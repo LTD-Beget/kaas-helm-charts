@@ -4,7 +4,7 @@ kind: Addon
 metadata:
   name: helm-inserter-vm-agent-additional-rbac
 spec:
-  path: "helm-inserter"
+  chart: "helm-inserter"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "0.2.5"

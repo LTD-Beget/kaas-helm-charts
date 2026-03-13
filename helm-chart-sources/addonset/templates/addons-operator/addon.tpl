@@ -5,7 +5,7 @@ kind: Addon
 metadata:
   name: addons-operator
 spec:
-  chart: "addons-operator"
+  chart: "addon-operator"
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "0.1.1"
   targetCluster: in-cluster
