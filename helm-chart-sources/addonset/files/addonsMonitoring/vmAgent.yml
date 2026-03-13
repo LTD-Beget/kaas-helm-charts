@@ -3,7 +3,7 @@ kind: Addon
 metadata:
   name: vm-agent
 spec:
-  path: "victoria-metrics-k8s-stack"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "0.52.0-1"
