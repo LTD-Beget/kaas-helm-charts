@@ -5,11 +5,10 @@ kind: Addon
 metadata:
   name: vm-alertrules
 spec:
-  chart: ""
-  path: "helm-chart-sources/alert-rules"
+  chart: "alert-rules"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert-rules"
   variables: {}

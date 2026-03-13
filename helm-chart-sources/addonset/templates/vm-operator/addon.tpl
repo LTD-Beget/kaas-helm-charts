@@ -5,20 +5,15 @@ kind: Addon
 metadata:
   name: vm-operator
 spec:
-  path: "helm-chart-sources/victoria-metrics-operator"
+  chart: "victoria-metrics-operator"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "v0.0.5" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-vm-operator"
   variables:
     cluster_name: in-cluster
   initDependencies:
-    - name: cert-manager-csi-driver
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
@@ -26,6 +21,11 @@ spec:
           operator: Equal
           value: true
 {{- end }}
+    - name: cert-manager-csi-driver
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

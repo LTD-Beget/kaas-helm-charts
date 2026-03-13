@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: coredns
 spec:
-  path: "helm-chart-sources/coredns"
+  chart: "coredns"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.28.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-coredns"
   variables:

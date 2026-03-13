@@ -3,20 +3,14 @@ kind: Addon
 metadata:
   name: kube-state-metrics
 spec:
-  path: "helm-chart-sources/kube-state-metrics"
+  path: "kube-state-metrics"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "6.1.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-kube-state-metrics"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

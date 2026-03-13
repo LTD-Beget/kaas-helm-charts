@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: cert-manager
 spec:
-  path: "helm-chart-sources/cert-manager"
+  chart: "cert-manager"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "v1.17.1-1"
   releaseName: cert-manager
   targetCluster: in-cluster
   targetNamespace: "beget-cert-manager"

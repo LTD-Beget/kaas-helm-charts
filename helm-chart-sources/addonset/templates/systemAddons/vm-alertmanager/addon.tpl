@@ -5,11 +5,10 @@ kind: Addon
 metadata:
   name: vm-alertmanager
 spec:
-  chart: ""
-  path: "helm-chart-sources/victoria-metrics-k8s-stack"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.52.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-alertmanager"
   variables:

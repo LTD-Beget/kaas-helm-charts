@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: crossplane
 spec:
-  path: "helm-chart-sources/crossplane"
+  chart: "crossplane"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "2.2.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-crossplane"
   variables:

@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: argocd
 spec:
-  path: "helm-chart-sources/argocd"
+  chart: "argo-cd"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "7.8.26-1"
   targetCluster: in-cluster
   targetNamespace: "beget-argocd"
   variables:

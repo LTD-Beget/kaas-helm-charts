@@ -5,11 +5,10 @@ kind: Addon
 metadata:
   name: signalilo
 spec:
-  chart: ""
-  path: "helm-chart-sources/signalilo"
+  chart: "signalilo"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.12.1-1"
   targetCluster: in-cluster
   targetNamespace: "beget-signalilo"
   variables:
@@ -21,7 +20,6 @@ spec:
     alertmanagerSignaliloPort: 8888
     alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
   valuesSources: []
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

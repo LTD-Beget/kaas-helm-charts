@@ -3,20 +3,14 @@ kind: Addon
 metadata:
   name: metrics-server
 spec:
-  path: "helm-chart-sources/metrics-server"
+  chart: "metrics-server"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "3.13.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-metrics-server"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

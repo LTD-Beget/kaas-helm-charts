@@ -5,21 +5,16 @@ kind: Addon
 metadata:
   name: incloud-web-resources
 spec:
-  path: "helm-chart-sources/incloud-web-resources"
+  chart: "incloud-web-resources"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.2.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-incloud-web-chart"
   variables:
     cluster_name: in-cluster
   valuesSources:  []
   initDependencies:
-    - name: incloud-web-chart
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
@@ -27,6 +22,11 @@ spec:
           operator: Equal
           value: true
 {{- end }}
+    - name: incloud-web-chart
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

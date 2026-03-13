@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
-  path: "helm-chart-sources/helm-inserter"
+  chart: "helm-inserter"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.2.5"
   targetCluster: in-cluster
   targetNamespace: "beget-extra-resources"
   variables:

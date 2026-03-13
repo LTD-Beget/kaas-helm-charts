@@ -3,20 +3,14 @@ kind: Addon
 metadata:
   name: prometheus-node-exporter
 spec:
-  path: "helm-chart-sources/prometheus-node-exporter"
+  chart: "prometheus-node-exporter"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "4.47.2-1"
   targetCluster: in-cluster
   targetNamespace: "beget-prometheus-node-exporter"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: konnectivity-agent
 spec:
-  path: "helm-chart-sources/konnectivity-agent"
+  chart: "konnectivity-agent"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   releaseName: konnectivity-agent
   targetCluster: {{ .Values.clientName }}
   targetNamespace: "beget-konnectivity-agent"
