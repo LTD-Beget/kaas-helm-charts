@@ -11,7 +11,6 @@ spec:
   targetNamespace: "beget-prometheus-node-exporter"
   variables:
     cluster_name: in-cluster
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

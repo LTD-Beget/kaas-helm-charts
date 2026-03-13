@@ -14,7 +14,6 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources: []
-  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

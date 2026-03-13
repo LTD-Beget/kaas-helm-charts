@@ -31,7 +31,6 @@ spec:
           jsonPath: .data.etcdbackupS3SecretAccessKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
-  initDependencies: []
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
