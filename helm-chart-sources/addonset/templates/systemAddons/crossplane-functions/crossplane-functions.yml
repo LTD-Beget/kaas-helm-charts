@@ -1,9 +1,9 @@
-{{- if .Values.addons.crossplanefunctions.enabled }}
+{{- if and .Values.addons.crossplanefunctions.enabled .Values.addons.system.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "crossplane-functions.addon" . }}
 
-  {{- .Files.Get "files/crossplane-functions/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/systemAddons/crossplane-functions/values.yml" | nindent 0 }}
 
   {{- include "crossplane-functions.phase" . }}
 
