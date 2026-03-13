@@ -13,10 +13,10 @@ signalilo:
       fullnameOverride: "signalilo"
       config:
         uuid: da4c0b1d-da4c-4f3b-9e5d-c23f5fcd751a
-        icinga_hostname: "signalilo"
+        icinga_hostname: "K8SSIGNALILO"
         icinga_url: https://192.168.88.204:25665
-        icinga_username: root
-        icinga_password: "13283597db083426"
+        icinga_username: k8ssignalilo
+        icinga_password: ""
         alertmanager_port: 8888
         alertmanager_bearer_token: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
       extraEnvVars:
