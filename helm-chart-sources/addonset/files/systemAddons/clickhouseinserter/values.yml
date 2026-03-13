@@ -71,8 +71,9 @@ spec:
             - name: GOMAXPROCS
               value: "4"
           remoteWrite:
-            url: "http://clickhouse-vmstorage.beget-clickhouse-vmstorage.svc:9363/promrw"
+            url: "http://k8s-clickhouse-c1.beget:9363/promrw"
             concurrency: 4
+            # TODO: Create secret with vault secret injection
             basicAuth:
               username:
                 name: clickhouse-credentials
