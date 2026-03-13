@@ -28,11 +28,6 @@ spec:
         - as: system.istioGwVip
           jsonPath: .data.systemIstioGwVip
   initDependencies:
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
@@ -40,6 +35,11 @@ spec:
           operator: Equal
           value: true
 {{- end }}
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

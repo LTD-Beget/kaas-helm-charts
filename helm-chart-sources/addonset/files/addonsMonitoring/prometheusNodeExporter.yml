@@ -11,12 +11,7 @@ spec:
   targetNamespace: "beget-prometheus-node-exporter"
   variables:
     cluster_name: in-cluster
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
+  initDependencies: []
   backend: 
     type: "argocd"
     namespace: "beget-argocd"

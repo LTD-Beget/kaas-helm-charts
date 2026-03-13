@@ -31,12 +31,7 @@ spec:
           jsonPath: .data.etcdbackupS3SecretAccessKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
+  initDependencies: []
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
