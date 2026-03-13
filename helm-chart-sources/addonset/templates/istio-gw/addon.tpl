@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: istio-gw
 spec:
-  path: "helm-chart-sources/istio-gw"
+  chart: "gateway"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.26.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-istio-gw"
   variables:

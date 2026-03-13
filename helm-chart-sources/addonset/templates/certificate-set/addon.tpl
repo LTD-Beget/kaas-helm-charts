@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: certificate-set
 spec:
-  path: "dist/chart"
+  chart: "certificate-set"
   pluginName: helm-with-values
-  repoURL: "https://github.com/PRO-Robotech/certificate-set"
-  version: "HEAD"
+  repoURL: "registry-1.docker.io/prorobotech"
+  version: "main-6b6710b3"
   targetCluster: in-cluster
   targetNamespace: "beget-certificate-set"
   variables:

@@ -5,9 +5,9 @@ kind: Addon
 metadata:
   name: addonset
 spec:
-  path: "helm-chart-sources/addonset"
+  chart: "addonset"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "{{ .Values.addonRevision }}"
   targetCluster: in-cluster
   targetNamespace: "beget-addonset"

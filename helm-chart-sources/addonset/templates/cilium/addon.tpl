@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: cilium
 spec:
-  path: "helm-chart-sources/cilium"
+  chart: "cilium"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.18.5-1"
   targetCluster: in-cluster
   targetNamespace: "beget-cilium"
   valuesSources:

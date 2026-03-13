@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: etcd-backup-snapshot
 spec:
-  path: "helm-chart-sources/etcd-backup-snapshot"
+  chart: "etcd-backup-snapshot"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "beget-etcd-backup-snapshot"
   variables:

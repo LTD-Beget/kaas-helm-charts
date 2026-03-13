@@ -3,9 +3,9 @@ kind: Addon
 metadata:
   name: must-replace
 spec:
-  path: "helm-chart-sources/must-replace"
+  chart: "must-replace"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-must-replace"

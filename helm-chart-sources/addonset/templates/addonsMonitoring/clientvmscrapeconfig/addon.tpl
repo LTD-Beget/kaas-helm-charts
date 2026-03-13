@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: client-vm-scrape-config
 spec:
-  path: "helm-chart-sources/helm-inserter"
+  chart: "helm-inserter"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.2.5"
   targetCluster: in-cluster
   targetNamespace: "beget-vmagent"
   variables:

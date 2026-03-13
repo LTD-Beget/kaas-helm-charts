@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: istiod
 spec:
-  path: "helm-chart-sources/istiod"
+  chart: "istiod"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.26.0-1"
   releaseName: istiod
   targetCluster: in-cluster
   targetNamespace: "beget-istio"
