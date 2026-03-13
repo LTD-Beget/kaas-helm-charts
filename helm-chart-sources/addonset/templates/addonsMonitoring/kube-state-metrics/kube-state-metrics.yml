@@ -1,0 +1,13 @@
+{{- if .Values.addons.kubestatemetrics.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "kube-state-metrics.addon" . }}
+
+  {{- .Files.Get "files/kube-state-metrics/values.yml" | nindent 0 }}
+
+  {{- include "kube-state-metrics.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "kube-state-metrics.phase" $clientContext }}
+  {{- end }}
+{{- end }}
