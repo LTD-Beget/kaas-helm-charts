@@ -14,6 +14,13 @@ spec:
             name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
           operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: cert-manager
         priority: 20

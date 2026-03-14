@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-crossplane"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   initDependencies:
     - name: crossplane
       criteria:

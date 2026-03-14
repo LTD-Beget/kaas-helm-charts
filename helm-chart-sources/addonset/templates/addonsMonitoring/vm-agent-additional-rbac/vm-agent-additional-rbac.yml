@@ -1,0 +1,13 @@
+{{- if .Values.addons.vmagentadditionalrbac.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "vm-agent-additional-rbac.addon" . }}
+
+  {{- .Files.Get "files/addonsMonitoring/vm-agent-additional-rbac/values.yml" | nindent 0 }}
+
+  {{- include "vm-agent-additional-rbac.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-agent-additional-rbac.phase" $clientContext }}
+  {{- end }}
+{{- end }}

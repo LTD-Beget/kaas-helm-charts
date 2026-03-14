@@ -2,6 +2,28 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: helm-inserter-vm-agent-additional-rbac-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: helm-inserter-vm-agent-additional-rbac-infra
   labels:
     addons.in-cloud.io/values: infra

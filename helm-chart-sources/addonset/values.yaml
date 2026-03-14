@@ -41,6 +41,14 @@ addons:
     enabled: false
   grafanaoperator:
     enabled: false
+  kubestatemetrics:
+    enabled: true
+  metricsserver:
+    enabled: true
+  prometheusprocessexporter:
+    enabled: true
+  prometheusnodeexporter:
+    enabled: true
   incloudwebchart:
     enabled: true
   incloudwebresources:
@@ -58,6 +66,10 @@ addons:
   test:
     enabled: true
   trustmanager:
+    enabled: true
+  vmagent:
+    enabled: true
+  vmagentadditionalrbac:
     enabled: true
   vmalert:
     enabled: false

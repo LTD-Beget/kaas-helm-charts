@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-grafana-operator"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
   backend: 
     type: "argocd"

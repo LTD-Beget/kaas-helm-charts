@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-coredns"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:

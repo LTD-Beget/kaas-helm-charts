@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-istio-gw"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:

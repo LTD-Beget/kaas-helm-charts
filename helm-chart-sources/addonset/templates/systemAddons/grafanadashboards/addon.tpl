@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-grafana"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: grafana-operator

@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-incloud-web-chart"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:  []
   initDependencies:
 {{- if .Values.clientClusterEnabled }}

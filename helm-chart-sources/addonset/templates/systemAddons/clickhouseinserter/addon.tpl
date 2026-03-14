@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-clickhouse-vmstorage"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: vm-cluster

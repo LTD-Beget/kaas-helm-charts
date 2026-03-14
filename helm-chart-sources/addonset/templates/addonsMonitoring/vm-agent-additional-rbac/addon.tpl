@@ -1,3 +1,4 @@
+{{- define "vm-agent-additional-rbac.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -12,6 +13,7 @@ spec:
   targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
 {{- if .Values.clientClusterEnabled }}
   initDependencies:
     - name: client-cp-control-plane
@@ -36,10 +38,14 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: infra
+    - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: infra
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
-
-{{ .Files.Get "files/addonsMonitoring/vmAgentAdditionalRbac.yml" }}
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+{{- end }}

@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-cert-manager-csi-driver"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
