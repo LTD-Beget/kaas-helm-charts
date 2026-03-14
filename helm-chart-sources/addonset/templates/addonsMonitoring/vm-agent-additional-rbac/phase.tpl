@@ -3,7 +3,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: vm-agent-additional-rbac{{ if eq .Values.environment "client" }}-client{{ end }}
+  name: helm-inserter-vm-agent-additional-rbac{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
     - name: infra
