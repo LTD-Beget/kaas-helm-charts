@@ -9,7 +9,7 @@ spec:
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "0.5.0-1"
-  releaseName: process-exporter
+  releaseName: prometheus-process-exporter
   targetCluster: in-cluster
   targetNamespace: "beget-process-exporter"
   variables:
