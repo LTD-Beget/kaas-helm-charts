@@ -2,10 +2,10 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-default
+  name: prometheus-process-exporter-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
     prometheus-process-exporter:
@@ -43,10 +43,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-immutable
+  name: prometheus-process-exporter-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: ""
 
@@ -54,10 +54,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-infra
+  name: prometheus-process-exporter-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
     prometheus-process-exporter:
@@ -73,10 +73,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-cert-manager
+  name: prometheus-process-exporter-cert-manager
   labels:
     addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
     argocdPlugins:
@@ -91,10 +91,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-vm-operator
+  name: prometheus-process-exporter-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
     monitoring:
@@ -104,10 +104,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: process-exporter-system
+  name: prometheus-process-exporter-system
   labels:
     addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: process-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
     prometheus-process-exporter:
