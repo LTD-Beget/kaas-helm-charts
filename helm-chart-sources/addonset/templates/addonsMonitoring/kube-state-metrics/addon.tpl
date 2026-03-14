@@ -5,7 +5,7 @@ kind: Addon
 metadata:
   name: kube-state-metrics
 spec:
-  path: "kube-state-metrics"
+  chart: "kube-state-metrics"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
   version: "6.1.0-1"
