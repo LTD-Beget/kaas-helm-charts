@@ -184,21 +184,23 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
-                beget_capi_cluster_spec_paused == bool 0
+                (
+                  beget_capi_cluster_spec_paused == bool 0
+                )
+                and
+                on(namespace, name) (
+                  (
+                    beget_capi_cluster_controlplane_update_required == bool 1
+                  )
+                  or
+                  (
+                    beget_capi_cluster_workers_update_required == bool 1
+                  )
+                )
               )
               unless
               on(namespace, name) (
                 beget_capi_cluster_deletion_requested > 0
-              )
-              and
-              on(namespace, name) (
-                (
-                  beget_capi_cluster_controlplane_update_required == bool 1
-                )
-                or
-                (
-                  beget_capi_cluster_workers_update_required == bool 1
-                )
               )
             labels: {}
 
@@ -209,15 +211,13 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
-                beget_capi_cluster_condition{type="Available"} == bool 1
-              )
-              and
-              on(namespace, name) (
-                beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
-              )
-              and
-              on(namespace, name) (
-                beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+                (
+                  beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
+                )
+                and
+                on(namespace, name) (
+                  beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+                )
               )
               unless
               on(namespace, name) (
@@ -232,15 +232,25 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
-                beget_capi_cluster_alive == bool 1
-              )
-              and
-              on(namespace, name) (
-                beget_capi_cluster_nodes_consistent == bool 1
-              )
-              and
-              on(namespace, name) (
-                beget_capi_cluster_spec_paused == bool 0
+                (
+                  beget_capi_cluster_spec_paused == bool 0
+                )
+                and
+                on(namespace, name) (
+                  beget_capi_cluster_condition{type="Available"} == bool 1
+                )
+                and
+                on(namespace, name) (
+                  beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
+                )
+                and
+                on(namespace, name) (
+                  beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+                )
+                and
+                on(namespace, name) (
+                  beget_capi_cluster_nodes_consistent == bool 1
+                )
               )
               unless
               on(namespace, name) (
