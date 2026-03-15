@@ -138,3 +138,112 @@ capiClusterRules:
                 beget_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 0
               )
             labels: {}
+
+        beget_capi_cluster_nodes_consistent:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_nodes_consistent
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_controlplane_condition_consistent == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_controlplane_replica_consistent == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_workers_condition_consistent == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_workers_replica_consistent == bool 1
+              )
+            labels: {}
+
+        beget_capi_cluster_nodes_update_required:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_nodes_update_required
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_controlplane_update_required == bool 1
+              )
+              or
+              on(namespace, name) (
+                beget_capi_cluster_workers_update_required == bool 1
+              )
+            labels: {}
+
+        beget_capi_cluster_updating:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_updating
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_spec_paused == bool 0
+              )
+              unless
+              on(namespace, name) (
+                beget_capi_cluster_deletion_requested > 0
+              )
+              and
+              on(namespace, name) (
+                (
+                  beget_capi_cluster_controlplane_update_required == bool 1
+                )
+                or
+                (
+                  beget_capi_cluster_workers_update_required == bool 1
+                )
+              )
+            labels: {}
+
+        beget_capi_cluster_alive:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_alive
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_condition{type="Available"} == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+              )
+              unless
+              on(namespace, name) (
+                beget_capi_cluster_deletion_requested > 0
+              )
+            labels: {}
+
+        beget_capi_cluster_ready:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_ready
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_alive == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_nodes_consistent == bool 1
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_spec_paused == bool 0
+              )
+              unless
+              on(namespace, name) (
+                beget_capi_cluster_deletion_requested > 0
+              )
+            labels: {}
