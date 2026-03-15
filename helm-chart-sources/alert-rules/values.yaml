@@ -568,6 +568,7 @@ vmrules:
     enabled: true
     groups:
       vmagent:
+        enabled: true
         rules:
           VMAgentConfigurationReloadFailure:
             enabled: true
@@ -601,6 +602,7 @@ vmrules:
     enabled: true
     groups:
       vmcluster:
+        enabled: true
         rules:
           VMClusterDiskRunsOutOfSpace:
             enabled: true
