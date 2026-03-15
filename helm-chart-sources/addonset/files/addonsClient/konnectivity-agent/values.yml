@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: konnectivity-agent
 spec:
   values: |
+    tolerations:
+      - operator: "Exists"
     hostNetwork: true
     agent:
       extraArgs:

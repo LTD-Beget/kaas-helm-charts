@@ -16,6 +16,8 @@ spec:
         requests:
           cpu: 100m
           memory: 128Mi
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

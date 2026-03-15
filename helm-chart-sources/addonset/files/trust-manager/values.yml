@@ -9,6 +9,11 @@ metadata:
 spec:
   values: |
     trust-manager:
+      tolerations:
+        - operator: "Exists"
+      app:
+        trust:
+          namespace: beget-cert-manager
       resources:
         requests:
           cpu: 50m

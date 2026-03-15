@@ -26,6 +26,8 @@ spec:
           tracer: zipkin
         defaultPodDisruptionBudget:
           enabled: false
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
