@@ -9,6 +9,8 @@ metadata:
 spec:
   values: |
     cert-manager-csi-driver:
+      tolerations:
+        - operator: "Exists"
       resources:
         limits:
           cpu: 200m

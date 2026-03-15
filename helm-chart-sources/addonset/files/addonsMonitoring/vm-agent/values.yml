@@ -11,6 +11,8 @@ spec:
     victoria-metrics-k8s-stack:
       vmagent:
         spec:
+          tolerations:
+            - operator: "Exists"
           resources:
             requests:
               cpu: "100m"

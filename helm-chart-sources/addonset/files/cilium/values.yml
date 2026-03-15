@@ -26,6 +26,16 @@ spec:
         replicas: 1
         image:
           pullPolicy: IfNotPresent
+        tolerations:
+          - operator: Exists
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: Exists
+          - key: "node-role.kubernetes.io/master" #deprecated
+            operator: Exists
+          - key: "node.kubernetes.io/not-ready"
+            operator: Exists
+          - key: "node.cloudprovider.kubernetes.io/uninitialized"
+            operator: Exists
       dnsPolicy: ClusterFirstWithHostNet
       prometheus:
         metricsService: true

@@ -13,6 +13,8 @@ spec:
       global:
         priorityClassName: system-cluster-critical
       cainjector:
+        tolerations:
+          - operator: "Exists"
         containerSecurityContext:
           runAsNonRoot: true
         resources:
@@ -22,6 +24,8 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+      tolerations:
+        - operator: "Exists"
       containerSecurityContext:
         runAsNonRoot: true
       resources:
@@ -35,6 +39,8 @@ spec:
         enabled: false
         containerSecurityContext:
           runAsNonRoot: true
+        tolerations:
+          - operator: "Exists"
       webhook:
         containerSecurityContext:
           runAsNonRoot: true
@@ -45,6 +51,8 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+        tolerations:
+          - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

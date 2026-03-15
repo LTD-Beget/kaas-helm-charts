@@ -31,6 +31,8 @@ spec:
       serviceAccount:
         create: true
         name: coredns
+      tolerations:
+        - operator: "Exists"
       affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

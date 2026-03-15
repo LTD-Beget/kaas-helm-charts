@@ -11,7 +11,7 @@ spec:
   version: "0.5.0-1"
   releaseName: prometheus-process-exporter
   targetCluster: in-cluster
-  targetNamespace: "beget-process-exporter"
+  targetNamespace: "beget-prometheus-process-exporter"
   variables:
     cluster_name: in-cluster
     dependency: "True"

@@ -38,6 +38,8 @@ spec:
             - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
               cmdline:
               - '.+'
+      tolerations:
+        - operator: "Exists"
           
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

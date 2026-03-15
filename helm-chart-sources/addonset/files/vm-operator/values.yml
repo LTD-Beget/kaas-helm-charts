@@ -9,6 +9,7 @@ metadata:
 spec:
   values: |
     victoria-metrics-operator:
+      fullnameOverride: "vm-operator"
       env:
         - name: GOMAXPROCS
           value: '1'
@@ -43,6 +44,8 @@ spec:
                   - vmoperator-infra
               topologyKey: failure-domain.beta.kubernetes.io/region
             weight: 100
+      tolerations:
+        - operator: "Exists"
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
