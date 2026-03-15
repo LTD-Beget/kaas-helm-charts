@@ -21,6 +21,7 @@ spec:
           operator: Equal
           value: "True"
   backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

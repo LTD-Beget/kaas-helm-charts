@@ -34,7 +34,8 @@ spec:
           jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

@@ -20,7 +20,8 @@ spec:
     alertmanagerSignaliloPort: 8888
     alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
   valuesSources: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

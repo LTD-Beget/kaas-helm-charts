@@ -14,7 +14,8 @@ spec:
   variables:
     cluster_name: in-cluster
     dependency: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

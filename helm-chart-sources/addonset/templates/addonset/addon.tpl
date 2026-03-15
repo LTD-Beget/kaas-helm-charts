@@ -28,7 +28,8 @@ spec:
           jsonPath: .data.clusterName
         - as: addonRevision
           jsonPath: .data.addonRevision
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

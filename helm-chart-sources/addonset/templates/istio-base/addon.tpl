@@ -21,7 +21,8 @@ spec:
           operator: Equal
           value: true
 {{- end }}
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     ignoreDifferences:
     - group: admissionregistration.k8s.io
