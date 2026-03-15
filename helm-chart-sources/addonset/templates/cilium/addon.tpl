@@ -29,7 +29,8 @@ spec:
           jsonPath: .data.podCidr
         - as: podCidrMaskSize
           jsonPath: .data.podCidrMaskSize
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

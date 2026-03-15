@@ -31,7 +31,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     ignoreDifferences:
     - group: admissionregistration.k8s.io

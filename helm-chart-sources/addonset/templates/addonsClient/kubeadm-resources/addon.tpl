@@ -51,7 +51,8 @@ spec:
       extract:
         - as: cluster.kubeCaCrtBase64
           jsonPath: .data["tls.crt"]
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

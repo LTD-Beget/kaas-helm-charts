@@ -10,7 +10,8 @@ spec:
   version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "beget-addons-operator"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
