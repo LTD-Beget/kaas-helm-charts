@@ -36,6 +36,30 @@ vmrules:
         rules:
           AuditLogError:
             enabled: true
+  capiClusterAlerts:
+    enabled: true
+    groups:
+      capiClusterAlerts:
+        enabled: true
+        rules:
+          BegetCapiClusterNotAlive:
+            enabled: true
+          BegetCapiClusterNotReady:
+            enabled: true
+          BegetCapiClusterNodesInconsistent:
+            enabled: true
+          BegetCapiClusterNodesUpdateRequiredTooLong:
+            enabled: true
+          BegetCapiClusterUpdatingTooLong:
+            enabled: true
+          BegetCapiClusterDeletionRequestedTooLong:
+            enabled: true
+          BegetCapiClusterControlPlaneUpdateRequiredTooLong:
+            enabled: true
+          BegetCapiClusterWorkersUpdateRequiredTooLong:
+            enabled: true
+          BegetCapiClusterPausedButUpdateRequired:
+            enabled: true
   capiClusterRules:
     enabled: true
     groups:
