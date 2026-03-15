@@ -14,12 +14,12 @@ capiClusterRules:
                 (
                   beget_capi_cluster_deleted_timestamp_seconds > 0
                 )
-                or on(namespace, name)
-                (
+                or
+                on(namespace, name) (
                   beget_capi_cluster_status_phase{phase="Deleting"} == 1
                 )
-                or on(namespace, name)
-                (
+                or
+                on(namespace, name) (
                   beget_capi_cluster_condition{type="Deleting"} == 1
                 )
               ) > bool 0
@@ -34,13 +34,9 @@ capiClusterRules:
               (
                 beget_capi_cluster_condition{type="ControlPlaneAvailable"} == bool 1
               )
-              and on(namespace, name)
-              (
+              and
+              on(namespace, name) (
                 beget_capi_cluster_condition{type="ControlPlaneMachinesReady"} == bool 1
-              )
-              and on(namespace, name)
-              (
-                beget_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 1
               )
             labels: {}
 
@@ -51,17 +47,38 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
-                (
-                  beget_capi_cluster_controlplane_ready_replicas
-                  == bool
-                  beget_capi_cluster_controlplane_desired_replicas
-                )
-                and
-                (
-                  beget_capi_cluster_controlplane_uptodate_replicas
-                  == bool
-                  beget_capi_cluster_controlplane_desired_replicas
-                )
+                beget_capi_cluster_controlplane_replicas
+                == bool
+                beget_capi_cluster_controlplane_desired_replicas
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_controlplane_ready_replicas
+                == bool
+                beget_capi_cluster_controlplane_desired_replicas
+              )
+              and
+              on(namespace, name) (
+                beget_capi_cluster_controlplane_available_replicas
+                == bool
+                beget_capi_cluster_controlplane_desired_replicas
+              )
+            labels: {}
+
+        beget_capi_cluster_controlplane_update_required:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_controlplane_update_required
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_controlplane_uptodate_replicas
+                != bool
+                beget_capi_cluster_controlplane_desired_replicas
+              )
+              or
+              on(namespace, name) (
+                beget_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 0
               )
             labels: {}
 
@@ -78,10 +95,6 @@ capiClusterRules:
               (
                 beget_capi_cluster_condition{type="WorkerMachinesReady"} == bool 1
               )
-              and on(namespace, name)
-              (
-                beget_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 1
-              )
             labels: {}
 
         beget_capi_cluster_workers_replica_consistent:
@@ -91,14 +104,37 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
+                beget_capi_cluster_workers_replicas
+                == bool
+                beget_capi_cluster_workers_desired_replicas
+              )
+              and
+              on(namespace, name) (
                 beget_capi_cluster_workers_ready_replicas
                 == bool
                 beget_capi_cluster_workers_desired_replicas
               )
-              and on(namespace, name)
-              (
-                beget_capi_cluster_workers_uptodate_replicas
+              and
+              on(namespace, name) (
+                beget_capi_cluster_workers_available_replicas
                 == bool
                 beget_capi_cluster_workers_desired_replicas
+              )
+            labels: {}
+
+        beget_capi_cluster_workers_update_required:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_workers_update_required
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_workers_uptodate_replicas
+                != bool
+                beget_capi_cluster_workers_desired_replicas
+              )
+              or
+              on(namespace, name) (
+                beget_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 0
               )
             labels: {}
