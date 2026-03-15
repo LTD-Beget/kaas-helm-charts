@@ -9,6 +9,8 @@ metadata:
 spec:
   values: |
     kube-state-metrics:
+      tolerations:
+        - operator: "Exists"
       prometheusScrape: false
       metricLabelsAllowlist:
         - nodes=[node-group.beget.com/name]
