@@ -42,7 +42,6 @@ capiClusterRules:
               (
                 beget_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 1
               )
-              and on(namespace, name)
             labels: {}
 
         beget_capi_cluster_controlplane_replica_consistent:
