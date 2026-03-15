@@ -48,9 +48,23 @@ vmrules:
             enabled: true
           beget_capi_cluster_controlplane_replica_consistent:
             enabled: true
+          beget_capi_cluster_controlplane_update_required:
+            enabled: true
           beget_capi_cluster_workers_condition_consistent:
             enabled: true
           beget_capi_cluster_workers_replica_consistent:
+            enabled: true
+          beget_capi_cluster_workers_update_required:
+            enabled: true
+          beget_capi_cluster_nodes_consistent:
+            enabled: true
+          beget_capi_cluster_nodes_update_required:
+            enabled: true
+          beget_capi_cluster_updating:
+            enabled: true
+          beget_capi_cluster_alive:
+            enabled: true
+          beget_capi_cluster_ready:
             enabled: true
   certManager:
     enabled: true
