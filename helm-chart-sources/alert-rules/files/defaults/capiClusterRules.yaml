@@ -1,0 +1,105 @@
+capiClusterRules:
+  enabled: false
+  groups:
+    capiClusterRules:
+      enabled: false
+      rules:
+        beget_capi_cluster_deletion_requested:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_deletion_requested
+            annotations: {}
+            expr: |
+              max by(cluster_full_name,cluster_type,name,namespace,remotewrite_cluster) (
+                (
+                  beget_capi_cluster_deleted_timestamp_seconds > 0
+                )
+                or on(namespace, name)
+                (
+                  beget_capi_cluster_status_phase{phase="Deleting"} == 1
+                )
+                or on(namespace, name)
+                (
+                  beget_capi_cluster_condition{type="Deleting"} == 1
+                )
+              ) > bool 0
+            labels: {}
+
+        beget_capi_cluster_controlplane_condition_consistent:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_controlplane_condition_consistent
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_condition{type="ControlPlaneAvailable"} == bool 1
+              )
+              and on(namespace, name)
+              (
+                beget_capi_cluster_condition{type="ControlPlaneMachinesReady"} == bool 1
+              )
+              and on(namespace, name)
+              (
+                beget_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 1
+              )
+              and on(namespace, name)
+            labels: {}
+
+        beget_capi_cluster_controlplane_replica_consistent:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_controlplane_replica_consistent
+            annotations: {}
+            expr: |
+              (
+                (
+                  beget_capi_cluster_controlplane_ready_replicas
+                  == bool
+                  beget_capi_cluster_controlplane_desired_replicas
+                )
+                and
+                (
+                  beget_capi_cluster_controlplane_uptodate_replicas
+                  == bool
+                  beget_capi_cluster_controlplane_desired_replicas
+                )
+              )
+            labels: {}
+
+        beget_capi_cluster_workers_condition_consistent:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_workers_condition_consistent
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_condition{type="WorkersAvailable"} == bool 1
+              )
+              and on(namespace, name)
+              (
+                beget_capi_cluster_condition{type="WorkerMachinesReady"} == bool 1
+              )
+              and on(namespace, name)
+              (
+                beget_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 1
+              )
+            labels: {}
+
+        beget_capi_cluster_workers_replica_consistent:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_workers_replica_consistent
+            annotations: {}
+            expr: |
+              (
+                beget_capi_cluster_workers_ready_replicas
+                == bool
+                beget_capi_cluster_workers_desired_replicas
+              )
+              and on(namespace, name)
+              (
+                beget_capi_cluster_workers_uptodate_replicas
+                == bool
+                beget_capi_cluster_workers_desired_replicas
+              )
+            labels: {}
