@@ -90,6 +90,8 @@ vmrules:
             enabled: true
           beget_capi_cluster_ready:
             enabled: true
+          beget_capi_cluster_controlplane_endpoint:
+            enabled: true
   certManager:
     enabled: true
     groups:
