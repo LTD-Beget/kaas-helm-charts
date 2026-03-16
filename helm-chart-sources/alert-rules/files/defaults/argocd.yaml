@@ -227,7 +227,20 @@ argocd:
                 Namespace: {{ $labels.namespace }}
                 Target cluster: {{ $labels.server }}
             expr: |
-              argocd_cluster_connection_status{} < 1
+              (
+                (
+                  argocd_cluster_connection_status < 1
+                )
+                * on(server) group_left(cluster_full_name,name,namespace)
+                (
+                  beget_capi_cluster_controlplane_endpoint
+                )
+              )
+              unless
+              on(cluster_full_name,name,namespace)
+              (
+                beget_capi_cluster_alive != 1
+              )
             for: 5m
             labels:
               severity: critical
