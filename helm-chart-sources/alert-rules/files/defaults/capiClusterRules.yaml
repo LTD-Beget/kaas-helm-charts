@@ -269,3 +269,32 @@ capiClusterRules:
                 beget_capi_cluster_deletion_requested > 0
               )
             labels: {}
+
+        beget_capi_cluster_controlplane_endpoint:
+          enabled: false
+          spec:
+            record: beget_capi_cluster_controlplane_endpoint
+            annotations: {}
+            expr: |
+              max by(cluster_full_name,name,namespace,server)(
+                label_join(
+                  label_replace(
+                    label_join(
+                      beget_capi_cluster_resource_info,
+                      "__tmp_hostport",
+                      ":",
+                      "controlplane_endpoint_host",
+                      "controlplane_endpoint_port"
+                    ),
+                    "__tmp_prefix",
+                    "https://",
+                    "name",
+                    ".*"
+                  ),
+                  "server",
+                  "",
+                  "__tmp_prefix",
+                  "__tmp_hostport"
+                )
+              )
+            labels: {}
