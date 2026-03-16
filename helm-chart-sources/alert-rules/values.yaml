@@ -46,6 +46,8 @@ vmrules:
             enabled: true
           BegetCapiClusterNotReady:
             enabled: true
+          BegetCapiClusterNotReadyTooLong:
+            enabled: true
           BegetCapiClusterNodesInconsistent:
             enabled: true
           BegetCapiClusterNodesUpdateRequiredTooLong:
@@ -55,8 +57,6 @@ vmrules:
           BegetCapiClusterDeletionRequestedTooLong:
             enabled: true
           BegetCapiClusterControlPlaneUpdateRequiredTooLong:
-            enabled: true
-          BegetCapiClusterWorkersUpdateRequiredTooLong:
             enabled: true
           BegetCapiClusterPausedButUpdateRequired:
             enabled: true
