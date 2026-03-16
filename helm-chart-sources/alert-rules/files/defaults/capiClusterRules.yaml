@@ -10,16 +10,16 @@ capiClusterRules:
             record: beget_capi_cluster_deletion_requested
             annotations: {}
             expr: |
-              max by(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              max by(cluster_full_name, namespace, name) (
                 (
                   beget_capi_cluster_deleted_timestamp_seconds > 0
                 )
                 or
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_status_phase{phase="Deleting"} == 1
                 )
                 or
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="Deleting"} == 1
                 )
               ) > bool 0
@@ -35,7 +35,7 @@ capiClusterRules:
                 beget_capi_cluster_condition{type="ControlPlaneAvailable"} == bool 1
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_condition{type="ControlPlaneMachinesReady"} == bool 1
               )
             labels: {}
@@ -52,13 +52,13 @@ capiClusterRules:
                 beget_capi_cluster_controlplane_desired_replicas
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_controlplane_ready_replicas
                 == bool
                 beget_capi_cluster_controlplane_desired_replicas
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_controlplane_available_replicas
                 == bool
                 beget_capi_cluster_controlplane_desired_replicas
@@ -78,7 +78,7 @@ capiClusterRules:
                   bool beget_capi_cluster_controlplane_desired_replicas
                 )
                 +
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 0
                 ),
                 1
@@ -95,7 +95,7 @@ capiClusterRules:
                 beget_capi_cluster_condition{type="WorkersAvailable"} == bool 1
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_condition{type="WorkerMachinesReady"} == bool 1
               )
             labels: {}
@@ -112,13 +112,13 @@ capiClusterRules:
                 beget_capi_cluster_workers_desired_replicas
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_workers_ready_replicas
                 == bool
                 beget_capi_cluster_workers_desired_replicas
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_workers_available_replicas
                 == bool
                 beget_capi_cluster_workers_desired_replicas
@@ -138,7 +138,7 @@ capiClusterRules:
                   bool beget_capi_cluster_workers_desired_replicas
                 )
                 +
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 0
                 ),
                 1
@@ -155,15 +155,15 @@ capiClusterRules:
                 beget_capi_cluster_controlplane_condition_consistent == bool 1
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_controlplane_replica_consistent == bool 1
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_workers_condition_consistent == bool 1
               )
               *
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_workers_replica_consistent == bool 1
               )
             labels: {}
@@ -179,7 +179,7 @@ capiClusterRules:
                   beget_capi_cluster_controlplane_update_required == bool 1
                 )
                 +
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_workers_update_required == bool 1
                 ),
                 1
@@ -197,13 +197,13 @@ capiClusterRules:
                   beget_capi_cluster_spec_paused == bool 0
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   clamp_max(
                     (
                       beget_capi_cluster_controlplane_update_required == bool 1
                     )
                     +
-                    on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                    on(cluster_full_name, namespace, name) (
                       beget_capi_cluster_workers_update_required == bool 1
                     ),
                     1
@@ -211,7 +211,7 @@ capiClusterRules:
                 )
               )
               unless
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             labels: {}
@@ -227,12 +227,12 @@ capiClusterRules:
                   beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
                 )
               )
               unless
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             labels: {}
@@ -248,24 +248,24 @@ capiClusterRules:
                   beget_capi_cluster_spec_paused == bool 0
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="Available"} == bool 1
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="InfrastructureReady"} == bool 1
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
                 )
                 *
-                on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+                on(cluster_full_name, namespace, name) (
                   beget_capi_cluster_nodes_consistent == bool 1
                 )
               )
               unless
-              on(cluster_full_name, cluster_type, namespace, name, remotewrite_cluster) (
+              on(cluster_full_name, namespace, name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             labels: {}

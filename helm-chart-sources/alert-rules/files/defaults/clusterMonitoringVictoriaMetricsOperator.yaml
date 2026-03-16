@@ -21,7 +21,12 @@ clusterMonitoringVictoriaMetricsOperator:
                 Pod: {{ $labels.pod }}
                 Container: {{ $labels.container }}
                 RestartsCountIn1m: {{ $value | humanize }}
-            expr: rate(kube_pod_container_status_restarts_total{namespace=~"kube-system",cluster_type!="client"}[10m]) * 600>=1
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace=~"kube-system",cluster_type!="client"
+                }[10m]
+                ) * 600>=1
             for: 1m
             labels:
               severity: critical

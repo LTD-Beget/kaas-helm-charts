@@ -11,8 +11,8 @@ argocd:
             annotations:
               summary: "An ArgoCD Application has Failed to Sync."
               description: |
-                The application {{ $labels.dest_server }}/{{ $labels.project }}/{{ $labels.name }}
-                has failed to sync with the status {{ $labels.phase }} the past 10m.
+                The application {{ $labels.name }} has failed to sync 
+                with the status {{ $labels.phase }} the past 10m.
               message: |
                 {{ $labels.cluster_full_name }}: ArgoCD Application sync failed
                 Application has failed to sync during the last 10 minutes.
@@ -44,8 +44,8 @@ argocd:
             annotations:
               summary: "An ArgoCD Application is Unhealthy."
               description: |
-                The application {{ $labels.dest_server }}/{{ $labels.project }}/{{ $labels.name }}
-                is unhealthy with the health status {{ $labels.health_status }} for the past 15m.
+                The application {{ $labels.name }} is unhealthy with the 
+                health status {{ $labels.health_status }} for the past 15m.
               message: |
                 {{ $labels.cluster_full_name }}: ArgoCD Application is unhealthy
                 Application health status is degraded for more than 15 minutes.
@@ -73,8 +73,8 @@ argocd:
             annotations:
               summary: "An ArgoCD Application is Out Of Sync."
               description: |
-                The application {{ $labels.dest_server }}/{{ $labels.project }}/{{ $labels.name }}
-                is out of sync with the sync status {{ $labels.sync_status }} for the past 15m.
+                The application {{ $labels.name }} is out of sync with 
+                the sync status {{ $labels.sync_status }} for the past 15m.
               message: |
                 {{ $labels.cluster_full_name }}: ArgoCD Application is out of sync
                 Application desired state differs from live cluster state for more than 15 minutes.
@@ -102,8 +102,7 @@ argocd:
             annotations:
               summary: "An ArgoCD Application has AutoSync Disabled."
               description: |
-                The application {{ $labels.dest_server }}/{{ $labels.project }}/{{ $labels.name }}
-                has autosync disabled for the past 2h.
+                The application {{ $labels.name }} has autosync disabled for the past 2h.
               message: |
                 {{ $labels.cluster_full_name }}: ArgoCD Application autosync disabled
                 Autosync has been disabled for more than 2 hours.
