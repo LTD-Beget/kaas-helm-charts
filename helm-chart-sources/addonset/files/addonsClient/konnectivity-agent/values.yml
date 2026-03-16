@@ -2,15 +2,26 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: konnectivity-agent-client
+  name: konnectivity-agent-default
   labels:
-    addons.in-cloud.io/values: client
+    addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: konnectivity-agent
 spec:
   values: |
     tolerations:
       - operator: "Exists"
     hostNetwork: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: konnectivity-agent-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: konnectivity-agent
+spec:
+  values: |
     agent:
       extraArgs:
         proxy-server-host: {{ .Values.cluster.host }}

@@ -50,9 +50,14 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: client
-      priority: 10
+    - name: default
+      priority: 0
       matchLabels:
-        addons.in-cloud.io/values: client
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: konnectivity-agent
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: konnectivity-agent
 {{- end }}
