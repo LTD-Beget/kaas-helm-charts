@@ -22,8 +22,9 @@ kubeStateMetrics:
                   kind: Cluster
                 metricNamePrefix: capi_cluster
                 labelsFromPath:
-                  name: [metadata, name]
-                  namespace: [metadata, namespace]
+                  cluster_name: [metadata, name]
+                  cluster_namespace: [metadata, namespace]
+                  cluster_hash: [metadata, labels, "xcluster.in-cloud.io/name"]
                 metrics:
                   - name: resource_info
                     help: "Cluster inventory info."
@@ -201,5 +202,13 @@ kubeStateMetrics:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+      serviceScrapeConfig:
+        relabelConfigs:
+          - source_labels: [cluster_namespace, cluster_name]
+            separator: "-"
+            regex: "(.+)-(.+)-(.+)"
+            target_label: cluster_full_name
+            replacement: "$1-$2"
+            action: replace
   ` }}
 {{- end -}}
