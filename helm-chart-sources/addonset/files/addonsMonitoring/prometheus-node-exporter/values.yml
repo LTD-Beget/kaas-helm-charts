@@ -25,8 +25,6 @@ spec:
         limits:
           cpu: 512m
           memory: 256Mi
-      tolerations:
-        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -57,6 +55,22 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

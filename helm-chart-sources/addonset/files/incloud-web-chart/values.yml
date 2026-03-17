@@ -9,11 +9,6 @@ metadata:
 spec:
   values: |
     incloud-web-chart:
-      tolerations:
-        - operator: "Exists"
-      oauth2-proxy:
-        tolerations:
-          - operator: "Exists"
       podDisruptionBudget:
         minAvailable: 0
 
@@ -98,6 +93,23 @@ metadata:
     addons.in-cloud.io/addon: incloud-web-chart
 spec:
   values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: iclientt
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    incloud-web-chart:
+      tolerations:
+        - operator: "Exists"
+      oauth2-proxy:
+        tolerations:
+          - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

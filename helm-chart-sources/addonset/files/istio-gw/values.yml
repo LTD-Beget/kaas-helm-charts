@@ -16,8 +16,6 @@ spec:
         requests:
           cpu: 100m
           memory: 128Mi
-      tolerations:
-        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -99,6 +97,20 @@ spec:
             protocol: HTTP 
     telemetry:
       enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

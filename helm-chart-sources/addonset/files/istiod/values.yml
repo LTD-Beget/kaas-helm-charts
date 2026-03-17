@@ -26,8 +26,6 @@ spec:
           tracer: zipkin
         defaultPodDisruptionBudget:
           enabled: false
-      tolerations:
-        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -95,7 +93,22 @@ spec:
       enabled: true
 
 ---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
+---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:

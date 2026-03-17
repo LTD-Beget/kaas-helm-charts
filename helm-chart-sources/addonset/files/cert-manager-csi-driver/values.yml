@@ -9,8 +9,6 @@ metadata:
 spec:
   values: |
     cert-manager-csi-driver:
-      tolerations:
-        - operator: "Exists"
       resources:
         limits:
           cpu: 200m
@@ -48,6 +46,22 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+    cert-manager-csi-driver:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

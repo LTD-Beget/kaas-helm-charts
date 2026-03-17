@@ -9,8 +9,6 @@ metadata:
 spec:
   values: |
     trust-manager:
-      tolerations:
-        - operator: "Exists"
       app:
         trust:
           namespace: beget-cert-manager
@@ -65,6 +63,23 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: infra
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    trust-manager:
+      app:
+        podLabels:
+          toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

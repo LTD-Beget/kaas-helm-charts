@@ -18,8 +18,6 @@ spec:
         limits:
           cpu: 250m
           memory: 256Mi
-      tolerations:
-        - operator: "Exists"
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
@@ -49,6 +47,22 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
