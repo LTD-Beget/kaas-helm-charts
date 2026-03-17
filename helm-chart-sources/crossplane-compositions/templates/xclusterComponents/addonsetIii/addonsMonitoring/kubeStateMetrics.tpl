@@ -203,10 +203,10 @@ kubeStateMetrics:
         issuer:
           name: selfsigned-cluster-issuer
       serviceScrapeConfig:
-        relabelConfigs:
+        metricRelabelConfigs:
           - source_labels: [cluster_namespace, cluster_name]
             separator: "-"
-            regex: "(.+)-(.+)-(.+)"
+            regex: "(.+)-(.+)"
             target_label: cluster_full_name
             replacement: "$1-$2"
             action: replace
