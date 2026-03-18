@@ -31,11 +31,17 @@ helmInsVMAgentAddRbac:
         apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRole
         metadata:
-          name: non-resource-metrics-url
+          name: vmagent-metrics
         rules:
           - nonResourceURLs:
               - "/metrics"
               - "/grafana/metrics"
+            verbs:
+              - get
+          - apiGroups:
+              - ""
+            resources:
+              - services
             verbs:
               - get
 
@@ -43,11 +49,11 @@ helmInsVMAgentAddRbac:
         apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
         metadata:
-          name: metrics
+          name: vmagent-metrics
         roleRef:
           apiGroup: rbac.authorization.k8s.io
           kind: ClusterRole
-          name: non-resource-metrics-url
+          name: vmagent-metrics
         subjects:
           - kind: ServiceAccount
             name: vmagent-vmagent
