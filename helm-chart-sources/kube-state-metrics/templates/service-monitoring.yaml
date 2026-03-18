@@ -4,10 +4,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{- include "kube-state-metrics.name" . }}-monitoring
-  namespace: {{- include "kube-state-metrics.namespace" . }}
+  name: {{ include "kube-state-metrics.name" . }}-monitoring
+  namespace: {{ include "kube-state-metrics.namespace" . }}
   labels:
-    monitoring.in-cloud.io/service: {{ .Release.Name }}
+    monitoring.in-cloud.io/service: {{ include "kube-state-metrics.name" . }}
 spec:
   ports:
   - name: https-metrics

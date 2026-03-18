@@ -3,17 +3,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: process-exporter-prometheus-process-exporter-svc-tls
+  name: prometheus-process-exporter-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: process-exporter-prometheus-process-exporter-svc-tls
+  secretName: prometheus-process-exporter-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: process-exporter-prometheus-process-exporter
+  commonName: {{ template "prometheus-process-exporter.fullname" . }}
   dnsNames:
-    - process-exporter-prometheus-process-exporter
-    - process-exporter-prometheus-process-exporter.{{ .Release.Namespace }}
-    - process-exporter-prometheus-process-exporter.{{ .Release.Namespace }}.svc
+    - {{ template "prometheus-process-exporter.fullname" . }}
+    - {{ template "prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}
+    - {{ template "prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
