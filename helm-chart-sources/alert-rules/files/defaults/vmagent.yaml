@@ -96,21 +96,11 @@ vmagent:
                 on(cluster_full_name)
                 (
                   (
-                    label_replace(
-                      beget_capi_cluster_controlplane_ready_replicas{},
-                      "cluster_full_name",
-                      "$1",
-                      "name",
-                      "(.*)"
-                    )
-                    +
-                    label_replace(
-                      beget_capi_cluster_workers_ready_replicas{},
-                      "cluster_full_name",
-                      "$1",
-                      "name",
-                      "(.*)"
-                    )
+                    beget_capi_cluster_controlplane_ready_replicas{}
+                  )
+                  +
+                  (
+                    beget_capi_cluster_workers_ready_replicas{}
                   ) == 0
                 )
               ) == 0
@@ -141,25 +131,17 @@ vmagent:
                 on(cluster_full_name)
                 (
                   (
-                    label_replace(
-                      beget_capi_cluster_controlplane_ready_replicas{},
-                      "cluster_full_name",
-                      "$1",
-                      "name",
-                      "(.*)"
+                    (
+                      beget_capi_cluster_controlplane_ready_replicas{}
                     )
                     +
-                    label_replace(
-                      beget_capi_cluster_workers_ready_replicas{},
-                      "cluster_full_name",
-                      "$1",
-                      "name",
-                      "(.*)"
+                    (
+                      beget_capi_cluster_workers_ready_replicas{}
                     )
                   ) == 0
                 )
               ) > 0
-            for: 30m
+            for: 60m
             labels:
               severity: critical
 
