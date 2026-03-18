@@ -48,12 +48,30 @@ spec:
          subPath: tls.key
 
       volumes:
-        - secret:
+        - name: kubeconfig
+          secret:
            secretName: client-kube-state-metrics-kubeconfig
-          name: kubeconfig
-        - secret:
+        - name: kubeconfig-certs
+          secret:
            secretName: monitoring-client
-          name: kubeconfig-certs
+
+      kubeRBACProxy:
+        enabled: true
+        image:
+          registry: quay.io
+          repository: brancz/kube-rbac-proxy
+          tag: v0.21.0
+
+        extraArgs:
+          - --v=2
+
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
 
       extraManifests:
         - apiVersion: v1
@@ -137,8 +155,30 @@ metadata:
     addons.in-cloud.io/addon: client-kube-state-metrics
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
+    kube-state-metrics:
+      volumes:
+        - name: kubeconfig
+          secret:
+           secretName: client-kube-state-metrics-kubeconfig
+        - name: kubeconfig-certs
+          secret:
+           secretName: monitoring-client
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: client-kube-state-metrics-svc-tls
+
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+
+        volumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+
     monitoring:
       secureService:
         enabled: true

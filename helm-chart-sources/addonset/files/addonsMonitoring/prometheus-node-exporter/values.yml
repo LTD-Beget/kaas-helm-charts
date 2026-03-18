@@ -25,6 +25,21 @@ spec:
         limits:
           cpu: 512m
           memory: 256Mi
+      kubeRBACProxy:
+        enabled: true
+        image:
+          registry: quay.io
+          repository: brancz/kube-rbac-proxy
+          tag: v0.21.0
+        extraArgs:
+          - --v=2
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -82,8 +97,21 @@ metadata:
     addons.in-cloud.io/addon: prometheus-node-exporter
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
+    prometheus-node-exporter:
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+        extraVolumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+      extraVolumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-node-exporter-svc-tls
     monitoring:
       secureService:
         enabled: true
@@ -100,6 +128,11 @@ metadata:
     addons.in-cloud.io/addon: prometheus-node-exporter
 spec:
   values: |
+    prometheus-node-exporter:
+      service:
+        labels:
+          monitoring.in-cloud.io/service: prometheus-node-exporter
+        portName: https-metrics
     monitoring:
       enabled: true
 
