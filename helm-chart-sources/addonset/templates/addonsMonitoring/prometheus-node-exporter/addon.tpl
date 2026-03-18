@@ -8,7 +8,7 @@ spec:
   chart: "prometheus-node-exporter"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "4.47.2-1"
+  version: "4.49.2-1"
   releaseName: prometheus-node-exporter
   targetCluster: in-cluster
   targetNamespace: "beget-prometheus-node-exporter"

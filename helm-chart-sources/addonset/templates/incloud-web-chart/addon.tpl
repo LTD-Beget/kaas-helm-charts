@@ -8,7 +8,7 @@ spec:
   chart: "incloud-web-chart"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "1.3.0-1"
+  version: "1.3.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-incloud-web-chart"
   variables:
