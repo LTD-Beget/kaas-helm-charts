@@ -190,10 +190,44 @@ kubeStateMetrics:
             verbs:
               - list
               - watch
-  {{ if $certManagerReady }}
-    argocdPlugins:
-      kustomize: true
-  {{ end }}
+    {{ if $certManagerReady }}
+      kubeRBACProxy:
+        enabled: true
+        image:
+          registry: quay.io
+          repository: brancz/kube-rbac-proxy
+          tag: v0.21.0
+
+        extraArgs:
+          - --secure-listen-address=0.0.0.0:8080
+          - --upstream=http://127.0.0.1:9080
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+
+        volumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+
+      volumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: kube-state-metrics-svc-tls
+    {{ end }}
+      customLabels:
+        # For vmServiceScrape
+        # monitoring.in-cloud.io/service: {{ .Release.Name }}
+        monitoring.in-cloud.io/service: kube-state-metrics
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
