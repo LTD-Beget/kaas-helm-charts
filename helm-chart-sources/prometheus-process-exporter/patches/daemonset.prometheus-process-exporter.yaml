@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: prometheus-node-exporter
+  name: prometheus-process-exporter
 spec:
   template:
     spec:
@@ -10,14 +10,14 @@ spec:
         - name: rbac-proxy
           image: quay.io/brancz/kube-rbac-proxy:v0.21.0
           args:
-            - --secure-listen-address=0.0.0.0:11045
-            - --upstream=http://127.0.0.1:9100
+            - --secure-listen-address=0.0.0.0:11046
+            - --upstream=http://127.0.0.1:9101
             - --tls-cert-file=/app/config/metrics/tls/tls.crt
             - --tls-private-key-file=/app/config/metrics/tls/tls.key
             - --v=2
           ports:
             - name: https-metrics
-              containerPort: 11045
+              containerPort: 11046
               protocol: TCP
           resources:
             requests:
@@ -34,4 +34,4 @@ spec:
       - name: rbac-proxy-tls
         secret:
           defaultMode: 420
-          secretName: prometheus-node-exporter-svc-tls
+          secretName: prometheus-process-exporter-svc-tls

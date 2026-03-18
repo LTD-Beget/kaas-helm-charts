@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-kube-state-metrics
+  name: incloud-ui-oauth2-proxy
   labels:
-    monitoring.in-cloud.io/service: client-kube-state-metrics
+    monitoring.in-cloud.io/service: incloud-web-chart-oauth2-proxy
 spec:
   ports:
     - name: https-metrics

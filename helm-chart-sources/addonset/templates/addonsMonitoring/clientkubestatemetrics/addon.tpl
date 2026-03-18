@@ -6,9 +6,9 @@ metadata:
   name: client-kube-state-metrics
 spec:
   chart: "kube-state-metrics"
-  pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "6.1.0-1"
+  version: "6.1.0-3"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "beget-client-kube-state-metrics"
   variables:

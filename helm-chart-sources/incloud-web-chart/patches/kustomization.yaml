@@ -14,3 +14,13 @@ patches:
     target:
       kind: Service
       name: incloud-web-chart-oauth2-proxy
+
+  - path: ./deployment.incloud-ui-oauth2-proxy.yaml
+    target:
+      kind: Deployment
+      name: incloud-ui-oauth2-proxy
+
+  - path: ./service.incloud-ui-oauth2-proxy.yaml
+    target:
+      kind: Service
+      name: incloud-ui-oauth2-proxy

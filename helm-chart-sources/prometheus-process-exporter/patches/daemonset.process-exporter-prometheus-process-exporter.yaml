@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: process-exporter-prometheus-process-exporter
+  name: prometheus-process-exporter
 spec:
   template:
     spec:
@@ -34,4 +34,4 @@ spec:
       - name: rbac-proxy-tls
         secret:
           defaultMode: 420
-          secretName: process-exporter-prometheus-process-exporter-svc-tls
+          secretName: prometheus-process-exporter-svc-tls

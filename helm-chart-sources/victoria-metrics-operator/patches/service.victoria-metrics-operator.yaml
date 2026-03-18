@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kube-state-metrics
+  name: victoria-metrics-operator
   labels:
-    monitoring.in-cloud.io/service: kube-state-metrics
+    monitoring.in-cloud.io/service: victoria-metrics-operator
 spec:
   ports:
     - name: https-metrics

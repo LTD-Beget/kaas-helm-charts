@@ -5,12 +5,12 @@ resources:
   - ./base.yaml
 
 patches:
-  - path: ./deployment.vm-operator-victoria-metrics-operator.yaml
+  - path: ./deployment.victoria-metrics-operator.yaml
     target:
       kind: Deployment
-      name: vm-operator-victoria-metrics-operator
+      name: victoria-metrics-operator
 
-  - path: ./service.vm-operator-victoria-metrics-operator.yaml
+  - path: ./service.victoria-metrics-operator.yaml
     target:
       kind: Service
-      name: vm-operator-victoria-metrics-operator
+      name: victoria-metrics-operator

@@ -5,12 +5,7 @@ resources:
   - ./base.yaml
 
 patches:
-  - path: ./daemonset.process-exporter-prometheus-process-exporter.yaml
+  - path: ./daemonset.prometheus-process-exporter.yaml
     target:
       kind: DaemonSet
-      name: process-exporter-prometheus-process-exporter
-
-  - path: ./service.process-exporter-prometheus-process-exporter.yaml
-    target:
-      kind: Service
-      name: process-exporter-prometheus-process-exporter
+      name: prometheus-process-exporter

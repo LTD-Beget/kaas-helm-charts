@@ -6,9 +6,9 @@ metadata:
   name: kube-state-metrics
 spec:
   chart: "kube-state-metrics"
-  pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "6.1.0-2"
+  version: "6.1.0-3"
+  pluginName: helm-with-values
   releaseName: kube-state-metrics
   targetCluster: in-cluster
   targetNamespace: "beget-kube-state-metrics"

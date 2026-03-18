@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-kube-state-metrics
+  name: victoria-metrics-operator
 spec:
   template:
     spec:
@@ -34,4 +34,4 @@ spec:
       - name: rbac-proxy-tls
         secret:
           defaultMode: 420
-          secretName: kube-state-metrics-svc-tls
+          secretName: victoria-metrics-operator-svc-tls
