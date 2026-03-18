@@ -10,10 +10,10 @@ metadata:
     monitoring.in-cloud.io/service: {{ include "kube-state-metrics.name" . }}
 spec:
   ports:
-  - name: https-metrics
+  - name: http
     port: {{ $ksm.service.port | default 8080}}
     protocol: TCP
-    targetPort: https-metrics
+    targetPort: http
   selector:
     {{- include "kube-state-metrics.selectorLabels" . | indent 4 }}
 {{- end }}
