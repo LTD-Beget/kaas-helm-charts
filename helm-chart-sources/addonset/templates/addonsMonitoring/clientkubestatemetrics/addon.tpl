@@ -5,12 +5,9 @@ kind: Addon
 metadata:
   name: client-kube-state-metrics
 spec:
-  # chart: "kube-state-metrics"
-  # repoURL: "https://blog.beget.com/kaas-helm-charts"
-  # version: "6.1.0-3"
-  path: "helm-chart-sources/kube-state-metrics"
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts.git"
-  version: "fix/vmscrapes"
+  chart: "kube-state-metrics"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "6.1.0-3"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "beget-client-kube-state-metrics"

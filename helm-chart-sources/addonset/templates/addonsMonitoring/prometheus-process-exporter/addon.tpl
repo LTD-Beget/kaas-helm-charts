@@ -5,12 +5,9 @@ kind: Addon
 metadata:
   name: prometheus-process-exporter
 spec:
-  # chart: "prometheus-process-exporter"
-  # repoURL: "https://blog.beget.com/kaas-helm-charts"
-  # version: "0.5.0-2"
-  path: "helm-chart-sources/prometheus-process-exporter"
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts.git"
-  version: "fix/vmscrapes"
+  chart: "prometheus-process-exporter"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.5.0-2"
   pluginName: helm-with-values
   releaseName: prometheus-process-exporter
   targetCluster: in-cluster
