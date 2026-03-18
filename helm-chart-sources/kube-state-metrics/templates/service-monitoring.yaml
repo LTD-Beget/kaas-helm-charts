@@ -1,0 +1,19 @@
+{{- if and .Values.monitoring.enabled }}
+{{- $ksm := index .Values "kube-state-metrics" -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{- include "kube-state-metrics.name" . }}-monitoring
+  namespace: {{- include "kube-state-metrics.namespace" . }}
+  labels:
+    monitoring.in-cloud.io/service: {{ .Release.Name }}
+spec:
+  ports:
+  - name: https-metrics
+    port: {{ $ksm.service.port | default 8080}}
+    protocol: TCP
+    targetPort: https-metrics
+  selector:
+    {{- include "kube-state-metrics.selectorLabels" . | indent 4 }}
+{{- end }}

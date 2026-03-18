@@ -224,10 +224,6 @@ kubeStateMetrics:
             defaultMode: 420
             secretName: kube-state-metrics-svc-tls
     {{ end }}
-      customLabels:
-        # For vmServiceScrape
-        # monitoring.in-cloud.io/service: {{ .Release.Name }}
-        monitoring.in-cloud.io/service: kube-state-metrics
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
