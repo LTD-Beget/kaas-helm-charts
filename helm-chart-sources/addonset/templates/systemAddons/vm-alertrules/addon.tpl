@@ -8,7 +8,7 @@ spec:
   chart: "alert-rules"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.1.0"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert-rules"
   variables: {}
