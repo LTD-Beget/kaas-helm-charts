@@ -29,7 +29,7 @@ capiClusterAlerts:
                 beget_capi_cluster_alive == 1
               )
               *
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_ready != 1
               )
             for: 30m
@@ -61,11 +61,11 @@ capiClusterAlerts:
                 beget_capi_cluster_alive == 1
               )
               *
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_nodes_consistent == 0
               )
               unless
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             for: 20m
@@ -84,7 +84,7 @@ capiClusterAlerts:
                 beget_capi_cluster_nodes_update_required == 1
               )
               unless
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             for: 120m
@@ -116,7 +116,7 @@ capiClusterAlerts:
                 beget_capi_cluster_spec_paused == 0
               )
               *
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_deletion_requested == 1
               )
             for: 60m
@@ -135,11 +135,11 @@ capiClusterAlerts:
                 beget_capi_cluster_spec_paused == 0
               )
               *
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_controlplane_update_required == 1
               )
               unless
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_deletion_requested > 0
               )
             for: 60m
@@ -158,7 +158,7 @@ capiClusterAlerts:
                 beget_capi_cluster_spec_paused == 1
               )
               *
-              on(cluster_full_name, namespace, name) (
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 beget_capi_cluster_nodes_update_required == 1
               )
             for: 30m

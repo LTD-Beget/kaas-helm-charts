@@ -10,19 +10,20 @@ capiClusterRules:
             record: beget_capi_cluster_deletion_requested
             annotations: {}
             expr: |
-              max by(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+              clamp_max(
                 (
-                  beget_capi_cluster_deleted_timestamp_seconds > 0
+                  beget_capi_cluster_deleted_timestamp_seconds > bool 0
                 )
-                or
+                +
                 on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
-                  beget_capi_cluster_status_phase{phase="Deleting"} == 1
+                  beget_capi_cluster_status_phase{phase="Deleting"} == bool 1
                 )
-                or
+                +
                 on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
-                  beget_capi_cluster_condition{type="Deleting"} == 1
-                )
-              ) > bool 0
+                  beget_capi_cluster_condition{type="Deleting"} == bool 1
+                ),
+                1
+              )
             labels: {}
 
         beget_capi_cluster_controlplane_condition_consistent:
