@@ -1,0 +1,88 @@
+clusterMonitoringVictoriaMetricsOperator:
+  enabled: false
+  groups:
+    pods:
+      enabled: false
+      rules:
+        ControlPlanePodsRestart:
+          enabled: false
+          spec:
+            alert: "ControlPlanePodsRestart"
+            annotations:
+              description: A control-plane pod restarted
+              summary: |-
+                An control plane pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources.
+              message: |
+                {{ $labels.cluster_full_name }}: control-plane pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace=~"kube-system",cluster_type!="client"
+                }[10m]
+                ) * 600>=1
+            for: 1m
+            labels:
+              severity: critical
+
+        ClientControlPlanePodsRestart:
+          enabled: false
+          spec:
+            alert: "ClientControlPlanePodsRestart"
+            annotations:
+              description: A client control-plane pod restarted
+              summary: |-
+                An client control plane pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources.
+              message: |
+                {{ $labels.cluster_full_name }}: client control-plane pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace="beget-system",
+                  container=~"konnectivity|kube-apiserver|kube-controller-manager|kube-scheduler"
+                }[10m]
+              ) * 600>=1
+            for: 1m
+            labels:
+              severity: critical
+
+        PodsRestart:
+          enabled: false
+          spec:
+            alert: "PodsRestart"
+            annotations:
+              description: Pod restarted
+              summary: |-
+                Pod restarted.
+                This may be caused by updates in the cluster, or it may be a lack of resources or incorrect configuration.
+              message: |
+                {{ $labels.cluster_full_name }}: pod restarted
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+                RestartsCountIn1m: {{ $value | humanize }}
+            expr: |
+              rate(
+                kube_pod_container_status_restarts_total{
+                  namespace=~"beget.*|kube.*",
+                  cluster_type!="client"
+                }[10m]
+              ) * 600>=1
+            for: 1m
+            labels:
+              severity: warning

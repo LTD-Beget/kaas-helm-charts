@@ -1,0 +1,205 @@
+coredns:
+  enabled: false
+  groups:
+    coredns:
+      enabled: false
+      rules:
+        CoreDNSDown:
+          enabled: false
+          spec:
+            alert: "CoreDNSDown"
+            annotations:
+              description: CoreDNS Down in cluster {{ $labels.cluster_full_name }}
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsdown
+              summary: CoreDNS has disappeared from Prometheus target discovery.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS target not discovered by Prometheus
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type!="client"})
+                unless on(cluster_full_name)
+                  up{job="coredns-coredns-metrics"} == 1
+            for: 1m
+            labels:
+              severity: warning
+
+        CoreDNSLatencyHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSLatencyHigh"
+            annotations:
+              description: CoreDNS has 99th percentile latency of {{ $value }} seconds for server {{ $labels.server }} zone {{ $labels.zone }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednslatencyhigh
+              summary: CoreDNS is experiencing high 99th percentile latency.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS 99th percentile latency above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Server: {{ $labels.server }}
+                Zone: {{ $labels.zone }}
+                Value: {{ $value }}
+            expr: |
+              histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (instance,pod)) > 4
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSErrorsHighCritical:
+          enabled: false
+          spec:
+            alert: "CoreDNSErrorsHighCritical"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
+              summary: CoreDNS is returning SERVFAIL.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above critical threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Value: {{ $value | humanizePercentage }}
+            expr: |
+              sum without (pod, instance, server, zone, view, rcode, plugin) (
+                rate(
+                  coredns_dns_responses_total{
+                    job="coredns-coredns-metrics",
+                    rcode="SERVFAIL"
+                  }[5m]
+                )
+              )
+              /
+              sum without (pod, instance, server, zone, view, rcode, plugin) (
+                rate(
+                  coredns_dns_responses_total{
+                    job="coredns-coredns-metrics"
+                  }[5m]
+                )
+              ) > 0.03
+            for: 10m
+            labels:
+              severity: critical
+
+        CoreDNSErrorsHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSErrorsHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of requests.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednserrorshigh
+              summary: CoreDNS is returning SERVFAIL.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS SERVFAIL rate above warning threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Value: {{ $value | humanizePercentage }}
+            expr: |
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, server, zone, view, rcode, plugin) (rate(coredns_dns_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
+            for: 10m
+            labels:
+              severity: warning
+
+    coredns_forward:
+      enabled: false
+      rules:
+        CoreDNSForwardLatencyHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardLatencyHigh"
+            annotations:
+              description: CoreDNS has 99th percentile latency of {{ $value }} seconds forwarding requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardlatencyhigh
+              summary: CoreDNS is experiencing high latency forwarding requests.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS forward latency above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value }}
+            expr: |
+              histogram_quantile(0.99, sum(rate(coredns_forward_request_duration_seconds_bucket{job="coredns-coredns-metrics"}[5m])) without (pod, instance, rcode)) > 4
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardErrorsTooHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardErrorsTooHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
+              summary: CoreDNS is returning SERVFAIL for forward requests.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value | humanizePercentage }}
+            expr: |
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.03
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardErrorsHigh:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardErrorsHigh"
+            annotations:
+              description: CoreDNS is returning SERVFAIL for {{ $value | humanizePercentage }} of forward requests to {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwarderrorshigh
+              summary: CoreDNS is returning SERVFAIL for forward requests.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS forward SERVFAIL rate above warning threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+                Value: {{ $value | humanizePercentage }}
+            expr: |
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics",rcode="SERVFAIL"}[5m]))
+                /
+              sum without (pod, instance, rcode) (rate(coredns_forward_responses_total{job="coredns-coredns-metrics"}[5m])) > 0.01
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardHealthcheckFailureCount:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardHealthcheckFailureCount"
+            annotations:
+              description: CoreDNS health checks have failed to upstream server {{ $labels.to }}.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckfailurecount
+              summary: CoreDNS health checks have failed to upstream server.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failures detected
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Upstream: {{ $labels.to }}
+            expr: |
+              sum without (pod, instance) (rate(coredns_forward_healthcheck_failures_total{job="coredns-coredns-metrics"}[5m])) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        CoreDNSForwardHealthcheckBrokenCount:
+          enabled: false
+          spec:
+            alert: "CoreDNSForwardHealthcheckBrokenCount"
+            annotations:
+              description: CoreDNS health checks have failed for all upstream servers.
+              runbook_url: https://github.com/povilasv/coredns-mixin/tree/master/runbook.md#alert-name-corednsforwardhealthcheckbrokencount
+              summary: CoreDNS health checks have failed for all upstream servers.
+              message: |
+                {{ $labels.cluster_full_name }}: CoreDNS upstream healthcheck failed for all upstream servers
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: |
+              sum without (pod, instance) (rate(coredns_forward_healthcheck_broken_total{job="coredns-coredns-metrics"}[5m])) > 0
+            for: 10m
+            labels:
+              severity: warning

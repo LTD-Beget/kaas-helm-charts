@@ -1,4 +1,5 @@
 {{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") }}
+{{- $scrapeConfig := .Values.monitoring.serviceScrapeConfig -}}
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
@@ -17,8 +18,12 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}
-      {{- with .Values.monitoring.serviceScrapeConfig.relabelConfigs }}
+      {{- with $scrapeConfig.relabelConfigs }}
       relabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $scrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}
   jobLabel: {{ .Release.Name }}
