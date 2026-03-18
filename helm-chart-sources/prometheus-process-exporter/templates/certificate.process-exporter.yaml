@@ -9,11 +9,11 @@ spec:
   secretName: prometheus-process-exporter-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ template "prometheus-process-exporter.fullname" . }}
+  commonName: {{ template "beget-prometheus-process-exporter.fullname" . }}
   dnsNames:
-    - {{ template "prometheus-process-exporter.fullname" . }}
-    - {{ template "prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}
-    - {{ template "prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}.svc
+    - {{ template "beget-prometheus-process-exporter.fullname" . }}
+    - {{ template "beget-prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}
+    - {{ template "beget-prometheus-process-exporter.fullname" . }}.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

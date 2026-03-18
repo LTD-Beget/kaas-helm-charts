@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "prometheus-process-exporter.name" -}}
+{{- define "beget-prometheus-process-exporter.name" -}}
 {{- $ppx := index .Values "prometheus-process-exporter" -}}
 {{- default .Chart.Name $ppx.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
@@ -12,7 +12,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "prometheus-process-exporter.fullname" -}}
+{{- define "beget-prometheus-process-exporter.fullname" -}}
 {{- $ppx := index .Values "prometheus-process-exporter" -}}
 {{- if $ppx.fullnameOverride -}}
 {{- $ppx.fullnameOverride | trunc 63 | trimSuffix "-" -}}
@@ -29,10 +29,10 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "prometheus-process-exporter.serviceAccountName" -}}
+{{- define "beget-prometheus-process-exporter.serviceAccountName" -}}
 {{- $ppx := index .Values "prometheus-process-exporter" -}}
 {{- if $ppx.serviceAccount.create -}}
-    {{ default (include "prometheus-process-exporter.fullname" .) $ppx.serviceAccount.name }}
+    {{ default (include "beget-prometheus-process-exporter.fullname" .) $ppx.serviceAccount.name }}
 {{- else -}}
     {{ default "default" $ppx.serviceAccount.name }}
 {{- end -}}

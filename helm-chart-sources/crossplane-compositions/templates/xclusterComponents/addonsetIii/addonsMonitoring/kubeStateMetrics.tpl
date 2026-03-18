@@ -199,8 +199,6 @@ kubeStateMetrics:
           tag: v0.21.0
 
         extraArgs:
-          - --secure-listen-address=0.0.0.0:8080
-          - --upstream=http://127.0.0.1:9080
           - --tls-cert-file=/app/config/metrics/tls/tls.crt
           - --tls-private-key-file=/app/config/metrics/tls/tls.key
           - --v=2

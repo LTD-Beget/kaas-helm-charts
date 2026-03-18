@@ -3,7 +3,7 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ template "prometheus-process-exporter.fullname" . }}
+  name: {{ template "beget-prometheus-process-exporter.fullname" . }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
@@ -15,6 +15,6 @@ spec:
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ template "prometheus-process-exporter.fullname" . }}
+        serverName: {{ template "beget-prometheus-process-exporter.fullname" . }}
   jobLabel: process-exporter
 {{- end }}
