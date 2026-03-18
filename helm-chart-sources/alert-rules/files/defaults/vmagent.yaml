@@ -75,18 +75,18 @@ vmagent:
           spec:
             alert: VMAgentScrapePoolHasNoTargets
             annotations:
+              summary: Vmagent scrape_pool has no discovered targets
               description: |
-                Vmagent "{{ $labels.job }}" has scrape_pool "{{ $labels.scrape_job }}" 
-                with 0 discovered targets. It is likely a misconfiguration. Please
-                follow https://docs.victoriametrics.com/victoriametrics/vmagent/#debugging-scrape-targets
-                to troubleshoot the scraping config.
-              summary: Vmagent has scrape_pool with 0 configured/discovered targets
-              message: |
-                {{ $labels.cluster_full_name }}: Vmagent has scrape_pool with 0 discovered targets (job {{ $labels.job }}; scrape_pool {{ $labels.scrape_job }})
+                Vmagent "{{ $labels.job }}" has scrape_pool "{{ $labels.scrape_job }}"
+                with 0 discovered targets for more than 30 minutes.
+                This usually indicates misconfiguration or broken service discovery.
+              message: |-
+                {{ $labels.cluster_full_name }}: Vmagent scrape_pool has no targets
 
                 Cluster: {{ $labels.cluster_full_name }}
                 Job: {{ $labels.job }}
                 Scrape pool: {{ $labels.scrape_job }}
+                Cluster type: {{ $labels.cluster_type }}
             expr: |
               (
                 sum by(cluster_full_name, cluster_type, scrape_job, job) (
@@ -113,11 +113,13 @@ vmagent:
           spec:
             alert: VMAgentTooManyScrapePoolWithoutTargets
             annotations:
+              summary: Vmagent has many scrape pools without targets
               description: |
-                Vmagent "{{ $labels.job }}" has too many scrape_pools with 0 configured/discovered targets
-              summary: Vmagent has too many scrape_pools with 0 configured/discovered targets
-              message: |
-                {{ $labels.cluster_full_name }}: Vmagent "{{ $labels.job }}" has too many scrape_pools with 0 configured/discovered targets
+                Vmagent has multiple scrape pools with no discovered targets
+                for more than 60 minutes. This usually indicates large scale service discovery
+                failure or broken configuration rollout.
+              message: |-
+                {{ $labels.cluster_full_name }}: Vmagent has many scrape pools without targets
 
                 Cluster: {{ $labels.cluster_full_name }}
             expr: |
@@ -140,7 +142,7 @@ vmagent:
                 (
                     beget_capi_cluster_deletion_requested == 1
                 )
-              ) > 0
+              ) > 3
             for: 60m
             labels:
               severity: critical
