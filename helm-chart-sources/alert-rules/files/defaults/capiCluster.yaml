@@ -10,7 +10,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterNotAlive
             annotations:
               summary: "Cluster is not alive"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is not alive for 10m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is not alive for 10m"
             expr: |
               beget_capi_cluster_alive == 0
             for: 10m
@@ -23,7 +23,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterNotReady
             annotations:
               summary: "Cluster is not ready"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is alive, but not ready"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is alive, but not ready"
             expr: |
               (
                 beget_capi_cluster_alive == 1
@@ -42,7 +42,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterNotReadyTooLong
             annotations:
               summary: "Cluster is not ready"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is alive, but not ready too long"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is alive, but not ready too long"
             expr: |
                 beget_capi_cluster_ready != 1
             for: 90m
@@ -55,7 +55,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterNodesInconsistent
             annotations:
               summary: "Cluster nodes are inconsistent"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} has inconsistent node state for 20m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} has inconsistent node state for 20m"
             expr: |
               (
                 beget_capi_cluster_alive == 1
@@ -78,7 +78,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterNodesUpdateRequiredTooLong
             annotations:
               summary: "Cluster update required for too long"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} requires node updates for more than 120m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} requires node updates for more than 120m"
             expr: |
               (
                 beget_capi_cluster_nodes_update_required == 1
@@ -97,7 +97,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterUpdatingTooLong
             annotations:
               summary: "Cluster updating for too long"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is updating for more than 90m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is updating for more than 90m"
             expr: |
               beget_capi_cluster_updating == 1
             for: 90m
@@ -110,7 +110,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterDeletionRequestedTooLong
             annotations:
               summary: "Cluster deletion requested for too long"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is marked for deletion for more than 60m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is marked for deletion for more than 60m"
             expr: |
               (
                 beget_capi_cluster_spec_paused == 0
@@ -129,7 +129,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterControlPlaneUpdateRequiredTooLong
             annotations:
               summary: "Control plane update required for too long"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} control plane requires update for more than 60m"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} control plane requires update for more than 60m"
             expr: |
               (
                 beget_capi_cluster_spec_paused == 0
@@ -152,7 +152,7 @@ capiClusterAlerts:
             alert: BegetCapiClusterPausedButUpdateRequired
             annotations:
               summary: "Paused cluster still requires update"
-              description: "Cluster {{ $labels.namespace }}/{{ $labels.name }} is paused and still has pending updates"
+              description: "Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is paused and still has pending updates"
             expr: |
               (
                 beget_capi_cluster_spec_paused == 1
