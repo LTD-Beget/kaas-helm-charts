@@ -10,6 +10,7 @@ spec:
   values: |
     kube-state-metrics:
       enabled: false
+      nameOverride: client-kube-state-metrics
       tolerations:
         - operator: "Exists"
       prometheusScrape: false
