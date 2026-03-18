@@ -4,12 +4,12 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ include "kube-state-metrics.name" . }}-monitoring
-  namespace: {{ include "kube-state-metrics.namespace" . }}
+  name: {{ include "beget-kube-state-metrics.name" . }}-monitoring
+  namespace: {{ include "beget-kube-state-metrics.namespace" . }}
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: {{ include "kube-state-metrics.name" . }}
+      monitoring.in-cloud.io/service: {{ include "beget-kube-state-metrics.name" . }}
   endpoints:
     - port: https-metrics
       path: /metrics
@@ -17,7 +17,7 @@ spec:
       honorLabels: true
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ include "kube-state-metrics.name" . }}
+        serverName: {{ include "beget-kube-state-metrics.name" . }}
       {{- with $scrapeConfig.relabelConfigs }}
       relabelConfigs:
         {{- toYaml . | nindent 8 }}
@@ -26,5 +26,5 @@ spec:
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  jobLabel: {{ include "kube-state-metrics.name" . }}
+  jobLabel: {{ include "beget-kube-state-metrics.name" . }}
 {{- end }}
