@@ -11,8 +11,6 @@ spec:
     victoria-metrics-k8s-stack:
       vmagent:
         spec:
-          tolerations:
-            - operator: "Exists"
           resources:
             requests:
               cpu: "100m"
@@ -283,6 +281,24 @@ spec:
         enabled: false
       vmsingle:
         enabled: false
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          externalLabels:
+            toleration.beget.com/ignore: "true"
+          tolerations:
+            - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
