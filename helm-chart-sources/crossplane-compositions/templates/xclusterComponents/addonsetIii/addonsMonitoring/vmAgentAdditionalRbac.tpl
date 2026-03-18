@@ -34,17 +34,19 @@ helmInsVMAgentAddRbac:
           name: vmagent-metrics
         rules:
           - nonResourceURLs:
-              - "/metrics"
               - "/grafana/metrics"
             verbs:
               - get
           - apiGroups:
               - ""
             resources:
-              - services
+              - "services/kube-state-metrics"
+              - "services/client-kube-state-metrics"
+            resourceNames:
+              - "kube-state-metrics"
+              - "client-kube-state-metrics"
             verbs:
-              - get
-
+              - "get"
       metricsClusterRoleBinding:
         apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
