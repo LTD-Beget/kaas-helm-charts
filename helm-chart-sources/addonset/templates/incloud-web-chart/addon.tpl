@@ -5,10 +5,13 @@ kind: Addon
 metadata:
   name: incloud-web-chart
 spec:
-  chart: "incloud-web-chart"
+  # chart: "incloud-web-chart"
+  # repoURL: "https://blog.beget.com/kaas-helm-charts"
+  # version: "1.3.0-2"
+  path: "helm-chart-sources/incloud-web-chart"
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts.git"
+  version: "fix/vmscrapes"
   pluginName: helm-with-values
-  repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "1.3.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-incloud-web-chart"
   variables:

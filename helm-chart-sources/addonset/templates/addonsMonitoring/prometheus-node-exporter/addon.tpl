@@ -5,10 +5,13 @@ kind: Addon
 metadata:
   name: prometheus-node-exporter
 spec:
-  chart: "prometheus-node-exporter"
+  # chart: "prometheus-node-exporter"
+  # repoURL: "https://blog.beget.com/kaas-helm-charts"
+  # version: "4.49.2-1"
+  path: "helm-chart-sources/prometheus-node-exporter"
+  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts.git"
+  version: "fix/vmscrapes"
   pluginName: helm-with-values
-  repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "4.49.2-1"
   releaseName: prometheus-node-exporter
   targetCluster: in-cluster
   targetNamespace: "beget-prometheus-node-exporter"
