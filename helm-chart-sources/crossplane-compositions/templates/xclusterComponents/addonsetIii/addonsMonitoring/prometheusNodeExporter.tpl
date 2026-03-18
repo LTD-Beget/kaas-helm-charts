@@ -44,8 +44,6 @@ prometheusNodeExporter:
           tag: v0.21.0
 
         extraArgs:
-          - --secure-listen-address=0.0.0.0:9100
-          - --upstream=http://127.0.0.1:8100
           - --tls-cert-file=/app/config/metrics/tls/tls.crt
           - --tls-private-key-file=/app/config/metrics/tls/tls.key
           - --v=2
@@ -58,16 +56,16 @@ prometheusNodeExporter:
             memory: "64Mi"
             cpu: "50m"
 
-        volumeMounts:
+        extraVolumeMounts:
           - name: rbac-proxy-tls
             mountPath: /app/config/metrics/tls
             readOnly: true
 
-      volumes:
+      extraVolumes:
         - name: rbac-proxy-tls
           secret:
             defaultMode: 420
-            secretName: kube-state-metrics-svc-tls
+            secretName: prometheus-node-exporter-svc-tls
     {{ end }}
     monitoring:
     {{ if $infraVMOperatorReady }}

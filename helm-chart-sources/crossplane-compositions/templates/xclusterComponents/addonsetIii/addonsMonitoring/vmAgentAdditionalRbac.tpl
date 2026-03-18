@@ -42,11 +42,14 @@ helmInsVMAgentAddRbac:
             resources:
               - "services/kube-state-metrics"
               - "services/client-kube-state-metrics"
+              - "services/prometheus-node-exporter"
             resourceNames:
               - "kube-state-metrics"
               - "client-kube-state-metrics"
+              - "prometheus-node-exporter"
             verbs:
               - "get"
+
       metricsClusterRoleBinding:
         apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
