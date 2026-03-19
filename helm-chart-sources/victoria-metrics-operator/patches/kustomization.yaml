@@ -14,3 +14,13 @@ patches:
     target:
       kind: Service
       name: victoria-metrics-operator
+
+  - path: ./deployment.vm-operator.yaml
+    target:
+      kind: Deployment
+      name: vm-operator
+
+  - path: ./service.vm-operator.yaml
+    target:
+      kind: Service
+      name: vm-operator
