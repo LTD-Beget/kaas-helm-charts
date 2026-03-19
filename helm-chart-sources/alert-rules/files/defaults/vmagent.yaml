@@ -88,22 +88,33 @@ vmagent:
                 Scrape pool: {{ $labels.scrape_job }}
                 Cluster type: {{ $labels.cluster_type }}
             expr: |
-              (
-                sum by(cluster_full_name, cluster_type, scrape_job, job) (
-                  vm_promscrape_scrape_pool_targets{}
-                )
-                unless
-                on(cluster_full_name)
-                (
-                  (
-                    beget_capi_cluster_controlplane_ready_replicas{}
-                  )
-                  +
-                  (
-                    beget_capi_cluster_workers_ready_replicas{}
-                  ) == 0
-                )
-              ) == 0
+              sum(
+                vm_promscrape_scrape_pool_targets{
+                  scrape_job!~"scrapeConfig/beget-vmagent/(client-cluster-kubelet-cadvisor|client-cluster-kubelet-resource)"
+                }
+              ) without (status, instance, pod) == 0
+              # TODO: починить условие, что у кластера есть хотяб одна нода
+              # Проблема в том, что метрика идет по инфра-кластеру, а количество нод нужно смотреть на клиентском
+              # (
+              #   sum by(cluster_full_name, cluster_type, scrape_job, job) (
+              #     vm_promscrape_scrape_pool_targets{status="up"}
+              #   )
+              #   unless
+              #   on(cluster_full_name)
+              #   (
+              #     label_replace(
+              #       sum by(cluster_full_name) (
+              #         beget_capi_cluster_controlplane_ready_replicas
+              #         +
+              #         beget_capi_cluster_workers_ready_replicas
+              #       ),
+              #       "cluster_full_name",
+              #       "$1-client",
+              #       "cluster_full_name",
+              #       "(.+)-infra"
+              #     ) == 0
+              #   )
+              # ) == 0
             for: 30m
             labels:
               severity: critical
