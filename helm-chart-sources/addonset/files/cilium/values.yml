@@ -64,6 +64,33 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: cilium-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      operator:
+        podLabels:
+          toleration.beget.com/ignore: "true"
+        tolerations:
+          - operator: Exists
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: Exists
+          - key: "node-role.kubernetes.io/master" #deprecated
+            operator: Exists
+          - key: "node.kubernetes.io/not-ready"
+            operator: Exists
+          - key: "node.cloudprovider.kubernetes.io/uninitialized"
+            operator: Exists
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: cilium-cert-manager
   labels:
     addons.in-cloud.io/values: "cert-manager"

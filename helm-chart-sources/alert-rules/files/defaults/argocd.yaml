@@ -1,0 +1,276 @@
+argocd:
+  enabled: false
+  groups:
+    argocdApps:
+      enabled: false
+      rules:
+        ArgoCdAppSyncFailed:
+          enabled: false
+          spec:
+            alert: ArgoCdAppSyncFailed
+            annotations:
+              summary: "An ArgoCD Application has Failed to Sync."
+              description: |
+                The application {{ $labels.name }} has failed to sync 
+                with the status {{ $labels.phase }} the past 10m.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD Application sync failed
+                Application has failed to sync during the last 10 minutes.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Destination server: {{ $labels.dest_server }}
+                Project: {{ $labels.project }}
+                Application: {{ $labels.name }}
+                Phase: {{ $labels.phase }}
+            expr: |
+              sum(
+                round(
+                  increase(
+                    argocd_app_sync_total{
+                      phase!="Succeeded",
+                      dest_namespace=~"beget.*"
+                    }[10m]
+                  )
+                )
+              ) by (cluster_full_name, job, dest_server, project, name, phase) > 0
+            for: 10m
+            labels:
+              severity: warning
+
+        ArgoCdAppUnhealthy:
+          enabled: false
+          spec:
+            alert: ArgoCdAppUnhealthy
+            annotations:
+              summary: "An ArgoCD Application is Unhealthy."
+              description: |
+                The application {{ $labels.name }} is unhealthy with the 
+                health status {{ $labels.health_status }} for the past 15m.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD Application is unhealthy
+                Application health status is degraded for more than 15 minutes.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Destination server: {{ $labels.dest_server }}
+                Project: {{ $labels.project }}
+                Application: {{ $labels.name }}
+                Health status: {{ $labels.health_status }}
+            expr: |
+              sum(
+                argocd_app_info{
+                  health_status!~"Healthy|Progressing",
+                  dest_namespace=~"beget.*"
+                }
+              ) by (cluster_full_name, job, dest_server, project, name, health_status) > 0
+            for: 15m
+            labels:
+              severity: critical
+
+        ArgoCdAppOutOfSync:
+          enabled: false
+          spec:
+            alert: ArgoCdAppOutOfSync
+            annotations:
+              summary: "An ArgoCD Application is Out Of Sync."
+              description: |
+                The application {{ $labels.name }} is out of sync with 
+                the sync status {{ $labels.sync_status }} for the past 15m.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD Application is out of sync
+                Application desired state differs from live cluster state for more than 15 minutes.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Destination server: {{ $labels.dest_server }}
+                Project: {{ $labels.project }}
+                Application: {{ $labels.name }}
+                Sync status: {{ $labels.sync_status }}
+            expr: |
+              sum(
+                argocd_app_info{
+                  sync_status!="Synced",
+                  dest_namespace=~"beget.*"
+                }
+              ) by (cluster_full_name, job, dest_server, project, name, sync_status) > 0
+            for: 30m
+            labels:
+              severity: warning
+
+        ArgoCdAppAutoSyncDisabled:
+          enabled: false
+          spec:
+            alert: ArgoCdAppAutoSyncDisabled
+            annotations:
+              summary: "An ArgoCD Application has AutoSync Disabled."
+              description: |
+                The application {{ $labels.name }} has autosync disabled for the past 2h.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD Application autosync disabled
+                Autosync has been disabled for more than 2 hours.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Destination server: {{ $labels.dest_server }}
+                Project: {{ $labels.project }}
+                Application: {{ $labels.name }}
+                Autosync enabled: {{ $labels.autosync_enabled }}
+            expr: |
+              sum(
+                argocd_app_info{
+                  autosync_enabled!="true",
+                  dest_namespace=~"beget.*"
+                }
+              ) by (cluster_full_name, job, dest_server, project, name, autosync_enabled) > 0
+            for: 6h
+            labels:
+              severity: info
+
+        ArgoCdAppControllerHighReconciliationDuration:
+          enabled: false
+          spec:
+            alert: ArgoCdAppControllerHighReconciliationDuration
+            annotations:
+              summary: "ArgoCD App Controller has high reconciliation duration."
+              description: |
+                ArgoCD app controller in {{ $labels.namespace }} is taking more than 60s
+                (0.95 percentile) to reconcile applications for the past 10m. This may
+                indicate performance issues or the need to scale up.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD controller reconciliation slow
+                Application reconciliation duration exceeds 60 seconds.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Reconcile duration p95: {{ $value }}
+            expr: |
+              histogram_quantile(
+                0.95,
+                sum(
+                  rate(
+                    argocd_app_reconcile_bucket{}[10m]
+                  )
+                ) by (cluster_full_name, namespace, le)
+              ) > 60
+            for: 15m
+            labels:
+              severity: warning
+
+    argocd:
+      enabled: false
+      rules:
+        ArgoCdRepoServerPendingRequests:
+          enabled: false
+          spec:
+            alert: ArgoCdRepoServerPendingRequests
+            annotations:
+              summary: "ArgoCD Repo Server has pending requests."
+              description: |
+                ArgoCD repo server in {{ $labels.namespace }} has 50 or more pending
+                requests for the past 5m. The repo server may be overloaded and need scaling.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD repo-server overloaded
+                Repo server has more than 50 pending requests.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pending requests: {{ $value }}
+            expr: |
+              sum(
+                argocd_repo_pending_request_total{}
+              ) by (cluster_full_name, namespace) > 180
+            for: 5m
+            labels:
+              severity: warning
+
+        ArgoCdRepoServerHighGitRequestDuration:
+          enabled: false
+          spec:
+            alert: ArgoCdRepoServerHighGitRequestDuration
+            annotations:
+              summary: "ArgoCD Repo Server has high git request duration."
+              description: |
+                ArgoCD repo server in {{ $labels.namespace }} is experiencing git operations
+                (fetch/clone)taking more than 30s (0.95 percentile) for the past 10m.
+                This may indicate slow git repository access or network issues.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD git operations slow
+                Git request duration exceeds 30 seconds.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Duration p95: {{ $value }}
+            expr: |
+              histogram_quantile(
+                0.95,
+                sum(
+                  rate(
+                    argocd_git_request_duration_seconds_bucket{}[10m]
+                  )
+                ) by (cluster_full_name, namespace, le)
+              ) > 60
+            for: 10m
+            labels:
+              severity: warning
+
+        ArgoCdClusterConnectionError:
+          enabled: false
+          spec:
+            alert: ArgoCdClusterConnectionError
+            annotations:
+              summary: "ArgoCD cannot connect to managed cluster."
+              description: |
+                ArgoCD in {{ $labels.namespace }} cannot connect to cluster {{ $labels.server }}
+                for the past 5m. Check cluster credentials and network connectivity.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD cannot connect to cluster
+                Connection to managed cluster failed.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Target cluster: {{ $labels.server }}
+            expr: |
+              (
+                (
+                  argocd_cluster_connection_status < 1
+                )
+                * on(server) group_left(cluster_full_name, cluster_hash, cluster_namespace)
+                (
+                  beget_capi_cluster_controlplane_endpoint
+                )
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace)
+              (
+                beget_capi_cluster_alive != 1
+              )
+            for: 5m
+            labels:
+              severity: critical
+
+        ArgoCdGitRequestErrors:
+          enabled: false
+          spec:
+            alert: ArgoCdGitRequestErrors
+            annotations:
+              summary: "ArgoCD Git requests are failing."
+              description: |
+                ArgoCD in {{ $labels.namespace }} is experiencing git fetch failures for
+                repository {{ $labels.repo }} for the past 5m. This may indicate
+                repository access issues or network problems.
+              message: |
+                {{ $labels.cluster_full_name }}: ArgoCD git fetch errors
+                Git fetch failures detected.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Repository: {{ $labels.repo }}
+                Failures: {{ $value }}
+            expr: |
+              sum(
+                round(
+                  increase(
+                    argocd_git_fetch_fail_total{}[5m]
+                  )
+                )
+              ) by (cluster_full_name, namespace, repo) > 5
+            for: 10m
+            labels:
+              severity: warning

@@ -107,6 +107,37 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: cert-manager-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      cainjector:
+        podLabels:
+          toleration.beget.com/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+      startupapicheck:
+        podLabels:
+          toleration.beget.com/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+      webhook:
+        podLabels:
+          toleration.beget.com/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: cert-manager-initialized
   labels:
     addons.in-cloud.io/values: initialized

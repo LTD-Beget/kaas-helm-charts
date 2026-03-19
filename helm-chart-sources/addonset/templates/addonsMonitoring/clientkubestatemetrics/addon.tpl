@@ -5,20 +5,23 @@ kind: Addon
 metadata:
   name: client-kube-state-metrics
 spec:
-  path: "helm-chart-sources/kube-state-metrics"
+  chart: "kube-state-metrics"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "6.1.0-3"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5" # "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-client-kube-state-metrics"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   initDependencies:
-    - name: vm-operator
+{{- if .Values.clientClusterEnabled }}
+    - name: client-cp-control-plane
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+{{- end }}
     - name: client-vm-scrape-config
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
@@ -29,14 +32,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-{{- if .Values.clientClusterEnabled }}
-    - name: client-cp-control-plane
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-{{- end }}
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

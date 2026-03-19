@@ -5,12 +5,13 @@ kind: Addon
 metadata:
   name: addons-operator
 spec:
-  path: "helm-chart-sources/addons-operator"
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  chart: "addon-operator"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "beget-addons-operator"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

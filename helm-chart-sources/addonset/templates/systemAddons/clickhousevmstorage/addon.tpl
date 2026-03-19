@@ -5,18 +5,18 @@ kind: Addon
 metadata:
   name: clickhouse-vmstorage
 spec:
-  chart: ""
-  path: "helm-chart-sources/clickhouse-vmstorage"
+  chart: "clickhouse-vmstorage"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "beget-clickhouse-vmstorage"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

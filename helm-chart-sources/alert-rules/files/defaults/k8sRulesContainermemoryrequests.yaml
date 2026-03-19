@@ -1,0 +1,34 @@
+k8sRulesContainermemoryrequests:
+  enabled: false
+  groups:
+    k8sRulesContainermemoryrequests:
+      enabled: false
+      rules:
+        "cluster:namespace:pod_memory:active:kube_pod_container_resource_requests":
+          enabled: false
+          spec:
+            annotations: {}
+            expr: |-
+              kube_pod_container_resource_requests{resource="memory",job="kube-state-metrics"}  * on (namespace,pod,cluster_full_name)
+              group_left() max by (namespace,pod,cluster_full_name) (
+                (kube_pod_status_phase{phase=~"Pending|Running"} == 1)
+              )
+            labels: {}
+            record: cluster:namespace:pod_memory:active:kube_pod_container_resource_requests
+
+        "namespace_memory:kube_pod_container_resource_requests:sum":
+          enabled: false
+          spec:
+            annotations: {}
+            expr: |-
+              sum by (namespace,cluster_full_name) (
+                  sum by (namespace,pod,cluster_full_name) (
+                      max by (namespace,pod,container,cluster_full_name) (
+                        kube_pod_container_resource_requests{resource="memory",job="kube-state-metrics"}
+                      ) * on (namespace,pod,cluster_full_name) group_left() max by (namespace,pod,cluster_full_name) (
+                        kube_pod_status_phase{phase=~"Pending|Running"} == 1
+                      )
+                  )
+              )
+            labels: {}
+            record: namespace_memory:kube_pod_container_resource_requests:sum

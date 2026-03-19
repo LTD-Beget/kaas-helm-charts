@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: kubeadm-resources
 spec:
-  path: "helm-chart-sources/kubeadm-resources-client-cp"
+  chart: "kubeadm-resources-client-cp"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   releaseName: kubeadm-resources
   targetCluster: {{ .Values.clientName }}
   targetNamespace: "beget-kubeadm-resources"
@@ -51,7 +51,8 @@ spec:
       extract:
         - as: cluster.kubeCaCrtBase64
           jsonPath: .data["tls.crt"]
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

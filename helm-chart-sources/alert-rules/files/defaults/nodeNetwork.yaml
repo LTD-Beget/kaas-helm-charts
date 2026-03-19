@@ -1,0 +1,33 @@
+nodeNetwork:
+  enabled: false
+  groups:
+    nodeNetwork:
+      enabled: false
+      rules:
+        NodeNetworkInterfaceFlapping:
+          enabled: false
+          spec:
+            alert: NodeNetworkInterfaceFlapping
+            annotations:
+              description: |
+                Network interface "{{ $labels.device }}" changing its up status
+                often on node-exporter {{ $labels.namespace }}/{{ $labels.pod }}
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/general/nodenetworkinterfaceflapping
+              summary: Network interface is often changing its status
+              message: |
+                {{ $labels.cluster_full_name }}: Network interface is often changing its status
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Interface: {{ $labels.device }}
+            expr: |
+              changes(
+                node_network_up{
+                  job="prometheus-node-exporter",
+                  device!~"veth.+"
+                }[2m]
+              ) > 2
+            for: 2m
+            labels:
+              severity: warning

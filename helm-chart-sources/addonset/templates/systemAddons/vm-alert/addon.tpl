@@ -5,11 +5,10 @@ kind: Addon
 metadata:
   name: vm-alert
 spec:
-  chart: ""
-  path: "helm-chart-sources/victoria-metrics-k8s-stack"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.52.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert"
   variables:
@@ -22,6 +21,7 @@ spec:
           operator: Equal
           value: "True"
   backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

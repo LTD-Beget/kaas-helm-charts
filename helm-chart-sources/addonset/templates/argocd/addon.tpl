@@ -5,14 +5,15 @@ kind: Addon
 metadata:
   name: argocd
 spec:
-  path: "helm-chart-sources/argocd"
+  chart: "argo-cd"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "7.8.26-1"
   targetCluster: in-cluster
   targetNamespace: "beget-argocd"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:
@@ -33,7 +34,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

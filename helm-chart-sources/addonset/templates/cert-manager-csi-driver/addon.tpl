@@ -5,15 +5,17 @@ kind: Addon
 metadata:
   name: cert-manager-csi-driver
 spec:
-  path: "helm-chart-sources/cert-manager-csi-driver"
+  chart: "cert-manager-csi-driver"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.10.4-1"
   targetCluster: in-cluster
   targetNamespace: "beget-cert-manager-csi-driver"
   variables:
     cluster_name: in-cluster
-  backend: 
+    dependency: "True"
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

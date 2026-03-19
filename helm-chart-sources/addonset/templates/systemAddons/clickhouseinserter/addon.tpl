@@ -5,15 +5,15 @@ kind: Addon
 metadata:
   name: clickhouse-inserter
 spec:
-  chart: ""
-  path: "helm-chart-sources/victoria-metrics-k8s-stack"
+  chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.52.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-clickhouse-vmstorage"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: vm-cluster
@@ -26,7 +26,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

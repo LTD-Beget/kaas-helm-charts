@@ -5,21 +5,23 @@ kind: Addon
 metadata:
   name: crossplane-functions
 spec:
-  path: "helm-chart-sources/crossplane-functions"
+  chart: "crossplane-functions"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.2"
   targetCluster: in-cluster
   targetNamespace: "beget-crossplane"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   initDependencies:
     - name: crossplane
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

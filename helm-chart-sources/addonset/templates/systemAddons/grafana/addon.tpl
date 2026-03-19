@@ -5,11 +5,10 @@ kind: Addon
 metadata:
   name: grafana
 spec:
-  chart: ""
-  path: "helm-chart-sources/grafana"
+  chart: "grafana"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "beget-grafana"
   variables:
@@ -23,7 +22,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

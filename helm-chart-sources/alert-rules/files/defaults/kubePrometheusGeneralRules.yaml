@@ -1,0 +1,20 @@
+kubePrometheusGeneralRules:
+  enabled: false
+  groups:
+    kubePrometheusGeneralRules:
+      enabled: false
+      rules:
+        "count:up1":
+          enabled: false
+          spec:
+            annotations: {}
+            expr: count without(instance, pod, node) (up == 1)
+            labels: {}
+            record: count:up1
+        "count:up0":
+          enabled: false
+          spec:
+            annotations: {}
+            expr: count without(instance, pod, node) (up == 0)
+            labels: {}
+            record: count:up0

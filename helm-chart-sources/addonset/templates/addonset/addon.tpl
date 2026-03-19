@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-addonset"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:
@@ -31,7 +32,8 @@ spec:
           jsonPath: .data.systemEnabled
         - as: cluster.clusterClientEnabled
           jsonPath: .data.clusterClientEnabled
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

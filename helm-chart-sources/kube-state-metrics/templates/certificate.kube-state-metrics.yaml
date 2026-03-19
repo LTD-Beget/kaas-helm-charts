@@ -3,17 +3,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-svc-tls
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "beget-kube-state-metrics.name" . }}-svc-tls
+  namespace: {{ include "beget-kube-state-metrics.namespace" . }}
 spec:
-  secretName: kube-state-metrics-svc-tls
+  secretName: {{ include "beget-kube-state-metrics.name" . }}-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}
+  commonName: {{ include "beget-kube-state-metrics.name" . }}
   dnsNames:
-    - {{ .Release.Name }}
-    - {{ .Release.Name }}.{{ .Release.Namespace }}
-    - {{ .Release.Name }}.{{ .Release.Namespace }}.svc
+    - {{ include "beget-kube-state-metrics.name" . }}
+    - {{ include "beget-kube-state-metrics.name" . }}.{{ include "beget-kube-state-metrics.namespace" . }}
+    - {{ include "beget-kube-state-metrics.name" . }}.{{ include "beget-kube-state-metrics.namespace" . }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

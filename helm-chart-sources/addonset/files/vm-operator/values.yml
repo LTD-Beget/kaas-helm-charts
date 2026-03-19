@@ -9,6 +9,7 @@ metadata:
 spec:
   values: |
     victoria-metrics-operator:
+      fullnameOverride: "vm-operator"
       env:
         - name: GOMAXPROCS
           value: '1'
@@ -63,6 +64,22 @@ spec:
           effect: "NoSchedule"
     monitoring:
       enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      podLabels:
+        toleration.beget.com/ignore: "true"
+      tolerations:
+        - operator: "Exists"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

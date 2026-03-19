@@ -12,6 +12,7 @@ spec:
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
 {{- if .Values.clientClusterEnabled }}
   initDependencies:
     - name: client-cp-control-plane
@@ -20,7 +21,8 @@ spec:
           operator: Equal
           value: true
 {{- end }}
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     ignoreDifferences:
     - group: admissionregistration.k8s.io

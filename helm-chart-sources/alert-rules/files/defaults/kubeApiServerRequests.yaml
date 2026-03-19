@@ -1,0 +1,12 @@
+kubeApiServerRequests:
+  enabled: false
+  groups:
+    kubeApiServerRequestsInFlight:
+      enabled: false
+      rules:
+        kubeApiServerRequestsInFlight:
+          enabled: false
+          spec:
+            expr: |
+              max_over_time(sum(apiserver_current_inflight_requests) by (request_kind, cluster_full_name)[2m:])
+            record: cluster:apiserver_current_inflight_requests:sum:max_over_time:2m

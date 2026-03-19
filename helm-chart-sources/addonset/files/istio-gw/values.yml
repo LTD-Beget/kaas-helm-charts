@@ -102,6 +102,20 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: istio-gw-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      tolerations:
+        - operator: "Exists"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: istio-gw-cert-manager
   labels:
     addons.in-cloud.io/values: "cert-manager"

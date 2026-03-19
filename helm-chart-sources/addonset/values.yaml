@@ -59,6 +59,16 @@ addons:
     enabled: false
   grafanaoperator:
     enabled: false
+  kubestatemetrics:
+    enabled: true
+  konnectivityagent:
+    enabled: false
+  metricsserver:
+    enabled: true
+  prometheusprocessexporter:
+    enabled: true
+  prometheusnodeexporter:
+    enabled: true
   incloudwebchart:
     enabled: true
   incloudwebresources:
@@ -78,6 +88,10 @@ addons:
   test:
     enabled: true
   trustmanager:
+    enabled: true
+  vmagent:
+    enabled: true
+  vmagentadditionalrbac:
     enabled: true
   trivyoperator:
     enabled: true
@@ -99,5 +113,5 @@ addons:
 environment: infra
 clientName: client
 clusterName: infra
-addonRevision: HEAD
+addonRevision: 0.1.0
 clientClusterEnabled: true

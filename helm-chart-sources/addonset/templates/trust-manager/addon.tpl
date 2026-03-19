@@ -5,14 +5,15 @@ kind: Addon
 metadata:
   name: trust-manager
 spec:
-  path: "helm-chart-sources/trust-manager"
+  chart: "trust-manager"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.16.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-trust-manager"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:
@@ -29,7 +30,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

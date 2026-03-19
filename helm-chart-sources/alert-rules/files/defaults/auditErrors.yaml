@@ -1,0 +1,27 @@
+auditErrors:
+  enabled: false
+  groups:
+    apiserverAudit:
+      enabled: false
+      rules:
+        AuditLogError:
+          enabled: false
+          spec:
+            alert: "AuditLogError"
+            annotations:
+              description: An API Server had an error writing to an audit log.
+              summary: |-
+                An API Server instance was unable to write audit logs. This could be
+                triggered by the node running out of space, or a malicious actor
+                tampering with the audit logs.
+              message: |
+                {{ $labels.cluster_full_name }}: API Server audit log write errors detected (non-zero error rate)
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Job: {{ $labels.job }}
+                Instance: {{ $labels.instance }}
+            expr: |
+              sum by (job, instance)(rate(apiserver_audit_error_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) / sum by (job, instance) (rate(apiserver_audit_event_total{job=~"apiserver|vmagent-kube-apiserver-client"}[5m])) > 0
+            for: 1m
+            labels:
+              severity: warning

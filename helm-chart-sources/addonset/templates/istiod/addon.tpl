@@ -5,15 +5,16 @@ kind: Addon
 metadata:
   name: istiod
 spec:
-  path: "helm-chart-sources/istiod"
+  chart: "istiod"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "1.26.0-1"
   releaseName: istiod
   targetCluster: in-cluster
   targetNamespace: "beget-istio"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:
@@ -30,7 +31,8 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     ignoreDifferences:
     - group: admissionregistration.k8s.io

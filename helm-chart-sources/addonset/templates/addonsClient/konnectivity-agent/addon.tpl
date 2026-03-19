@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: konnectivity-agent
 spec:
-  path: "helm-chart-sources/konnectivity-agent"
+  chart: "konnectivity-agent"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   releaseName: konnectivity-agent
   targetCluster: {{ .Values.clientName }}
   targetNamespace: "beget-konnectivity-agent"
@@ -34,7 +34,8 @@ spec:
           jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
@@ -49,9 +50,14 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: client
-      priority: 10
+    - name: default
+      priority: 0
       matchLabels:
-        addons.in-cloud.io/values: client
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: konnectivity-agent
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: konnectivity-agent
 {{- end }}

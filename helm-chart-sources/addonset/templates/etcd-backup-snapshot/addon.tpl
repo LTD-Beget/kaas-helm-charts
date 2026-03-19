@@ -5,14 +5,15 @@ kind: Addon
 metadata:
   name: etcd-backup-snapshot
 spec:
-  path: "helm-chart-sources/etcd-backup-snapshot"
+  chart: "etcd-backup-snapshot"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "v0.0.5"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "beget-etcd-backup-snapshot"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters
       sourceRef:
@@ -31,20 +32,16 @@ spec:
           jsonPath: .data.etcdbackupS3SecretAccessKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
-  initDependencies:
-    - name: vm-operator
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
 {{- if .Values.clientClusterEnabled }}
+  initDependencies:
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
           value: true
 {{- end }}
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

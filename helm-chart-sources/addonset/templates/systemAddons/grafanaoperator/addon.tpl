@@ -5,18 +5,18 @@ kind: Addon
 metadata:
   name: grafana-operator
 spec:
-  chart: ""
-  path: "helm-chart-sources/grafana-operator"
+  chart: "grafana-operator"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "5.18.0-1"
   targetCluster: in-cluster
   targetNamespace: "beget-grafana-operator"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources: []
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

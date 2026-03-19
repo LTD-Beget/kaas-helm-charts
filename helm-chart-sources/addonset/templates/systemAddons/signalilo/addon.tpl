@@ -5,24 +5,23 @@ kind: Addon
 metadata:
   name: signalilo
 spec:
-  chart: ""
-  path: "helm-chart-sources/signalilo"
+  chart: "signalilo"
   pluginName: helm-with-values
-  repoURL: "https://github.com/LTD-Beget/kaas-helm-charts"
-  version: "HEAD"
+  repoURL: "https://blog.beget.com/kaas-helm-charts"
+  version: "0.12.1-1"
   targetCluster: in-cluster
   targetNamespace: "beget-signalilo"
   variables:
     uuid: "da4c0b1d-da4c-4f3b-9e5d-c23f5fcd751a"
     icingaUrl: "https://1.2.3.4:25665"
-    icingaHostname: "signalilo"
-    icingaUsername: "signalilo"
-    icingaPassword: "signalilo"
+    icingaHostname: "K8SSIGNALILO"
+    icingaUsername: "k8ssignalilo"
+    icingaPassword: ""
     alertmanagerSignaliloPort: 8888
     alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
   valuesSources: []
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
