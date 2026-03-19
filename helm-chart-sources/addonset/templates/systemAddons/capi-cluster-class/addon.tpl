@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "in-cloud-capi-template"
   pluginName: helm-with-values
-  repoURL: "registry.beget.ru/k8s-charts-public/charts"
+  repoURL: "https://registry.beget.ru/k8s-charts-public/charts"
   version: "0.0.0-master-9506d5a"
   targetCluster: in-cluster
   targetNamespace: "bcloud-capi"
