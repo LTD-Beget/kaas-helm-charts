@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: capi-cluster-class
 spec:
-  path: "."
+  chart: "in-cloud-capi-template"
   pluginName: helm-with-values
-  repoURL: "https://gitlab.beget.ru/cloud/k8s/charts/in-cloud-capi.git"
-  version: "v0.0.5"
+  repoURL: "oci://registry.beget.ru/k8s-charts-public/charts"
+  version: "0.0.0-master-9506d5a"
   targetCluster: in-cluster
   targetNamespace: "bcloud-capi"
   variables:
