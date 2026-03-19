@@ -13,14 +13,14 @@ spec:
     managerClaim:
       image:
         repository: prorobotech/addons-operator-addonclaim
-        tag: feature-CLOUD-459-579b6587
+        tag: main-2e3dd3a4
     manager:
       env:
       - name: ENABLE_WEBHOOKS
         value: false
       image:
         repository: prorobotech/addons-operator
-        tag: feature-CLOUD-459-579b6587
+        tag: main-2e3dd3a4
         pullPolicy: IfNotPresent
       tolerations:
       - effect: NoExecute
