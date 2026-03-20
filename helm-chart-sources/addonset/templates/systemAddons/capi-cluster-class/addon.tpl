@@ -6,7 +6,7 @@ metadata:
   name: capi-cluster-class
 spec:
   path: .
-  repoURL: "oci://registry.beget.ru/k8s-charts-public/charts/in-cloud-capi-template"
+  repoURL: "registry.beget.ru/k8s-charts-public/charts/in-cloud-capi-template"
   version: "0.0.0-master-9506d5a"
   targetCluster: in-cluster
   targetNamespace: "bcloud-capi"
