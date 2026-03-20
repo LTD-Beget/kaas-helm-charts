@@ -1,0 +1,8 @@
+{{- if .Values.addons.workergroupclaimoperator.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "worker-group-claim-operator.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/worker-group-claim-operator/values.yml" | nindent 0 }}
+
+{{- end }}

@@ -110,6 +110,8 @@ addons:
   system:
     enabled: false
     clickhouseInserter: false
+  workergroupclaimoperator:
+    enabled: true
 environment: infra
 clientName: client
 clusterName: infra

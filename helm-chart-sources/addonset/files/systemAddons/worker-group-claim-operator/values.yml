@@ -1,0 +1,25 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: worker-group-claim-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: worker-group-claim-operator
+spec:
+  values: |
+    manager:
+      image:
+        repository: prorobotech/worker-group-claim-operator
+        tag: CLOUD-495-d309b119
+        
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: worker-group-claim-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: worker-group-claim-operator
+spec:
+  values: ""
