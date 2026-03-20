@@ -15,7 +15,7 @@ spec:
     cluster_name: in-cluster
     dependency: "True"
   initDependencies:
-{{- if .Values.clientClusterEnabled }}
+{{- if eq (lower (toString .Values.clientClusterEnabled)) "true" }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
