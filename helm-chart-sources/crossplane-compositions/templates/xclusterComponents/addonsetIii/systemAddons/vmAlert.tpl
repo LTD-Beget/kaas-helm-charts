@@ -12,6 +12,19 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalert
+          replicaCount: 2
           serviceSpec:
             metadata:
               name: vmalert
@@ -89,7 +102,6 @@ vmAlert:
             requests:
               cpu: 100m
               memory: 128Mi
-          replicaCount: 1
           updateStrategy: RollingUpdate
           extraEnvs:
             - name: GOMAXPROCS
@@ -117,7 +129,13 @@ vmAlert:
                   name: ca
                   key: ca.crt
           notifiers:
-            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+            - selector:
+                namespaceSelector:
+                  matchNames:
+                    - beget-alertmanager
+                labelSelector:
+                  matchLabels:
+                    monitoring.in-cloud.io/component: vmalertmanager
               tlsConfig:
                 ca:
                   configMap:

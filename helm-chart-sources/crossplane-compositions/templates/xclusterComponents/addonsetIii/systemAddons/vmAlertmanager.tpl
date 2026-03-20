@@ -13,9 +13,25 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
+          replicaCount: 2
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalertmanager
           templates:
             - key: telegram_alerts.tmpl
               name: vmalertmanager-alertmanager-alert-templates
+          managedMetadata:
+            labels:
+              monitoring.in-cloud.io/component: vmalertmanager
           serviceSpec:
             metadata:
               name: vmalertmanager
