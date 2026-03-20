@@ -140,7 +140,7 @@ vmAlertmanager:
           - source_matchers:
               - alertname="BegetCapiClusterNotAlive"
             target_matchers:
-              - alertname=~"ArgoCdClusterConnectionError|BegetCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent"
+              - alertname=~"ArgoCdClusterConnectionError|BegetCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentTooManyScrapePoolWithoutTargets|VMagentLogsErrorsHigh"
             equal:
               - cluster_full_name
 
@@ -172,6 +172,12 @@ vmAlertmanager:
             equal:
               - cluster_full_name
 
+          - source_matchers:
+              - alertname="VMAgentTooManyScrapePoolWithoutTargets"
+            target_matchers:
+              - alertname="VMAgentScrapePoolHasNoTargets"
+            equal:
+              - cluster_full_name
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
