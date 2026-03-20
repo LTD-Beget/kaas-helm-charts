@@ -136,6 +136,42 @@ vmAlertmanager:
                 url: "http://signalilo.beget-signalilo.svc/webhook?token=HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
                 send_resolved: true
 
+        inhibit_rules:
+          - source_matchers:
+              - alertname="BegetCapiClusterNotAlive"
+            target_matchers:
+              - alertname=~"ArgoCdClusterConnectionError|BegetCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="ArgoCdClusterConnectionError"
+            target_matchers:
+              - alertname=~"ArgoCdAppUnhealthy|ArgoCdAppOutOfSync|ArgoCdAppSyncFailed"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="CoreDNSErrorsHighCritical"
+            target_matchers:
+              - alertname="CoreDNSErrorsHigh"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="ExtremelyHighIndividualControlPlaneCPU"
+            target_matchers:
+              - alertname=~"HighIndividualControlPlaneCPU|HighOverallControlPlaneCPU"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="BegetCapiClusterNotReadyTooLong"
+            target_matchers:
+              - alertname="BegetCapiClusterNotReady"
+            equal:
+              - cluster_full_name
+
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
