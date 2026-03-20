@@ -5,8 +5,8 @@ kind: Addon
 metadata:
   name: capi-cluster-class
 spec:
-  path: .
-  repoURL: "registry.beget.ru/k8s-charts-public/charts/in-cloud-capi-template"
+  path: "k8s-charts-public/charts/in-cloud-capi-template"
+  repoURL: "registry.beget.ru"
   version: "0.0.0-master-9506d5a"
   targetCluster: in-cluster
   targetNamespace: "bcloud-capi"
