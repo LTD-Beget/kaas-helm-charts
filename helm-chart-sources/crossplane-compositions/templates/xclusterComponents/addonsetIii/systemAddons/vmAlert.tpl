@@ -129,13 +129,27 @@ vmAlert:
                   name: ca
                   key: ca.crt
           notifiers:
-            - selector:
-                namespaceSelector:
-                  matchNames:
-                    - beget-alertmanager
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/instance: vmalertmanager
+            # Bug with set -notifier.tlsCAFile=... arg to deployment
+            # https://github.com/vmware-tanzu/vm-operator/issues/1530
+            # - selector:
+            #     namespaceSelector:
+            #       matchNames:
+            #         - beget-alertmanager
+            #     labelSelector:
+            #       matchLabels:
+            #         app.kubernetes.io/instance: vmalertmanager
+            #   tlsConfig:
+            #     ca:
+            #       configMap:
+            #         name: ca
+            #         key: ca.crt
+            - url: "https://vmalertmanager-alertmanager-1.vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+            - url: "https://vmalertmanager-alertmanager-0.vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
               tlsConfig:
                 ca:
                   configMap:

@@ -85,7 +85,7 @@ vmAlertmanager:
             - name: alertmanager-tls
               secret:
                 defaultMode: 420
-                secretName: {{ $clusterName }}-alertmanager
+                secretName: alertmanager
           podMetadata:
             labels:
               in-cloud-metrics: "infra"
@@ -206,13 +206,16 @@ vmAlertmanager:
           kind: ClusterIssuer
           name: selfsigned-cluster-issuer
         certificate:
-          name: {{ $clusterName }}-alertmanager
-          secretName: {{ $clusterName }}-alertmanager
+          name: alertmanager
+          secretName: alertmanager
           commonName: alertmanager
           dnsNames:
             - "vmalertmanager-alertmanager"
             - "vmalertmanager-alertmanager.beget-alertmanager"
             - "vmalertmanager-alertmanager.beget-alertmanager.svc"
+            - "*.vmalertmanager-alertmanager"
+            - "*.vmalertmanager-alertmanager.beget-alertmanager"
+            - "*.vmalertmanager-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
   `}}
