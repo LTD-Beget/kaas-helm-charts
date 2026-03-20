@@ -1,0 +1,459 @@
+{{- if .Values.crd.enable }}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+    annotations:
+        controller-gen.kubebuilder.io/version: v0.19.0
+    name: workergroupclaims.workergroup.in-cloud.io
+spec:
+    group: workergroup.in-cloud.io
+    names:
+        kind: WorkerGroupClaim
+        listKind: WorkerGroupClaimList
+        plural: workergroupclaims
+        singular: workergroupclaim
+        shortNames:
+        - wgc
+    scope: Namespaced
+    versions:
+        - additionalPrinterColumns:
+            - jsonPath: .spec.clusterName
+              name: Cluster
+              type: string
+            - jsonPath: .status.phase
+              name: Phase
+              type: string
+            - jsonPath: .spec.replicas
+              name: Replicas
+              type: integer
+            - jsonPath: .status.machineDeployment.readyReplicas
+              name: Ready
+              type: integer
+            - jsonPath: .status.machineDeployment.upToDateReplicas
+              name: UpToDate
+              type: integer
+            - jsonPath: .metadata.creationTimestamp
+              name: Age
+              type: date
+          name: v1alpha1
+          schema:
+            openAPIV3Schema:
+                description: |-
+                    WorkerGroupClaim is the Schema for the workergroupclaims API.
+                    It manages a ClusterAPI MachineDeployment with immutable template versioning.
+                properties:
+                    apiVersion:
+                        description: |-
+                            APIVersion defines the versioned schema of this representation of an object.
+                            Servers should convert recognized schemas to the latest internal value, and
+                            may reject unrecognized values.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+                        type: string
+                    kind:
+                        description: |-
+                            Kind is a string value representing the REST resource this object represents.
+                            Servers may infer this from the endpoint the client submits requests to.
+                            Cannot be updated.
+                            In CamelCase.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                        type: string
+                    metadata:
+                        type: object
+                    spec:
+                        description: WorkerGroupClaimSpec defines the desired state of WorkerGroupClaim.
+                        properties:
+                            bootstrap:
+                                additionalProperties:
+                                    x-kubernetes-preserve-unknown-fields: true
+                                description: |-
+                                    Bootstrap variables rendered through WGBootstrapTemplate.
+                                    Values can be: string, number, boolean, array, or object.
+                                    Each key maps to {{ "{{ .key }}" }} in the template.
+                                    Operator auto-injects "nodeLabels" from spec.nodeLabels and
+                                    "machineDeploymentName" = {clusterName}-{claimName} if not set here.
+                                type: object
+                            bootstrapTemplateRef:
+                                description: BootstrapTemplateRef references a cluster-scoped WGBootstrapTemplate.
+                                properties:
+                                    name:
+                                        description: Name of the cluster-scoped template resource.
+                                        minLength: 1
+                                        type: string
+                                required:
+                                    - name
+                                type: object
+                            clusterName:
+                                description: |-
+                                    ClusterName is the name of the ClusterAPI Cluster.
+                                    Immutable after creation.
+                                minLength: 1
+                                type: string
+                                x-kubernetes-validations:
+                                    - message: clusterName is immutable
+                                      rule: self == oldSelf
+                            deletion:
+                                description: |-
+                                    Deletion configures timeouts for Machine deletion (drain, volume detach, node deletion).
+                                    Maps to MachineDeployment.spec.template.spec.deletion.
+                                    If not set, defaults are applied: nodeDrainTimeoutSeconds=60, nodeVolumeDetachTimeoutSeconds=60, nodeDeletionTimeoutSeconds=120.
+                                    In-place MD update — does NOT trigger rollout.
+                                properties:
+                                    nodeDeletionTimeoutSeconds:
+                                        description: 'NodeDeletionTimeoutSeconds is the total time to attempt Node deletion. Default: 120.'
+                                        format: int32
+                                        minimum: 0
+                                        type: integer
+                                    nodeDrainTimeoutSeconds:
+                                        description: 'NodeDrainTimeoutSeconds is the total time to spend draining a node. Default: 60.'
+                                        format: int32
+                                        minimum: 0
+                                        type: integer
+                                    nodeVolumeDetachTimeoutSeconds:
+                                        description: 'NodeVolumeDetachTimeoutSeconds is the total time to wait for volumes to detach. Default: 60.'
+                                        format: int32
+                                        minimum: 0
+                                        type: integer
+                                type: object
+                            infrastructure:
+                                additionalProperties:
+                                    x-kubernetes-preserve-unknown-fields: true
+                                description: |-
+                                    Infrastructure variables rendered through WGMachineTemplate.
+                                    Values can be: string, number, boolean, array, or object.
+                                    Each key maps to {{ "{{ .key }}" }} in the template.
+                                type: object
+                            kubeletConfiguration:
+                                description: |-
+                                    KubeletConfiguration overrides for kubelet config on worker nodes.
+                                    Merged with default kubelet config and injected as __kubeletConfigYaml
+                                    into bootstrap vars. Changes update KCT in-place, NO rollout.
+                                properties:
+                                    cpuCFSQuota:
+                                        type: boolean
+                                    evictionHard:
+                                        additionalProperties:
+                                            type: string
+                                        type: object
+                                    evictionMaxPodGracePeriod:
+                                        format: int32
+                                        type: integer
+                                    evictionMinimumReclaim:
+                                        additionalProperties:
+                                            type: string
+                                        type: object
+                                    evictionPressureTransitionPeriod:
+                                        type: string
+                                    evictionSoft:
+                                        additionalProperties:
+                                            type: string
+                                        type: object
+                                    evictionSoftGracePeriod:
+                                        additionalProperties:
+                                            type: string
+                                        type: object
+                                    imageGCHighThresholdPercent:
+                                        format: int32
+                                        type: integer
+                                    imageGCLowThresholdPercent:
+                                        format: int32
+                                        type: integer
+                                    imageMaximumGCAge:
+                                        type: string
+                                    imageMinimumGCAge:
+                                        type: string
+                                    kubeReserved:
+                                        description: ResourceOverrides defines CPU and memory resource limits.
+                                        properties:
+                                            cpu:
+                                                type: string
+                                            memory:
+                                                type: string
+                                        type: object
+                                    maxPods:
+                                        format: int32
+                                        type: integer
+                                    shutdownGracePeriod:
+                                        type: string
+                                    systemReserved:
+                                        additionalProperties:
+                                            type: string
+                                        type: object
+                                type: object
+                            machineTemplateRef:
+                                description: MachineTemplateRef references a cluster-scoped WGMachineTemplate.
+                                properties:
+                                    name:
+                                        description: Name of the cluster-scoped template resource.
+                                        minLength: 1
+                                        type: string
+                                required:
+                                    - name
+                                type: object
+                            nodeLabels:
+                                additionalProperties:
+                                    type: string
+                                description: |-
+                                    NodeLabels are labels applied to Kubernetes nodes.
+                                    Dual effect: added to MD template labels AND auto-injected as
+                                    "nodeLabels" bootstrap var (format: "k1=v1,k2=v2", sorted keys).
+                                    Reserved prefixes (cluster.x-k8s.io/, workergroup.in-cloud.io/,
+                                    node-group.beget.com/) are rejected by validation.
+                                type: object
+                            replicas:
+                                description: Replicas is the desired number of machines. In-place MD update.
+                                format: int32
+                                minimum: 0
+                                type: integer
+                            rolloutTimeout:
+                                default: 30m
+                                description: |-
+                                    RolloutTimeout is the maximum duration to wait for a rollout to complete.
+                                    After this, condition RolloutTimedOut=True is set and phase becomes Degraded.
+                                    No automatic rollback. Default: 30m.
+                                type: string
+                            strategy:
+                                description: |-
+                                    Strategy defines the rolling update strategy.
+                                    Mapped 1:1 to MachineDeployment.spec.strategy. In-place MD update.
+                                properties:
+                                    rollingUpdate:
+                                        description: RollingUpdate config params. Present only if Type = RollingUpdate.
+                                        properties:
+                                            deletePolicy:
+                                                description: DeletePolicy defines the policy for selecting which machines to delete.
+                                                enum:
+                                                    - Random
+                                                    - Newest
+                                                    - Oldest
+                                                type: string
+                                            maxSurge:
+                                                anyOf:
+                                                    - type: integer
+                                                    - type: string
+                                                description: |-
+                                                    MaxSurge is the maximum number of machines that can be created
+                                                    above the desired number during update. Value can be an absolute
+                                                    number (e.g., 5) or a percentage (e.g., "10%").
+                                                x-kubernetes-int-or-string: true
+                                            maxUnavailable:
+                                                anyOf:
+                                                    - type: integer
+                                                    - type: string
+                                                description: |-
+                                                    MaxUnavailable is the maximum number of machines that can be
+                                                    unavailable during update. Value can be an absolute number or percentage.
+                                                x-kubernetes-int-or-string: true
+                                        type: object
+                                    type:
+                                        default: RollingUpdate
+                                        description: 'Type of deployment strategy. Default: RollingUpdate.'
+                                        enum:
+                                            - RollingUpdate
+                                            - OnDelete
+                                        type: string
+                                type: object
+                            taints:
+                                description: |-
+                                    Taints are applied to nodes via MachineDeployment.spec.template.spec.taints.
+                                    In-place MD update — does NOT trigger rollout (no node recreation).
+                                items:
+                                    description: MachineTaint mirrors ClusterAPI v1beta2 MachineTaint type.
+                                    properties:
+                                        effect:
+                                            description: Effect is the taint effect.
+                                            enum:
+                                                - NoSchedule
+                                                - PreferNoSchedule
+                                                - NoExecute
+                                            type: string
+                                        key:
+                                            description: Key is the taint key.
+                                            maxLength: 317
+                                            minLength: 1
+                                            type: string
+                                        propagation:
+                                            default: Always
+                                            description: |-
+                                                Propagation defines how the taint is propagated to nodes.
+                                                Always: continuously reconciled. OnInitialization: set only on node init.
+                                            enum:
+                                                - Always
+                                                - OnInitialization
+                                            type: string
+                                        value:
+                                            description: Value is the taint value.
+                                            maxLength: 63
+                                            type: string
+                                    required:
+                                        - effect
+                                        - key
+                                        - propagation
+                                    type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                            version:
+                                description: Version is the Kubernetes version (e.g., "v1.30.1"). In-place MD update.
+                                minLength: 1
+                                type: string
+                        required:
+                            - bootstrapTemplateRef
+                            - clusterName
+                            - machineTemplateRef
+                            - replicas
+                            - version
+                        type: object
+                    status:
+                        description: WorkerGroupClaimStatus defines the observed state of WorkerGroupClaim.
+                        properties:
+                            conditions:
+                                description: |-
+                                    Conditions represent the current state of the WorkerGroupClaim.
+                                    Known types: Ready, TemplatesRendered, RolloutComplete, RolloutTimedOut, Paused.
+                                items:
+                                    description: Condition contains details for one aspect of the current state of this API Resource.
+                                    properties:
+                                        lastTransitionTime:
+                                            description: |-
+                                                lastTransitionTime is the last time the condition transitioned from one status to another.
+                                                This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                                            format: date-time
+                                            type: string
+                                        message:
+                                            description: |-
+                                                message is a human readable message indicating details about the transition.
+                                                This may be an empty string.
+                                            maxLength: 32768
+                                            type: string
+                                        observedGeneration:
+                                            description: |-
+                                                observedGeneration represents the .metadata.generation that the condition was set based upon.
+                                                For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                                                with respect to the current state of the instance.
+                                            format: int64
+                                            minimum: 0
+                                            type: integer
+                                        reason:
+                                            description: |-
+                                                reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                                                Producers of specific condition types may define expected values and meanings for this field,
+                                                and whether the values are considered a guaranteed API.
+                                                The value should be a CamelCase string.
+                                                This field may not be empty.
+                                            maxLength: 1024
+                                            minLength: 1
+                                            pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                                            type: string
+                                        status:
+                                            description: status of the condition, one of True, False, Unknown.
+                                            enum:
+                                                - "True"
+                                                - "False"
+                                                - Unknown
+                                            type: string
+                                        type:
+                                            description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                                            maxLength: 316
+                                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                                            type: string
+                                    required:
+                                        - lastTransitionTime
+                                        - message
+                                        - reason
+                                        - status
+                                        - type
+                                    type: object
+                                type: array
+                                x-kubernetes-list-map-keys:
+                                    - type
+                                x-kubernetes-list-type: map
+                            currentTemplates:
+                                description: CurrentTemplates holds names of the currently active BMT and KCT.
+                                properties:
+                                    bmt:
+                                        description: BMT is the name of the current BegetMachineTemplate.
+                                        type: string
+                                    kct:
+                                        description: KCT is the name of the current KubeadmConfigTemplate.
+                                        type: string
+                                required:
+                                    - bmt
+                                    - kct
+                                type: object
+                            lastRendered:
+                                description: LastRendered holds the hashes and any errors from the last render cycle.
+                                properties:
+                                    bmtHash:
+                                        description: BMTHash is the SHA256[:8] hash of the rendered BegetMachineTemplate.
+                                        type: string
+                                    error:
+                                        description: Error is the error message from the last failed render, if any.
+                                        type: string
+                                    kctHash:
+                                        description: KCTHash is the SHA256[:8] hash of the rendered KubeadmConfigTemplate.
+                                        type: string
+                                type: object
+                            machineDeployment:
+                                description: MachineDeployment mirrors relevant status from the managed MachineDeployment.
+                                properties:
+                                    readyReplicas:
+                                        description: ReadyReplicas is the number of ready machines.
+                                        format: int32
+                                        type: integer
+                                    replicas:
+                                        description: Replicas is the total number of machines targeted by this deployment.
+                                        format: int32
+                                        type: integer
+                                    upToDateReplicas:
+                                        description: UpToDateReplicas is the number of machines running the latest template.
+                                        format: int32
+                                        type: integer
+                                type: object
+                            observedGeneration:
+                                description: ObservedGeneration is the most recent generation observed by the controller.
+                                format: int64
+                                type: integer
+                            pendingDeletion:
+                                description: |-
+                                    PendingDeletion is a list of old template resources awaiting cleanup
+                                    after rollout completes.
+                                items:
+                                    description: ResourceRef identifies a Kubernetes resource for pending deletion tracking.
+                                    properties:
+                                        kind:
+                                            description: Kind of the resource (e.g., "BegetMachineTemplate", "KubeadmConfigTemplate").
+                                            type: string
+                                        name:
+                                            description: Name of the resource.
+                                            type: string
+                                    required:
+                                        - kind
+                                        - name
+                                    type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                            phase:
+                                description: Phase represents the current lifecycle phase of the WorkerGroupClaim.
+                                enum:
+                                    - Provisioning
+                                    - Ready
+                                    - Updating
+                                    - Degraded
+                                    - Failed
+                                    - Paused
+                                    - Deleting
+                                type: string
+                            rolloutStartedAt:
+                                description: |-
+                                    RolloutStartedAt is the timestamp when the current rollout began.
+                                    Set when phase transitions to Updating.
+                                format: date-time
+                                type: string
+                        type: object
+                required:
+                    - spec
+                type: object
+          served: true
+          storage: true
+          subresources:
+            status: {}
+{{- end }}
