@@ -135,7 +135,7 @@ vmAlert:
                     - beget-alertmanager
                 labelSelector:
                   matchLabels:
-                    monitoring.in-cloud.io/component: vmalertmanager
+                    app.kubernetes.io/instance: vmalertmanager
               tlsConfig:
                 ca:
                   configMap:

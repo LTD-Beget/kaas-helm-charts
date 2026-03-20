@@ -29,9 +29,6 @@ vmAlertmanager:
           templates:
             - key: telegram_alerts.tmpl
               name: vmalertmanager-alertmanager-alert-templates
-          managedMetadata:
-            labels:
-              monitoring.in-cloud.io/component: vmalertmanager
           serviceSpec:
             metadata:
               name: vmalertmanager
