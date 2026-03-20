@@ -12,7 +12,7 @@ spec:
       kustomize: true
     dex:
       config:
-        issuer: {{ printf "https://%%s" .Values.istioGwVip }}
+        issuer: {{ printf "https://%%s" .Values.systemIstioGwVip }}
         storage:
           type: kubernetes
           config: { inCluster: true }
@@ -40,13 +40,13 @@ spec:
             name: incloud-ui-oauth2-proxy
             secret: incloud-ui-super-secret
             redirectURIs:
-              - {{ printf "https://%%s/oauth2/callback" .Values.istioGwVip }}
+              - {{ printf "https://%%s/oauth2/callback" .Values.systemIstioGwVip }}
               - "https://localhost/oauth2/callback"
           - id: dex
             name: dex
             secret: argo-cd-super-secret
             redirectURIs:
-              - {{ printf "https://%%s/dex/auth/callback" .Values.istioGwVip }}
+              - {{ printf "https://%%s/dex/auth/callback" .Values.systemIstioGwVip }}
               - "https://localhost/dex/auth/callback"
           - id: apiserver
             name: apiserver
@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: tls
           secret:
-            secretName: {{ $clusterName }}-dex-tls
+            secretName: {{ .Values.clusterName }}-dex-tls
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

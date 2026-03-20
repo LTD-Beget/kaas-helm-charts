@@ -44,7 +44,7 @@ spec:
         metadata:
           annotations:
             argocd.argoproj.io/compare-options: "IgnoreExtraneous"
-            argocd.argoproj.io/tracking-id: {{ .Values.tackingID }}
+            argocd.argoproj.io/tracking-id: {{ .Values.trackingID }}
           name: {{ .Values.xcluster }}
           namespace: beget-argocd
         spec:

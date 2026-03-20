@@ -25,7 +25,7 @@ spec:
           jsonPath: .data.dexStaticPasswordsAdmin
         - as: dexStaticClientsApiserver
           jsonPath: .data.dexStaticClientsApiserver
-        - as: cluster.name
+        - as: clusterName
           jsonPath: .data.clusterName
         - as: istioGwVip
           jsonPath: .data.systemIstioGwVip

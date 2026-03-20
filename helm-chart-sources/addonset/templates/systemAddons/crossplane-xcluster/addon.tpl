@@ -23,7 +23,7 @@ spec:
       extract:
         - as: clusterHost
           jsonPath: .data.clusterHost
-        - as: istioGwVip
+        - as: systemIstioGwVip
           jsonPath: .data.systemIstioGwVip
         - as: systemVmInsertVIP
           jsonPath: .data.systemVmInsertVIP

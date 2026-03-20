@@ -10,7 +10,7 @@ spec:
   values: |
     addons:
       system:
-        enabled: {{ Values.cluster.systemEnabled }}
+        enabled: {{ .Values.cluster.systemEnabled }}
     clientName: {{ .Values.cluster.client.name }}
     clusterName: {{ .Values.cluster.name }}
     addonRevision: {{ .Values.addonRevision }}
