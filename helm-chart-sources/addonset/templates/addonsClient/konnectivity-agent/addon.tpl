@@ -23,7 +23,7 @@ spec:
           value: true
 {{- end }}
   valuesSources:
-    - name: parameters
+    - name: parameters-client
       sourceRef:
         apiVersion: v1
         kind: ConfigMap

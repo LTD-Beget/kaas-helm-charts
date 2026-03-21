@@ -15,11 +15,11 @@ spec:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: clientServiceCidrCoredns

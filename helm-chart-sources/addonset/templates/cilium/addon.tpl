@@ -12,11 +12,11 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-cilium"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: cluster.host

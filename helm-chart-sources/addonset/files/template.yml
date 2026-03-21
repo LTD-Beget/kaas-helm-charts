@@ -12,11 +12,11 @@ spec:
   variables:
     cluster_name: in-cluster
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: argocdServerAdminPassword
@@ -278,7 +278,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters
+            name: parameters-infra
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
@@ -294,7 +294,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters
+            name: parameters-infra
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
