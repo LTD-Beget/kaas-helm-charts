@@ -82,19 +82,14 @@ vmAlert:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
-          externalLabels:
-            in-cloud-metrics: "infra"
           extraArgs:
             external.url: "https://{{ $systemIstioGwVip }}"
-          podMetadata:
-            labels:
-              in-cloud-metrics: "infra"
           evaluationInterval: 60s
           selectAllByDefault: false
           ruleNamespaceSelector: {}
           ruleSelector:
             matchLabels:
-              in-cloud-metrics: "infra"
+              monitoring.in-cloud.io/vmrules: infra
           resources:
             limits:
               cpu: 1

@@ -86,9 +86,6 @@ vmAlertmanager:
               secret:
                 defaultMode: 420
                 secretName: alertmanager
-          podMetadata:
-            labels:
-              in-cloud-metrics: "infra"
           configSecret: vmalertmanager-config
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
