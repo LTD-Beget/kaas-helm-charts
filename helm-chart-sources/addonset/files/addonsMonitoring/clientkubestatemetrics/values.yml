@@ -59,8 +59,8 @@ spec:
       kubeRBACProxy:
         enabled: true
         image:
-          registry: quay.io
-          repository: brancz/kube-rbac-proxy
+          # registry: quay.io
+          # repository: brancz/kube-rbac-proxy
           tag: v0.21.0
 
         extraArgs:

@@ -27,6 +27,11 @@ spec:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
     - name: vm-operator
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
