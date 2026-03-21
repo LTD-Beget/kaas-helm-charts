@@ -19,7 +19,7 @@ spec:
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+        name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
         namespace: beget-system
       extract:
         - as: argocdServerAdminPassword
