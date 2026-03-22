@@ -116,29 +116,17 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-cert-manager
-  labels:
-    addons.in-cloud.io/values: "cert-manager"
-    addons.in-cloud.io/addon: istio-gw
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: istio-gw-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: istio-gw
 spec:
   values: |
+    argocdPlugins:
+      kustomize: true
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
