@@ -68,7 +68,7 @@ vmagent:
             expr: increase(vm_promscrape_scrapes_failed_total[5m]) > 0
             for: 15m
             labels:
-              severity: warning
+              severity: critical
 
         VMAgentScrapePoolHasNoTargets:
           enabled: false
