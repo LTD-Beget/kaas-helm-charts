@@ -13,6 +13,7 @@ spec:
     - port: https
       path: /metrics
       scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: localhost
         insecureSkipVerify: true
