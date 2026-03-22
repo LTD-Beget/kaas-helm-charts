@@ -536,6 +536,7 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
+    # TODO: move to extraContainers
     argocdPlugins:
       kustomize: true
     monitoring:

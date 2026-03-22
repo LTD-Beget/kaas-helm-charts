@@ -178,30 +178,19 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: coredns-cert-manager
-  labels:
-    addons.in-cloud.io/values: "cert-manager"
-    addons.in-cloud.io/addon: coredns
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: coredns-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
+    # TODO: move to extraContainers
+    argocdPlugins:
+      kustomize: true
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

@@ -22,7 +22,7 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: trust-manager
-    - name: cert-manager
+    - name: vm-operator
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
@@ -37,14 +37,6 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-      selector:
-        name: cert-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: "cert-manager"
-          addons.in-cloud.io/addon: trust-manager
-    - name: vm-operator
-      criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
