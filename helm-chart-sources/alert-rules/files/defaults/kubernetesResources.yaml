@@ -128,7 +128,7 @@ kubernetesResources:
             alert: "KubeCPUQuotaOvercommit"
             annotations:
               description: |
-                Cluster {{ $labels.cluster_full_name }}  has overcommitted CPU
+                Cluster {{ $labels.cluster_full_name }} has overcommitted CPU
                 resource requests for Namespaces.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecpuquotaovercommit
               summary: Cluster has overcommitted CPU resource requests.
