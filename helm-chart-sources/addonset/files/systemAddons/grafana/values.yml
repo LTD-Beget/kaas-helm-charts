@@ -221,7 +221,7 @@ spec:
       virtualService:
         enabled: true
         gateways:
-          - beget-grafana/default
+          - beget-istio-gw/default
         hosts:
           - "*"
         http:
