@@ -37,8 +37,8 @@ spec:
             redirectURIs:
               - /grafana/login/generic_oauth
           - id: kubernetes
-            name: incloud-ui-oauth2-proxy
-            secret: incloud-ui-super-secret
+            name: incloud-web-chart-oauth2-proxy
+            secret: incloud-web-chart-super-secret
             redirectURIs:
               - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwVip }}
               - "https://localhost/oauth2/callback"
