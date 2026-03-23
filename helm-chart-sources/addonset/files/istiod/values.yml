@@ -53,7 +53,7 @@ spec:
     {{- $replicas := $a -}}
     {{- if gt $a $b }}{{ $replicas = $b }}{{ end -}}
     istiod:
-      replicaCount: {{- if lt $min 1 }}1{{ else }}{{ $replicas }}{{ end -}}
+      replicaCount: {{- if lt $replicas 1 }}1{{ else }}{{ $replicas }}{{ end -}}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
