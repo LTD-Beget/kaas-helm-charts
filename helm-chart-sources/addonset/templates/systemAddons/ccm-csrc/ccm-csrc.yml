@@ -1,0 +1,9 @@
+{{- if and .Values.addons.ccmcsrcsystem.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "ccm-csrc.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/ccm-csrc/values.yml" | nindent 0 }}
+
+  {{- include "ccm-csrc.phase" . }}
+{{- end }}
