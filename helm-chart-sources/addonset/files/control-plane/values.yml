@@ -70,7 +70,7 @@ spec:
               extraArgs:
                 agent-namespace: beget-konnectivity-agent
                 mode: http-connect
-                server-count: "{{ .Variables.controlPlaneDesiredReplicas }}"
+                server-count: "{{ .Variables.controlPlaneReplicas }}"
           service:
             enabled: true
             type: NodePort
