@@ -13,6 +13,19 @@ vmAlertmanager:
       fullnameOverride: "alertmanager"
       alertmanager:
         spec:
+          replicaCount: 2
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalertmanager
           templates:
             - key: telegram_alerts.tmpl
               name: vmalertmanager-alertmanager-alert-templates
@@ -72,10 +85,7 @@ vmAlertmanager:
             - name: alertmanager-tls
               secret:
                 defaultMode: 420
-                secretName: {{ $clusterName }}-alertmanager
-          podMetadata:
-            labels:
-              in-cloud-metrics: "infra"
+                secretName: alertmanager
           configSecret: vmalertmanager-config
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
@@ -136,6 +146,48 @@ vmAlertmanager:
                 url: "http://signalilo.beget-signalilo.svc/webhook?token=HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
                 send_resolved: true
 
+        inhibit_rules:
+          - source_matchers:
+              - alertname="BegetCapiClusterNotAlive"
+            target_matchers:
+              - alertname=~"ArgoCdClusterConnectionError|BegetCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentTooManyScrapePoolWithoutTargets|VMagentLogsErrorsHigh"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="ArgoCdClusterConnectionError"
+            target_matchers:
+              - alertname=~"ArgoCdAppUnhealthy|ArgoCdAppOutOfSync|ArgoCdAppSyncFailed"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="CoreDNSErrorsHighCritical"
+            target_matchers:
+              - alertname="CoreDNSErrorsHigh"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="ExtremelyHighIndividualControlPlaneCPU"
+            target_matchers:
+              - alertname=~"HighIndividualControlPlaneCPU|HighOverallControlPlaneCPU"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="BegetCapiClusterNotReadyTooLong"
+            target_matchers:
+              - alertname="BegetCapiClusterNotReady"
+            equal:
+              - cluster_full_name
+
+          - source_matchers:
+              - alertname="VMAgentTooManyScrapePoolWithoutTargets"
+            target_matchers:
+              - alertname="VMAgentScrapePoolHasNoTargets"
+            equal:
+              - cluster_full_name
     monitoring:
     {{ if $infraVMOperatorReady }}
       enabled: true
@@ -151,13 +203,16 @@ vmAlertmanager:
           kind: ClusterIssuer
           name: selfsigned-cluster-issuer
         certificate:
-          name: {{ $clusterName }}-alertmanager
-          secretName: {{ $clusterName }}-alertmanager
+          name: alertmanager
+          secretName: alertmanager
           commonName: alertmanager
           dnsNames:
             - "vmalertmanager-alertmanager"
             - "vmalertmanager-alertmanager.beget-alertmanager"
             - "vmalertmanager-alertmanager.beget-alertmanager.svc"
+            - "*.vmalertmanager-alertmanager"
+            - "*.vmalertmanager-alertmanager.beget-alertmanager"
+            - "*.vmalertmanager-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
   `}}

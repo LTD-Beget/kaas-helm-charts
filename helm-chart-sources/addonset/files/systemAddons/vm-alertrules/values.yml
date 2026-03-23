@@ -9,7 +9,7 @@ metadata:
 spec:
   values: |
     additionalLabels:
-      in-cloud-metrics: "infra"
+      monitoring.in-cloud.io/vmrules: infra
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

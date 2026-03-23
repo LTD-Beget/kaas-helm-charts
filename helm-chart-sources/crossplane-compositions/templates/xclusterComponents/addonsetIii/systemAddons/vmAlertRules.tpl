@@ -10,6 +10,6 @@ vmAlertRules:
     - vmOperator
   values:
     additionalLabels:
-      in-cloud-metrics: "infra"
+      monitoring.in-cloud.io/vmrules: infra
   ` }}
 {{- end -}}

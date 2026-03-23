@@ -8,7 +8,7 @@ metadata:
   name: beget-clickhouse-rules
   namespace: {{ .Release.Namespace }}
   labels:
-    in-cloud-metrics: clickhouse
+    monitoring.in-cloud.io/vmrules: clickhouse
 spec:
   groups:
     # NODEGROUPS
