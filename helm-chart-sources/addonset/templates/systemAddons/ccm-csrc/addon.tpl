@@ -5,7 +5,7 @@ kind: Addon
 metadata:
   name: ccm-csrc
 spec:
-  path: "."
+  chart: "helm-inserter"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts/"
   version: "0.2.5"
