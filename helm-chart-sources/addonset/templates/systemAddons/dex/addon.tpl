@@ -27,7 +27,7 @@ spec:
           jsonPath: .data.dexStaticClientsApiserver
         - as: clusterName
           jsonPath: .data.clusterName
-        - as: istioGwVip
+        - as: systemIstioGwVip
           jsonPath: .data.systemIstioGwVip
   initDependencies:
     - name: cert-manager
