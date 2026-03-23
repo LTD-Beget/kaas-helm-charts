@@ -33,7 +33,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: system
+          in-cloud.io/clusterName: infra
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
