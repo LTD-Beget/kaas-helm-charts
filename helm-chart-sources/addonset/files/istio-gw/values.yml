@@ -162,6 +162,7 @@ spec:
           lb.beget.com/healthcheck-interval-seconds: "60"
           lb.beget.com/healthcheck-timeout-seconds: "5"
     tls:
+      certificate:
         ipAddresses:
           - 127.0.0.1
           - {{ .Values.systemIstioGwVip }}
