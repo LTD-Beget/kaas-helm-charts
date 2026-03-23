@@ -153,7 +153,7 @@ spec:
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "True"
+          value: "true"
       selector:
         name: system
         priority: 50
@@ -169,7 +169,7 @@ spec:
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "True"
+          value: "true"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
