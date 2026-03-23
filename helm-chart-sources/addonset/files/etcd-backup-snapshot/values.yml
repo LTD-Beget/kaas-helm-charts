@@ -55,6 +55,7 @@ metadata:
     addons.in-cloud.io/addon: etcd-backup-snapshot
 spec:
   values: |
+    app:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
