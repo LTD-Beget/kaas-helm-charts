@@ -9,8 +9,6 @@ metadata:
 spec:
   values: |
     metrics-server:
-      metrics:
-        enabled: true
       resources:
         requests:
           cpu: 100m
@@ -68,22 +66,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: metrics-server-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: metrics-server
-spec:
-  values: |
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: metrics-server-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
@@ -92,3 +74,7 @@ spec:
   values: |
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

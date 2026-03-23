@@ -46,9 +46,10 @@ spec:
   initDependencies:
     - name: cilium
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
   backend: 
     type: "argocd"
     namespace: "beget-argocd"
@@ -214,9 +215,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: must-replace
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: initialized
         priority: 10
@@ -229,9 +231,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: cert-manager
         priority: 20
@@ -244,9 +247,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: vm-operator
         priority: 30
@@ -259,16 +263,18 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: istio-base
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: must-replace
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: istio-base
         priority: 40
@@ -305,9 +311,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: must-replace
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: system-and-initialized
         priority: 60

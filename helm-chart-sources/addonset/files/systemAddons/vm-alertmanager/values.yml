@@ -44,9 +44,6 @@ spec:
           extraEnvs:
             - name: GOMAXPROCS
               value: '1'
-          podMetadata:
-            labels:
-              in-cloud-metrics: "infra"
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
               operator: "Exists"

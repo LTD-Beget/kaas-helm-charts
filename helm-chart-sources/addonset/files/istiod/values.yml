@@ -69,32 +69,20 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istiod-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: istiod
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: istiod-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: istiod
 spec:
   values: |
+    argocdPlugins:
+      kustomize: true
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

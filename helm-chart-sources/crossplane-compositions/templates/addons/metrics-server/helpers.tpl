@@ -7,8 +7,6 @@ repoURL: https://github.com/LTD-Beget/kaas-helm-charts
 targetRevision: {{ $addonValue.targetRevision | default "HEAD" }}
 default: |
   metrics-server:
-    metrics:
-      enabled: true
     replicas: 1
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"

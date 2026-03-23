@@ -19,9 +19,10 @@ spec:
   initDependencies:
     - name: vm-operator 
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
   backend:
     finalizer: true
     type: "argocd"

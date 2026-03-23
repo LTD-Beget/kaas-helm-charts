@@ -502,24 +502,6 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: argocd-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: argocd
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: argocd-trust-manager
   labels:
     addons.in-cloud.io/values: trust-manager
@@ -554,8 +536,15 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
+    # TODO: move to extraContainers
+    argocdPlugins:
+      kustomize: true
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

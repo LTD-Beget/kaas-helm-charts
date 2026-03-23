@@ -8,7 +8,7 @@ spec:
   chart: "metrics-server"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "3.13.0-1"
+  version: "3.13.0-2"
   releaseName: metrics-server
   targetCluster: in-cluster
   targetNamespace: "beget-metrics-server"

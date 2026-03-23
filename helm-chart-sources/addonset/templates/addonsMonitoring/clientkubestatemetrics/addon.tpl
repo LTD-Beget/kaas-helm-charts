@@ -24,14 +24,16 @@ spec:
 {{- end }}
     - name: client-vm-scrape-config
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
     - name: cert-manager
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
   backend:
     finalizer: true
     type: "argocd"

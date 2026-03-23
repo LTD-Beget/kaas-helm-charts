@@ -12,6 +12,19 @@ vmAlert:
     victoria-metrics-k8s-stack:
       vmalert:
         spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalert
+          replicaCount: 2
           serviceSpec:
             metadata:
               name: vmalert
@@ -69,19 +82,14 @@ vmAlert:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
-          externalLabels:
-            in-cloud-metrics: "infra"
           extraArgs:
             external.url: "https://{{ $systemIstioGwVip }}"
-          podMetadata:
-            labels:
-              in-cloud-metrics: "infra"
           evaluationInterval: 60s
           selectAllByDefault: false
           ruleNamespaceSelector: {}
           ruleSelector:
             matchLabels:
-              in-cloud-metrics: "infra"
+              monitoring.in-cloud.io/vmrules: infra
           resources:
             limits:
               cpu: 1
@@ -89,7 +97,6 @@ vmAlert:
             requests:
               cpu: 100m
               memory: 128Mi
-          replicaCount: 1
           updateStrategy: RollingUpdate
           extraEnvs:
             - name: GOMAXPROCS
@@ -117,7 +124,27 @@ vmAlert:
                   name: ca
                   key: ca.crt
           notifiers:
-            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+            # Bug with set -notifier.tlsCAFile=... arg to deployment
+            # https://github.com/vmware-tanzu/vm-operator/issues/1530
+            # - selector:
+            #     namespaceSelector:
+            #       matchNames:
+            #         - beget-alertmanager
+            #     labelSelector:
+            #       matchLabels:
+            #         app.kubernetes.io/instance: vmalertmanager
+            #   tlsConfig:
+            #     ca:
+            #       configMap:
+            #         name: ca
+            #         key: ca.crt
+            - url: "https://vmalertmanager-alertmanager-1.vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+            - url: "https://vmalertmanager-alertmanager-0.vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
               tlsConfig:
                 ca:
                   configMap:

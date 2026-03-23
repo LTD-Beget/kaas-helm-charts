@@ -22,7 +22,7 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istiod
-    - name: cert-manager
+    - name: vm-operator
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
@@ -37,21 +37,14 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-      selector:
-        name: cert-manager
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: istiod
-    - name: vm-operator
-      criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
