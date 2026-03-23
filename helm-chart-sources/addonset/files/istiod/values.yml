@@ -50,10 +50,11 @@ spec:
   values: |
     {{- $a := .Values.controlPlaneDesiredReplicas -}}
     {{- $b := .Values.controlPlaneAvailableReplicas -}}
-    {{- $replicas := $a -}}
-    {{- if gt $a $b }}{{ $replicas = $b }}{{ end -}}
+    {{- $replicas := 1 -}}
+    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
+    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
     istiod:
-      replicaCount: {{- if lt $replicas 1 }}1{{ else }}{{ $replicas }}{{ end -}}
+      replicaCount: {{ $replicas }}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
