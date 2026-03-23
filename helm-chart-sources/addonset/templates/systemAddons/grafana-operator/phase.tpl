@@ -1,4 +1,4 @@
-{{- define "grafanaoperator.phase" }}
+{{- define "grafana-operator.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase

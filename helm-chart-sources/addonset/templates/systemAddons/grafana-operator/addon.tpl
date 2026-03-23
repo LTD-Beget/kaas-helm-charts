@@ -1,4 +1,4 @@
-{{- define "grafanaoperator.addon" }}
+{{- define "grafana-operator.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
