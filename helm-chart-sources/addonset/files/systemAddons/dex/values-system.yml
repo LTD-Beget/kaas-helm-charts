@@ -42,12 +42,12 @@ spec:
             redirectURIs:
               - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwVip }}
               - "https://localhost/oauth2/callback"
-          - id: dex
-            name: dex
+          - id: argocd
+            name: argocd
             secret: argo-cd-super-secret
             redirectURIs:
-              - {{ printf "https://%s/dex/auth/callback" .Values.systemIstioGwVip }}
-              - "https://localhost/dex/auth/callback"
+              - {{ printf "https://%s/argocd/auth/callback" .Values.systemIstioGwVip }}
+              - "https://localhost/argocd/auth/callback"
           - id: apiserver
             name: apiserver
             redirectURIs:
