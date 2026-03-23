@@ -3,7 +3,6 @@
   
   {{- if .Values.addons.system.enabled }}
     {{- include "grafana-operator.addon" . }}
-    {{- .Files.Get "files/systemAddons/grafana-operator/values-system.yml" | nindent 0 }}
   {{- end }}
 
   {{- .Files.Get "files/systemAddons/grafana-operator/values.yml" | nindent 0 }}

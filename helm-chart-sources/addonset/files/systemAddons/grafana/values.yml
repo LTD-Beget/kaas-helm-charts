@@ -39,9 +39,9 @@ spec:
               contains(email, 'admin@beget.ru') && 'Admin' || 'Viewer'
             role_attribute_strict: 'true'
             tls_skip_verify_insecure: "true"
-            auth_url: "http://{{ .Variables.systemIstioGwVip }}/auth"
-            token_url: "http://{{ .Variables.systemIstioGwVip }}/token"
-            api_url: "http://{{ .Variables.systemIstioGwVip }}/userinfo"
+            auth_url: "http://{{ .Values.systemIstioGwVip }}/auth"
+            token_url: "http://{{ .Values.systemIstioGwVip }}/token"
+            api_url: "http://{{ .Values.systemIstioGwVip }}/userinfo"
         deployment:
           spec:
             template:
@@ -60,7 +60,7 @@ spec:
                       - name: GRAFANA_OIDC_CLIENT_ID
                         value: {{ .Variables.oidcClientID }}
                       - name: GRAFANA_OIDC_CLIENT_SECRET
-                        value: {{ .Variables.oidcClientSecret }}
+                        value: {{ .Values.oidcClientSecret }}
                     resources:
                       requests:
                         cpu: "100m"
@@ -131,9 +131,9 @@ spec:
       spec:
         config:
           auth.generic_oauth:
-            auth_url: "https://{{ .Variables.systemIstioGwVip }}/auth"
-            token_url: "https://{{ .Variables.systemIstioGwVip }}/token"
-            api_url: "https://{{ .Variables.systemIstioGwVip }}/userinfo"
+            auth_url: "https://{{ .Values.systemIstioGwVip }}/auth"
+            token_url: "https://{{ .Values.systemIstioGwVip }}/token"
+            api_url: "https://{{ .Values.systemIstioGwVip }}/userinfo"
         deployment:
           spec:
             template:

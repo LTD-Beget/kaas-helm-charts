@@ -31,6 +31,7 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
+        - ServerSideApply=true
   valuesSelectors:
     - name: default
       priority: 0

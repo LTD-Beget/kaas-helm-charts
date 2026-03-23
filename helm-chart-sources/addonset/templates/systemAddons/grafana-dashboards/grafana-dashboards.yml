@@ -1,15 +1,10 @@
-{{- if .Values.addons.grafana.enabled }}
+{{- if .Values.addons.grafanadashboards.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
   
   {{- if .Values.addons.system.enabled }}
-    {{- include "grafana.addon" . }}
+    {{- include "grafana-dashboards.addon" . }}
   {{- end }}
 
   {{- .Files.Get "files/systemAddons/grafana/values.yml" | nindent 0 }}
 
-  {{- include "grafana.phase" . }}
-
-  {{- if eq .Values.environment "infra" }}
-    {{- include "grafana.phase" $clientContext }}
-  {{- end }}
 {{- end }}
