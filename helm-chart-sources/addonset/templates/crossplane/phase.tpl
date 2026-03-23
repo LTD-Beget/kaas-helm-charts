@@ -6,27 +6,6 @@ metadata:
   name: crossplane{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: crossplane
     - name: infra
       criteria:
         - source:
@@ -48,10 +27,24 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -79,9 +72,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: crossplane{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon

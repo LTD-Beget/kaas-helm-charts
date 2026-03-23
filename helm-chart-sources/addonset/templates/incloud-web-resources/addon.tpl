@@ -25,9 +25,10 @@ spec:
 {{- end }}
     - name: incloud-web-chart
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
   backend:
     finalizer: true
     type: "argocd"

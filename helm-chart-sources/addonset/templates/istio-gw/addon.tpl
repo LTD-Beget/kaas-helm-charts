@@ -27,14 +27,16 @@ spec:
   initDependencies:
     - name: cert-manager
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
     - name: istiod
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
   backend:
     finalizer: true
     type: "argocd"

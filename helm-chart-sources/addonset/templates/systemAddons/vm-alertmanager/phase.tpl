@@ -12,9 +12,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -26,9 +27,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: trust-manager
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: cert-manager
         priority: 20
@@ -41,9 +43,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: signalilo
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon

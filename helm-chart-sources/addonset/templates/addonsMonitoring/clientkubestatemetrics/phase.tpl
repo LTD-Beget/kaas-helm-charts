@@ -26,9 +26,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: vm-operator
         priority: 30
