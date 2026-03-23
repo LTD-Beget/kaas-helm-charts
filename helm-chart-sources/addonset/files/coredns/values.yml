@@ -131,8 +131,12 @@ metadata:
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
+    {{- $a := .Values.controlPlaneDesiredReplicas -}}
+    {{- $b := .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := $a -}}
+    {{- if gt $a $b }}{{ $replicas = $b }}{{ end -}}
     coredns:
-      replicaCount: {{ .Values.controlPlaneReplicas }}
+      replicaCount: {{- if lt $min 1 }}1{{ else }}{{ $replicas }}{{ end -}}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -171,8 +175,12 @@ metadata:
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
+    {{- $a := .Values.controlPlaneDesiredReplicas -}}
+    {{- $b := .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := $a -}}
+    {{- if gt $a $b }}{{ $replicas = $b }}{{ end -}}
     coredns:
-      replicaCount: {{ .Values.controlPlaneReplicas }}
+      replicaCount: {{- if lt $min 1 }}1{{ else }}{{ $replicas }}{{ end -}}
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

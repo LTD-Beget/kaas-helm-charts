@@ -24,8 +24,10 @@ spec:
       extract:
         - as: clientServiceCidrCoredns
           jsonPath: .data.clientServiceCidrCoredns
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
+        - as: controlPlaneAvailableReplicas
+          jsonPath: .data.controlPlaneAvailableReplicas
+        - as: controlPlaneDesiredReplicas
+          jsonPath: .data.controlPlaneDesiredReplicas
   initDependencies:
     - name: cilium
       criteria:

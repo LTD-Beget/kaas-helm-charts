@@ -27,8 +27,10 @@ spec:
           jsonPath: .data.clusterName
         - as: cluster.port
           jsonPath: .data.clusterPort
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
+        - as: controlPlaneAvailableReplicas
+          jsonPath: .data.controlPlaneAvailableReplicas
+        - as: controlPlaneDesiredReplicas
+          jsonPath: .data.controlPlaneDesiredReplicas
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
         - as: etcdbackupAppArgsStorecontainer
