@@ -28,8 +28,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: trust-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Exists
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -62,9 +64,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -84,9 +87,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: istio-base{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -98,9 +102,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: istio-base
         priority: 40
@@ -113,9 +118,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: istio-gw{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -127,9 +133,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: istio-gw
         priority: 45
@@ -166,9 +173,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
       selector:
         name: system-and-initialized
         priority: 60

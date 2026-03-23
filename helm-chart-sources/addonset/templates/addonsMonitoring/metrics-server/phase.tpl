@@ -12,9 +12,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -26,9 +27,10 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon

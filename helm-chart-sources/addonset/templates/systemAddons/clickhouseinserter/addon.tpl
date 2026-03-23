@@ -18,14 +18,18 @@ spec:
   initDependencies:
     - name: vm-cluster
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
+{{- if .Values.addons.clickhousevmstorage.enabled }}
     - name: clickhouse-vmstorage
       criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+        - jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
+          keep: false
+{{- end }}
   backend:
     finalizer: true
     type: "argocd"
