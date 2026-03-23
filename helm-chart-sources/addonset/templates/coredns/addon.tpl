@@ -23,7 +23,7 @@ spec:
         namespace: beget-system
       extract:
         - as: clientServiceCidrCoredns
-          jsonPath: .data.clientServiceCidrCoredns
+          jsonPath: .data.clusterDNS
         - as: controlPlaneAvailableReplicas
           jsonPath: .data.controlPlaneAvailableReplicas
         - as: controlPlaneDesiredReplicas
