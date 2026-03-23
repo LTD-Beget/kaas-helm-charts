@@ -25,7 +25,7 @@ spec:
           jsonPath: .data.xcluster
         - as: trackingID
           jsonPath: .data.trackingID
-        - as: cluster.name
+        - as: clusterName
           jsonPath: .data.clusterName
         - as: systemNamespace
           jsonPath: .data.systemNamespace
