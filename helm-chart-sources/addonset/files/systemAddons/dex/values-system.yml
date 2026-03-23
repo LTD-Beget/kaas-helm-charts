@@ -8,7 +8,7 @@ metadata:
     addons.in-cloud.io/addon: dex
 spec:
   values: |
-    dexPlugins:
+    argocdPlugins:
       kustomize: true
     dex:
       config:

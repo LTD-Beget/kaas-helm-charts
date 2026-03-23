@@ -13,9 +13,9 @@ spec:
             kind: ConfigMap
             name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
             namespace: beget-system
-          jsonPath: $.data.environment
+          jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "infra"
+          value: "true"
       selector:
         name: system
         priority: 15
