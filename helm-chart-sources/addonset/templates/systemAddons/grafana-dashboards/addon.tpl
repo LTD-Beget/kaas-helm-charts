@@ -1,4 +1,4 @@
-{{- define "grafanadashboards.addon" }}
+{{- define "grafana-dashboards.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon

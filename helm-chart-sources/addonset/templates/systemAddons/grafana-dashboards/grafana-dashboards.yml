@@ -5,6 +5,6 @@
     {{- include "grafana-dashboards.addon" . }}
   {{- end }}
 
-  {{- .Files.Get "files/systemAddons/grafana/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/systemAddons/grafana-dashboards/values.yml" | nindent 0 }}
 
 {{- end }}
