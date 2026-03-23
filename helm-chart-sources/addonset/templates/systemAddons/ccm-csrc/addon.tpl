@@ -13,7 +13,24 @@ spec:
   targetNamespace: "beget-system"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: xcluster
+          jsonPath: .data.xcluster
+        - as: trackingID
+          jsonPath: .data.trackingID
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: systemNamespace
+          jsonPath: .data.systemNamespace
+        - as: customer
+          jsonPath: .data.customer
   initDependencies: 
     - name: helm-inserter
       criteria:
