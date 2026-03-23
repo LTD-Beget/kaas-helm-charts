@@ -12,8 +12,7 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-grafana"
   variables:
-    oidcClientID: ""
-    oidcClientSecret: ""
+    oidcClientID: "grafana"
     systemIstioGwVip: ""
   valuesSources: 
     - name: parameters

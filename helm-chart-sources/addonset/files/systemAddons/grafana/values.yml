@@ -142,9 +142,9 @@ spec:
                   - name: grafana
                     env:
                       - name: GRAFANA_OIDC_CLIENT_ID
-                        value: {{ .Variables.oidcClientID }}
+                        value: {{ .Values.spec.variables.oidcClientID }}
                       - name: GRAFANA_OIDC_CLIENT_SECRET
-                        value: {{ .Variables.oidcClientSecret }}
+                        value: {{ .Values.oidcClientSecret }}
                     resources:
                       requests:
                         cpu: "100m"
