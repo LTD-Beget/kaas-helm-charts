@@ -12,8 +12,8 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-alertmanager"
   variables:
-    telegramToken: ""
-    telegramChatId: ""
+    telegramToken: "123456789:AAExampleTokenHere"
+    telegramChatId: "-1001234567890"
     signaliloAlertmanagerToken: ""
     dependency: "True"
   valuesSources: []
