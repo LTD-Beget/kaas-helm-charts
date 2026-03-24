@@ -5,5 +5,4 @@
 
   {{- .Files.Get "files/systemAddons/clickhousevmstorage/values.yml" | nindent 0 }}
 
-  {{- include "clickhousevmstorage.phase" . }}
 {{- end }}
