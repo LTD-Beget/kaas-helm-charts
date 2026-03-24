@@ -22,8 +22,6 @@ spec:
         name: parameters
         namespace: beget-system
       extract:
-        - as: systemIstioGwVip
-          jsonPath: .data.systemIstioGwVip
         - as: systemVmInsertVIP
           jsonPath: .data.systemVmInsertVIP
   initDependencies:
