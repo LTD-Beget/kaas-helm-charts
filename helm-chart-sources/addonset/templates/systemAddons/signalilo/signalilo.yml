@@ -1,4 +1,4 @@
-{{- if .Values.addons.signalilo.enabled }}
+{{- if and .Values.addons.signalilo.enabled .Values.addons.system.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "signalilo.addon" . }}

@@ -18,9 +18,9 @@ addons:
   coredns:
     enabled: true
   clickhouseinserter:
-    enabled: false
+    enabled: true
   clickhousevmstorage:
-    enabled: false
+    enabled: true
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
@@ -84,7 +84,7 @@ addons:
   secretcopyoperator:
     enabled: true
   signalilo:
-    enabled: false
+    enabled: true
   template:
     enabled: true
   test:
