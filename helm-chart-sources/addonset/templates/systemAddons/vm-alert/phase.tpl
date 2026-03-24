@@ -34,7 +34,7 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: vm-alert-cert-manager
+          addons.in-cloud.io/addon: vm-alert
     - name: vm-operator
       criteria:
         - source:
