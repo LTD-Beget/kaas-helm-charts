@@ -86,7 +86,7 @@ spec:
             configs:
               criticalAlertGroup:
                 bot_token: "{{ .Variables.telegramToken }}"
-                chat_id: "{{ .Variables.telegramChatId }}"
+                chat_id: {{ .Variables.telegramChatId }}
                 parse_mode: 'HTML'
                 send_resolved: true
                 message: '{{`{{ template "tg.message" . }}`}}'
