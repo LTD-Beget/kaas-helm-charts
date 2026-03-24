@@ -43,7 +43,7 @@ spec:
     - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: cert-manager
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-alertmanager
     - name: immutable
       priority: 99
