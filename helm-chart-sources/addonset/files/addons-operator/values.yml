@@ -61,3 +61,17 @@ spec:
     metrics:
       enable: true
       port: 8443
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    managerClaim:
+      enabled: true
+
