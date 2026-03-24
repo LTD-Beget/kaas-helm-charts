@@ -1,4 +1,4 @@
-{{- define "vmalertmanager.addon" }}
+{{- define "vm-alertmanager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -15,6 +15,7 @@ spec:
     telegramToken: ""
     telegramChatId: ""
     signaliloAlertmanagerToken: ""
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: vm-operator 

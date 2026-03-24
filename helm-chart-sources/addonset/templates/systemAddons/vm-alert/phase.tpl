@@ -1,4 +1,4 @@
-{{- define "vmalert.phase" }}
+{{- define "vm-alert.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase

@@ -1,9 +1,15 @@
 {{- if .Values.addons.vmcluster.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- if .Values.addons.system.enabled }}
+    {{- include "vm-cluster.addon" . }}
+  {{- end }}
 
-  {{- include "vmcluster.addon" . }}
+  {{- .Files.Get "files/systemAddons/vm-cluster/values.yml" | nindent 0 }}
 
-  {{- .Files.Get "files/systemAddons/vmcluster/values.yml" | nindent 0 }}
+  {{- include "vm-cluster.phase" . }}
 
-  {{- include "vmcluster.phase" . }}
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-cluster.phase" $clientContext }}
+  {{- end }}
 {{- end }}

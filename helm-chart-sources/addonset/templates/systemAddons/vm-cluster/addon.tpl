@@ -1,4 +1,4 @@
-{{- define "vmcluster.addon" }}
+{{- define "vm-cluster.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -13,6 +13,7 @@ spec:
   targetNamespace: "beget-vmcluster"
   variables:
     systemIstioGwVip: ""
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: vm-operator 
