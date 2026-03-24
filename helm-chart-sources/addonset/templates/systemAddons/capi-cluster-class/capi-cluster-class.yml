@@ -1,0 +1,9 @@
+{{- if and .Values.addons.capiclusterclass.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "capi-cluster-class.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/capi-cluster-class/values.yml" | nindent 0 }}
+
+  {{- include "capi-cluster-class.phase" . }}
+{{- end }}

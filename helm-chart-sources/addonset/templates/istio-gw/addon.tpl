@@ -24,6 +24,10 @@ spec:
       extract:
         - as: cluster.name
           jsonPath: .data.clusterName
+        - as: clusterHost
+          jsonPath: .data.clusterHost
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
   initDependencies:
     - name: cert-manager
       criteria:

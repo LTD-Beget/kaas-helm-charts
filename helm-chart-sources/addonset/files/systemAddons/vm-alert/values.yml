@@ -31,7 +31,7 @@ spec:
               operator: "Exists"
               effect: "NoSchedule"
           extraArgs:
-            external.url: "https://{{ .Variables.systemIstioGwVip }}"
+            external.url: "https://{{ .Values.systemIstioGwVip }}"
           extraEnvs:
             - name: GOMAXPROCS
               value: "4"
@@ -167,7 +167,7 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmalert-monitoring-svc-tls
+                secretName: vm-alert-monitoring-svc-tls
             - name: trusted-ca-certs
               configMap:
                 name: ca

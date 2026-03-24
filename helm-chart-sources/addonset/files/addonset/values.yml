@@ -8,9 +8,13 @@ metadata:
     addons.in-cloud.io/addon: addon-set
 spec:
   values: |
+    addons:
+      system:
+        enabled: {{ .Values.cluster.systemEnabled }}
     clientName: {{ .Values.cluster.client.name }}
     clusterName: {{ .Values.cluster.name }}
     addonRevision: {{ .Values.addonRevision }}
+    clientClusterEnabled: {{ .Values.cluster.clusterClientEnabled }}
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

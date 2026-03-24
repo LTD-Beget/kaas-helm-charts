@@ -1,9 +1,15 @@
 {{- if .Values.addons.vmalertmanager.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- if .Values.addons.system.enabled }}
+    {{- include "vm-alertmanager.addon" . }}
+  {{- end }}
 
-  {{- include "vmalertmanager.addon" . }}
+  {{- .Files.Get "files/systemAddons/vm-alertmanager/values.yml" | nindent 0 }}
 
-  {{- .Files.Get "files/systemAddons/vmalertmanager/values.yml" | nindent 0 }}
+  {{- include "vm-alertmanager.phase" . }}
 
-  {{- include "vmalertmanager.phase" . }}
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-alertmanager.phase" $clientContext }}
+  {{- end }}
 {{- end }}

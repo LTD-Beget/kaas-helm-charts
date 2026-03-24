@@ -1,9 +1,9 @@
-{{- define "vmcluster.phase" }}
+{{- define "vm-cluster.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: vm-cluster
+  name: vm-cluster{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
     - name: cert-manager
@@ -11,7 +11,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: cert-manager
+            name: cert-manager{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.deployed
           operator: Equal
           value: true
@@ -26,7 +26,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: trust-manager
+            name: trust-manager{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.deployed
           operator: Equal
           value: true

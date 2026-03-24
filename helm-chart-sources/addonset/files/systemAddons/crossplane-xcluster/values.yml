@@ -1,0 +1,54 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-xcluster-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: crossplane-xcluster
+spec:
+  values: ""
+      
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-xcluster-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: crossplane-xcluster
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: crossplane-xcluster-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: crossplane-xcluster
+spec:
+  values: |
+    composition:
+      cluster:
+        spec:
+          clusterNetwork:
+            apiServerPort: 6443
+          topology:
+            class: capi-cluster-class-cluster-template
+            classNamespace: bcloud-capi
+            controlPlane:
+              replicas: 3
+            version: v1.30.4
+      coreProject:
+        metadata:
+          namespace: beget-argocd
+      istioGwVip: {{ .Values.systemIstioGwVip }}
+      systemKubeApiVip: {{ .Values.clusterHost }}
+      system:
+        services:
+          istioGw:
+            host: {{ .Values.systemIstioGwVip }}
+          vmInserter:
+            host: {{ .Values.systemVmInsertVIP }}

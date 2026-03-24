@@ -1,4 +1,4 @@
-{{- define "vmalertmanager.addon" }}
+{{- define "vm-alertmanager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -12,9 +12,10 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-alertmanager"
   variables:
-    telegramToken: ""
-    telegramChatId: ""
+    telegramToken: "123456789:AAExampleTokenHere"
+    telegramChatId: "-1001234567890"
     signaliloAlertmanagerToken: ""
+    dependency: "True"
   valuesSources: []
   initDependencies:
     - name: vm-operator 
@@ -43,7 +44,7 @@ spec:
     - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: cert-manager
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-alertmanager
     - name: immutable
       priority: 99

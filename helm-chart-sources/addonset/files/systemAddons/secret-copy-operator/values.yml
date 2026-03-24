@@ -1,0 +1,31 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: secret-copy-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: secret-copy-operator
+spec:
+  values: |
+    manager:
+      image:
+        repository: prorobotech/secret-copy-operator
+        tag: feature-CLOUD-409-be1cb5b3
+        pullPolicy: IfNotPresent
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: secret-copy-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: secret-copy-operator
+spec:
+  values: ""

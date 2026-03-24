@@ -1,4 +1,4 @@
-{{- define "vmalert.addon" }}
+{{- define "vm-alert.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -13,7 +13,17 @@ spec:
   targetNamespace: "beget-vmalert"
   variables:
     systemIstioGwVip: ""
-  valuesSources: []
+    dependency: "True"
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
   initDependencies:
     - name: vm-cluster
       criteria:

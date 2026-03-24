@@ -5,6 +5,8 @@ addons:
     enabled: true
   argocd:
     enabled: true
+  begetcmprovider:
+    enabled: true
   certificateset:
     enabled: true
   certmanager:
@@ -16,31 +18,49 @@ addons:
   coredns:
     enabled: true
   clickhouseinserter:
-    enabled: false
+    enabled: true
   clickhousevmstorage:
-    enabled: false
+    enabled: true
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
     enabled: false
+  ccmcsrcsystem:
+    enabled: true
+  capi:
+    enabled: true
+  capiclusterclass:
+    enabled: true
+  capikubeadmbootstrap:
+    enabled: true
+  capikubeadmcontrolplane:
+    enabled: true
   controlplane:
     enabled: true
   crossplane:
-    enabled: false
+    enabled: true
   crossplanecompositions:
-    enabled: false
+    enabled: true
   crossplanefunctions:
-    enabled: false
+    enabled: true
+  crossplanexcluster:
+    enabled: true
+  dex:
+    enabled: true
+  dockerregistry:
+    enabled: true
   etcdbackupsnapshot:
     enabled: true
   extraresources:
     enabled: true
+  helminserter:
+    enabled: true
   grafana:
-    enabled: false
+    enabled: true
   grafanadashboards:
-    enabled: false
+    enabled: true
   grafanaoperator:
-    enabled: false
+    enabled: true
   kubestatemetrics:
     enabled: true
   konnectivityagent:
@@ -61,8 +81,10 @@ addons:
     enabled: true
   istiogw:
     enabled: true
+  secretcopyoperator:
+    enabled: true
   signalilo:
-    enabled: false
+    enabled: true
   template:
     enabled: true
   test:
@@ -73,15 +95,24 @@ addons:
     enabled: true
   vmagentadditionalrbac:
     enabled: true
-  vmalert:
-    enabled: false
-  vmalertmanager:
-    enabled: false
-  vmalertrules:
-    enabled: false
-  vmcluster:
-    enabled: false
+  trivyoperator:
+    enabled: true
   vmoperator:
+    enabled: true
+  vault:
+    enabled: false
+  vmalert:
+    enabled: true
+  vmalertmanager:
+    enabled: true
+  vmalertrules:
+    enabled: true
+  vmcluster:
+    enabled: true
+  system:
+    enabled: false
+    clickhouseInserter: false
+  workergroupclaimoperator:
     enabled: true
 environment: infra
 clientName: client

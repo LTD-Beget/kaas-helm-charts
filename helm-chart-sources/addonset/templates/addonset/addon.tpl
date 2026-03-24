@@ -28,6 +28,10 @@ spec:
           jsonPath: .data.clusterName
         - as: addonRevision
           jsonPath: .data.addonRevision
+        - as: cluster.systemEnabled
+          jsonPath: .data.systemEnabled
+        - as: cluster.clusterClientEnabled
+          jsonPath: .data.clusterClientEnabled
   backend:
     finalizer: true
     type: "argocd"

@@ -17,7 +17,7 @@ spec:
         spec:
           templates:
             - key: telegram_alerts.tmpl
-              name: vmalertmanager-alertmanager-alert-templates
+              name: vm-alertmanager-alertmanager-alert-templates
           serviceSpec:
             metadata:
               name: vmalertmanager
@@ -86,10 +86,10 @@ spec:
             configs:
               criticalAlertGroup:
                 bot_token: "{{ .Variables.telegramToken }}"
-                chat_id: "{{ .Variables.telegramChatId }}"
+                chat_id: {{ .Variables.telegramChatId }}
                 parse_mode: 'HTML'
                 send_resolved: true
-                message: '{{ template "tg.message" . }}'
+                message: '{{`{{ template "tg.message" . }}`}}'
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -205,7 +205,7 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmalertmanager-monitoring-svc-tls
+                secretName: vm-alertmanager-monitoring-svc-tls
             - name: alertmanager-tls
               secret:
                 defaultMode: 420

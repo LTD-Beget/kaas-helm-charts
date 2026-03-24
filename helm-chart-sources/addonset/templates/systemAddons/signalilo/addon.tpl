@@ -16,9 +16,9 @@ spec:
     icingaUrl: "https://1.2.3.4:25665"
     icingaHostname: "K8SSIGNALILO"
     icingaUsername: "k8ssignalilo"
-    icingaPassword: ""
-    alertmanagerSignaliloPort: 8888
-    alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
+    icingaPassword: "1234test"
+    alertmanagerSignaliloPort: "8888"
+    alertmanagerSignaliloToken: "HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
   valuesSources: []
   backend:
     finalizer: true

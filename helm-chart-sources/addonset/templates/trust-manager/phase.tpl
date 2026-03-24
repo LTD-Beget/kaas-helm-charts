@@ -67,7 +67,7 @@ spec:
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "True"
+          value: "true"
       selector:
         name: system
         priority: 50
