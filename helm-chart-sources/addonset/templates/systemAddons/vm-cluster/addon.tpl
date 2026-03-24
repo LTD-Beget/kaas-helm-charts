@@ -24,6 +24,8 @@ spec:
       extract:
         - as: systemIstioGwVip
           jsonPath: .data.systemIstioGwVip
+        - as: systemVmInsertVIP
+          jsonPath: .data.systemVmInsertVIP
   initDependencies:
     - name: vm-operator 
       criteria:
