@@ -89,7 +89,7 @@ spec:
                 chat_id: "{{ .Variables.telegramChatId }}"
                 parse_mode: 'HTML'
                 send_resolved: true
-                message: '{{ template "tg.message" . }}'
+                message: '{{`{{ template "tg.message" . }}`}}'
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
