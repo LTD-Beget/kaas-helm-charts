@@ -5,5 +5,4 @@
 
   {{- .Files.Get "files/systemAddons/signalilo/values.yml" | nindent 0 }}
 
-  {{- include "signalilo.phase" . }}
 {{- end }}
