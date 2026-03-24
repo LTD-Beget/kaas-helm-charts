@@ -14,7 +14,16 @@ spec:
   variables:
     systemIstioGwVip: ""
     dependency: "True"
-  valuesSources: []
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters
+        namespace: beget-system
+      extract:
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
   initDependencies:
     - name: vm-operator 
       criteria:
