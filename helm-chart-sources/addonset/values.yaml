@@ -1,6 +1,8 @@
 addons:
   addonsoperator:
     enabled: true
+  addonmanifests:
+    enabled: true
   addonset:
     enabled: true
   argocd:
@@ -25,6 +27,8 @@ addons:
     enabled: false
   clientvmscrapeconfig:
     enabled: false
+  clusterclaimoperator:
+    enabled: true
   ccmcsrcsystem:
     enabled: true
   ccmcsrccontroller:
