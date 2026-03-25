@@ -18,7 +18,7 @@ spec:
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: cluster.name
