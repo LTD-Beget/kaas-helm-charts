@@ -23,8 +23,6 @@ spec:
       extract:
         - as: dexStaticPasswordsAdmin
           jsonPath: .data.dexStaticPasswordsAdmin
-        - as: dexStaticClientsApiserver
-          jsonPath: .data.dexStaticClientsApiserver
         - as: clusterName
           jsonPath: .data.clusterName
         - as: systemIstioGwVip
