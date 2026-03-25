@@ -25,7 +25,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters
+            name: parameters-infra
             namespace: beget-system
           jsonPath: $.data.environment
           operator: Equal
