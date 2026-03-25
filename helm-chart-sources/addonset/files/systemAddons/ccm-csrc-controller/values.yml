@@ -2,7 +2,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: ccm-csrc-default
+  name: ccm-csrc-controller-default
   labels:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: ccm-csrc-controller
@@ -30,7 +30,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: ccm-csrc-immutable
+  name: ccm-csrc-controller-immutable
   labels:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: ccm-csrc-controller
