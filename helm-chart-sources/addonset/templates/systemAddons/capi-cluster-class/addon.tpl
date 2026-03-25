@@ -8,7 +8,7 @@ spec:
   path: "."
   pluginName: helm-with-values
   repoURL: "https://gitlab.beget.ru/cloud/k8s/charts/in-cloud-capi.git"
-  version: "v0.0.5"
+  version: "aggregate"
   targetCluster: in-cluster
   targetNamespace: "bcloud-capi"
   variables:
