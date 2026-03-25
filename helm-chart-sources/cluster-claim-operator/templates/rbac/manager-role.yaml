@@ -1,0 +1,102 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "manager-role" "context" $) }}
+rules:
+    - apiGroups:
+        - ""
+      resources:
+        - events
+      verbs:
+        - create
+        - patch
+    - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - argoproj.io
+      resources:
+        - applications
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - clusters
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - clusterclaim.in-cloud.io
+      resources:
+        - clusterclaimobserveresourcetemplates
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - clusterclaim.in-cloud.io
+      resources:
+        - clusterclaims
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - clusterclaim.in-cloud.io
+      resources:
+        - clusterclaims/finalizers
+      verbs:
+        - update
+    - apiGroups:
+        - clusterclaim.in-cloud.io
+      resources:
+        - clusterclaims/status
+      verbs:
+        - get
+        - patch
+        - update
+    - apiGroups:
+        - controller.in-cloud.io
+      resources:
+        - ccmcsrcs
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - in-cloud.io
+      resources:
+        - certificatesets
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
