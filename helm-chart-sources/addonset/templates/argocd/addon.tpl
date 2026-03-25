@@ -8,7 +8,7 @@ spec:
   chart: "argo-cd"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "7.8.26-1"
+  version: "9.4.15-1"
   targetCluster: in-cluster
   targetNamespace: "beget-argocd"
   variables:
