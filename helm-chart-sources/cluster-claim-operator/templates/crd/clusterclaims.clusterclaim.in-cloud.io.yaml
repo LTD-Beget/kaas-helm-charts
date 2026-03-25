@@ -363,8 +363,13 @@ spec:
                                                         format: int32
                                                         type: integer
                                                 type: object
+                                            host:
+                                                type: string
                                             phase:
                                                 type: string
+                                            port:
+                                                format: int32
+                                                type: integer
                                             workers:
                                                 description: ReplicaStatus contains replica count information mirrored from a CAPI Cluster.
                                                 properties:
@@ -465,8 +470,13 @@ spec:
                                                         format: int32
                                                         type: integer
                                                 type: object
+                                            host:
+                                                type: string
                                             phase:
                                                 type: string
+                                            port:
+                                                format: int32
+                                                type: integer
                                             workers:
                                                 description: ReplicaStatus contains replica count information mirrored from a CAPI Cluster.
                                                 properties:
