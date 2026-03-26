@@ -10,17 +10,17 @@ spec:
   repoURL: "https://gitlab.beget.ru/cloud/k8s/charts/in-cloud-capi.git"
   version: "aggregate"
   targetCluster: in-cluster
-  targetNamespace: "bcloud-capi"
+  targetNamespace: "beget-capi"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies: 
     - name: cert-manager
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

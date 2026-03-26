@@ -16,7 +16,6 @@ spec:
     telegramChatId: "-1001234567890"
     signaliloAlertmanagerToken: ""
     dependency: "True"
-  valuesSources: []
   initDependencies:
     - name: vm-operator 
       criteria:

@@ -14,7 +14,6 @@ spec:
   variables:
     cluster_name: in-cluster
     dependency: "True"
-  valuesSources: []
   initDependencies:
     - name: vm-cluster
       criteria:

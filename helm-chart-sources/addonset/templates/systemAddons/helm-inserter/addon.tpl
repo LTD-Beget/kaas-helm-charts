@@ -29,8 +29,8 @@ spec:
           jsonPath: .data.clusterName
         - as: systemNamespace
           jsonPath: .data.systemNamespace
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

@@ -13,7 +13,6 @@ spec:
   targetNamespace: "beget-addons-operator"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies: 
     - name: addons-operator
       criteria:
@@ -21,6 +20,7 @@ spec:
           operator: Equal
           value: "True"
   backend: 
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

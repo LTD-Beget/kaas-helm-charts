@@ -19,7 +19,6 @@ spec:
     icingaPassword: "1234test"
     alertmanagerSignaliloPort: "8888"
     alertmanagerSignaliloToken: "HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
-  valuesSources: []
   backend:
     finalizer: true
     type: "argocd"

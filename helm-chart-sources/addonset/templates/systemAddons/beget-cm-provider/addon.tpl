@@ -13,14 +13,14 @@ spec:
   targetNamespace: "beget-cm-provider"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
   initDependencies: 
     - name: cert-manager
       criteria:
         - jsonPath: $.status.conditions[?(@.type=='Ready')].status
           operator: Equal
           value: "True"
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

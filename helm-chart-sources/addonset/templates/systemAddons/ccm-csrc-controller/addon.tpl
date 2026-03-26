@@ -14,9 +14,8 @@ spec:
   targetNamespace: "beget-ccm-csrc-controller"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

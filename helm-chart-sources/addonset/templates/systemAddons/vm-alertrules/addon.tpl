@@ -13,7 +13,6 @@ spec:
   targetNamespace: "beget-vmalert-rules"
   variables: 
     dependency: "True"
-  valuesSources: []
   initDependencies:
     - name: vm-operator 
       criteria:

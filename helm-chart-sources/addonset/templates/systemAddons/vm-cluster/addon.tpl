@@ -32,6 +32,7 @@ spec:
           value: true
           keep: false
   backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

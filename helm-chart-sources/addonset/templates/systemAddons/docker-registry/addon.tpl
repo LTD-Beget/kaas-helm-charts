@@ -13,9 +13,8 @@ spec:
   targetNamespace: "beget-docker-registry"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"

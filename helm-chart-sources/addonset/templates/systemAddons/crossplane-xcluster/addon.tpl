@@ -27,8 +27,8 @@ spec:
           jsonPath: .data.systemIstioGwVip
         - as: systemVmInsertVIP
           jsonPath: .data.systemVmInsertVIP
-  initDependencies: []
-  backend: 
+  backend:
+    finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
     project: "default"
