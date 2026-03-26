@@ -47,7 +47,6 @@ spec:
           operator: Equal
           value: true
           keep: false
-          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -71,7 +70,6 @@ spec:
           operator: Equal
           value: true
           keep: false
-          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
