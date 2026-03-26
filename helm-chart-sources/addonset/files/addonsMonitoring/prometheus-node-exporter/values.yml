@@ -146,7 +146,7 @@ metadata:
     addons.in-cloud.io/addon: prometheus-node-exporter
 spec:
   values: |
-    prometheus-prometheus-node-exporter:
+    prometheus-node-exporter:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
