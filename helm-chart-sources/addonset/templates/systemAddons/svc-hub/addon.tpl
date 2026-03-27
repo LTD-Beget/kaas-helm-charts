@@ -28,7 +28,7 @@ spec:
           jsonPath: .data.svcHubRabbitPassword
         - as: svcHubRabbitHost
           jsonPath: .data.svcHubRabbitHost
-        - as: svcHubRabbitVhost
+        - as: svcHubRabbitVirtualHost
           jsonPath: .data.svcHubRabbitVirtualHost
   backend: 
     finalizer: true
