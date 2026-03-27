@@ -11,6 +11,7 @@ spec:
     victoria-metrics-k8s-stack:
       vmcluster:
         spec:
+          serviceAccountName: vm-cluster-vmcluster-victoria-metrics-k8s-stack
           clusterDomainName: cluster.local
           retentionPeriod: "1"
           replicationFactor: 2
