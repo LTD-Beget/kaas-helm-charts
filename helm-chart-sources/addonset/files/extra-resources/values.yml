@@ -118,3 +118,21 @@ spec:
         spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-system-issuer
+  labels:
+    addons.in-cloud.io/values: system-issuer
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+      issuer:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: ca{{ if eq .Values.environment "client" }}-client{{ end }}
+        spec:
+          ca:
+            secretName: {{ .Values.cluster.name }}-ca
