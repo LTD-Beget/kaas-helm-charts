@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: svc-hub
 spec:
-  path: ".k8s/helm"
+  path: "."
   pluginName: helm-with-values
-  repoURL: "https://gitlab.beget.ru/golang/svc-hub.git"
-  version: "upd-chart"
+  repoURL: "https://gitlab.beget.ru/k8s-charts-public/svc-hub.git"
+  version: "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-svc-hub"
   variables:
