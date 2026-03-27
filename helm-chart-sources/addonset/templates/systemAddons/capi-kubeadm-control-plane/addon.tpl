@@ -5,12 +5,12 @@ kind: Addon
 metadata:
   name: capi-kubeadm-control-plane
 spec:
-  chart: "capi-kubeadm-cp-provider"
+  chart: "capi-kubeadm-control-plane"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts/"
   version: "1.2.0"
   targetCluster: in-cluster
-  targetNamespace: "beget-capi-kubeadm-control-plane"
+  targetNamespace: "beget-capi-kubeadm-cp-provider"
   variables:
     cluster_name: in-cluster
   initDependencies: 

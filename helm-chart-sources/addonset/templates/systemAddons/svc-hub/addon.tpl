@@ -29,7 +29,7 @@ spec:
         - as: svcHubRabbitHost
           jsonPath: .data.svcHubRabbitHost
         - as: svcHubRabbitVhost
-          jsonPath: .data.svcHubRabbitVhost
+          jsonPath: .data.svcHubRabbitVirtualHost
   backend: 
     finalizer: true
     type: "argocd"
