@@ -24,6 +24,8 @@ spec:
       extract:
         - as: systemVmInsertVIP
           jsonPath: .data.systemVmInsertVIP
+        - as: vmClusterReplicas
+          jsonPath: .data.vmClusterReplicas
   initDependencies:
     - name: vm-operator 
       criteria:
