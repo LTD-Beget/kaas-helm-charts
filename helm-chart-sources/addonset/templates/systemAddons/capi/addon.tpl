@@ -10,7 +10,7 @@ spec:
   repoURL: "https://blog.beget.com/kaas-helm-charts/"
   version: "1.2.0"
   targetCluster: in-cluster
-  targetNamespace: "beget-capi"
+  targetNamespace: "beget-capi-controller"
   variables:
     cluster_name: in-cluster
   initDependencies: 

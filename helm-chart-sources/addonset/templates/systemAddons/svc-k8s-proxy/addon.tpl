@@ -1,25 +1,20 @@
-{{- define "capi-kubeadm-bootstrap.addon" }}
+{{- define "svc-k8s-proxy.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: capi-kubeadm-bootstrap
+  name: svc-k8s-proxy
 spec:
-  chart: "capi-kubeadm-bootstrap"
+  path: "charts/svc-k8s-proxy"
   pluginName: helm-with-values
-  repoURL: "https://blog.beget.com/kaas-helm-charts/"
-  version: "1.2.0"
+  repoURL: "https://gitlab.beget.ru/cloud/k8s/svc-k8s-proxy.git"
+  version: "dev"
   targetCluster: in-cluster
-  targetNamespace: "beget-capi-kubeadm-boot-provider"
+  targetNamespace: "beget-svc-k8s-proxy"
   variables:
     cluster_name: in-cluster
-  initDependencies: 
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-  backend:
+    dependency: "True"
+  backend: 
     finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
@@ -39,10 +34,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: capi-kubeadm-bootstrap
+        addons.in-cloud.io/addon: svc-k8s-proxy
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: capi-kubeadm-bootstrap
+        addons.in-cloud.io/addon: svc-k8s-proxy
 {{- end }}

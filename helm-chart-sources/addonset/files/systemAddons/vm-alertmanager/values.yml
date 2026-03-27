@@ -85,8 +85,8 @@ spec:
             type: telegram_configs
             configs:
               criticalAlertGroup:
-                bot_token: "{{ .Variables.telegramToken }}"
-                chat_id: {{ .Variables.telegramChatId }}
+                bot_token: "{{ .Values.telegramToken }}"
+                chat_id: {{ .Values.telegramChatId }}
                 parse_mode: 'HTML'
                 send_resolved: true
                 message: '{{`{{ template "tg.message" . }}`}}'
@@ -275,5 +275,5 @@ spec:
             type: webhook_configs
             configs:
               mainSignaliloInstance:
-                url: "http://signalilo.beget-signalilo.svc/webhook?token={{ .Variables.signaliloAlertmanagerToken }}"
+                url: "http://signalilo.beget-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
                 send_resolved: true

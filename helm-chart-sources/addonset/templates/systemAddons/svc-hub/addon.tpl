@@ -1,20 +1,18 @@
-{{- define "vm-alertmanager.addon" }}
+{{- define "svc-hub.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: vm-alertmanager
+  name: svc-hub
 spec:
-  chart: "victoria-metrics-k8s-stack"
+  path: ".k8s/helm"
   pluginName: helm-with-values
-  repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.52.0-1"
+  repoURL: "https://gitlab.beget.ru/golang/svc-hub.git"
+  version: "upd-chart"
   targetCluster: in-cluster
-  targetNamespace: "beget-alertmanager"
+  targetNamespace: "beget-svc-hub"
   variables:
-    telegramToken: "123456789:AAExampleTokenHere"
-    telegramChatId: "-1001234567890"
-    signaliloAlertmanagerToken: ""
+    cluster_name: in-cluster
     dependency: "True"
   valuesSources: 
     - name: parameters
@@ -24,20 +22,15 @@ spec:
         name: parameters-infra
         namespace: beget-system
       extract:
-        - as: telegramToken
-          jsonPath: .data.telegramToken
-        - as: telegramChatId
-          jsonPath: .data.telegramChatId
-        - as: alertmanagerSignaliloToken
-          jsonPath: .data.alertmanagerSignaliloToken
-  initDependencies:
-    - name: vm-operator 
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-  backend:
+        - as: svcHubRabbitUsername
+          jsonPath: .data.svcHubRabbitUsername
+        - as: svcHubRabbitPassword
+          jsonPath: .data.svcHubRabbitPassword
+        - as: svcHubRabbitHost
+          jsonPath: .data.svcHubRabbitHost
+        - as: svcHubRabbitVhost
+          jsonPath: .data.svcHubRabbitVhost
+  backend: 
     finalizer: true
     type: "argocd"
     namespace: "beget-argocd"
@@ -45,7 +38,6 @@ spec:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -58,10 +50,10 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: vm-alertmanager
+        addons.in-cloud.io/addon: svc-hub
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: vm-alertmanager
+        addons.in-cloud.io/addon: svc-hub
 {{- end }}

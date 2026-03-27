@@ -71,10 +71,10 @@ spec:
             # TODO: Create secret with vault secret injection
             basicAuth:
               username:
-                name: clickhouse-credentials
+                name: external-clickhouse-credentials
                 key: username
               password:
-                name: clickhouse-credentials
+                name: external-clickhouse-credentials
                 key: password
           remoteRead:
             url: "http://vmselect.beget-vmcluster.svc:8481/select/0/prometheus"

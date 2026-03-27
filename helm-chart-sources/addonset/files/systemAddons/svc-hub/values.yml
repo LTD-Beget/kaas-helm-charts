@@ -1,0 +1,34 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-hub-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: svc-hub  
+spec:
+  values: |
+    hub:
+      image: registry.beget.ru/golang/svc-hub:latest
+      config:
+        plugin:
+          rabbit:
+            host: "{{ .Values.svcHubRabbitHost }}"
+            port: 5672
+            username: "{{ .Values.svcHubRabbitUsername }}"
+            password: "{{ .Values.svcHubRabbitPassword }}"
+            virtual_host: "{{ .Values.svcHubRabbitVirtualHost }}"
+            exchange: global-events
+    imagePullSecrets:
+      - name: regcred
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-hub-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: svc-hub
+spec:
+  values: ""

@@ -22,7 +22,7 @@ addons:
   clickhouseinserter:
     enabled: true
   clickhousevmstorage:
-    enabled: true
+    enabled: false
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
@@ -90,6 +90,10 @@ addons:
   secretcopyoperator:
     enabled: true
   signalilo:
+    enabled: true
+  svck8sproxy:
+    enabled: true
+  svchub:
     enabled: true
   template:
     enabled: true
