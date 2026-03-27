@@ -10,6 +10,7 @@ spec:
   repoURL: "https://blog.beget.com/kaas-helm-charts/"
   version: "3.0.0"
   targetCluster: in-cluster
+  releaseName: docker-registry-cache
   targetNamespace: "beget-docker-registry"
   variables:
     cluster_name: in-cluster
