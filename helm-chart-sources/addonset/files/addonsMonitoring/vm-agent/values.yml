@@ -161,27 +161,27 @@ spec:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+                values: infra
           podScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+                values: infra
           nodeScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+                values: infra
           staticScrapeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "in-cloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+                values: infra
           probeNamespaceSelector:
             matchExpressions:
               - operator: In
                 key: "incloud.io/clusterName"
-                values: [{{ .Values.cluster.name }}]
+                values: infra
           remoteWrite:
             - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
               tlsConfig:

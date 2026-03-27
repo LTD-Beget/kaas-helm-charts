@@ -37,7 +37,7 @@ spec:
         metadata:
           name: {{ .Values.systemNamespace }}
           labels:
-            in-cloud.io/clusterName: {{ .Values.cluster.name }}
+            in-cloud.io/clusterName: infra
       appProjectCustomer:
         apiVersion: argoproj.io/v1alpha1
         kind: AppProject
