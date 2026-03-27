@@ -13,6 +13,13 @@ spec:
   targetNamespace: "beget-system"
   variables:
     cluster_name: in-cluster
+  initDependencies:
+    - name: ccm-csrc-controller
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
   valuesSources: 
     - name: parameters
       sourceRef:
