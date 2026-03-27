@@ -1,4 +1,4 @@
-{{- if and .Values.addons.ccmcsrcsystem.enabled .Values.addons.system.enabled }}
+{{- if and .Values.addons.ccmcsrcsystem.enabled .Values.addons.system.enabled false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
   
   {{- include "ccm-csrc.addon" . }}
