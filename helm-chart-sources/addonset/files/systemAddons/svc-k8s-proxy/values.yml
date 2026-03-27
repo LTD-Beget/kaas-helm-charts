@@ -8,8 +8,10 @@ metadata:
     addons.in-cloud.io/addon: svc-k8s-proxy  
 spec:
   values: |
-    imagePullSecrets:
-      - name: regcred
+    imagePullSecrets: []	
+    image:
+      repository: registry.beget.ru/k8s-charts-public/svc-k8s-proxy	
+      tag: "v0.0.1"
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

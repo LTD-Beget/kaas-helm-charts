@@ -5,10 +5,10 @@ kind: Addon
 metadata:
   name: svc-k8s-proxy
 spec:
-  path: "charts/svc-k8s-proxy"
+  path: .
   pluginName: helm-with-values
-  repoURL: "https://gitlab.beget.ru/cloud/k8s/svc-k8s-proxy.git"
-  version: "dev"
+  repoURL: "https://gitlab.beget.ru/k8s-charts-public/svc-k8s-proxy.git"
+  version: "HEAD"
   targetCluster: in-cluster
   targetNamespace: "beget-svc-k8s-proxy"
   variables:
