@@ -128,6 +128,7 @@ metadata:
     addons.in-cloud.io/addon: extra-resources
 spec:
   values: |
+    resources:
       issuer:
         apiVersion: cert-manager.io/v1
         kind: ClusterIssuer

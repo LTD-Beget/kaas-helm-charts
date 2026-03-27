@@ -77,6 +77,7 @@ spec:
             kind: ClusterClaim
             name: {{ .Values.clusterName }}
             namespace: beget-system
+          keep: false
           jsonPath: $.metadata.uid
           operator: NotExists
       selector:
