@@ -72,10 +72,41 @@ spec:
             namespace: beget-system
           jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
           operator: Exists
+        - source:
+            apiVersion: clusterclaim.in-cloud.io/v1alpha1
+            kind: ClusterClaim
+            name: {{ .Values.clusterName }}
+            namespace: beget-system
+          jsonPath: $.metadata.uid
+          operator: NotExists
       selector:
         name: system
         priority: 40
         matchLabels:
           addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: extra-resources
+    - name: system-issuer
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: {{ if eq .Values.environment "client" }}{{ .Values.clientName }}{{ else }}{{ .Values.clusterName }}{{ end }}-ca
+            namespace: beget-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+      selector:
+        name: system-issuer
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system-issuer
           addons.in-cloud.io/addon: extra-resources
 {{- end }}
