@@ -12,6 +12,6 @@ roleRef:
   name: kube-rbac-proxy-tokenreview
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-vmcluster-victoria-metrics-k8s-stack
+    name: vmcluster-{{ .Release.Name }}-victoria-metrics-k8s-stack
     namespace: {{ .Release.Namespace }}
 {{- end }}
