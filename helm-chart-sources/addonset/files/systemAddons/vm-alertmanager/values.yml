@@ -231,9 +231,9 @@ spec:
           secretName: alertmanager
           commonName: alertmanager
           dnsNames:
-            - "vmalertmanager-alertmanager"
-            - "vmalertmanager-alertmanager.beget-alertmanager"
-            - "vmalertmanager-alertmanager.beget-alertmanager.svc"
+            - "vmalertmanager-vm-alertmanager"
+            - "vmalertmanager-vm-alertmanager.beget-alertmanager"
+            - "vmalertmanager-vm-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
 
