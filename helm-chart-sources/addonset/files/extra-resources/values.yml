@@ -129,11 +129,4 @@ metadata:
 spec:
   values: |
     resources:
-      issuer:
-        apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          name: ca{{ if eq .Values.environment "client" }}-client{{ end }}
-        spec:
-          ca:
-            secretName: {{ .Values.cluster.name }}-ca
+      certificate: {}

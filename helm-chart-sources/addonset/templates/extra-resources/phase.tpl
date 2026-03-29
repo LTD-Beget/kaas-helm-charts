@@ -72,14 +72,6 @@ spec:
             namespace: beget-system
           jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
           operator: Exists
-        - source:
-            apiVersion: clusterclaim.in-cloud.io/v1alpha1
-            kind: ClusterClaim
-            name: {{ .Values.clusterName }}
-            namespace: beget-system
-          keep: false
-          jsonPath: $.metadata.uid
-          operator: NotExists
       selector:
         name: system
         priority: 40
@@ -103,6 +95,14 @@ spec:
             name: {{ if eq .Values.environment "client" }}{{ .Values.clientName }}{{ else }}{{ .Values.clusterName }}{{ end }}-ca
             namespace: beget-system
           jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+        - source:
+            apiVersion: clusterclaim.in-cloud.io/v1alpha1
+            kind: ClusterClaim
+            name: {{ .Values.clusterName }}
+            namespace: beget-system
+          keep: false
+          jsonPath: $.metadata.uid
           operator: Exists
       selector:
         name: system-issuer
