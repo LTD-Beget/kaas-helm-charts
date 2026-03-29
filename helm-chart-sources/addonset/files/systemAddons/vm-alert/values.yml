@@ -226,7 +226,7 @@ spec:
       vmalert:
         spec:
           notifiers:
-            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+            - url: "https://vmalertmanager-vm-alertmanager.beget-alertmanager.svc:9093"
               tlsConfig:
                 ca:
                   configMap:
