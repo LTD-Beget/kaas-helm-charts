@@ -22,7 +22,7 @@ spec:
             metadata:
               name: vmalertmanager
               labels:
-                monitoring.in-cloud.io/service: vmalertmanager
+                monitoring.in-cloud.io/service: vm-alertmanager
             spec:
               ports:
                 - name: http
