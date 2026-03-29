@@ -154,7 +154,7 @@ metadata:
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: "alertmanager"
+      fullnameOverride: "vm-alertmanager"
       alertmanager:
         spec:
           serviceSpec:

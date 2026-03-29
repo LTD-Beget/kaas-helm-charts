@@ -8,7 +8,7 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.52.0-1"
+  version: "0.52.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert"
   variables:
