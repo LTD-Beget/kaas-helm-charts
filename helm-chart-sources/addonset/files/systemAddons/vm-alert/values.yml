@@ -9,7 +9,7 @@ metadata:
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: "vmalert"
+      fullnameOverride: "vm-alert"
       vmalert:
         spec:
           serviceSpec:
