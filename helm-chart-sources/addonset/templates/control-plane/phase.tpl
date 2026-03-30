@@ -29,4 +29,20 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: "vm-operator"
           addons.in-cloud.io/addon: client-cp-control-plane
+    - name: disable
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: client-cp-control-plane
+          jsonPath: $.spec.variables.controlPlaneReplicas
+          operator: Equal
+          value: 0
+          keep: false
+      selector:
+        name: disable
+        priority: 98
+        matchLabels:
+          addons.in-cloud.io/values: "disable"
+          addons.in-cloud.io/addon: client-cp-control-plane
 {{- end }}

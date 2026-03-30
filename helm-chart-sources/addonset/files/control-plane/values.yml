@@ -665,3 +665,18 @@ spec:
           monitoring:
             enabled: true
             type: VictoriaMetrics
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-disable
+  labels:
+    addons.in-cloud.io/values: disable
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          enabled: false
