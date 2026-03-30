@@ -332,7 +332,7 @@ spec:
                             repoURL:
                                 description: RepoURL specifies the Helm repository URL.
                                 maxLength: 2048
-                                pattern: ^https?://.*
+                                pattern: ^(https?|oci)://.*
                                 type: string
                             targetCluster:
                                 description: |-

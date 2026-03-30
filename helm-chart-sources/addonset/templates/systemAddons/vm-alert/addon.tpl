@@ -1,4 +1,4 @@
-{{- define "vmalert.addon" }}
+{{- define "vm-alert.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -8,12 +8,22 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.52.0-1"
+  version: "0.52.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert"
   variables:
     systemIstioGwVip: ""
-  valuesSources: []
+    dependency: "True"
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: beget-system
+      extract:
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
   initDependencies:
     - name: vm-cluster
       criteria:

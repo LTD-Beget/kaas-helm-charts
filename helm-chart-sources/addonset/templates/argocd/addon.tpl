@@ -8,18 +8,18 @@ spec:
   chart: "argo-cd"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "7.8.26-1"
+  version: "9.4.15-1"
   targetCluster: in-cluster
   targetNamespace: "beget-argocd"
   variables:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: argocdServerAdminPassword

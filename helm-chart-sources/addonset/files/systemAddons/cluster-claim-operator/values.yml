@@ -1,0 +1,37 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cluster-claim-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cluster-claim-operator  
+spec:
+  values: |
+    manager:
+      image:
+        repository: prorobotech/cluster-claim-operator
+        tag: main-26666d17
+      env:
+      - name: ENABLE_WEBHOOKS
+        value: false
+      args:
+        - --leader-elect
+        - --remote-namespace=beget-system
+        - --enable-webhook=false
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cluster-claim-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cluster-claim-operator
+spec:
+  values: ""

@@ -47,6 +47,13 @@ spec:
           operator: Equal
           value: true
           keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: vm-operator
         priority: 30
@@ -63,6 +70,13 @@ spec:
           operator: Equal
           value: true
           keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: istio-gw
         priority: 40

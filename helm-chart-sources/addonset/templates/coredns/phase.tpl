@@ -34,7 +34,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
           jsonPath: $.data.environment
           operator: Equal
@@ -86,11 +86,11 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "True"
+          value: "true"
       selector:
         name: system
         priority: 40
@@ -102,9 +102,18 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
-          jsonPath: $.data.controlPlaneReplicas
+          jsonPath: $.data.controlPlaneAvailableReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.controlPlaneDesiredReplicas
           operator: GreaterThan
           value: 1
           keep: false

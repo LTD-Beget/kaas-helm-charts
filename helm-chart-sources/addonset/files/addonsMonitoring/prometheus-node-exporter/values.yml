@@ -146,7 +146,7 @@ metadata:
     addons.in-cloud.io/addon: prometheus-node-exporter
 spec:
   values: |
-    prometheus-prometheus-node-exporter:
+    prometheus-node-exporter:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -155,6 +155,9 @@ spec:
           operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/default"
           operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/crossplane"

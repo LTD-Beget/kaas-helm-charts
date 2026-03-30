@@ -16,15 +16,17 @@ spec:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
+        - as: controlPlaneAvailableReplicas
+          jsonPath: .data.controlPlaneAvailableReplicas
+        - as: controlPlaneDesiredReplicas
+          jsonPath: .data.controlPlaneDesiredReplicas
   initDependencies:
     - name: istio-base
       criteria:

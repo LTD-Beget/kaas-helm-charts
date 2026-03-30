@@ -1,4 +1,4 @@
-{{- define "vmalertrules.addon" }}
+{{- define "vm-alertrules.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -11,8 +11,8 @@ spec:
   version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "beget-vmalert-rules"
-  variables: {}
-  valuesSources: []
+  variables: 
+    dependency: "True"
   initDependencies:
     - name: vm-operator 
       criteria:

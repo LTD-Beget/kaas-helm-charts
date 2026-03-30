@@ -1,0 +1,109 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: ccm-csrc-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: ccm-csrc  
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: ccm-csrc-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: ccm-csrc
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: ccm-csrc-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: ccm-csrc
+spec:
+  values: |
+    resources:
+      ccmCsrcResource:
+        apiVersion: controller.in-cloud.io/v1alpha1
+        kind: CcmCsrc
+        metadata:
+          annotations:
+            argocd.argoproj.io/tracking-id: {{ .Values.trackingID }}
+          labels:
+            xcluster.in-cloud.io/name: {{ .Values.xcluster }}
+          name: {{ .Values.xcluster }}
+          namespace: {{ .Values.systemNamespace }}
+        spec:
+          beget-ccm:
+            appSpec:
+              applications:
+                ccmClient:
+                  enabled: false
+                ccmInfra:
+                  enabled: true
+                  imagePullSecrets: []
+                  containers:
+                    manager:
+                      image:
+                        repository: registry.beget.ru/k8s-charts-public/capi-ccm
+                        tag: v1.0.3
+                      extraEnv:
+                        CLUSTER_NAME: {{ .Values.clusterName }}
+                        CLUSTER_NAMESPACE: {{ .Values.systemNamespace }}
+                        CUSTOMER_LOGIN: {{ .Values.customer }}
+                        PARENT_CLUSTER_NAME: {{ .Values.xcluster }}
+                        USE_INTERNAL_LB: "true"
+                  volumes:
+                    secret-ccm-kubeconfig:
+                      volume:
+                        items:
+                          - key: value
+                            path: kubeconfig
+                        mode: secret
+                        secretName: {{ .Values.clusterName }}-kubeconfig
+                  tolerations:
+                    - key: "node-role.kubernetes.io/control-plane"
+                      operator: "Exists"
+                      effect: "NoSchedule"
+                    - key: "node-role.kubernetes.io/master"
+                      operator: "Exists"
+                      effect: "NoSchedule"
+          beget-csrc:
+            appSpec:
+              applications:
+                csrcClient:
+                  enabled: false
+                csrcInfra:
+                  enabled: true
+                  imagePullSecrets: []
+                  containers:
+                    manager:
+                      image:
+                        repository: registry.beget.ru/k8s-charts-public/capi-csr-approver
+                        tag: v1.0.3
+                      extraArgs:
+                        cluster-name: {{ .Values.clusterName }}
+                        cluster-namespace: {{ .Values.systemNamespace }}
+                  volumes:
+                    secret-ccm-kubeconfig:
+                      volume:
+                        items:
+                          - key: value
+                            path: kubeconfig
+                        mode: secret
+                        secretName: {{ .Values.clusterName }}-kubeconfig
+                  tolerations:
+                    - key: "node-role.kubernetes.io/control-plane"
+                      operator: "Exists"
+                      effect: "NoSchedule"
+                    - key: "node-role.kubernetes.io/master"
+                      operator: "Exists"
+                      effect: "NoSchedule"

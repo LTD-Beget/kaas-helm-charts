@@ -1,0 +1,23 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-k8s-proxy-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: svc-k8s-proxy  
+spec:
+  values: |
+    imagePullSecrets:
+      - name: regcred
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-k8s-proxy-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: svc-k8s-proxy
+spec:
+  values: ""

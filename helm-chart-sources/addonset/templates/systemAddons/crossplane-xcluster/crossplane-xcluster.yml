@@ -1,0 +1,9 @@
+{{- if and .Values.addons.crossplanexcluster.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "crossplane-xcluster.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/crossplane-xcluster/values.yml" | nindent 0 }}
+
+  {{- include "crossplane-xcluster.phase" . }}
+{{- end }}

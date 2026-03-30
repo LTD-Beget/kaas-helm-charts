@@ -11,7 +11,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
           jsonPath: $.data.environment
           operator: Equal
@@ -57,5 +57,21 @@ spec:
         priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: istio-gw
 {{- end }}

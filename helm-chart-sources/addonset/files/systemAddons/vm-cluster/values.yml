@@ -15,7 +15,7 @@ spec:
           retentionPeriod: "1"
           replicationFactor: 2
           vmstorage:
-            replicaCount: 3
+            replicaCount: {{ .Values.vmClusterReplicas }}
             extraArgs:
               blockcache.missesBeforeCaching: '2'
               cacheExpireDuration: 45m
@@ -81,7 +81,7 @@ spec:
                     topologyKey: kubernetes.io/hostname
           vmselect:
             enabled: true
-            replicaCount: 3
+            replicaCount: {{ .Values.vmClusterReplicas }}
             extraArgs:
               dedup.minScrapeInterval: 30s
               search.maxQueryDuration: 60s
@@ -143,7 +143,7 @@ spec:
                     topologyKey: kubernetes.io/hostname
           vminsert:
             enabled: true
-            replicaCount: 3
+            replicaCount: {{ .Values.vmClusterReplicas }}
             rollingUpdate:
               maxSurge: 0
               maxUnavailable: 1
@@ -467,7 +467,7 @@ spec:
             - "vminsert.beget-vmcluster.svc"
           ipAddresses:
             - 127.0.0.1
-            - {{ .Variables.systemIstioGwVip }}
+            - {{ .Values.systemVmInsertVIP }}
       vmSelect:
         enabled: true
         issuer:

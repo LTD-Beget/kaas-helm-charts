@@ -1,4 +1,4 @@
-{{- define "vmalertmanager.addon" }}
+{{- define "vm-alertmanager.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -8,14 +8,28 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.52.0-1"
+  version: "0.52.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-alertmanager"
   variables:
-    telegramToken: ""
-    telegramChatId: ""
+    telegramToken: "123456789:AAExampleTokenHere"
+    telegramChatId: "-1001234567890"
     signaliloAlertmanagerToken: ""
-  valuesSources: []
+    dependency: "True"
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: beget-system
+      extract:
+        - as: telegramToken
+          jsonPath: .data.telegramToken
+        - as: telegramChatId
+          jsonPath: .data.telegramChatId
+        - as: alertmanagerSignaliloToken
+          jsonPath: .data.alertmanagerSignaliloToken
   initDependencies:
     - name: vm-operator 
       criteria:
@@ -43,7 +57,7 @@ spec:
     - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: cert-manager
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-alertmanager
     - name: immutable
       priority: 99

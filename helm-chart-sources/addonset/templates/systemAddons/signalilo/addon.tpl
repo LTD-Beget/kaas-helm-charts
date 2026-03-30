@@ -16,10 +16,31 @@ spec:
     icingaUrl: "https://1.2.3.4:25665"
     icingaHostname: "K8SSIGNALILO"
     icingaUsername: "k8ssignalilo"
-    icingaPassword: ""
-    alertmanagerSignaliloPort: 8888
-    alertmanagerSignaliloToken: HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I=
-  valuesSources: []
+    icingaPassword: "1234test"
+    alertmanagerSignaliloPort: "8888"
+    alertmanagerSignaliloToken: "HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: beget-system
+      extract:
+        - as: signaliloUuid
+          jsonPath: .data.signaliloUuid
+        - as: icingaHostname
+          jsonPath: .data.icingaHostname
+        - as: icingaUrl
+          jsonPath: .data.icingaUrl
+        - as: icingaUsername
+          jsonPath: .data.icingaUsername
+        - as: icingaPassword
+          jsonPath: .data.icingaPassword
+        - as: alertmanagerSignaliloPort
+          jsonPath: .data.alertmanagerSignaliloPort
+        - as: alertmanagerSignaliloToken
+          jsonPath: .data.alertmanagerSignaliloToken
   backend:
     finalizer: true
     type: "argocd"

@@ -1,0 +1,38 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: ccm-csrc-controller-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: ccm-csrc-controller
+spec:
+  values: |
+    controllerManager:
+      manager:
+        image:
+          repository: docker.io/mistrikoff/ccm-csr-controller
+          tag: test
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+          requests:
+            cpu: 128m
+            memory: 128Mi
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: ccm-csrc-controller-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: ccm-csrc-controller
+spec:
+  values: ""

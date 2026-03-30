@@ -11,13 +11,13 @@ spec:
     signalilo:
       fullnameOverride: "signalilo"
       config:
-        uuid: {{ .Variables.uuid }}
-        icinga_hostname: {{ .Variables.icingaHostname }}
-        icinga_url: {{ .Variables.icingaUrl }}
-        icinga_username: {{ .Variables.icingaUsername }}
-        icinga_password: {{ .Variables.icingaPassword }}
-        alertmanager_port: {{ .Variables.alertmanagerSignaliloPort }}
-        alertmanager_bearer_token: {{ .Variables.alertmanagerSignaliloToken }}
+        uuid: {{ .Values.signaliloUuid }}
+        icinga_hostname: {{ .Values.icingaHostname }}
+        icinga_url: {{ .Values.icingaUrl }}
+        icinga_username: {{ .Values.icingaUsername }}
+        icinga_password: {{ .Values.icingaPassword }}
+        alertmanager_port: {{ .Values.alertmanagerSignaliloPort }}
+        alertmanager_bearer_token: {{ .Values.alertmanagerSignaliloToken }}
       extraEnvVars:
         - name: SIGNALILO_LOG_LEVEL
           value: "2"

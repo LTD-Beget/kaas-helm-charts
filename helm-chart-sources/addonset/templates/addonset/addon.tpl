@@ -15,19 +15,25 @@ spec:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
+        - as: clusterClaim	
+          jsonPath: .data.xcluster
         - as: cluster.client.name
           jsonPath: .data.clusterClientName
         - as: cluster.name
           jsonPath: .data.clusterName
         - as: addonRevision
           jsonPath: .data.addonRevision
+        - as: cluster.systemEnabled
+          jsonPath: .data.systemEnabled
+        - as: cluster.clusterClientEnabled
+          jsonPath: .data.clusterClientEnabled
   backend:
     finalizer: true
     type: "argocd"

@@ -27,4 +27,20 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: addons-operator
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: beget-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 25
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: addons-operator
 {{- end }}

@@ -12,10 +12,20 @@ spec:
   targetCluster: in-cluster
   targetNamespace: "beget-grafana"
   variables:
-    oidcClientID: ""
-    oidcClientSecret: ""
+    oidcClientID: "grafana"
     systemIstioGwVip: ""
-  valuesSources: []
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: beget-system
+      extract:
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: oidcClientSecret
+          jsonPath: .data.grafanaDeploymentEnvOidcSecret
   initDependencies:
     - name: grafana-operator
       criteria:
@@ -35,7 +45,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: system
+          in-cloud.io/clusterName: infra
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true

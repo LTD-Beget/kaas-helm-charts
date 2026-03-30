@@ -1,0 +1,21 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-manifests-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-manifests  
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-manifests-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: addon-manifests
+spec:
+  values: ""

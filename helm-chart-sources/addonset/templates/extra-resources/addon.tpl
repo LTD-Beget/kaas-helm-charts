@@ -19,7 +19,7 @@ spec:
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+        name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
         namespace: beget-system
       extract:
         - as: argocdServerAdminPassword
@@ -30,8 +30,6 @@ spec:
           jsonPath: .data.clusterName
         - as: cluster.port
           jsonPath: .data.clusterPort
-        - as: controlPlaneReplicas
-          jsonPath: .data.controlPlaneReplicas
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
         - as: environment

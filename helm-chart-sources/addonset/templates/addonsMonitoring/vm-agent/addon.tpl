@@ -8,18 +8,18 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "https://blog.beget.com/kaas-helm-charts"
-  version: "0.52.0-1"
+  version: "0.52.0-2"
   targetCluster: in-cluster
   targetNamespace: "beget-vmagent"
   variables:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-    - name: parameters
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters
+        name: parameters-infra
         namespace: beget-system
       extract:
         - as: cluster.name

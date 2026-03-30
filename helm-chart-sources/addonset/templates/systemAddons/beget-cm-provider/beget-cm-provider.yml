@@ -1,0 +1,9 @@
+{{- if and .Values.addons.begetcmprovider.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "beget-cm-provider.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/beget-cm-provider/values.yml" | nindent 0 }}
+
+  {{- include "beget-cm-provider.phase" . }}
+{{- end }}

@@ -14,7 +14,6 @@ spec:
   variables:
     cluster_name: in-cluster
     dependency: "True"
-  valuesSources: []
   backend:
     finalizer: true
     type: "argocd"

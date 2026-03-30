@@ -9,14 +9,14 @@ metadata:
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: "vmalert"
+      fullnameOverride: "vm-alert"
       vmalert:
         spec:
           serviceSpec:
             metadata:
               name: vmalert
               labels:
-                monitoring.in-cloud.io/service: vmalert
+                monitoring.in-cloud.io/service: vm-alert
             spec:
               ports:
                 - name: http
@@ -31,7 +31,7 @@ spec:
               operator: "Exists"
               effect: "NoSchedule"
           extraArgs:
-            external.url: "https://{{ .Variables.systemIstioGwVip }}"
+            external.url: "https://{{ .Values.systemIstioGwVip }}"
           extraEnvs:
             - name: GOMAXPROCS
               value: "4"
@@ -167,7 +167,7 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmalert-monitoring-svc-tls
+                secretName: vm-alert-monitoring-svc-tls
             - name: trusted-ca-certs
               configMap:
                 name: ca
@@ -226,7 +226,7 @@ spec:
       vmalert:
         spec:
           notifiers:
-            - url: "https://vmalertmanager-alertmanager.beget-alertmanager.svc:9093"
+            - url: "https://vmalertmanager-vm-alertmanager.beget-alertmanager.svc:9093"
               tlsConfig:
                 ca:
                   configMap:

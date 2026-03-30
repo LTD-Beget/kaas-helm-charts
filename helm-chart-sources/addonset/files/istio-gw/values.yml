@@ -130,3 +130,28 @@ spec:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.beget.com/type: "internal"
+          lb.beget.com/algorithm: "round_robin" # or "least_conns"
+          lb.beget.com/healthcheck-interval-seconds: "60"
+          lb.beget.com/healthcheck-timeout-seconds: "5"
+    tls:
+      certificate:
+        ipAddresses:
+          - 127.0.0.1
+          - {{ .Values.systemIstioGwVip }}
+          - {{ .Values.clusterHost }}

@@ -1,4 +1,4 @@
-{{- if .Values.addons.clickhouseinserter.enabled }}
+{{- if and .Values.addons.clickhouseinserter.enabled .Values.addons.system.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "clickhouseinserter.addon" . }}

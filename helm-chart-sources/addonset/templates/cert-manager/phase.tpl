@@ -55,7 +55,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
           jsonPath: $.data.environment
           operator: Equal
@@ -94,11 +94,11 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: beget-system
           jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "True"
+          value: "true"
       selector:
         name: system
         priority: 30

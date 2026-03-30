@@ -17,12 +17,12 @@ spec:
         spec:
           templates:
             - key: telegram_alerts.tmpl
-              name: vmalertmanager-alertmanager-alert-templates
+              name: vm-alertmanager-alertmanager-alert-templates
           serviceSpec:
             metadata:
               name: vmalertmanager
               labels:
-                monitoring.in-cloud.io/service: vmalertmanager
+                monitoring.in-cloud.io/service: vm-alertmanager
             spec:
               ports:
                 - name: http
@@ -85,11 +85,11 @@ spec:
             type: telegram_configs
             configs:
               criticalAlertGroup:
-                bot_token: "{{ .Variables.telegramToken }}"
-                chat_id: "{{ .Variables.telegramChatId }}"
+                bot_token: "{{ .Values.telegramToken }}"
+                chat_id: {{ .Values.telegramChatId }}
                 parse_mode: 'HTML'
                 send_resolved: true
-                message: '{{ template "tg.message" . }}'
+                message: '{{`{{ template "tg.message" . }}`}}'
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -154,7 +154,7 @@ metadata:
 spec:
   values: |
     victoria-metrics-k8s-stack:
-      fullnameOverride: "alertmanager"
+      fullnameOverride: "vm-alertmanager"
       alertmanager:
         spec:
           serviceSpec:
@@ -205,7 +205,7 @@ spec:
             - name: rbac-proxy-tls
               secret:
                 defaultMode: 420
-                secretName: vmalertmanager-monitoring-svc-tls
+                secretName: vm-alertmanager-monitoring-svc-tls
             - name: alertmanager-tls
               secret:
                 defaultMode: 420
@@ -231,9 +231,9 @@ spec:
           secretName: alertmanager
           commonName: alertmanager
           dnsNames:
-            - "vmalertmanager-alertmanager"
-            - "vmalertmanager-alertmanager.beget-alertmanager"
-            - "vmalertmanager-alertmanager.beget-alertmanager.svc"
+            - "vmalertmanager-vm-alertmanager"
+            - "vmalertmanager-vm-alertmanager.beget-alertmanager"
+            - "vmalertmanager-vm-alertmanager.beget-alertmanager.svc"
           ipAddresses:
             - 127.0.0.1
 
@@ -275,5 +275,5 @@ spec:
             type: webhook_configs
             configs:
               mainSignaliloInstance:
-                url: "http://signalilo.beget-signalilo.svc/webhook?token={{ .Variables.signaliloAlertmanagerToken }}"
+                url: "http://signalilo.beget-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
                 send_resolved: true
