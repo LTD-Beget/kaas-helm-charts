@@ -78,7 +78,7 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: extra-resources
-    - name: system-issuer
+    - name: system-migrated
       criteria:
         - source:
             apiVersion: v1
@@ -99,15 +99,15 @@ spec:
         - source:
             apiVersion: clusterclaim.in-cloud.io/v1alpha1
             kind: ClusterClaim
-            name: {{ .Values.clusterName }}
+            name: {{ .Values.clusterClaim }}
             namespace: beget-system
           keep: false
           jsonPath: $.metadata.uid
           operator: Exists
       selector:
-        name: system-issuer
+        name: system-migrated
         priority: 50
         matchLabels:
-          addons.in-cloud.io/values: system-issuer
+          addons.in-cloud.io/values: system-migrated
           addons.in-cloud.io/addon: extra-resources
 {{- end }}

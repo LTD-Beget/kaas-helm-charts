@@ -122,11 +122,11 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: extra-resources-system-issuer
+  name: extra-resources-system-migrated
   labels:
-    addons.in-cloud.io/values: system-issuer
+    addons.in-cloud.io/values: system-migrated
     addons.in-cloud.io/addon: extra-resources
 spec:
   values: |
     resources:
-      certificate: {}
+      certificate: null
