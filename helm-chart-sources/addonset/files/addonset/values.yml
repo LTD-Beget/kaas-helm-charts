@@ -12,6 +12,7 @@ spec:
       system:
         enabled: {{ .Values.cluster.systemEnabled }}
     clientName: {{ .Values.cluster.client.name }}
+    clusterClaim: {{ .Values.clusterClaim }}
     clusterName: {{ .Values.cluster.name }}
     addonRevision: {{ .Values.addonRevision }}
     clientClusterEnabled: {{ .Values.cluster.clusterClientEnabled }}
