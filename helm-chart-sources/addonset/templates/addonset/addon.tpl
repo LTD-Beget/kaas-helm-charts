@@ -22,6 +22,8 @@ spec:
         name: parameters-infra
         namespace: beget-system
       extract:
+        - as: clusterClaim	
+          jsonPath: .data.xcluster
         - as: cluster.client.name
           jsonPath: .data.clusterClientName
         - as: cluster.name
