@@ -1,0 +1,93 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-client
+spec:
+  apiVersion: cluster.x-k8s.io/v1beta2
+  kind: Cluster
+  value: |
+    metadata:
+      annotations:
+        dependency.kubeadmres.in-cloud.io/ready: "true"
+      labels:
+        {{ .Values.extraArgs.companyDomain }}/environment: client
+        cluster.x-k8s.io/cluster-name: {{`{{ .ClusterClaim.metadata.name }}`}}-client
+        topology.cluster.x-k8s.io/owned: ""
+        xcluster.in-cloud.io/name: {{`{{ .ClusterClaim.metadata.name }}`}}
+    spec:
+      clusterNetwork:
+        apiServerPort: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}
+        pods:
+          cidrBlocks:
+          - {{`{{ .ClusterClaim.spec.client.network.podCidr }}`}}
+        serviceDomain: cluster.local
+        services:
+          cidrBlocks:
+          - {{`{{ .ClusterClaim.spec.client.network.serviceCidr }}`}}
+
+      paused: {{`{{ .ClusterClaim.spec.client.paused | default false }}`}}
+
+      topology:
+        classRef:
+          name: capi-cluster-class-cluster-client-template
+          namespace: {{ .Values.extraArgs.companyPrefix }}-capi
+
+        variables:
+          - name: argocdSourceTragetRevision
+            value: {{ .Values.versions.clientControlPlane }}
+
+          - name: {{ .Values.extraArgs.companyPrefix }}CltLoadBalancerListenerPort
+            values: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerPorts
+            value:
+              - from: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}
+                to: 30000
+                type: controlPlane
+              - from: 8132
+                to: 30132
+                type: generic
+          - name: {{ .Values.extraArgs.companyPrefix }}AppDestinationName
+            value: in-cluster
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterCustomerLogin
+            value: {{`{{ .ClusterClaim.metadata.namespace }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}TrackingId
+            value: {{`{{ .ClusterClaim.metadata.namespace }}`}}_{{`{{ .ClusterClaim.metadata.name }}`}}:argoproj.io/Application:{{`{{ .ClusterClaim.metadata.namespace }}`}}/{{`{{ .ClusterClaim.metadata.name }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerAddress
+            value: {{`{{ .InfraControlPlaneEndpoint.Host }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}AppProviderConfigRefName
+            value: {{`{{ .ClusterClaim.metadata.name }}`}}-infra-kubernetes-provider-config
+          - name: {{ .Values.extraArgs.companyPrefix }}EtcdCaSecretName
+            value: {{`{{ .ClusterClaim.metadata.name }}`}}-infra-etcd
+          {{`{{- if and (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_clt_suspend") .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_clt_suspend }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}CltControlplaneReplicas
+            value: "0"
+          {{`{{- else }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}CltControlplaneReplicas
+            value: "{{`{{ .InfraControlPlaneDesiredReplicas }}`}}"
+          {{`{{- end }}`}}
+
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerType
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_load_balancer_type }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterClaimName
+            value: {{`{{ .ClusterClaim.metadata.name }}`}}
+
+          - name: {{ .Values.extraArgs.companyPrefix }}AppDestinationNamespace
+            value: {{ .Values.extraArgs.companyPrefix }}-system
+          - name: {{ .Values.extraArgs.companyPrefix }}AppNamespace
+            value: {{ .Values.extraArgs.companyPrefix }}-argocd
+          - name: {{ .Values.extraArgs.companyPrefix }}AppReleaseName
+            value: client-cp
+
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerHealthcheckIntervalSec
+            value: 30
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerHealthcheckThreshold
+            value: 3
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerHealthcheckTimeoutSec
+            value: 10
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerInternal
+            value: false
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterRegion
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_region }}`}}
+
+        version: {{`{{ .ClusterClaim.spec.client.componentVersions.kubernetes.version }}`}}

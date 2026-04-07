@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.etcdbackupsnapshot.enabled }}
+
+{{- tpl (.Files.Get "files/etcd-backup-snapshot/etcd-backup-snapshot-0.1.0/manifest.yaml") . }}
+
+{{- end }}

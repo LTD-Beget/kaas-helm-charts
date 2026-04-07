@@ -1,0 +1,33 @@
+argo-cd: {}
+# some values for argocd
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+  secureService:
+    enabled: false
+    # Create a secret named 'argocd-server-metrics'
+    # containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: argocd
+      route:
+        host: argocd-server
+        port: 443
+  destinationRule:
+    enabled: false
+    host: argocd-server
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true

@@ -1,0 +1,31 @@
+{{- $expose   := .Values.expose -}}
+{{- if and $expose.enabled (eq $expose.resourceType "istio") }}
+{{ range $proxyName, $proxyValue := .Values.proxies }}
+{{- if $proxyValue.enabled }}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $intTls             := $.Values.internalTLS -}}
+{{- if or (eq $intTls.certSource "certmanager") (eq $intTls.certSource "secret") }}
+{{- $intSecretName      := printf "%s-internal-tls" (include "docker-registry.fullname" $) -}}
+{{- if eq $intTls.certSource "secret" }}
+{{- $intSecretName      = $intTls.secret.secretName -}}
+{{- end }}
+
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "docker-registry.selectorLabels" $ | nindent 4 }}
+spec:
+  host: {{ template "docker-registry.fullname" $ }}-{{ $proxyParsedName }}
+  trafficPolicy:
+    tls:
+      insecureSkipVerify: true
+      mode: SIMPLE
+      # credentialName: {{ $intSecretName }}
+    {{- end }}
+    {{ end }}
+{{- end }}
+{{- end }}

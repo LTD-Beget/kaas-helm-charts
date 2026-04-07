@@ -1,0 +1,17 @@
+{{- range $dsName, $dsValue := .Values.grafanaDataSources }}
+{{- if $dsValue.enabled }}
+{{- $dsSpec := $dsValue.spec }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: "{{ $dsName | kebabcase }}"
+  namespace: "{{ $.Release.Namespace }}"
+  {{- with $.Values.grafana.labels }}
+  labels:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{ toYaml $dsSpec | nindent 2 }}
+{{- end }}
+{{- end }}

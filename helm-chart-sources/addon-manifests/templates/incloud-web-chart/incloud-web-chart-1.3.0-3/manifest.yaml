@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.incloudwebchart.enabled }}
+
+{{- tpl (.Files.Get "files/incloud-web-chart/incloud-web-chart-1.3.0-3/manifest.yaml") . }}
+
+{{- end }}

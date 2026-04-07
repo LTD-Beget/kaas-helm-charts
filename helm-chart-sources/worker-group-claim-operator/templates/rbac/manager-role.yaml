@@ -1,0 +1,88 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "manager-role" "context" $) }}
+rules:
+    - apiGroups:
+        - ""
+      resources:
+        - events
+      verbs:
+        - create
+        - patch
+    - apiGroups:
+        - bootstrap.cluster.x-k8s.io
+      resources:
+        - kubeadmconfigtemplates
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - update
+        - watch
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machinedeployments
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machinesets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - infrastructure.cluster.x-k8s.io
+      resources:
+        - {{ $.Values.companyPrefix }}machinetemplates
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - wgbootstraptemplates
+        - wgmachinetemplates
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - workergroupclaims
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - workergroupclaims/finalizers
+      verbs:
+        - update
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - workergroupclaims/status
+      verbs:
+        - get
+        - patch
+        - update

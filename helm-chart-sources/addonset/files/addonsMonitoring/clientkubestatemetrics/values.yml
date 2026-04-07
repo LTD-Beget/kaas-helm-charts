@@ -1,0 +1,210 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      enabled: false
+      nameOverride: client-kube-state-metrics
+      tolerations:
+        - operator: "Exists"
+      prometheusScrape: false
+      metricLabelsAllowlist:
+        - nodes=[node-group.{{ .Values.companyDomain }}/name]
+      customLabels:
+        in-cloud.io/clusterName: ""
+
+      collectors:
+        - nodes
+        - pods
+
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
+
+      extraArgs:
+        - --kubeconfig=/kubeconfig/config
+
+      volumeMounts:
+       - mountPath: /kubeconfig/config
+         name: kubeconfig
+         subPath: config
+       - mountPath: /kubeconfig/ca.crt
+         name: kubeconfig-certs
+         subPath: ca.crt
+       - mountPath: /kubeconfig/tls.crt
+         name: kubeconfig-certs
+         subPath: tls.crt
+       - mountPath: /kubeconfig/tls.key
+         name: kubeconfig-certs
+         subPath: tls.key
+
+      volumes:
+        - name: kubeconfig
+          secret:
+           secretName: client-kube-state-metrics-kubeconfig
+        - name: kubeconfig-certs
+          secret:
+           secretName: monitoring-client
+
+      kubeRBACProxy:
+        enabled: true
+        image:
+          # registry: quay.io
+          # repository: brancz/kube-rbac-proxy
+          tag: v0.21.0
+
+        extraArgs:
+          - --v=2
+
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+
+      extraManifests:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: client-kube-state-metrics-kubeconfig
+            namespace: {{ .Values.companyPrefix }}-client-kube-state-metrics
+          type: Opaque
+          stringData:
+            config: |
+              apiVersion: v1
+              kind: Config
+              clusters:
+                - name: kubernetes
+                  cluster:
+                    certificate-authority: /kubeconfig/ca.crt
+                    server: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              users:
+                - name: user
+                  user:
+                    client-certificate: /kubeconfig/tls.crt
+                    client-key: /kubeconfig/tls.key
+              contexts:
+                - name: default-context
+                  context:
+                    cluster: kubernetes
+                    user: user
+                    namespace: default
+              current-context: default-context
+
+        - apiVersion: cert-manager.io/v1
+          kind: Certificate
+          metadata:
+            name: monitoring-client
+            namespace: {{ .Values.companyPrefix }}-client-kube-state-metrics
+          spec:
+            commonName: metrics-reader
+            duration: 8760h
+            isCA: false
+            issuerRef:
+              kind: ClusterIssuer
+              name: ca-client
+            privateKey:
+              algorithm: RSA
+              size: 2048
+            renewBefore: 1460h
+            secretName: monitoring-client
+            subject:
+              organizations:
+                - {{ .Values.companyPrefix }}:metrics-reader
+            usages:
+            - client auth
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      enabled: true
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      volumes:
+        - name: kubeconfig
+          secret:
+           secretName: client-kube-state-metrics-kubeconfig
+        - name: kubeconfig-certs
+          secret:
+           secretName: monitoring-client
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: client-kube-state-metrics-svc-tls
+
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+
+        volumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    monitoring:
+      enabled: true
+      serviceScrapeConfig:
+        relabelConfigs:
+          - targetLabel: cluster_full_name
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: remotewrite_cluster
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: client_cluster
+            replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+          - targetLabel: cluster_type
+            replacement: client

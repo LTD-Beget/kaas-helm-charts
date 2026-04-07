@@ -1,0 +1,13 @@
+{{- if .Values.telemetry.enabled }}
+---
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+metadata:
+  name: {{ default "telemetry-default" .Values.telemetry.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessLogging:
+    - disabled: false
+    - providers:
+        - name: Envoy
+{{- end }}

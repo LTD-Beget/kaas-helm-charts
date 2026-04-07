@@ -1,0 +1,78 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonTemplate
+metadata:
+  name: coredns
+spec:
+  template: |
+    spec:
+      chart: "coredns"
+      pluginName: helm-with-values
+      repoURL: "{{ .Values.companyExternalChartRegistry }}"
+      version: "1.28.0-1"
+      releaseName: coredns
+      targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
+      targetNamespace: "{{ .Values.companyPrefix }}-coredns"
+      variables:
+        cluster_name: {{ "{{ .Values.spec.variables.cluster }}" }}
+        dependency: "False"
+      valuesSources:
+        - name: parameters-client
+          sourceRef:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: {{ .Values.companyPrefix }}-system
+          extract:
+            - as: clientServiceCidrCoredns
+              jsonPath: .data.clientServiceCidrCoredns
+            - as: controlPlaneAvailableReplicas
+              jsonPath: .data.controlPlaneAvailableReplicas
+            - as: controlPlaneDesiredReplicas
+              jsonPath: .data.controlPlaneDesiredReplicas
+            - as: companyPrefix
+              jsonPath: .data.companyPrefix
+            - as: companyDomain
+              jsonPath: .data.companyDomain
+      initDependencies:
+        - name: cilium
+          criteria:
+            - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+              operator: Equal
+              value: "True"
+      backend: 
+        finalizer: true
+        type: "argocd"
+        namespace: "{{ .Values.companyPrefix }}-argocd"
+        project: "default"
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: false
+          managedNamespaceMetadata:
+            labels:
+              in-cloud.io/caBundle: approved
+              in-cloud.io/clusterName: {{ "{{ .Values.spec.variables.cluster }}" }}
+          syncOptions:
+            - ApplyOutOfSyncOnly=true
+            - CreateNamespace=true
+      valuesSelectors:
+        - name: default
+          priority: 0
+          matchLabels:
+            addons.in-cloud.io/values: default
+            addons.in-cloud.io/addon: coredns
+        - name: custom
+          priority: 90
+          matchLabels:
+            addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
+            addons.in-cloud.io/addon: coredns-client
+        - name: client
+          priority: 95
+          matchLabels:
+            addons.in-cloud.io/values: client
+            addons.in-cloud.io/addon: coredns
+        - name: immutable
+          priority: 99
+          matchLabels:
+            addons.in-cloud.io/values: immutable
+            addons.in-cloud.io/addon: coredns

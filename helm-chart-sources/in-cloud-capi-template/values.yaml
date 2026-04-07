@@ -1,0 +1,514 @@
+companyDomain: example.com
+companyPrefix: example
+clusterResourcesEnabled: false
+capi:
+  externalSecrets:
+    controllerManager:
+      enabled: false
+      targetComands:
+        - openssl genrsa -out /etc/kubernetes/pki/controller-manager-server.key 2048
+        - openssl req -new -key /etc/kubernetes/pki/controller-manager-server.key -config /etc/kubernetes/pki/controller-manager-server.cnf -out /etc/kubernetes/pki/controller-manager-server.csr
+        - openssl x509 -req -in /etc/kubernetes/pki/controller-manager-server.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/controller-manager-server.crt -days 365 -sha256 -extfile /etc/kubernetes/pki/controller-manager-server.cnf -extensions req_ext
+    scheduler:
+      enabled: false
+      targetComands:
+        - openssl genrsa -out /etc/kubernetes/pki/scheduler-server.key 2048
+        - openssl req -new -key /etc/kubernetes/pki/scheduler-server.key -config /etc/kubernetes/pki/scheduler-server.cnf -out /etc/kubernetes/pki/scheduler-server.csr
+        - openssl x509 -req -in /etc/kubernetes/pki/scheduler-server.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/scheduler-server.crt -days 365 -sha256 -extfile /etc/kubernetes/pki/scheduler-server.cnf -extensions req_ext
+
+  k8s:
+    infrastructureType: wrapper
+    controlPlaneType: kubeadm # kubeadm
+
+    clientControlPlaneType: addon-claim # addonClaim
+
+
+    clusterInfrastructureTemplate:
+      wrapper:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+        kind: WrapperClusterTemplate
+
+    machineInfrastructureTemplate:
+      wrapper:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+        kind: WrapperMachineTemplate
+
+    controlPlaneTypeTemplate: 
+      kubeadm:
+        name: kubeadm
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+        kind: KubeadmControlPlaneTemplate
+
+      addon-claim:
+        name: addon-claim
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: AddonClaimTemplate
+
+    containerRuntime:
+      socket: unix:///var/run/containerd/containerd.sock
+
+      mirrors:
+        enabled: true
+        default:
+          args:
+            skip_verify: true
+            capabilities: ["pull","resolve"]
+
+  
+        repos:
+          docker.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/registry-1-docker-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://registry-1.docker.io
+            server: https://docker.io
+          europe-docker.pkg.dev:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/europe-docker-pkg-dev'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://europe-docker.pkg.dev
+            server: https://europe-docker.pkg.dev
+          gcr.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/gcr-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://gcr.io
+            server: https://gcr.io
+          ghcr.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/ghcr-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://ghcr.io
+            server: https://ghcr.io
+          mirror.gcr.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/mirror-gcr-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://mirror.gcr.io
+            server: https://mirror.gcr.io
+          public.ecr.aws:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/public-ecr-aws'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://public.ecr.aws
+            server: https://public.ecr.aws
+          quay.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/quay-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://quay.io
+            server: https://quay.io
+          registry-1.docker.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/registry-1-docker-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://registry-1.docker.io
+            server: https://registry-1.docker.io
+
+          registry.k8s.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/registry-k8s-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://registry.k8s.io
+            server: https://registry.k8s.io
+
+          xpkg.crossplane.io:
+            mirrors:
+              - args:
+                  ca: /etc/kubernetes/pki/ca-oidc.crt
+                  priority: 1
+                  skip_verify: false
+                mirror: '{{  .containerdMirrorUrl }}/repository/xpkg-crossplane-io'
+              - args:
+                  priority: 2
+                  skip_verify: false
+                mirror: https://xpkg.crossplane.io
+            server: https://xpkg.crossplane.io
+
+          #### EXAMPLE #####################################################
+          # registry-1.docker.io:
+          #   server: https://registry-1.docker.io
+          #   mirrors:
+          #     - mirror: https://foo.local/repository/docker.io
+          #       args:
+          #         skip_verify: false
+          #         ca: "/etc/certs/mirror.crt"
+          #         capabilities: ["pull","resolve"]
+          #     - mirror: https://registry-1.docker.io
+          #       args:
+          #         skip_verify: false
+          #         capabilities: ["pull","resolve"]
+
+    users:
+      - name: capv
+        sshAuthorizedKeys: 
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINGPb8b0krR7l/tH7m9g59SLlvFRe05aZfx8ZR7UBeT4 @dobry_kot
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC973OhTJ7214Kv0oJuHo4C9epzLqNdl+LSMcPALWRMWFAXilgtLu32ERkHUNakLbS5+ZQNPH8bVaA/dGmpSEegaokvF6dXSfuVeC9OM5BAgZ7QDhgYtPn7lC4kkzQ/KWX62K5Jo7q8dme8qOE4W0NqBu09Q3AxpeCg1WoMOXGBPVksctO5icsZy88vlHJQuJx3gJEWES07Nw053d+wLbsbhsWE2UvS4sYfRlj1i2ODvBm5JgMEu6+O1RsUJkSJ9yEgsjAd1XEhwcBztuoRc6ubcOekQ5bqfZDI9L324f1DbgXrhl6ojAqYzqIEscCRIgE8Qli5FwvifHpt9zQ/0Bwi4qIqH7yatca/Nh5VYJNLeVyje0KUS8h5epDXVFz2j/js9+moOUSDxjV4Y12yv+9YA+DrsG1pwocDo4gea9APChM+oynyHX02n06fJgejVZF+g07VB5UxbtDrCl5ZTWipv7ptg5noRLUQhhC11S+RjGi0wi5vEt39qS4ZRHcKgg8= @shynie42
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcraQN1wxh3D/Gi7M56BLxInIscCGos+QMQel4oweBco4gc6TqGLcQdteipnYgYGBQ3YzU0RG34qTKQ+BMq7o4+iYTF/MSF1Zj5K+nwG1xP6AaxGh5h1w2dTuv4MOEbWDiQU8l70wITDigSktonHwXgz+nDG9VjcfOgf5kfij5lok0BTtuNlaQPqm1fJ9CrSWwzIsU1GjIX0oLR0wpYLwm9lPtMSEgpfyAr8vmTwt3xPvv57WbGCjjqW1uFuiUxj7l9UF+7SkN0yOqyu+KLz79pvrhtqWK9dfx12GZpuWnZLRaLYmgHHK/rE6qlMD1NPV800XAV5y4+pV7T0d0xAogQ03ppkWG8kLjRUTWA3x5GvA6PxS4HtWKR3NCFKh/KX0+FADUbr1eYlz/dl3eRQ0UBrg8LIbLOEoagGKr8NYPHyDAfCTn3oPvxUTKB5qk0GpWOZ39h9hiUVBvYxRs5Q+kSgwiLBJ08iyUCz+DsUdf/VWto5sBxkkZiP43QRkHlsc= @Mistrikoff
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJeBpQ7CPTPutxy9g1rURRSw6HZRGtkmFLzyy9rHlBcp @godjee
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3UEO6WQP1UdA9mfCT/ZBefBJM4pLJ97E1l0c3CCr29apGNjMmRN8whyGcbU0xkL+fMjRuzrbuFwHqvSuW5sd113Hlw8A95QEnD81jWUJqhbzVS5LSQlq1A8DUjYrEW9B07gIBbWEUBWE/ZoYIMyPw5ggG3EXF/X1+JQcXcfmoitT9qVbVGHhMQItOlCj/LbntIl0NgUFgNieUJtUOY9Q9ZgnmE4ehUHRkOUd8blkGfOa+xuV1SZnK1ndEOq2dHTWpCnSRpdjcF3y9rrmwHUEYeRiMGt6Rhi4toSABQNGavLJjw2PmIldTtc4ixY7JBzYffuOOKNv5OD4nkRswVDgL ubuntu@vm-sivanov
+          - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/lJUBs6L6qsqcPXRVV3rRe/eCt+rySjI3XchRXjJ6N1n1+B1x3UgUe8tt+ngz2F47AUR30g9Brh5agy8ZtmTWux+TQ6UKiyMrh/JWg6b4PE935lfq/hBk40rJIGA3svHZkwdzThR96Ij8l73afhJqgSy28TqCGbkzZTWlZbULZhlnew1XBvwP0WI3Y78PsCsx97eQnycuzPlZAnkmzQnXlxjMPchUv+wGA2l4l39nFNwJ5bBIaxEV4b5FiStGTFjrR9fL8WoNjrRx34NLmIDQF1LxUS/13TUycPNwOSBZetQqnmgfnaPDoz16H8QFCWW6N6GkgK2weGDn5WH9hdcwY3fySwsoEoyRZmZauGfmNpvgFOWh4aS5u0VoKnmGE50gD+6Qt+Dghg91OCKEoH3cVVs1MUbOD1cqpj3Dsg6khUj93fKc8yme7CncTwYhWSwDOxYlORB0Znn7XWDYFwDtXnscqS/JoU7nglnH0AmF0ZnaAVsH8V0hDkdIslo2BPfkGsKWoO4mgBHcjGwabAfVPEUwywvVVav0mJzk7/7FlvTxrb15puQ3gZungvCWMhRV7FsOBL6P7SBFJDtGuBBIdshwztppAmjS4lppFghkXz9fRI1ZnO7ioIzQTAdKarpF788uFf57Ug0Wl10aiXGeW1K8+sDuE0XaWxKpyiMq5w== @dmkolbin
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        passwd: $6$rounds=4096$cF9Ut2vIkCjiIV$GK/GTDvBSLC5jV/.uhML1B85RPhAR.Ol6Zb4LFfz86PhoWLPZkyFHkvoTfHlfGQhWN7MVBJiNnaM/nQBAJGHt0
+
+    controlPlane:
+
+      components:
+        helm: &kubectlComponent
+          enabled: true
+          bin:
+            repository: "https://get.helm.sh"
+            pathBin: "helm-${COMPONENT_VERSION}-linux-amd64.tar.gz"
+            pathSha256: "helm-${COMPONENT_VERSION}-linux-amd64.tar.gz.sha256sum"
+            version: v3.19.5
+            installPath: /usr/local/bin/helm
+            targetComands:
+              - systemctl enable helm-install
+              - systemctl start helm-install
+
+        kubectl: &kubectlComponent
+          enabled: true
+          bin:
+            repository: "https://dl.k8s.io"
+            pathBin: "${COMPONENT_VERSION}/bin/linux/amd64/kubectl"
+            pathSha256: "${COMPONENT_VERSION}/bin/linux/amd64/kubectl.sha256"
+            version: v1.30.4
+            installPath: /usr/local/bin/kubectl
+            targetComands:
+              - systemctl enable kubectl-install
+              - systemctl start kubectl-install
+
+        kubeadm: &kubeadmComponent
+          enabled: true
+          bin:
+            repository: "https://dl.k8s.io"
+            pathBin: "${COMPONENT_VERSION}/bin/linux/amd64/kubeadm"
+            pathSha256: "${COMPONENT_VERSION}/bin/linux/amd64/kubeadm.sha256"
+            version: v1.30.4
+            installPath: /usr/local/bin/kubeadm
+            targetComands:
+              - systemctl enable kubeadm-install
+              - systemctl start kubeadm-install
+
+        kubelet: &kubeletComponent
+          enabled: true
+          extraArgs:
+            cloud-provider: external
+            config: "/var/lib/kubelet/config-custom.yaml"
+            # cluster-domain: '{{ .internalClusterName }}.{{ .internalClusterDomain }}'
+            # cluster-dns: '{{ .clusterDnsSvc }}'
+            node-labels: "node-group.wrapper.com/name={{ .builtin.cluster.name }}-control-plane"
+
+          bin:
+            repository: "https://dl.k8s.io"
+            pathBin: "${COMPONENT_VERSION}/bin/linux/amd64/kubelet"
+            pathSha256: "${COMPONENT_VERSION}/bin/linux/amd64/kubelet.sha256"
+            version: v1.30.4
+            installPath: /usr/local/bin/kubelet
+            targetComands:
+              - systemctl enable kubelet
+              - systemctl enable kubelet-install
+              - systemctl start kubelet-install
+
+        crictl: &crictlComponent
+          enabled: true
+          bin:
+            repository: "https://github.com/kubernetes-sigs/cri-tools/releases/download"
+            pathBin: "${COMPONENT_VERSION}/crictl-${COMPONENT_VERSION}-linux-amd64.tar.gz"
+            pathSha256: "${COMPONENT_VERSION}/crictl-${COMPONENT_VERSION}-linux-amd64.tar.gz.sha256"
+            version: v1.30.0
+            installPath: /usr/local/bin/crictl
+            targetComands:
+              - systemctl enable crictl-install
+              - systemctl start crictl-install
+
+        runc: &runcComponent
+          enabled: true
+          bin:
+            repository: "https://github.com/opencontainers/runc/releases/download"
+            pathBin: "${COMPONENT_VERSION}/runc.amd64"
+            pathSha256: "${COMPONENT_VERSION}/runc.sha256sum"
+            version: v1.1.12
+            installPath: /usr/local/bin/runc
+            targetComands:
+              - systemctl enable runc-install
+              - systemctl start runc-install
+
+        containerd: &containerdComponent
+          enabled: true
+          bin:
+            repository: "https://github.com/containerd/containerd/releases/download"
+            pathBin: "v${COMPONENT_VERSION}/containerd-${COMPONENT_VERSION}-linux-amd64.tar.gz"
+            pathSha256: "v${COMPONENT_VERSION}/containerd-${COMPONENT_VERSION}-linux-amd64.tar.gz.sha256sum"
+            version: 1.7.19
+            installPath: /usr/local/bin/
+            targetComands:
+              - systemctl enable containerd-install
+              - systemctl enable containerd
+              - systemctl restart containerd
+
+        etcd:
+          peerCertSANs:
+            - 127.0.0.1
+          serverCertSANs:
+            - 127.0.0.1
+
+          extraArgs:
+            auto-compaction-retention: "8"
+            cert-file: "/etc/kubernetes/pki/etcd/server.crt"
+            client-cert-auth: "true"
+            data-dir: "/var/lib/etcd"
+            election-timeout: "1500"
+            heartbeat-interval: "250"
+            key-file: "/etc/kubernetes/pki/etcd/server.key"
+            logger: "zap"
+            max-snapshots: "10"
+            max-wals: "10"
+            metrics: "extensive"
+            peer-cert-file: "/etc/kubernetes/pki/etcd/peer.crt"
+            peer-client-cert-auth: "true"
+            peer-key-file: "/etc/kubernetes/pki/etcd/peer.key"
+            peer-trusted-ca-file: "/etc/kubernetes/pki/etcd/ca.crt"
+            snapshot-count: "10000"
+            trusted-ca-file: "/etc/kubernetes/pki/etcd/ca.crt"
+            listen-metrics-urls: http://0.0.0.0:2381
+            quota-backend-bytes: "10737418240"
+
+          bin:
+            repository: "https://github.com/etcd-io/etcd/releases/download"
+            pathBin: "${COMPONENT_VERSION}/etcd-${COMPONENT_VERSION}-linux-amd64.tar.gz"
+            pathSha256: "${COMPONENT_VERSION}/SHA256SUMS"
+            version: v3.5.5
+            installPath: /usr/local/bin/
+            targetComands:
+              - systemctl enable etcd-install
+              - systemctl start etcd-install
+
+        apiServer:
+          certSANs:
+            - "api.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
+            - "api-int.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
+
+          extraVolumes:
+            - name: k8s-audit-policy
+              hostPath: /etc/kubernetes/audit-policy.yaml
+              mountPath: /etc/kubernetes/audit-policy.yaml
+              readOnly: true
+              pathType: File
+            - name: k8s-audit
+              hostPath: /var/log/kubernetes/audit/
+              mountPath: /var/log/kubernetes/audit/
+              readOnly: false
+              pathType: DirectoryOrCreate
+            - name: k8s-ca-oidc-crt
+              hostPath: /etc/kubernetes/pki/ca-oidc.crt
+              mountPath: /etc/kubernetes/pki/ca-oidc.crt
+              readOnly: true
+              pathType: File
+          extraArgs:
+            # tls
+            tls-cert-file: "/etc/kubernetes/pki/apiserver.crt"
+            tls-private-key-file: "/etc/kubernetes/pki/apiserver.key"
+            client-ca-file: "/etc/kubernetes/pki/ca.crt"
+            # etcd
+            etcd-cafile: "/etc/kubernetes/pki/etcd/ca.crt"
+            etcd-certfile: "/etc/kubernetes/pki/apiserver-etcd-client.crt"
+            etcd-keyfile: "/etc/kubernetes/pki/apiserver-etcd-client.key"
+            etcd-servers: "https://127.0.0.1:2379"
+            # service accounts
+            service-account-issuer: 'https://kubernetes.default.svc.{{ .internalClusterName }}.{{ .internalClusterDomain }}'
+            service-account-key-file: "/etc/kubernetes/pki/sa.pub"
+            service-account-signing-key-file: "/etc/kubernetes/pki/sa.key"
+            # network
+            api-audiences: "konnectivity-server"
+            service-cluster-ip-range: '{{ .clusterServiceSubnet }}'
+            # aggregation layer / front-proxy
+            enable-aggregator-routing: "true"
+            requestheader-allowed-names: "front-proxy-client"
+            requestheader-client-ca-file: "/etc/kubernetes/pki/front-proxy-ca.crt"
+            requestheader-extra-headers-prefix: "X-Remote-Extra-"
+            requestheader-group-headers: "X-Remote-Group"
+            requestheader-username-headers: "X-Remote-User"
+            proxy-client-cert-file: "/etc/kubernetes/pki/front-proxy-client.crt"
+            proxy-client-key-file: "/etc/kubernetes/pki/front-proxy-client.key"
+            # auth / admission
+            anonymous-auth: "true"
+            # DEPRECATED: in 1.25+ and not effective in 1.30+
+            # allow-privileged: "true"
+            authorization-mode: "Node,RBAC"
+            enable-bootstrap-token-auth: "true"
+            enable-admission-plugins: "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,NodeRestriction,PodSecurity,StorageObjectInUseProtection,PersistentVolumeClaimResize,RuntimeClass"
+            # oidc
+            oidc-ca-file: "/etc/kubernetes/pki/ca-oidc.crt"
+            oidc-client-id: "kubernetes"
+            oidc-issuer-url: '{{ .oidcIssuerUrl }}'
+            oidc-username-claim: "email"
+            # audit
+            audit-policy-file: "/etc/kubernetes/audit-policy.yaml"
+            audit-log-path: "/var/log/kubernetes/audit/audit.log"
+            audit-log-mode: "batch"
+            audit-log-maxsize: "1000"
+            audit-log-maxbackup: "10"
+            audit-log-maxage: "1"
+            # kubelet
+            kubelet-client-certificate: "/etc/kubernetes/pki/apiserver-kubelet-client.crt"
+            kubelet-client-key: "/etc/kubernetes/pki/apiserver-kubelet-client.key"
+            # misc
+            profiling: "false"
+            v: "3"
+            watch-cache: '{{ .watchCache }}'
+
+        controllerManager:
+          extraVolumes:
+            - name: k8s-controller-manager-crt
+              hostPath: /etc/kubernetes/pki/controller-manager-server.crt
+              mountPath: /etc/kubernetes/pki/controller-manager-server.crt
+              readOnly: true
+              pathType: File
+            - name: k8s-controller-manager-key
+              hostPath: /etc/kubernetes/pki/controller-manager-server.key
+              mountPath: /etc/kubernetes/pki/controller-manager-server.key
+              readOnly: true
+              pathType: File
+          extraArgs:
+            bind-address: "0.0.0.0"
+            # tls
+            tls-cert-file: "/etc/kubernetes/pki/controller-manager-server.crt"
+            tls-private-key-file: "/etc/kubernetes/pki/controller-manager-server.key"
+            client-ca-file: "/etc/kubernetes/pki/ca.crt"
+            # auth / kubeconfig
+            kubeconfig: "/etc/kubernetes/controller-manager.conf"
+            authentication-kubeconfig: "/etc/kubernetes/controller-manager.conf"
+            authorization-kubeconfig: "/etc/kubernetes/controller-manager.conf"
+            authorization-always-allow-paths: "/healthz,/readyz,/livez,/metrics"
+            requestheader-client-ca-file: "/etc/kubernetes/pki/front-proxy-ca.crt"
+            # network
+            cluster-cidr: '{{ .clusterPodCidr }}'
+            service-cluster-ip-range: '{{ .clusterServiceSubnet }}'
+            # service accounts
+            root-ca-file: "/etc/kubernetes/pki/ca.crt"
+            service-account-private-key-file: "/etc/kubernetes/pki/sa.key"
+            use-service-account-credentials: "true"
+            # cloud
+            cloud-provider: "external"
+            # cluster signing
+            cluster-signing-cert-file: "/etc/kubernetes/pki/ca.crt"
+            cluster-signing-key-file: "/etc/kubernetes/pki/ca.key"
+            cluster-signing-duration: "720h0m0s"
+            # cluster identity
+            cluster-name: '{{ .builtin.cluster.name }}'
+            controllers: "*,bootstrapsigner,tokencleaner"
+            # tuning (non-default)
+            concurrent-replicaset-syncs: "20"
+            node-monitor-period: "5s"
+            node-monitor-grace-period: "40s"
+            node-startup-grace-period: "1m0s"
+            node-sync-period: "0s"
+            terminated-pod-gc-threshold: "50"
+            # misc
+            profiling: "false"
+            v: "2"
+
+        scheduler:
+          extraVolumes:
+            - name: k8s-scheduler-crt
+              hostPath: /etc/kubernetes/pki/scheduler-server.crt
+              mountPath: /etc/kubernetes/pki/scheduler-server.crt
+              readOnly: true
+              pathType: File
+            - name: k8s-scheduler-key
+              hostPath: /etc/kubernetes/pki/scheduler-server.key
+              mountPath: /etc/kubernetes/pki/scheduler-server.key
+              readOnly: true
+              pathType: File
+          extraArgs:
+            leader-elect: "true"
+            bind-address: "0.0.0.0"
+            tls-cert-file: "/etc/kubernetes/pki/scheduler-server.crt"
+            tls-private-key-file: "/etc/kubernetes/pki/scheduler-server.key"
+
+    dataPlane:
+      components:
+
+        kubectl: *kubectlComponent
+
+        kubeadm: *kubeadmComponent
+
+        kubelet: &kubeletComponent
+          enabled: true
+          extraArgs:
+            cloud-provider: external
+            config: "/var/lib/kubelet/config-custom.yaml"
+            node-labels: '{{ printf "node-group.wrapper.com/name=%s-%s" .clusterName .name | quote }}'
+
+          bin:
+            repository: "https://dl.k8s.io"
+            pathBin: "${COMPONENT_VERSION}/bin/linux/amd64/kubelet"
+            pathSha256: "${COMPONENT_VERSION}/bin/linux/amd64/kubelet.sha256"
+            version: v1.30.4
+            installPath: /usr/local/bin/kubelet
+            targetComands:
+              - systemctl enable kubelet
+              - systemctl enable kubelet-install
+              - systemctl start kubelet-install
+
+        crictl: *crictlComponent
+
+        runc: *runcComponent
+
+        containerd: *containerdComponent

@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeadm-config
+  namespace: {{ .Values.kubeadmConfig.namespace }}
+data:
+  ClusterConfiguration: |
+    {{- .Values.kubeadmConfig.clusterConfiguration | toYaml | nindent 4 }}

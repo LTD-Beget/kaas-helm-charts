@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: secret-copy-operator
+    name: secret-copy-operator-manager-rolebinding
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: secret-copy-operator-manager-role
+subjects:
+    - kind: ServiceAccount
+      name: secret-copy-operator-controller-manager
+      namespace: {{ .Release.Namespace }}

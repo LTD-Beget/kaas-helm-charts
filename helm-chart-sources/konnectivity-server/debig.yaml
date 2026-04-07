@@ -1,0 +1,102 @@
+---
+# Source: konnectivity-server/templates/daemonset.konnectivity-server.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: konnectivity-server
+  labels:
+    app.kubernetes.io/name: konnectivity-server
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "0.31.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app: konnectivity-server
+  template:
+    metadata:
+      labels:
+        app: konnectivity-server
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirst
+      priorityClassName: system-cluster-critical
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+
+      containers:
+        - name: server
+          image: "gcr.io/k8s-staging-kas-network-proxy/proxy-server:master"
+          imagePullPolicy: IfNotPresent
+          args:
+            - --admin-port=8133
+            - --agent-namespace=kube-system
+            - --agent-port=8132
+            - --agent-service-account=konnectivity-agent
+            - --authentication-audience=system:konnectivity-server
+            - --cluster-cert=/tls/tls.crt
+            - --cluster-key=/tls/tls.key
+            - --delete-existing-uds-file
+            - --enable-lease-controller
+            - --health-port=8134
+            - --logtostderr=true
+            - --mode=grpc
+            - --server-ca-cert=/tls/ca.crt
+            - --server-cert=/tls/tls.crt
+            - --server-key=/tls/tls.key
+            - --server-port=8130
+            - --v=8
+          ports:
+            - containerPort: 8132
+              hostPort: 8132
+              name: agent
+              protocol: TCP
+            - containerPort: 8133
+              hostPort: 8133
+              name: admin
+              protocol: TCP
+            - containerPort: 8134
+              hostPort: 8134
+              name: health
+              protocol: TCP
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /tls
+              name: tls
+              readOnly: true
+            - mountPath: /etc/kubernetes/konnectivity-server.conf
+              name: kubeconfig
+              readOnly: true
+              subPath: konnectivity-server.conf
+            - mountPath: /etc/kubernetes/konnectivity-server
+              name: konn-uds
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              host: 127.0.0.1
+              path: /healthz
+              port: 8134
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+
+      volumes:
+        - name: kubeconfig
+          secret:
+            defaultMode: 420
+            secretName: konnectivity-server-kubeconfig
+        - name: konn-uds
+          hostPath:
+            path: /etc/kubernetes/konnectivity-server
+            type: DirectoryOrCreate
+        - name: tls
+          secret:
+            defaultMode: 420
+            secretName: konnectivity-cluster-server

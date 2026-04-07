@@ -1,0 +1,42 @@
+{{- if .Values.clientCertificate.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.clientCertificate.name | default "konnectivity-client" }}
+spec:
+  secretName: {{ .Values.clientCertificate.secretName | default "konnectivity-client" }}
+  {{- with .Values.clientCertificate.usages }}
+  usages:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.clientCertificate.commonName }}
+  commonName: {{ . | quote }}
+  {{- end }}
+  {{- if or .Values.clientCertificate.organizations .Values.clientCertificate.organizationalUnits }}
+  subject:
+    {{- with .Values.clientCertificate.organizations }}
+    organizations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.clientCertificate.organizationalUnits }}
+    organizationalUnits:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  {{- with .Values.clientCertificate.privateKey }}
+  privateKey:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.clientCertificate.duration }}
+  duration: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.clientCertificate.renewBefore }}
+  renewBefore: {{ . | quote }}
+  {{- end }}
+  issuerRef:
+    name: {{ .Values.clientCertificate.issuerRef.name | default "kubernetes-ca" }}
+    kind: {{ .Values.clientCertificate.issuerRef.kind | default "ClusterIssuer" }}
+    {{- with .Values.clientCertificate.issuerRef.group }}
+    group: {{ . }}
+    {{- end }}
+{{- end }}

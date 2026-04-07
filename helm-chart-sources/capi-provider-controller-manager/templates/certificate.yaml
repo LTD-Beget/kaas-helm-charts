@@ -1,0 +1,26 @@
+{{- with .Values.appSpec.applications.providerControllerManager }}
+  {{- if and .enabled $.Values.certificates.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $.Release.Name }}-{{ .volumes.certificate.volume.name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  commonName: {{ $.Release.Name }}-{{ .name }}
+  dnsNames:
+    - {{ $.Release.Name }}-{{ .name }}
+    - {{ $.Release.Name }}-{{ .name }}.{{ $.Release.Namespace }}
+    - {{ $.Release.Name }}-{{ .name }}.{{ $.Release.Namespace }}.svc
+  issuerRef:
+  {{- if $.Values.certificates.useExternalIssuer }}
+    {{ $.Values.certificates.externalIssuer | toYaml | nindent 4 }}
+  {{- else }}
+    kind: ClusterIssuer
+    name: {{ $.Release.Name }}-selfsigned-issuer
+  {{- end }}
+  secretName: {{ $.Release.Name }}-{{ .volumes.certificate.volume.name }}
+  subject:
+    organizations:
+      - k8s-sig-cluster-lifecycle
+  {{- end }}
+{{- end }}

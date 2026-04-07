@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.cilium.enabled }}
+
+{{- tpl (.Files.Get "files/cilium/cilium-1.18.5-1/manifest.yaml") . }}
+
+{{- end }}

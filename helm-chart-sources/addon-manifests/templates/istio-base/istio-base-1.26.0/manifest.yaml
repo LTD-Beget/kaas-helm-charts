@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.istiobase.enabled }}
+
+{{- tpl (.Files.Get "files/istio-base/istio-base-1.26.0/manifest.yaml") . }}
+
+{{- end }}

@@ -1,0 +1,26 @@
+{{- with .Values.appSpec.applications.providerControllerManager }}
+  {{- if and .enabled $.Values.certificates.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $.Release.Name }}-{{ .volumes.webhook.volume.name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  commonName: {{ $.Release.Name }}-{{ .name }}-webhook
+  dnsNames:
+    - {{ $.Release.Name }}-{{ .name }}-webhook
+    - {{ $.Release.Name }}-{{ .name }}-webhook.{{ $.Release.Namespace }}
+    - {{ $.Release.Name }}-{{ .name }}-webhook.{{ $.Release.Namespace }}.svc
+  issuerRef:
+  {{- if $.Values.certificates.useExternalIssuer }}
+    {{ $.Values.certificates.externalIssuer | toYaml | nindent 4 }}
+  {{- else }}
+    kind: ClusterIssuer
+    name: {{ $.Release.Name }}-selfsigned-issuer
+  {{- end }}
+  secretName: {{ $.Release.Name }}-{{ .volumes.webhook.volume.name }}
+  subject:
+    organizations:
+      - k8s-sig-cluster-lifecycle
+  {{- end }}
+{{- end }}

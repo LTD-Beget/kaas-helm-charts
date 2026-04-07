@@ -1,0 +1,13 @@
+{{- if .Values.addons.vmagent.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "vm-agent.addon" . }}
+
+  {{- .Files.Get "files/addonsMonitoring/vm-agent/values.yml" | nindent 0 }}
+
+  {{- include "vm-agent.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-agent.phase" $clientContext }}
+  {{- end }}
+{{- end }}

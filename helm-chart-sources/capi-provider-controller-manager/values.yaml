@@ -1,0 +1,100 @@
+globalVolumeCertificate: &globalVolumeCertificate "/etc/provider-wrapper-controller-manager/tls"
+
+certificates:
+  enabled: true
+  useExternalIssuer: false
+  externalIssuer:
+    kind: ClusterIssuer
+    name: ""
+
+monitoring:
+  vmServiceScrape:
+    enabled: false
+
+appSpec:
+  applications:
+    providerControllerManager:
+      enabled: false
+      replicas: 1
+      name: provider-wrapper-controller-manager
+      type: Deployment
+      #TODO
+      #extraAnnotations:
+      #  kubectl.kubernetes.io/default-container: manager
+      imagePullSecrets: []
+
+      service:
+        enabled: true
+
+      volumes:
+        certificate:
+          volume:
+            mode: secret
+            name: server-tls
+        webhook:
+          volume:
+            mode: secret
+            name: webhook-server-cert
+
+      containers:
+        manager:
+          livenessProbeEnabled: false
+          readinessProbeEnabled: false
+          name: manager
+          image:
+            repository: registry.example.ru/cloud/k8s/controllers/capi-provider-wrapper
+            tag: v2.1.4
+            pullPolicy: IfNotPresent
+
+          extraArgs:
+           metrics-bind-address: :8443
+           metrics-secure: true
+           metrics-cert-path: *globalVolumeCertificate
+           webhook-cert-path: /tmp/k8s-webhook-server/serving-certs
+
+          extraCommand:
+          - /manager
+
+          extraPorts:
+            metrics:
+              containerPort: 8443
+              protocol: TCP
+            webhook-server:
+              containerPort: 9443
+              protocol: TCP
+
+          extraLivenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          extraReadinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          extraResources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
+
+          extraVolumeMounts:
+            certificate:
+              volumeMount:
+                path: *globalVolumeCertificate
+            webhook:
+              volumeMount:
+                path: /tmp/k8s-webhook-server/serving-certs
+
+companyPrefix: example

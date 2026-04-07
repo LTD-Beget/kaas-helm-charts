@@ -1,0 +1,671 @@
+companyPrefix: example.com
+companyWikiAlertingUrl: example.com
+
+additionalLabels: {}
+
+vmrules:
+  argocd:
+    enabled: true
+    groups:
+      argocd:
+        enabled: true
+        rules:
+          ArgoCdClusterConnectionError:
+            enabled: true
+          ArgoCdGitRequestErrors:
+            enabled: true
+          ArgoCdRepoServerHighGitRequestDuration:
+            enabled: true
+          ArgoCdRepoServerPendingRequests:
+            enabled: true
+      argocdApps:
+        enabled: true
+        rules:
+          ArgoCdAppAutoSyncDisabled:
+            enabled: true
+          ArgoCdAppControllerHighReconciliationDuration:
+            enabled: true
+          ArgoCdAppOutOfSync:
+            enabled: true
+          ArgoCdAppSyncFailed:
+            enabled: true
+          ArgoCdAppUnhealthy:
+            enabled: true
+  auditErrors:
+    enabled: true
+    groups:
+      apiserverAudit:
+        enabled: true
+        rules:
+          AuditLogError:
+            enabled: true
+  capiClusterAlerts:
+    enabled: true
+    groups:
+      capiClusterAlerts:
+        enabled: true
+        rules:
+          InCloudCapiClusterNotAlive:
+            enabled: true
+          InCloudCapiClusterNotReady:
+            enabled: true
+          InCloudCapiClusterNotReadyTooLong:
+            enabled: true
+          InCloudCapiClusterNodesInconsistent:
+            enabled: true
+          InCloudCapiClusterNodesUpdateRequiredTooLong:
+            enabled: true
+          InCloudCapiClusterUpdatingTooLong:
+            enabled: true
+          InCloudCapiClusterDeletionRequestedTooLong:
+            enabled: true
+          InCloudCapiClusterControlPlaneUpdateRequiredTooLong:
+            enabled: true
+          InCloudCapiClusterPausedButUpdateRequired:
+            enabled: true
+  capiClusterRules:
+    enabled: true
+    groups:
+      capiClusterRules:
+        enabled: true
+        rules:
+          in_cloud_capi_cluster_deletion_requested:
+            enabled: true
+          in_cloud_capi_cluster_controlplane_condition_consistent:
+            enabled: true
+          in_cloud_capi_cluster_controlplane_replica_consistent:
+            enabled: true
+          in_cloud_capi_cluster_controlplane_update_required:
+            enabled: true
+          in_cloud_capi_cluster_workers_condition_consistent:
+            enabled: true
+          in_cloud_capi_cluster_workers_replica_consistent:
+            enabled: true
+          in_cloud_capi_cluster_workers_update_required:
+            enabled: true
+          in_cloud_capi_cluster_nodes_consistent:
+            enabled: true
+          in_cloud_capi_cluster_nodes_update_required:
+            enabled: true
+          in_cloud_capi_cluster_updating:
+            enabled: true
+          in_cloud_capi_cluster_alive:
+            enabled: true
+          in_cloud_capi_cluster_ready:
+            enabled: true
+          in_cloud_capi_cluster_controlplane_endpoint:
+            enabled: true
+  certManager:
+    enabled: true
+    groups:
+      certManager:
+        enabled: true
+        rules:
+          CertManagerAbsent:
+            enabled: true
+      certificates:
+        enabled: true
+        rules:
+          CertManagerCertExpirySoon:
+            enabled: true
+          CertManagerCertNotReady:
+            enabled: true
+          CertManagerHittingRateLimits:
+            enabled: true
+  clusterMonitoringVictoriaMetrics:
+    enabled: true
+    groups:
+      jobs:
+        enabled: true
+        rules:
+          VMAgentJobAbsent:
+            enabled: true
+          VMAlertJobAbsent:
+            enabled: true
+          VMAlertmanagerJobAbsent:
+            enabled: true
+  clusterMonitoringVictoriaMetricsOperator:
+    enabled: true
+    groups:
+      pods:
+        enabled: true
+        rules:
+          ClientControlPlanePodsRestart:
+            enabled: true
+          ControlPlanePodsRestart:
+            enabled: true
+          PodsRestart:
+            enabled: true
+  coredns:
+    enabled: true
+    groups:
+      coredns:
+        enabled: true
+        rules:
+          CoreDNSDown:
+            enabled: true
+          CoreDNSErrorsHigh:
+            enabled: true
+          CoreDNSErrorsHighCritical:
+            enabled: true
+          CoreDNSLatencyHigh:
+            enabled: true
+      coredns_forward:
+        enabled: true
+        rules:
+          CoreDNSForwardErrorsHigh:
+            enabled: true
+          CoreDNSForwardErrorsTooHigh:
+            enabled: true
+          CoreDNSForwardHealthcheckBrokenCount:
+            enabled: true
+          CoreDNSForwardHealthcheckFailureCount:
+            enabled: true
+          CoreDNSForwardLatencyHigh:
+            enabled: true
+  cpuUtilization:
+    enabled: true
+    groups:
+      controlPlaneCpuUtilization:
+        enabled: true
+        rules:
+          ExtremelyHighIndividualControlPlaneCPU:
+            enabled: true
+          HighIndividualControlPlaneCPU:
+            enabled: true
+          HighOverallControlPlaneCPU:
+            enabled: true
+  etcd:
+    enabled: true
+    groups:
+      etcd:
+        enabled: true
+        rules:
+          EtcdHighCommitDurations:
+            enabled: true
+          EtcdHighFsyncDurations:
+            enabled: true
+          EtcdHighFsyncDurationsIncreasing:
+            enabled: true
+          EtcdHighNumberOfLeaderChanges:
+            enabled: true
+          EtcdNoLeader:
+            enabled: true
+          etcdDatabaseHighFragmentationRatio:
+            enabled: true
+          etcdDatabaseQuotaLowSpace:
+            enabled: true
+          etcdExcessiveDatabaseGrowth:
+            enabled: true
+          etcdMembersDown:
+            enabled: true
+  k8sRulesContainercpulimits:
+    enabled: true
+    groups:
+      k8sRulesContainercpulimits:
+        enabled: true
+        rules:
+          "cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits":
+            enabled: true
+          "namespace_cpu:kube_pod_container_resource_limits:sum":
+            enabled: true
+  k8sRulesContainercpurequests:
+    enabled: true
+    groups:
+      k8sRulesContainercpurequests:
+        enabled: true
+        rules:
+          "cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests":
+            enabled: true
+          "namespace_cpu:kube_pod_container_resource_requests:sum":
+            enabled: true
+  k8sRulesContainermemorylimits:
+    enabled: true
+    groups:
+      k8sRulesContainermemorylimits:
+        enabled: true
+        rules:
+          "cluster:namespace:pod_memory:active:kube_pod_container_resource_limits":
+            enabled: true
+          "namespace_memory:kube_pod_container_resource_limits:sum":
+            enabled: true
+  k8sRulesContainermemoryrequests:
+    enabled: true
+    groups:
+      k8sRulesContainermemoryrequests:
+        enabled: true
+        rules:
+          "cluster:namespace:pod_memory:active:kube_pod_container_resource_requests":
+            enabled: true
+          "namespace_memory:kube_pod_container_resource_requests:sum":
+            enabled: true
+  kubeApiServerRequests:
+    enabled: true
+    groups:
+      kubeApiServerRequestsInFlight:
+        enabled: true
+        rules:
+          kubeApiServerRequestsInFlight:
+            enabled: true
+  kubePrometheusGeneralRules:
+    enabled: true
+    groups:
+      kubePrometheusGeneralRules:
+        enabled: true
+        rules:
+          count:up0:
+            enabled: true
+          count:up1:
+            enabled: true
+  kubeStateMetrics:
+    enabled: true
+    groups:
+      kubeStateMetrics:
+        enabled: true
+        rules:
+          KubeStateMetricsListErrors:
+            enabled: true
+          KubeStateMetricsShardingMismatch:
+            enabled: true
+          KubeStateMetricsShardsMissing:
+            enabled: true
+          KubeStateMetricsWatchErrors:
+            enabled: true
+  kubernetesApps:
+    enabled: true
+    groups:
+      kubernetesApps:
+        enabled: true
+        rules:
+          KubeContainerWaiting:
+            enabled: true
+          KubeDaemonSetMisScheduled:
+            enabled: true
+          KubeDaemonSetNotScheduled:
+            enabled: true
+          KubeDaemonSetRolloutStuck:
+            enabled: true
+          KubeDeploymentGenerationMismatch:
+            enabled: true
+          KubeDeploymentReplicasMismatch:
+            enabled: true
+          KubeDeploymentRolloutStuck:
+            enabled: true
+          KubeHpaMaxedOut:
+            enabled: true
+          KubeHpaReplicasMismatch:
+            enabled: true
+          KubeInfraDaemonSetRolloutStuck:
+            enabled: true
+          KubeInfraDeploymentReplicasMismatch:
+            enabled: true
+          KubeInfraDeploymentRolloutStuck:
+            enabled: true
+          KubeInfraPodCrashLooping:
+            enabled: true
+          KubeJobFailed:
+            enabled: true
+          KubeJobNotCompleted:
+            enabled: true
+          KubePdbNotEnoughHealthyPods:
+            enabled: true
+          KubePodCrashLooping:
+            enabled: true
+          KubePodNotReady:
+            enabled: true
+          KubeStatefulSetGenerationMismatch:
+            enabled: true
+          KubeStatefulSetReplicasMismatch:
+            enabled: true
+          KubeStatefulSetUpdateNotRolledOut:
+            enabled: true
+  kubernetesResources:
+    enabled: true
+    groups:
+      kubernetesResources:
+        enabled: true
+        rules:
+          CPUThrottlingHigh:
+            enabled: true
+          KubeCPUOvercommit:
+            enabled: true
+          KubeCPUQuotaOvercommit:
+            enabled: true
+          KubeMemoryOvercommit:
+            enabled: true
+          KubeMemoryQuotaOvercommit:
+            enabled: true
+          KubeQuotaAlmostFull:
+            enabled: true
+          KubeQuotaExceeded:
+            enabled: true
+          KubeQuotaFullyUsed:
+            enabled: true
+  kubernetesStorage:
+    enabled: true
+    groups:
+      kubernetesStorage:
+        enabled: true
+        rules:
+          KubePersistentVolumeErrors:
+            enabled: true
+          KubePersistentVolumeFillingUp:
+            enabled: true
+          KubePersistentVolumeFillingUpCritical:
+            enabled: true
+          KubePersistentVolumeInodesFillingUp:
+            enabled: true
+          KubePersistentVolumeInodesFillingUpCritical:
+            enabled: true
+  kubernetesSystem:
+    enabled: true
+    groups:
+      kubernetesSystem:
+        enabled: true
+        rules:
+          KubeClientErrors:
+            enabled: true
+          KubeVersionMismatch:
+            enabled: true
+  kubernetesSystemApiserver:
+    enabled: true
+    groups:
+      kubernetesSystemApiserver:
+        enabled: true
+        rules:
+          KubeAPITerminatedRequests:
+            enabled: true
+          KubeAggregatedAPIDown:
+            enabled: true
+          KubeAggregatedAPIErrors:
+            enabled: true
+          KubeClientCertificateExpiration:
+            enabled: true
+          KubeClientCertificateExpirationCritical:
+            enabled: true
+  kubernetesSystemKubelet:
+    enabled: true
+    groups:
+      kubernetesSystemKubelet:
+        enabled: true
+        rules:
+          KubeNodeEviction:
+            enabled: true
+          KubeNodeNotReady:
+            enabled: true
+          KubeNodePressure:
+            enabled: true
+          KubeNodeReadinessFlapping:
+            enabled: true
+          KubeNodeUnreachable:
+            enabled: true
+          KubeletClientCertificateExpiration:
+            enabled: true
+          KubeletClientCertificateExpirationCritical:
+            enabled: true
+          KubeletClientCertificateRenewalErrors:
+            enabled: true
+          KubeletPlegDurationHigh:
+            enabled: true
+          KubeletPodStartUpLatencyHigh:
+            enabled: true
+          KubeletServerCertificateExpiration:
+            enabled: true
+          KubeletServerCertificateExpirationCritical:
+            enabled: true
+          KubeletServerCertificateRenewalErrors:
+            enabled: true
+          KubeletTooManyPods:
+            enabled: true
+  nodeExporter:
+    enabled: true
+    groups:
+      nodeExporter:
+        enabled: true
+        rules:
+          NodeBondingDegraded:
+            enabled: true
+          NodeCPUHighUsage:
+            enabled: true
+          NodeClockNotSynchronising:
+            enabled: true
+          NodeClockSkewDetected:
+            enabled: true
+          NodeDiskIOSaturation:
+            enabled: true
+          NodeFileDescriptorLimit:
+            enabled: true
+          NodeFileDescriptorLimitCritical:
+            enabled: true
+          NodeFilesystemAlmostOutOfFiles:
+            enabled: true
+          NodeFilesystemAlmostOutOfFilesCritical:
+            enabled: true
+          NodeFilesystemAlmostOutOfSpace:
+            enabled: true
+          NodeFilesystemAlmostOutOfSpaceCritical:
+            enabled: true
+          NodeFilesystemFilesFillingUp:
+            enabled: true
+          NodeFilesystemFilesFillingUpCritical:
+            enabled: true
+          NodeFilesystemSpaceFillingUp:
+            enabled: true
+          NodeFilesystemSpaceFillingUpCritical:
+            enabled: true
+          NodeHighNumberConntrackEntriesUsed:
+            enabled: true
+          NodeMemoryHighUtilization:
+            enabled: true
+          NodeMemoryMajorPagesFaults:
+            enabled: true
+          NodeNetworkReceiveErrs:
+            enabled: true
+          NodeNetworkTransmitErrs:
+            enabled: true
+          NodeRAIDDegraded:
+            enabled: true
+          NodeRAIDDiskFailure:
+            enabled: true
+          NodeSystemSaturation:
+            enabled: true
+          NodeSystemdServiceCrashlooping:
+            enabled: true
+          NodeSystemdServiceFailed:
+            enabled: true
+          NodeTextFileCollectorScrapeError:
+            enabled: true
+  nodeExporterRules:
+    enabled: true
+    groups:
+      nodeExporterRules:
+        enabled: true
+        rules:
+          "instance:node_cpu_utilisation:rate5m":
+            enabled: true
+          "instance:node_load1_per_cpu:ratio":
+            enabled: true
+          "instance:node_memory_utilisation:ratio":
+            enabled: true
+          "instance:node_network_receive_bytes_excluding_lo:rate5m":
+            enabled: true
+          "instance:node_network_receive_drop_excluding_lo:rate5m":
+            enabled: true
+          "instance:node_network_transmit_bytes_excluding_lo:rate5m":
+            enabled: true
+          "instance:node_network_transmit_drop_excluding_lo:rate5m":
+            enabled: true
+          "instance:node_num_cpu:sum":
+            enabled: true
+          "instance:node_vmstat_pgmajfault:rate5m":
+            enabled: true
+          "instance_device:node_disk_io_time_seconds:rate5m":
+            enabled: true
+          "instance_device:node_disk_io_time_weighted_seconds:rate5m":
+            enabled: true
+  nodeNetwork:
+    enabled: true
+    groups:
+      nodeNetwork:
+        enabled: true
+        rules:
+          NodeNetworkInterfaceFlapping:
+            enabled: true
+  nodeRules:
+    enabled: true
+    groups:
+      nodeRules:
+        enabled: true
+        rules:
+          ":node_memory_MemAvailable_bytes:sum":
+            enabled: true
+          "cluster:node_cpu:ratio_rate5m":
+            enabled: true
+          "node:node_cpu_utilization:ratio_rate5m":
+            enabled: true
+          "node:node_num_cpu:sum":
+            enabled: true
+          "node_namespace_pod:kube_pod_info:":
+            enabled: true
+  podSecurity:
+    enabled: true
+    groups:
+      PodSecurityViolation:
+        enabled: true
+        rules:
+          PodSecurityViolation:
+            enabled: true
+  prometheusK8sPrometheusRules:
+    enabled: true
+    groups:
+      prometheus:
+        enabled: true
+        rules:
+          PrometheusBadConfig:
+            enabled: true
+          PrometheusDuplicateTimestamps:
+            enabled: true
+          PrometheusErrorSendingAlertsToSomeAlertmanagers:
+            enabled: true
+          PrometheusLabelLimitHit:
+            enabled: true
+          PrometheusMissingRuleEvaluations:
+            enabled: true
+          PrometheusNotConnectedToAlertmanagers:
+            enabled: true
+          PrometheusNotIngestingSamples:
+            enabled: true
+          PrometheusNotificationQueueRunningFull:
+            enabled: true
+          PrometheusOutOfOrderTimestamps:
+            enabled: true
+          PrometheusRemoteStorageFailures:
+            enabled: true
+          PrometheusRemoteWriteBehind:
+            enabled: true
+          PrometheusRemoteWriteDesiredShards:
+            enabled: true
+          PrometheusScrapeBodySizeLimitHit:
+            enabled: true
+          PrometheusScrapeSampleLimitHit:
+            enabled: true
+          PrometheusTSDBCompactionsFailing:
+            enabled: true
+          PrometheusTSDBReloadsFailing:
+            enabled: true
+          PrometheusTargetLimitHit:
+            enabled: true
+          PrometheusTargetSyncFailure:
+            enabled: true
+          VMRuleFailures:
+            enabled: true
+  vmHealth:
+    enabled: true
+    groups:
+      vmHealth:
+        enabled: true
+        rules:
+          VMConcurrentInsertsHitTheLimit:
+            enabled: true
+          VMIndexDBRecordsDrop:
+            enabled: true
+          VMProcessNearFDLimits:
+            enabled: true
+          VMRowsRejectedOnIngestion:
+            enabled: true
+          VMServiceDown:
+            enabled: true
+          VMTooHighCPUUsage:
+            enabled: true
+          VMTooHighMemoryUsage:
+            enabled: true
+          VMTooHighQueryLoad:
+            enabled: true
+          VMTooManyLogs:
+            enabled: true
+          VMTooManyRestarts:
+            enabled: true
+          VMTooManyTSIDMisses:
+            enabled: true
+  vmagent:
+    enabled: true
+    groups:
+      vmagent:
+        enabled: true
+        rules:
+          VMAgentConfigurationReloadFailure:
+            enabled: true
+          VMAgentPersistentQueueForReadsIsSaturated:
+            enabled: true
+          VMAgentPersistentQueueForWritesIsSaturated:
+            enabled: true
+          VMAgentPersistentQueueIsDroppingData:
+            enabled: true
+          VMAgentRejectedRemoteWriteDataBlocksAreDropped:
+            enabled: true
+          VMAgentRemoteWriteConnectionIsSaturated:
+            enabled: true
+          VMAgentScrapePoolHasNoTargets:
+            enabled: true
+          VMAgentTooManyScrapePoolWithoutTargets:
+            enabled: true
+          VMagentLogsErrorsHigh:
+            enabled: true
+          VMAgentSeriesLimitDayReached:
+            enabled: true
+          VMAgentSeriesLimitHourReached:
+            enabled: true
+          VMAgentStreamAggrDedupFlushTimeout:
+            enabled: true
+          VMAgentStreamAggrFlushTimeout:
+            enabled: true
+          VMAgentTooManyRemoteWriteErrors:
+            enabled: true
+          VMAgentTooManyScrapeErrors:
+            enabled: true
+          VMAgentTooManyWriteErrors:
+            enabled: true
+  vmcluster:
+    enabled: true
+    groups:
+      vmcluster:
+        enabled: true
+        rules:
+          VMClusterDiskRunsOutOfSpace:
+            enabled: true
+          VMClusterDiskRunsOutOfSpaceIn3Days:
+            enabled: true
+          VMClusterNodeBecomesReadonlyIn3Days:
+            enabled: true
+          VMClusterRPCErrors:
+            enabled: true
+          VMClusterRequestErrorsToAPI:
+            enabled: true
+          VMClusterTooHighChurnRate:
+            enabled: true
+          VMClusterTooHighChurnRate24h:
+            enabled: true
+          VMClusterTooHighSlowInsertsRate:
+            enabled: true
+          VminsertVmstorageConnectionIsSaturated:
+            enabled: true

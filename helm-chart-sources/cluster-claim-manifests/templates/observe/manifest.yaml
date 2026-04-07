@@ -1,0 +1,31 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-observe
+spec:
+  apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  value: |
+    metadata:
+      annotations:
+        argocd.argoproj.io/tracking-id: {{`{{ .ClusterClaim.metadata.namespace }}`}}_{{`{{ .ClusterClaim.metadata.name }}`}}:argoproj.io/Application:{{`{{ .ClusterClaim.metadata.namespace }}`}}/{{`{{ .ClusterClaim.metadata.name }}`}}
+      labels:
+        xcluster.in-cloud.io/name: {{`{{ .ClusterClaim.metadata.name }}`}}
+    spec:
+      destination:
+        name: in-cluster
+        namespace: {{`{{ .ClusterClaim.metadata.namespace }}`}}
+      project: common
+      source:
+        helm:
+          releaseName: {{`{{ .ClusterClaim.metadata.name }}`}}
+        path: .
+        repoURL: https://gitlab.{{ .Values.extraArgs.companyPrefix }}.ru/cloud/k8s/charts/cluster
+        targetRevision: feat/no-recursion
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=false

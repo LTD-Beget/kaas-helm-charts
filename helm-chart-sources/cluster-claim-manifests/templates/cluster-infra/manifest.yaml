@@ -1,0 +1,138 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  apiVersion: cluster.x-k8s.io/v1beta2
+  kind: Cluster
+  value: |
+    metadata:
+      labels:
+        {{ .Values.extraArgs.companyDomain }}/environment: infra
+        cluster.x-k8s.io/cluster-name: {{`{{ .ClusterClaim.metadata.name }}`}}-infra
+        topology.cluster.x-k8s.io/owned: ""
+        xcluster.in-cloud.io/name: {{`{{ .ClusterClaim.metadata.name }}`}}
+    spec:
+      clusterNetwork:
+        apiServerPort: {{`{{ .ClusterClaim.spec.infra.network.kubeApiserverPort }}`}}
+        pods:
+          cidrBlocks:
+          - {{`{{ .ClusterClaim.spec.infra.network.podCidr }}`}}
+        serviceDomain: cluster.local
+        services:
+          cidrBlocks:
+          - {{`{{ .ClusterClaim.spec.infra.network.serviceCidr }}`}}
+
+      paused: {{`{{ .ClusterClaim.spec.infra.paused }}`}}
+
+      topology:
+        classRef:
+          name: capi-cluster-class-cluster-template
+          namespace: {{ .Values.extraArgs.companyPrefix }}-capi
+
+        controlPlane:
+          metadata:
+            labels:
+              capi.{{ .Values.extraArgs.companyPrefix }}.io/metadata-required: "true"
+          replicas: {{`{{ .ClusterClaim.spec.replicas }}`}}
+
+        variables:
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterCustomerLogin
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterRegion
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_region }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpManagedBy
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_managed_by }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerType
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_load_balancer_type }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpUsePrivateNetwork
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_usePrivateNetwork }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpNetworkTag
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_networkTag }}`}}
+
+          - name: clusterDnsSvc
+            value: {{`{{ .ClusterClaim.spec.infra.network.clusterDNS }}`}}
+          - name: clusterServiceSubnet
+            value: {{`{{ .ClusterClaim.spec.infra.network.serviceCidr }}`}}
+          - name: clusterPodCidr
+            value: {{`{{ .ClusterClaim.spec.infra.network.podCidr }}`}}
+          - name: clusterPodCidrMaskSize
+            value: {{`{{ .ClusterClaim.spec.infra.network.podCidrMaskSize | quote }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerPorts
+            value:
+              - from: {{`{{ .ClusterClaim.spec.infra.network.kubeApiserverPort }}`}}
+                to: {{`{{ .ClusterClaim.spec.infra.network.kubeApiserverPort }}`}}
+                type: controlPlane
+              - from: 443
+                to: 32443
+                type: generic
+
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpConfigurationCpucount
+            value: {{`{{ .ClusterClaim.spec.configuration.cpuCount }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpConfigurationDisksize
+            value: {{`{{ .ClusterClaim.spec.configuration.diskSize }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpConfigurationMemory
+            value: {{`{{ .ClusterClaim.spec.configuration.memory }}`}}
+{{ if eq .Values.versionMode "static" }}
+          - name: runcVersion
+            value: {{ .Values.versions.runc }}
+          - name: containerdVersion
+            value: {{ .Values.versions.containerd }}
+          - name: crictlVersion
+            value: {{ .Values.versions.crictl }}
+          - name: pauseVersion
+            value: {{ .Values.versions.pause }}
+          - name: etcdVersion
+            value: {{ .Values.versions.etcd }}
+          - name: kubeadmVersion
+            value: {{ .Values.versions.kubeadm }}
+          - name: kubectlVersion
+            value: {{ .Values.versions.kubectl }}
+          - name: kubeletVersion
+            value: {{ .Values.versions.kubelet }}
+          #- name: kubeApiserverVersion
+          #  value: {{ .Values.versions.kubeApiServer }}
+          #- name: kubeControllerManagerVersion
+          #  value: {{ .Values.versions.kubeControllerManager }}
+          #- name: kubeSchedulerVersion
+          #  value: {{ .Values.versions.kubeScheduler }}
+{{- else }}
+          - name: runcVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.runc.version }}`}}
+          - name: containerdVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.containerd.version }}`}}
+          - name: crictlVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.crictl.version }}`}}
+          - name: pauseVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.pause.version }}`}}
+          - name: etcdVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.etcd.version }}`}}
+          - name: kubeadmVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubeadm.version }}`}}
+          - name: kubectlVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubectl.version }}`}}
+          - name: kubeletVersion
+            value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubelet.version }}`}}
+          #- name: kubeApiserverVersion
+          #  value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubernetes.version }}`}}
+          #- name: kubeControllerManagerVersion
+          #  value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubernetes.version }}`}}
+          #- name: kubeSchedulerVersion
+          #  value: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubernetes.version }}`}}
+{{- end }}
+
+          - name: containerdMirrorUrl
+            value: https://{{ .Values.extraArgs.companyInternalDockerRegistry }}
+          - name: {{ .Values.extraArgs.companyPrefix }}ClusterClaimName
+            value: {{`{{ .ClusterClaim.metadata.name }}`}}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_serverName") }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpServerName
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_serverName }}`}}
+        {{`{{- end }}`}}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_master_image") }}`}}
+          - name: {{ .Values.extraArgs.companyPrefix }}VmtCpMasterImage
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_master_image }}`}}
+        {{`{{- end }}`}}
+
+        version: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubernetes.version }}`}}

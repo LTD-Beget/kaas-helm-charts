@@ -1,0 +1,28 @@
+{{- if .Values.rbacHelpers.enable }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: certs
+    name: certs-certificateset-editor-role
+rules:
+    - apiGroups:
+        - in-cloud.io
+      resources:
+        - certificatesets
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - in-cloud.io
+      resources:
+        - certificatesets/status
+      verbs:
+        - get
+{{- end }}

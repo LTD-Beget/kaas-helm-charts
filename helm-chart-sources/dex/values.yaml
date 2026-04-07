@@ -1,0 +1,54 @@
+dex: {}
+
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
+
+tls:
+  enabled: false
+  issuer:
+    name: default-issuer-name
+    secretName: default-secret-name
+  certificate:
+    name: dex-tls
+    secretName: dex-tls
+    duration: 8760h
+    renewBefore: 720h
+    commonName: dex
+    dnsNames:
+      - dex.default.svc
+      - dex.default.svc.cluster.local
+
+rbac:
+  enabled: false
+  clusterRoleBinding:
+    subjects:
+      kind: User
+      name: default-user
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: dex
+      route:
+        host: dex
+        port: 5554
+  destinationRule:
+    enabled: false
+    host: dex
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true

@@ -1,0 +1,25 @@
+{{- range $appName, $appValue := .Values.applications }}
+  {{- if $appValue.containers.konnectivityServer.tls.server }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: konnectivity-cluster-server
+  namespace: {{ $.Release.Namespace }}
+spec:
+  secretName: konnectivity-cluster-server-tls
+  duration: 8760h
+  renewBefore: 1460h
+  usages: ["digital signature","key encipherment","server auth"]
+  ipAddresses:
+    {{- range $ip := $appValue.containers.konnectivityServer.certIPs }}
+    - {{ $ip | quote }}
+    {{- end }}
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: kubernetes-ca
+    kind: ClusterIssuer
+  {{- end }}
+{{- end }}

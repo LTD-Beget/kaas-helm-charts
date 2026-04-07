@@ -1,0 +1,102 @@
+{{- if .Values.clusterResourcesEnabled }}
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonTemplate
+metadata:
+  name: client-cp-control-plane
+spec:
+  template: |
+    spec:
+      initDependencies:	
+        - name: cert-manager-csi-driver	
+          criteria:	
+            - jsonPath: $.status.deployed	
+              operator: Equal	
+              value: true	
+        - name: cert-manager	
+          criteria:	
+            - jsonPath: $.status.deployed	
+              operator: Equal	
+              value: true	
+        - name: trust-manager	
+          criteria:	
+            - jsonPath: $.status.deployed	
+              operator: Equal	
+              value: true
+      chart: "control-plane"
+      pluginName: helm-with-values
+      repoURL: "https://blog.{{ .Values.companyDomain }}/kaas-helm-charts"
+      version: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneSourceTargetRevision }}`}}"
+      releaseName: client-cp-control-plane
+      targetCluster: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneDestinationName }}`}}"
+      targetNamespace: "{{ .Values.companyPrefix }}-system"
+      variables:
+        argocdApplicationControlPlaneDestinationName: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneDestinationName }}`}}"
+        argocdApplicationControlPlaneDestinationNamespace: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneDestinationNamespace }}`}}"
+        argocdApplicationControlPlaneReleaseName: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneReleaseName }}`}}"
+        argocdApplicationControlPlaneValueArgsClusterVersion: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneValueArgsClusterVersion }}`}}"
+        argocdApplicationControlPlaneValueArgsHost: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneValueArgsHost }}`}}"
+        argocdApplicationControlPlaneValueArgsPort: "{{`{{ .Values.spec.variables.argocdApplicationControlPlaneValueArgsPort }}`}}"
+        certificatesCaName: "{{`{{ .Values.spec.variables.certificatesCaName }}`}}"
+        certificatesEtcdName: "{{`{{ .Values.spec.variables.certificatesEtcdName }}`}}"
+        clusterName: "{{`{{ .Values.spec.variables.clusterName }}`}}"
+        compositeDeletePolicy: "{{`{{ .Values.spec.variables.compositeDeletePolicy }}`}}"
+        controlPlaneReplicas: "{{`{{ .Values.spec.variables.controlPlaneReplicas }}`}}"
+        customer: "{{`{{ .Values.spec.variables.customer }}`}}"
+        serviceCidr: "{{`{{ .Values.spec.variables.serviceCidr }}`}}"
+        serviceCidrBase: "{{`{{ .Values.spec.variables.serviceCidrBase }}`}}"
+        serviceCidrCoredns: "{{`{{ .Values.spec.variables.serviceCidrCoredns }}`}}"
+        serviceCidrApi: "{{`{{ .Values.spec.variables.serviceCidrApi }}`}}"
+        xcluster: "{{`{{ .Values.spec.variables.xcluster }}`}}"
+      valuesSources:
+        - name: parameters-client
+          sourceRef:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: {{ .Values.companyPrefix }}-system
+          extract:
+            - as: companyPrefix
+              jsonPath: .data.companyPrefix
+            - as: companyDomain
+              jsonPath: .data.companyDomain
+      backend:
+        finalizer: false
+        type: "argocd"
+        namespace: "{{ .Values.companyPrefix }}-argocd"
+        project: "default"
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: false
+          managedNamespaceMetadata:
+            labels:
+              in-cloud.io/caBundle: approved
+              in-cloud.io/clusterName: '{{`{{ .Values.spec.variables.clusterName }}`}}'
+          syncOptions:
+            - ApplyOutOfSyncOnly=true
+            - CreateNamespace=true
+            - AllowEmpty=true
+            - Prune=false
+      valuesSelectors:
+        - name: default
+          priority: 0
+          matchLabels:
+            addons.in-cloud.io/values: default
+            addons.in-cloud.io/addon: client-cp-control-plane
+        - name: csi
+          priority: 10
+          matchLabels:
+            addons.in-cloud.io/values: csi
+            addons.in-cloud.io/addon: client-cp-control-plane
+        - name: custom
+          priority: 90
+          matchLabels:
+            addons.in-cloud.io/values: '{{`{{ .Values.spec.valueLabels }}`}}'
+            addons.in-cloud.io/addon: '{{`{{ .Values.spec.addon.name }}`}}'
+        - name: immutable
+          priority: 99
+          matchLabels:
+            addons.in-cloud.io/values: immutable
+            addons.in-cloud.io/addon: client-cp-control-plane
+{{- end }}

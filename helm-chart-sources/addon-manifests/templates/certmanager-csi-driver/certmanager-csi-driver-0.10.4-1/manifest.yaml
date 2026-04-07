@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.certmanagercsidriver.enabled }}
+
+{{- tpl (.Files.Get "files/cert-manager-csi-driver/cert-manager-csi-driver-0.10.4-1/manifest.yaml") . }}
+
+{{- end }}

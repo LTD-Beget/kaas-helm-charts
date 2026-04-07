@@ -1,0 +1,36 @@
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: ClusterClass
+metadata:
+  name: {{ .Release.Name }}-cluster-client-template
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- with .Values.capi.k8s -}}
+    {{- $controlPlaneTemplate           := index .controlPlaneTypeTemplate      .clientControlPlaneType }}
+    {{- $clusterInfrastructureTemplate  := index .clusterInfrastructureTemplate .infrastructureType }}
+  controlPlane:
+    templateRef:
+      apiVersion: {{ $controlPlaneTemplate.apiVersion }}
+      kind: {{ $controlPlaneTemplate.kind }}
+      name: {{ $.Release.Name }}-{{ .clientControlPlaneType }}-control-plane-template
+      # namespace: {{ $.Release.Namespace }}
+
+  infrastructure:
+    templateRef:
+      apiVersion: {{ $clusterInfrastructureTemplate.apiVersion }}
+      kind: {{ $clusterInfrastructureTemplate.kind }}
+      name: {{ $.Release.Name }}-{{ .infrastructureType }}-cluster-template
+      # namespace: {{ $.Release.Namespace }}
+
+  patches:
+  - name: custom:WrapperClusterTemplate
+    definitions:
+      {{- (include "in-cloud-capi-template.patches.clusterTemplate.wrapper.client" $) | nindent 6  }}
+
+  {{- (include "in-cloud-capi-template.patches.addonClaimTemplate.custom" $) | nindent 2  }}
+  variables:
+
+    {{- (include "in-cloud-capi-template.variables.wrapper.client.addonClaim" $) | nindent 4  }}
+    {{- (include "in-cloud-capi-template.variables.wrapper.loadBalancer" $) | nindent 4  }}
+    {{- (include "in-cloud-capi-template.variables.wrapper.base" $) | nindent 4  }}
+
+  {{- end }}

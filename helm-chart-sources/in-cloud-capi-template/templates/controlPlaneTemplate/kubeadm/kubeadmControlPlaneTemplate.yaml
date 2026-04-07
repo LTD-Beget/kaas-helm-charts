@@ -1,0 +1,89 @@
+{{- if eq .Values.capi.k8s.controlPlaneType "kubeadm" }}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+kind: KubeadmControlPlaneTemplate
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.capi.k8s.controlPlaneType }}-control-plane-template
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      rollout:
+        before:
+          certificatesExpiryDays: 180
+
+      kubeadmConfigSpec:
+        users:
+          - name: capv
+            sshAuthorizedKeys:
+              - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPemirhenH3JKGPs6UNRDj2rsu5LmTEmu8d87XgaP89x dk@dobryKot.global.bcs"
+            sudo: ALL=(ALL) NOPASSWD:ALL
+            shell: /bin/bash
+
+        clusterConfiguration:
+          apiServer:
+            extraVolumes:
+              - name: k8s-audit
+                hostPath: /var/log/kubernetes/audit/
+                mountPath: /var/log/kubernetes/audit/
+                pathType: DirectoryOrCreate
+
+          controllerManager:
+            extraArgs:
+              - name: bind-address
+                value: 0.0.0.0
+
+          scheduler:
+            extraArgs:
+              - name: bind-address
+                value: 0.0.0.0
+              - name: leader-elect
+                value: "true"
+
+          etcd:
+            local:
+              imageRepository: registry.k8s.io
+              dataDir: /var/lib/etcd
+
+          imageRepository: registry.k8s.io
+        files:
+          - content: |
+              ##### FIX PROBLEM CLUSTER API =( 
+              ###->
+              error computing the desired state of the Cluster topology: failed to
+              apply patches: failed to apply patches for patch
+              "customKubeadmControlPlaneFiles": failed to apply patch: error applying
+              json patch (RFC6902): add operation does not apply: doc is missing path:
+              "/spec/template/spec/kubeadmConfigSpec/files/-": missing value
+              
+              #### Ошибка возникает, потому что если блок files будет пустым массивом, 
+              #### то при развертывании этот блок будет удален из спецификации, и патч выдаст ошибку.
+              #### ЭТОТ КОНФИГ ОТСЮДА НЕ УДАЛЯТЬ!!!!! =)
+            owner: root:root
+            path: /tmp/tempory_file
+            permissions: "0644"
+
+        format: cloud-config
+
+        initConfiguration:
+          localAPIEndpoint:
+            advertiseAddress: 127.0.0.1
+          nodeRegistration:
+            imagePullPolicy: IfNotPresent
+          skipPhases:
+            - addon
+
+        joinConfiguration:
+          controlPlane:
+            localAPIEndpoint:
+              advertiseAddress: 127.0.0.1
+          nodeRegistration:
+            imagePullPolicy: IfNotPresent
+
+      machineTemplate:
+        spec:
+          deletion:
+            nodeDeletionTimeoutSeconds: 120
+            nodeDrainTimeoutSeconds: 60
+            nodeVolumeDetachTimeoutSeconds: 60
+{{- end }}

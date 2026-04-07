@@ -1,0 +1,1104 @@
+companyPrefix: example
+appSpec:
+  companyPrefix: example
+  configMap:
+    status: false
+  globalVars:
+    k8sCerts:                     &k8sCerts                     /etc/kubernetes/pki
+    kubeconfigControllerManager:  &kubeconfigControllerManager  /etc/kubernetes/controller-manager.conf
+    kubeconfigScheduler:          &kubeconfigScheduler          /etc/kubernetes/scheduler.conf
+
+  applications:
+    controlPlane:
+      enabled: true
+      csiDriver: false
+      name: control-plane
+      type: DaemonSet
+      issuers:
+        kubernetesCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: kubernetes-ca
+        frontProxyCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: front-proxy-ca
+        etcdCA:
+          enabled: true
+          type: selfsigned      #selfsigned or other
+          secretName: etcd-ca
+      clusterName: default      #using in selfsigned certs secretTemplate labels
+      monitoring:
+        enabled: false
+        # type: VictoriaMetrics
+      imagePullSecrets: []
+      containers:
+
+        kubeApiserver:
+          name: kube-apiserver
+          image:
+            repository: registry.k8s.io/kube-apiserver
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+          certSANs:
+            - "default-control-plane"
+            - "default-control-plane.default"
+            - "default-control-plane.default.svc"
+            - "default-control-plane.default.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
+          extraArgs:
+            advertise-address: $(NODE_IP)
+            aggregator-reject-forwarding-redirect: true
+            allow-privileged: true
+            anonymous-auth: true
+            api-audiences: konnectivity-server
+            apiserver-count: 1
+            audit-log-batch-buffer-size: 10000
+            audit-log-batch-max-size: 1
+            audit-log-batch-max-wait: 0s
+            audit-log-batch-throttle-burst: 0
+            audit-log-batch-throttle-enable: false
+            audit-log-batch-throttle-qps: 0
+            audit-log-compress: false
+            audit-log-format: json
+            audit-log-maxage: 30
+            audit-log-maxbackup: 10
+            audit-log-maxsize: 1000
+            audit-log-mode: batch
+            audit-log-path: "/var/log/kubernetes/audit/audit.log"
+            audit-log-truncate-enabled: false
+            audit-log-truncate-max-batch-size: "10485760"
+            audit-log-truncate-max-event-size: 102400
+            audit-log-version: audit.k8s.io/v1
+            audit-policy-file: "/etc/kubernetes/audit-policy.yaml"
+            audit-webhook-batch-buffer-size: 10000
+            audit-webhook-batch-initial-backoff: 10s
+            audit-webhook-batch-max-size: 400
+            audit-webhook-batch-max-wait: 30s
+            audit-webhook-batch-throttle-burst: 15
+            audit-webhook-batch-throttle-enable: true
+            audit-webhook-batch-throttle-qps: 10
+            audit-webhook-initial-backoff: 10s
+            audit-webhook-mode: batch
+            audit-webhook-truncate-enabled: false
+            audit-webhook-truncate-max-batch-size: "10485760"
+            audit-webhook-truncate-max-event-size: 102400
+            audit-webhook-version: audit.k8s.io/v1
+            authentication-token-webhook-cache-ttl: 2m0s
+            authentication-token-webhook-version: v1beta1
+            authorization-mode: Node,RBAC
+            authorization-webhook-cache-authorized-ttl: 5m0s
+            authorization-webhook-cache-unauthorized-ttl: 30s
+            authorization-webhook-version: v1beta1
+            bind-address: 0.0.0.0
+            cert-dir: /var/run/kubernetes
+            client-ca-file: /etc/kubernetes/pki/ca.crt
+            # cloud-provider: external  # депрекейтед аргумент в кластерах с v1.34+
+            # cloud-provider-gce-l7lb-src-cidrs: 130.211.0.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
+            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
+            contention-profiling: false
+            default-not-ready-toleration-seconds: 300
+            default-unreachable-toleration-seconds: 300
+            default-watch-cache-size: 100
+            delete-collection-workers: 1
+            enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,NodeRestriction,PodSecurity
+            enable-aggregator-routing: true
+            enable-bootstrap-token-auth: true
+            enable-garbage-collector: true
+            enable-logs-handler: true
+            enable-priority-and-fairness: true
+            encryption-provider-config-automatic-reload: false
+            endpoint-reconciler-type: lease
+            etcd-cafile: /etc/kubernetes/pki/etcd/ca.crt
+            etcd-certfile: /etc/kubernetes/pki/apiserver-etcd-client.crt
+            etcd-compaction-interval: 5m0s
+            etcd-count-metric-poll-period: 1m0s
+            etcd-db-metric-poll-interval: 30s
+            etcd-healthcheck-timeout: 2s
+            etcd-keyfile: /etc/kubernetes/pki/apiserver-etcd-client.key
+            etcd-prefix: /client
+            etcd-readycheck-timeout: 2s
+            etcd-servers: https://$(NODE_IP):2379
+            event-ttl: 1h0m0s
+            feature-gates: RotateKubeletServerCertificate=true
+            goaway-chance: 0
+            help: false
+            http2-max-streams-per-connection: 0
+            kubelet-client-certificate: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+            kubelet-client-key: /etc/kubernetes/pki/apiserver-kubelet-client.key
+            kubelet-port: 10250
+            kubelet-preferred-address-types: InternalIP,ExternalIP,Hostname
+            kubelet-read-only-port: 10255
+            kubelet-timeout: 5s
+            kubernetes-service-node-port: 0
+            lease-reuse-duration-seconds: 60
+            livez-grace-period: 0s
+            log-flush-frequency: 5s
+            log-json-info-buffer-size: 0
+            log-json-split-stream: false
+            log-text-info-buffer-size: 0
+            log-text-split-stream: false
+            logging-format: text
+            max-connection-bytes-per-sec: 0
+            max-mutating-requests-inflight: 200
+            max-requests-inflight: 400
+            min-request-timeout: 1800
+            permit-address-sharing: false
+            permit-port-sharing: false
+            profiling: false
+            proxy-client-cert-file: /etc/kubernetes/pki/front-proxy-client.crt
+            proxy-client-key-file: /etc/kubernetes/pki/front-proxy-client.key
+            request-timeout: 1m0s
+            requestheader-allowed-names: front-proxy-client
+            requestheader-client-ca-file: /etc/kubernetes/pki/front-proxy-ca.crt
+            requestheader-extra-headers-prefix: X-Remote-Extra-
+            requestheader-group-headers: X-Remote-Group
+            requestheader-username-headers: X-Remote-User
+            runtime-config: api/all=true
+            secure-port: 443
+            service-account-extend-token-expiration: true
+            service-account-issuer: https://kubernetes.default.svc.cluster.local
+            service-account-key-file: /etc/kubernetes/pki/sa.pub
+            service-account-lookup: true
+            service-account-max-token-expiration: 0s
+            service-account-signing-key-file: /etc/kubernetes/pki/sa.key
+            service-cluster-ip-range: 29.64.0.0/16
+            service-node-port-range: 30000-32767
+            shutdown-delay-duration: 0s
+            shutdown-send-retry-after: false
+            shutdown-watch-termination-grace-period: 0s
+            storage-backend: etcd3
+            storage-media-type: application/vnd.kubernetes.protobuf
+            tls-cert-file: /etc/kubernetes/pki/apiserver.crt
+            tls-private-key-file: /etc/kubernetes/pki/apiserver.key
+            v: 2
+            version: false
+            watch-cache: true
+
+          extraMetadataEnv:
+            NODE_IP:
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+
+          extraCommand:
+          - kube-apiserver
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /livez
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          readinessProbeEnabled: true
+          extraReadinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 443
+              scheme: HTTPS
+            periodSeconds: 1
+            timeoutSeconds: 15
+
+          extraPorts:
+            https:
+              containerPort: 443
+              protocol: TCP
+
+          extraResources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - NET_BIND_SERVICE
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /livez
+              port: 26443
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            sa-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.key
+                spec:
+                  subPath: sa.key
+                  readOnly: true
+            sa-pub:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.pub
+                spec:
+                  subPath: sa.pub
+                  readOnly: true
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            etcd-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/etcd/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            etcd-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/etcd/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            proxy-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.crt
+                spec:
+                  subPath: front-proxy-ca.crt
+                  readOnly: true
+            proxy-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.key
+                spec:
+                  subPath: front-proxy-ca.key
+                  readOnly: true
+            audit-policy:
+              volumeMount:
+                path: /etc/kubernetes/audit-policy.yaml
+                spec:
+                  subPath: audit-policy
+                  readOnly: true
+            audit-log:
+              volumeMount:
+                path: /var/log/kubernetes/audit/
+                spec:
+                  readOnly: false
+
+        kubeControllerManager:
+          name: kube-controller-manager
+          image:
+            repository: registry.k8s.io/kube-controller-manager
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+          certSANs:
+            - "default-controller-manager"
+            - "default-controller-manager.default"
+            - "default-controller-manager.default.svc"
+            - "default-controller-manager.default.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
+
+          extraArgs:
+            allocate-node-cidrs: false
+            allow-untagged-cloud: false
+            attach-detach-reconcile-sync-period: 1m0s
+            authentication-kubeconfig: /etc/kubernetes/controller-manager.conf
+            authentication-skip-lookup: false
+            authentication-token-webhook-cache-ttl: 10s
+            authentication-tolerate-lookup-failure: false
+            authorization-always-allow-paths: /healthz,/readyz,/livez,/metrics
+            authorization-kubeconfig: /etc/kubernetes/controller-manager.conf
+            authorization-webhook-cache-authorized-ttl: 10s
+            authorization-webhook-cache-unauthorized-ttl: 10s
+            bind-address: 0.0.0.0
+            cidr-allocator-type: RangeAllocator
+            client-ca-file: /etc/kubernetes/pki/ca.crt
+            cloud-provider: external
+            # cloud-provider-gce-lb-src-cidrs: 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16  # депрекейтед аргумент в кластерах с v1.34+
+            cluster-name: cluster.local
+            cluster-signing-cert-file: /etc/kubernetes/pki/ca.crt
+            cluster-signing-duration: 720h0m0s
+            cluster-signing-key-file: /etc/kubernetes/pki/ca.key
+            concurrent-cron-job-syncs: 5
+            concurrent-deployment-syncs: 5
+            concurrent-endpoint-syncs: 5
+            concurrent-ephemeralvolume-syncs: 5
+            concurrent-gc-syncs: 20
+            concurrent-horizontal-pod-autoscaler-syncs: 5
+            concurrent-job-syncs: 5
+            concurrent-namespace-syncs: 10
+            concurrent-rc-syncs: 5
+            concurrent-replicaset-syncs: 20
+            concurrent-resource-quota-syncs: 5
+            concurrent-service-endpoint-syncs: 5
+            concurrent-service-syncs: 1
+            concurrent-serviceaccount-token-syncs: 5
+            concurrent-statefulset-syncs: 5
+            concurrent-ttl-after-finished-syncs: 5
+            concurrent-validating-admission-policy-status-syncs: 5
+            configure-cloud-routes: true
+            contention-profiling: false
+            controller-start-interval: 0s
+            controllers: "*,bootstrapsigner,tokencleaner"
+            disable-attach-detach-reconcile-sync: false
+            disable-force-detach-on-timeout: false
+            enable-dynamic-provisioning: true
+            enable-garbage-collector: true
+            enable-hostpath-provisioner: false
+            enable-leader-migration: false
+            endpoint-updates-batch-period: 0s
+            endpointslice-updates-batch-period: 0s
+            feature-gates: RotateKubeletServerCertificate=true
+            help: false
+            horizontal-pod-autoscaler-cpu-initialization-period: 5m0s
+            # horizontal-pod-autoscaler-downscale-delay: 5m0s # депрекейтед аргумент в кластерах с v1.34+
+            horizontal-pod-autoscaler-downscale-stabilization: 5m0s
+            horizontal-pod-autoscaler-initial-readiness-delay: 30s
+            horizontal-pod-autoscaler-sync-period: 30s
+            horizontal-pod-autoscaler-tolerance: 0.1
+            # horizontal-pod-autoscaler-upscale-delay: 3m0s # депрекейтед аргумент в кластерах с v1.34+
+            http2-max-streams-per-connection: 0
+            kube-api-burst: 120
+            kube-api-content-type: application/vnd.kubernetes.protobuf
+            kube-api-qps: 100
+            kubeconfig: /etc/kubernetes/controller-manager.conf
+            large-cluster-size-threshold: 50
+            leader-elect: true
+            leader-elect-lease-duration: 15s
+            leader-elect-renew-deadline: 10s
+            leader-elect-resource-lock: leases
+            leader-elect-resource-name: kube-controller-manager
+            leader-elect-resource-namespace: kube-system
+            leader-elect-retry-period: 2s
+            legacy-service-account-token-clean-up-period: 8760h0m0s
+            log-flush-frequency: 5s
+            log-json-info-buffer-size: 0
+            log-json-split-stream: false
+            log-text-info-buffer-size: 0
+            log-text-split-stream: false
+            logging-format: text
+            max-endpoints-per-slice: 100
+            min-resync-period: 12h0m0s
+            mirroring-concurrent-service-endpoint-syncs: 5
+            mirroring-endpointslice-updates-batch-period: 0s
+            mirroring-max-endpoints-per-subset: 1000
+            namespace-sync-period: 2m0s
+            node-cidr-mask-size: 0
+            node-cidr-mask-size-ipv4: 0
+            node-cidr-mask-size-ipv6: 0
+            node-eviction-rate: 0.1
+            node-monitor-grace-period: 40s
+            node-monitor-period: 5s
+            node-startup-grace-period: 10s
+            node-sync-period: 0s
+            permit-address-sharing: false
+            permit-port-sharing: false
+            profiling: false
+            pv-recycler-increment-timeout-nfs: 30
+            pv-recycler-minimum-timeout-hostpath: 60
+            pv-recycler-minimum-timeout-nfs: 300
+            pv-recycler-timeout-increment-hostpath: 30
+            pvclaimbinder-sync-period: 15s
+            requestheader-client-ca-file: /etc/kubernetes/pki/front-proxy-ca.crt
+            requestheader-extra-headers-prefix: x-remote-extra-
+            requestheader-group-headers: x-remote-group
+            requestheader-username-headers: x-remote-user
+            resource-quota-sync-period: 5m0s
+            root-ca-file: /etc/kubernetes/pki/ca.crt
+            route-reconciliation-period: 10s
+            secondary-node-eviction-rate: 0.01
+            secure-port: 20257
+            service-account-private-key-file: /etc/kubernetes/pki/sa.key
+            terminated-pod-gc-threshold: 0
+            unhealthy-zone-threshold: 0.55
+            use-service-account-credentials: true
+            v: 2
+            version: false
+            # volume-host-allow-local-loopback: true # депрекейтед аргумент в кластерах с v1.34+
+
+          extraCommand:
+          - kube-controller-manager
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /healthz
+              port: 20257
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraResources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /healthz
+              port: 20257
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            sa-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/sa.key
+                spec:
+                  subPath: sa.key
+                  readOnly: true
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+            proxy-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.crt
+                spec:
+                  subPath: front-proxy-ca.crt
+                  readOnly: true
+            proxy-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/front-proxy-ca.key
+                spec:
+                  subPath: front-proxy-ca.key
+                  readOnly: true
+            controller-manager-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/controller-manager.conf
+                spec:
+                  subPath: controller-manager-kubeconfig
+                  readOnly: true
+
+        kubeScheduler:
+          name: kube-scheduler
+          image:
+            repository: registry.k8s.io/kube-scheduler
+            tag: v1.30.4
+            pullPolicy: IfNotPresent
+          certSANs:
+            - "default-scheduler"
+            - "default-scheduler.default"
+            - "default-scheduler.default.svc"
+            - "default-scheduler.default.svc.cluster.local"
+          certIPs:
+            - "127.0.0.1"
+
+          extraArgs:
+            authentication-kubeconfig: /etc/kubernetes/scheduler.conf
+            authorization-kubeconfig: /etc/kubernetes/scheduler.conf
+            bind-address: 0.0.0.0
+            kubeconfig: /etc/kubernetes/scheduler.conf
+            leader-elect: true
+            secure-port: 20259
+
+          extraCommand:
+          - kube-scheduler
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /healthz
+              port: 20259
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraResources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          startupProbeEnabled: true
+          extraStartupProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /healthz
+              port: 20259
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 15
+
+          extraVolumeMounts:
+            scheduler-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/scheduler.conf
+                spec:
+                  subPath: scheduler-kubeconfig
+                  readOnly: true
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            ca-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.key
+                spec:
+                  subPath: ca.key
+                  readOnly: true
+
+        konnectivityServer:
+          enabled: true
+          tls:
+            server: true
+            kubeconfig: true
+          name: konnectivity
+          image:
+            repository: gcr.io/k8s-staging-kas-network-proxy/proxy-server
+            tag: master
+            pullPolicy: IfNotPresent
+          certIPs:
+            - "127.0.0.1"
+          extraArgs:
+            logtostderr: true
+            delete-existing-uds-file: null
+            mode: grpc
+            server-port: 8130
+            agent-port: 8132
+            admin-port: 8133
+            health-port: 8134
+            agent-namespace: kube-system
+            agent-service-account: konnectivity-agent
+            authentication-audience: system:konnectivity-server
+            kubeconfig: /etc/kubernetes/konnectivity-server.conf
+            cluster-cert: /etc/kubernetes/pki/tls.crt
+            cluster-key: /etc/kubernetes/pki/tls.key
+            server-key: /etc/kubernetes/pki/tls.key
+            server-cert: /etc/kubernetes/pki/tls.crt
+            server-ca-cert: /etc/kubernetes/pki/ca.crt
+            v: 8
+            enable-lease-controller: null
+
+          livenessProbeEnabled: true
+          extraLivenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /healthz
+              port: 8134
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 60
+            successThreshold: 1
+
+          readinessProbeEnabled: false
+
+          extraResources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+
+          extraSecurityContext:
+            readOnlyRootFilesystem: false
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            privileged: false
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+
+          extraVolumeMounts:
+            ca-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/ca.crt
+                spec:
+                  subPath: ca.crt
+                  readOnly: true
+            konnectivity-kubeconfig:
+              volumeMount:
+                path: /etc/kubernetes/konnectivity-server.conf
+                spec:
+                  subPath: konnectivity-kubeconfig
+                  readOnly: true
+            konnectivity-server-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/tls.crt
+                spec:
+                  subPath: tls.crt
+                  readOnly: true
+            konnectivity-server-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/tls.key
+                spec:
+                  subPath: tls.key
+                  readOnly: true
+            konnectivity-client-crt:
+              volumeMount:
+                path: /etc/kubernetes/pki/konnectivity-client.crt
+                spec:
+                  subPath: tls.crt
+                  readOnly: true
+            konnectivity-client-key:
+              volumeMount:
+                path: /etc/kubernetes/pki/konnectivity-client.key
+                spec:
+                  subPath: tls.key
+                  readOnly: true
+
+
+      extraHostNetwork: false
+
+      extraPriority: 2000001000
+
+      extraPriorityClassName: system-node-critical
+
+      service:
+        enabled: true
+        type: NodePort
+        nodePort: 30000
+        additional:
+          enabled: false
+          type: NodePort
+
+
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+
+      volumes:
+        ca-crt:
+          volume:
+            mode: secret
+            secretName: kubernetes-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+            name: ca-crt
+
+        ca-key:
+          volume:
+            mode: secret
+            secretName: kubernetes-ca
+            items:
+              - key: tls.key
+                path: ca.key
+            name: ca-key
+
+        etcd-crt:
+          volume:
+            mode: secret
+            secretName: etcd-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+            name: etcd-crt
+
+        etcd-key:
+          volume:
+            mode: secret
+            secretName: etcd-ca
+            items:
+              - key: tls.key
+                path: ca.key
+            name: etcd-key
+
+        proxy-crt:
+          volume:
+            mode: secret
+            secretName: front-proxy-ca
+            items:
+              - key: tls.crt
+                path: front-proxy-ca.crt
+            name: proxy-crt
+
+        proxy-key:
+          volume:
+            mode: secret
+            secretName: front-proxy-ca
+            items:
+              - key: tls.key
+                path: front-proxy-ca.key
+            name: proxy-key
+
+        sa-key:
+          volume:
+            mode: secret
+            secretName: service-account-ca-secret
+            items:
+              - key: tls.key
+                path: sa.key
+            name: sa
+
+        sa-pub:
+          volume:
+            mode: secret
+            secretName: service-account-ca-secret
+            items:
+              - key: tls.crt
+                path: sa.pub
+            name: sa
+
+        konnectivity-server-crt:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+            name: konnectivity-server-crt
+        konnectivity-server-key:
+          volume:
+            mode: secret
+            secretName: konnectivity-cluster-server-tls
+            items:
+              - key: tls.key
+                path: tls.key
+            name: konnectivity-server-key
+        konnectivity-client-crt:
+          volume:
+            mode: secret
+            secretName: konnectivity-client
+            items:
+              - key: tls.crt
+                path: tls.crt
+            name: konnectivity-client-crt
+        konnectivity-client-key:
+          volume:
+            mode: secret
+            secretName: konnectivity-client
+            items:
+              - key: tls.key
+                path: tls.key
+            name: konnectivity-client-key
+
+        audit-log:
+          volume:
+            mode: emptyDir
+            spec:
+              sizeLimit: "500Mi"
+            name: audit-log
+
+        controller-manager-kubeconfig:
+          volume:
+            mode: configMap
+            name: controller-manager-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/controller-manager.crt
+                    client-key: /etc/kubernetes/pki/controller-manager.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context
+
+        scheduler-kubeconfig:
+          volume:
+            mode: configMap
+            name: scheduler-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/scheduler.crt
+                    client-key: /etc/kubernetes/pki/scheduler.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context
+
+        konnectivity-kubeconfig:
+          volume:
+            mode: configMap
+            name: konnectivity-kubeconfig
+            payload:
+              format: yaml
+              content: |
+                apiVersion: v1
+                kind: Config
+                preferences: {}
+                clusters:
+                - name: my-cluster
+                  cluster:
+                    server: https://127.0.0.1:26443
+                    certificate-authority: /etc/kubernetes/pki/ca.crt
+                users:
+                - name: my-user
+                  user:
+                    client-certificate: /etc/kubernetes/pki/konnectivity-client.crt
+                    client-key: /etc/kubernetes/pki/konnectivity-client.key
+                contexts:
+                - name: my-context
+                  context:
+                    cluster: my-cluster
+                    user: my-user
+                current-context: my-context
+
+        audit-policy:
+          volume:
+            mode: configMap
+            name: audit-policy
+            payload:
+              format: yaml
+              content: |
+                ---
+                apiVersion: audit.k8s.io/v1
+                kind: Policy
+                # Общие правила
+                # Исключаем раннюю стадию аудита "RequestReceived", чтобы снизить объем логов и дублирование
+                # Эта настройка применяется глобально, но в некоторых правилах переопределяется локально
+                # omitStages может быть указано также внутри отдельных правил
+                rules:
+                  # Отключаем логирование "watch"-запросов от kube-proxy к endpoint'ам и сервисам
+                  - level: None
+                    users: ["system:kube-proxy"]
+                    verbs: ["watch"]
+                    resources:
+                      - group: ""  # Core API group
+                        resources: ["endpoints", "services", "services/status"]
+                  # Отключаем логирование чтения configmap в kube-system от "system:unsecured"
+                  - level: None
+                    users: ["system:unsecured"]
+                    namespaces: ["kube-system"]
+                    verbs: ["get"]
+                    resources:
+                      - group: ""
+                        resources: ["configmaps"]
+                  # Отключаем логирование чтения узлов legacy-пользователем "kubelet"
+                  - level: None
+                    users: ["kubelet"]
+                    verbs: ["get"]
+                    resources:
+                      - group: ""
+                        resources: ["nodes", "nodes/status"]
+                  # Отключаем логирование чтения узлов группой "system:nodes"
+                  - level: None
+                    userGroups: ["system:nodes"]
+                    verbs: ["get"]
+                    resources:
+                      - group: ""
+                        resources: ["nodes", "nodes/status"]
+                  # Отключаем логирование get/update endpoint'ов в kube-system от контроллеров
+                  - level: None
+                    users:
+                      - system:kube-controller-manager
+                      - system:kube-scheduler
+                      - system:serviceaccount:kube-system:endpoint-controller
+                    verbs: ["get", "update"]
+                    namespaces: ["kube-system"]
+                    resources:
+                      - group: ""
+                        resources: ["endpoints"]
+                  # Отключаем логирование операций с namespace'ами от системного пользователя apiserver
+                  - level: None
+                    users: ["system:apiserver"]
+                    verbs: ["get"]
+                    resources:
+                      - group: ""
+                        resources: ["namespaces", "namespaces/status", "namespaces/finalize"]
+                  # Отключаем логирование операций с configmap и endpoint в kube-system от cluster-autoscaler
+                  - level: None
+                    users: ["cluster-autoscaler"]
+                    verbs: ["get", "update"]
+                    namespaces: ["kube-system"]
+                    resources:
+                      - group: ""
+                        resources: ["configmaps", "endpoints"]
+                  # Отключаем логирование запросов к метрикам от kube-controller-manager
+                  - level: None
+                    users: ["system:kube-controller-manager"]
+                    verbs: ["get", "list"]
+                    resources:
+                      - group: "metrics.k8s.io"
+                  # Отключаем логирование системных non-resource URL (здоровье, версия, swagger и т.п.)
+                  - level: None
+                    nonResourceURLs:
+                      - /healthz*
+                      - /version
+                      - /swagger*
+                  # Отключаем логирование событий (events) — они часто шумные и не критичны
+                  - level: None
+                    resources:
+                      - group: ""
+                        resources: ["events"]
+                  # Логирование обновлений статуса узлов и подов от kubelet и node-problem-detector
+                  - level: Request
+                    users:
+                      - kubelet
+                      - system:node-problem-detector
+                      - system:serviceaccount:kube-system:node-problem-detector
+                    verbs:
+                      - update
+                      - patch
+                    resources:
+                      - group: ""
+                        resources:
+                          - nodes/status
+                          - pods/status
+                    omitStages:
+                      - "RequestReceived"
+                  # То же самое для всех участников группы system:nodes
+                  - level: Request
+                    userGroups: ["system:nodes"]
+                    verbs:
+                      - update
+                      - patch
+                    resources:
+                      - group: ""
+                        resources:
+                          - nodes/status
+                          - pods/status
+                    omitStages:
+                      - "RequestReceived"
+                  # Логирование массового удаления (deletecollection) от namespace-controller
+                  - level: Request
+                    users: ["system:serviceaccount:kube-system:namespace-controller"]
+                    verbs: ["deletecollection"]
+                    omitStages:
+                      - "RequestReceived"
+                  # Логирование метаданных для чувствительных ресурсов: секретов, токенов, токен-рецензий
+                  - level: Metadata
+                    resources:
+                      - group: ""
+                        resources: ["secrets", "configmaps", "serviceaccounts/token"]
+                      - group: authentication.k8s.io
+                        resources: ["tokenreviews"]
+                    omitStages:
+                      - "RequestReceived"
+                  # Логирование всех безопасных операций чтения (get/list/watch) по всем известным группам
+                  - level: Request
+                    verbs: ["get", "list", "watch"]
+                    resources:
+                      - group: ""  # Core
+                      - group: "admissionregistration.k8s.io"
+                      - group: "apiextensions.k8s.io"
+                      - group: "apiregistration.k8s.io"
+                      - group: "apps"
+                      - group: "authentication.k8s.io"
+                      - group: "authorization.k8s.io"
+                      - group: "autoscaling"
+                      - group: "batch"
+                      - group: "certificates.k8s.io"
+                      - group: "extensions"
+                      - group: "metrics.k8s.io"
+                      - group: "networking.k8s.io"
+                      - group: "policy"
+                      - group: "rbac.authorization.k8s.io"
+                      - group: "scheduling.k8s.io"
+                      - group: "settings.k8s.io"
+                      - group: "storage.k8s.io"
+                    omitStages:
+                      - "RequestReceived"
+                  # Логирование всех операций, включая тело запроса и ответа (RequestResponse)
+                  - level: RequestResponse
+                    resources:
+                      - group: ""  # Core
+                      - group: "admissionregistration.k8s.io"
+                      - group: "apiextensions.k8s.io"
+                      - group: "apiregistration.k8s.io"
+                      - group: "apps"
+                      - group: "authentication.k8s.io"
+                      - group: "authorization.k8s.io"
+                      - group: "autoscaling"
+                      - group: "batch"
+                      - group: "certificates.k8s.io"
+                      - group: "extensions"
+                      - group: "metrics.k8s.io"
+                      - group: "networking.k8s.io"
+                      - group: "policy"
+                      - group: "rbac.authorization.k8s.io"
+                      - group: "scheduling.k8s.io"
+                      - group: "settings.k8s.io"
+                      - group: "storage.k8s.io"
+                    omitStages:
+                      - "RequestReceived"
+                  # Финальный catch-all: логируем метаданные всего остального
+                  - level: Metadata
+                    omitStages:
+                      - "RequestReceived"

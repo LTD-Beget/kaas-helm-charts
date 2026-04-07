@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "konnectivity-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "konnectivity-agent.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "konnectivity-agent.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "konnectivity-agent.fullname" . }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.hostNetwork }}
+      hostNetwork: true
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ default "agent" .Values.container.name }}
+          image: "{{ default "gcr.io/k8s-staging-kas-network-proxy/proxy-agent" .Values.image.repository }}:{{ default "master" .Values.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+
+          {{- with .Values.agent.extraArgs }}
+          args:
+            {{- range $k, $v := . }}
+            {{- if not (eq $v nil) }}
+            - --{{- $k }}={{ $v -}}
+            {{- else }}
+            - --{{- $k }}
+            {{- end}}
+            {{- end}}
+          {{- end }}
+
+          {{- with .Values.agent.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.container.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.container.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- $mounts := list -}}
+          {{- if .Values.projectedToken.enabled }}
+          {{- $mounts = append $mounts (dict "name" .Values.projectedToken.volumeName "mountPath" .Values.projectedToken.mountPath) -}}
+          {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+          {{- $mounts = concat $mounts .Values.extraVolumeMounts -}}
+          {{- end }}
+          {{- if $mounts }}
+          volumeMounts:
+            {{- toYaml $mounts | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.agent.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      {{- $vols := list -}}
+      {{- if .Values.projectedToken.enabled }}
+      {{- $v := dict "name" .Values.projectedToken.volumeName
+                     "projected" (dict
+                       "defaultMode" 420
+                       "sources" (list (dict "serviceAccountToken" (dict
+                         "audience" .Values.projectedToken.audience
+                         "expirationSeconds" .Values.projectedToken.expirationSeconds
+                         "path" .Values.projectedToken.path)))) }}
+      {{- $vols = append $vols $v -}}
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+      {{- $vols = concat $vols .Values.extraVolumes -}}
+      {{- end }}
+      {{- if $vols }}
+      volumes:
+        {{- toYaml $vols | nindent 8 }}
+      {{- end }}
+
+
+
+

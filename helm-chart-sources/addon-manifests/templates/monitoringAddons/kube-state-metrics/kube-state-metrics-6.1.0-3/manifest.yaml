@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.kubestatemetrics.enabled }}
+
+{{- tpl (.Files.Get "files/monitoringAddons/kube-state-metrics/kube-state-metrics-6.1.0-3/manifest.yaml") . }}
+
+{{- end }}

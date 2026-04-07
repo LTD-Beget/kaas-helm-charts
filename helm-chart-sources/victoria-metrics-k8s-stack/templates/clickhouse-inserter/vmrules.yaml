@@ -1,0 +1,534 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if $vmstack.clickhouseIserter.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: {{ .Values.companyPrefix }}-clickhouse-rules
+  namespace: {{ .Release.Namespace }}
+  labels:
+    monitoring.in-cloud.io/vmrules: clickhouse
+spec:
+  groups:
+    # NODEGROUPS
+    - name: {{ .Values.companyPrefix }}-clickhouse-rules.nodegroup
+      params: {}
+      rules:
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              (
+                sum by (cluster, nodename) (
+                  label_replace(
+                    label_replace(
+                      kube_node_status_capacity{resource="memory"},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodename", "$1", "node", "(.*)"
+                  )
+                ) / 1024 / 1024
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
+                  label_replace(
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                )
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_memory_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              (
+                sum by (cluster, nodename) (
+                  label_replace(
+                    label_replace(
+                      (container_memory_working_set_bytes{metrics_path=~"/metrics/cadvisor|", container!=""}),
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodename", "$1", "node", "(.*)"
+                  )
+                ) / 1024 / 1024
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
+                  label_replace(
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                )
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_memory_used_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodegroup) (
+                (
+                  sum by (cluster, nodename) (
+                    label_replace(
+                      label_replace(
+                        (container_memory_working_set_bytes{metrics_path=~"/metrics/cadvisor|", container!=""}),
+                        "cluster", "$1", "cluster_full_name", "(.*)"
+                      ),
+                      "nodename", "$1", "node", "(.*)"
+                    )
+                  )
+                )
+                * on(nodename) group_left(nodegroup)
+                max by (nodename, nodegroup) (
+                  label_replace(
+                    label_replace(
+                      kube_node_labels,
+                      "nodename", "$1", "node", "(.*)"
+                    ),
+                    "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                  )
+                )
+              )
+              /
+              sum by (cluster, nodegroup) (
+                (
+                  sum by (cluster, nodename) (
+                    label_replace(
+                      label_replace(
+                        kube_node_status_capacity{resource="memory"},
+                        "cluster", "$1", "cluster_full_name", "(.*)"
+                      ),
+                      "nodename", "$1", "node", "(.*)"
+                    )
+                  )
+                )
+                * on(nodename) group_left(nodegroup)
+                max by (nodename, nodegroup) (
+                  label_replace(
+                    label_replace(
+                      kube_node_labels,
+                      "nodename", "$1", "node", "(.*)"
+                    ),
+                    "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                  )
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_memory_used_percent'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              sum by (cluster, nodename, nodegroup) (
+                sum by (cluster, nodename) (
+                  label_replace(
+                    label_replace(
+                      kube_node_status_capacity{resource="cpu"},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodename", "$1", "node", "(.*)"
+                  )
+                )
+                * on(nodename) group_left(nodegroup)
+                max by (nodename, nodegroup) (
+                  label_replace(
+                    label_replace(
+                      kube_node_labels,
+                      "nodename", "$1", "node", "(.*)"
+                    ),
+                    "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                  )
+                )
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_cpu_total_cores'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              rate(
+                label_replace(
+                  label_replace(
+                    node_cpu_usage_seconds_total{},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodegroup", "$1", "node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                )[5m]
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_cpu_used_cores'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodegroup) (
+                rate(
+                  label_replace(
+                    label_replace(
+                      node_cpu_usage_seconds_total{},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodegroup", "$1", "node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                  )[5m]
+                )
+              )
+              /
+              sum by (cluster, nodegroup) (
+                sum by (cluster, nodename, nodegroup) (
+                  sum by (cluster, nodename) (
+                    label_replace(
+                      label_replace(
+                        kube_node_status_capacity{resource="cpu"},
+                        "cluster", "$1", "cluster_full_name", "(.*)"
+                      ),
+                      "nodename", "$1", "node", "(.*)"
+                    )
+                  )
+                  * on(nodename) group_left(nodegroup)
+                  max by (nodename, nodegroup) (
+                    label_replace(
+                      label_replace(
+                        kube_node_labels,
+                        "nodename", "$1", "node", "(.*)"
+                      ),
+                      "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                    )
+                  )
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_cpu_used_percent'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              (
+                sum by (cluster, nodename) (
+                  label_replace(
+                    label_replace(
+                      (kube_node_status_capacity{resource="ephemeral_storage"}),
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodename", "$1", "node", "(.*)"
+                  )
+                ) / 1024 / 1024
+              )
+              * on(nodename) group_left(nodegroup)
+              max by (nodename, nodegroup) (
+                label_replace(
+                  label_replace(
+                    kube_node_labels,
+                    "nodename", "$1", "node", "(.*)"
+                  ),
+                  "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                )
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_filesystem_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodegroup) (
+              label_replace(
+                label_replace(
+                  (container_fs_usage_bytes{container="",device=~"/dev/(.*)"}),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodegroup", "$1", "node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+              )
+            ) / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_filesystem_used_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodegroup) (
+                label_replace(
+                  label_replace(
+                    (container_fs_usage_bytes{container="",device=~"/dev/(.*)"}),
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodegroup", "$1", "node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                )
+              )
+            )
+            /
+            (
+              sum by (cluster, nodegroup) (
+                (
+                  sum by (cluster, nodename) (
+                    label_replace(
+                      label_replace(
+                        (kube_node_status_capacity{resource="ephemeral_storage"}),
+                        "cluster", "$1", "cluster_full_name", "(.*)"
+                      ),
+                      "nodename", "$1", "node", "(.*)"
+                    )
+                  )
+                )
+                * on(nodename) group_left(nodegroup)
+                max by (nodename, nodegroup) (
+                  label_replace(
+                    label_replace(
+                      kube_node_labels,
+                      "nodename", "$1", "node", "(.*)"
+                    ),
+                    "nodegroup", "$1", "label_node_group_{{ .Values.companyPrefix }}_com_name", "(.*)"
+                  )
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_nodegroup_filesystem_used_percent'
+
+    # NODES
+    - name: {{ .Values.companyPrefix }}-clickhouse-rules.node
+      params: {}
+      rules:
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              label_replace(
+                label_replace(
+                  kube_node_status_capacity{resource="memory"},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodename", "$1", "node", "(.*)"
+              )
+            ) / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_memory_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              label_replace(
+                label_replace(
+                  (container_memory_working_set_bytes{metrics_path=~"/metrics/cadvisor|", container!=""}),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodename", "$1", "node", "(.*)"
+              )
+            ) / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_memory_used_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodename) (
+                label_replace(
+                  label_replace(
+                    (container_memory_working_set_bytes{metrics_path=~"/metrics/cadvisor|", container!=""}),
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "node", "(.*)"
+                )
+              )
+              /
+              sum by (cluster, nodename) (
+                label_replace(
+                  label_replace(
+                    kube_node_status_capacity{resource="memory"},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "node", "(.*)"
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_memory_used_percent'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              label_replace(
+                label_replace(
+                  kube_node_status_capacity{resource="cpu"},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodename", "$1", "node", "(.*)"
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_cpu_total_cores'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              rate(
+                label_replace(
+                  label_replace(
+                    node_cpu_usage_seconds_total{},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "instance", "(.*)"
+                )[5m]
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_cpu_used_cores'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodename) (
+                rate(
+                  label_replace(
+                    label_replace(
+                      node_cpu_usage_seconds_total{},
+                      "cluster", "$1", "cluster_full_name", "(.*)"
+                    ),
+                    "nodename", "$1", "instance", "(.*)"
+                  )[5m]
+                )
+              )
+              /
+              sum by (cluster, nodename) (
+                label_replace(
+                  label_replace(
+                    kube_node_status_capacity{resource="cpu"},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "node", "(.*)"
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_cpu_used_percent'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              label_replace(
+                label_replace(
+                  (kube_node_status_capacity{resource="ephemeral_storage"}),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodename", "$1", "node", "(.*)"
+              )
+            ) / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_filesystem_total_mb'
+
+        - annotations: {}
+          expr: |-
+            sum by (cluster, nodename) (
+              label_replace(
+                label_replace(
+                  (container_fs_usage_bytes{container="",device=~"/dev/(.*)"}),
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                ),
+                "nodename", "$1", "instance", "(.*)"
+              )
+            ) / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_filesystem_used_mb'
+
+        - annotations: {}
+          expr: |-
+            (
+              sum by (cluster, nodename) (
+                label_replace(
+                  label_replace(
+                    (container_fs_usage_bytes{container="",device=~"/dev/(.*)"}),
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "instance", "(.*)"
+                )
+              )
+            )
+            /
+            (
+              sum by (cluster, nodename) (
+                label_replace(
+                  label_replace(
+                    (kube_node_status_capacity{resource="ephemeral_storage"}),
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  ),
+                  "nodename", "$1", "node", "(.*)"
+                )
+              )
+            ) * 100
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_node_filesystem_used_percent'
+
+    # PODS
+    - name: {{ .Values.companyPrefix }}-clickhouse-rules.pods
+      params: {}
+      rules:
+        - annotations: {}
+          expr: |-
+            max by (cluster, namespace, pod, container, phase) (
+              (
+                max by (cluster, namespace, pod, container, phase) (
+                  label_replace(
+                    kube_pod_status_phase{pod!="", namespace!=""},
+                    "cluster", "$1", "cluster_full_name", "(.*)"
+                  )
+                )
+              ) == 1
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_pod_status_phase'
+
+        - annotations: {}
+          expr: |-
+            max by (cluster, namespace, phase, pod, container) (
+              label_replace(
+                kube_pod_container_status_restarts_total{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_pod_restarts_total'
+
+        - annotations: {}
+          expr: |-
+            max by (cluster, namespace, phase, pod, container, created_by_kind, created_by_name, host_ip, host_network, node, pod_ip, priority_class) (
+              label_replace(
+                kube_pod_info{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_pod_info'
+
+        - annotations: {}
+          expr: |-
+            avg by (cluster, node, namespace, pod, container) (
+              label_replace(
+                container_memory_working_set_bytes{pod!="", namespace!=""},
+                "cluster", "$1", "cluster_full_name", "(.*)"
+              )
+            )  / 1024 / 1024
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_pod_memory_usage_mb'
+
+        - annotations: {}
+          expr: |-
+            avg by (cluster, node, namespace, pod, container) (
+              rate(
+                label_replace(
+                  container_cpu_usage_seconds_total{pod!="", namespace!=""},
+                  "cluster", "$1", "cluster_full_name", "(.*)"
+                )
+              )
+            )
+          labels: {}
+          record: '{{ .Values.companyPrefix }}_pod_cpu_usage_cores'
+{{- end }}

@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.secureService.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "wrapper-kube-state-metrics.name" . }}-svc-tls
+  namespace: {{ include "wrapper-kube-state-metrics.namespace" . }}
+spec:
+  secretName: {{ include "wrapper-kube-state-metrics.name" . }}-svc-tls
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ include "wrapper-kube-state-metrics.name" . }}
+  dnsNames:
+    - {{ include "wrapper-kube-state-metrics.name" . }}
+    - {{ include "wrapper-kube-state-metrics.name" . }}.{{ include "wrapper-kube-state-metrics.namespace" . }}
+    - {{ include "wrapper-kube-state-metrics.name" . }}.{{ include "wrapper-kube-state-metrics.namespace" . }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}

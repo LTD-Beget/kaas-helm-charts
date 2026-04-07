@@ -1,0 +1,28 @@
+companyPrefix: example
+
+incloud-web-chart: {}
+# some values for incloud-web-chart
+
+istio:
+  virtualService:
+    enabled: false
+    gateways:
+      - default-ns/default
+    hosts:
+      - "*"
+    http:
+      name: incloud-web-chart-redirect
+      route:
+        host: incloud-web-chart-oauth2-proxy
+        port: 80
+      
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default

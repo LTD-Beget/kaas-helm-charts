@@ -1,0 +1,62 @@
+clusterMonitoringVictoriaMetrics:
+  enabled: false
+  groups:
+    jobs:
+      enabled: false
+      rules:
+        VMAgentJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAgentJobAbsent"
+            annotations:
+              description: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAgent is absesnt in {{ $labels.cluster_full_name }}.
+              message: |
+                {{ $labels.cluster_full_name }}: VMAgent is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type!="client"})
+                unless on(cluster_full_name)
+                  up{job="vmagent"} == 1
+            for: 2m
+            labels:
+              severity: critical
+
+        VMAlertJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAlertJobAbsent"
+            annotations:
+              description: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAlert is absesnt in {{ $labels.cluster_full_name }}.
+              message: |
+                {{ $labels.cluster_full_name }}: VMAlert is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
+                unless on(cluster_full_name)
+                  up{job="vmalert"} == 1
+            for: 2m
+            labels:
+              severity: critical
+
+        VMAlertmanagerJobAbsent:
+          enabled: false
+          spec:
+            alert: "VMAlertmanagerJobAbsent"
+            annotations:
+              description: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+              summary: VMAlertmanager is absesnt in {{ $labels.cluster_full_name }}.
+              message: |
+                {{ $labels.cluster_full_name }}: VMAlertmanager is absent for at least 2 minutes
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: |
+              group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type="system"})
+                unless on(cluster_full_name)
+                  up{job="vmalertmanager"} == 1
+            for: 2m
+            labels:
+              severity: critical

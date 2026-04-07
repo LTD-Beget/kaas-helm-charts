@@ -1,0 +1,19 @@
+{{- if .Values.monitoring.vmServiceScrape.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "capi.fullname" . }}-metrics-service
+  labels:
+    monitoring.in-cloud.io/service: {{ include "capi.fullname" . }}-metrics-service
+    {{- include "capi.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metricsService.type }}
+  ports:
+    - port: {{ .Values.metricsService.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "capi.selectorLabels" . | nindent 6 }}
+{{- end }}

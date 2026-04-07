@@ -1,0 +1,25 @@
+prometheus: {}
+# some values for prometheus
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  namespace: default
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
+  grafana:
+    datasource:
+      enabled: false
+      name: prometheus-data
+      namespace: default #should be the same as grafana-dashboards
+      selector: grafana
+      type: prometheus
+      url: "http://prometheus-server.default.svc:80"
+      jsonData:
+        tlsSkipVerify: true
+        timeInterval: 5s
+

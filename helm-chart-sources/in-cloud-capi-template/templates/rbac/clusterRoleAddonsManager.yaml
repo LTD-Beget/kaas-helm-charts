@@ -1,0 +1,45 @@
+{{- if .Values.clusterResourcesEnabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    cluster.x-k8s.io/aggregate-to-manager: 'true'
+  name: addons-in-cloud-io-manager
+rules:
+- apiGroups:
+  - addons.in-cloud.io
+  resources:
+  - addonclaimtemplates
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+  - update
+- apiGroups:
+  - addons.in-cloud.io
+  resources:
+  - addonclaims
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - addons.in-cloud.io
+  resources:
+  - addonclaims/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - addons.in-cloud.io
+  resources:
+  - addonclaims/finalizers
+  verbs:
+  - update
+{{- end }}

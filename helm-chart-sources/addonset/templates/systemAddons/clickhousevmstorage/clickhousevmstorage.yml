@@ -1,0 +1,8 @@
+{{- if and .Values.addons.clickhousevmstorage.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "clickhousevmstorage.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/clickhousevmstorage/values.yml" | nindent 0 }}
+
+{{- end }}

@@ -1,0 +1,13 @@
+{{- if .Values.addons.prometheusnodeexporter.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "prometheus-node-exporter.addon" . }}
+
+  {{- .Files.Get "files/addonsMonitoring/prometheus-node-exporter/values.yml" | nindent 0 }}
+
+  {{- include "prometheus-node-exporter.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "prometheus-node-exporter.phase" $clientContext }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,70 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    trivy-operator:
+      trivy:
+        storageClassEnabled: false
+        severity: HIGH,CRITICAL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64M
+          limits:
+            cpu: 750m
+            memory: 750M
+        server:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: ""

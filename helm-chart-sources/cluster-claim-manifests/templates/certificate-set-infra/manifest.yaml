@@ -1,0 +1,32 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-certificateset-infra
+spec:
+  apiVersion: in-cloud.io/v1alpha1
+  kind: CertificateSet
+  value: |
+    metadata:
+      annotations:
+        secret-copy.in-cloud.io/dstClusterKubeconfig: {{`{{ .ClusterClaim.metadata.namespace }}`}}/{{`{{ .ClusterClaim.metadata.name }}`}}-infra-kubeconfig
+        secret-copy.in-cloud.io/dstNamespace: {{ .Values.extraArgs.companyPrefix }}-system
+        strategy.secret-copy.in-cloud.io/ifExist: overwrite
+      labels:
+        cluster.x-k8s.io/cluster-name: {{`{{ .ClusterClaim.metadata.name }}`}}-infra
+        clusterctl.cluster.x-k8s.io/move: "true"
+        secret-copy.in-cloud.io: "true"
+        xcluster.in-cloud.io/name: {{`{{ .ClusterClaim.metadata.name }}`}}
+    spec:
+      environment: {{`{{ .ClusterClaim.spec.infra.role }}`}}
+      issuerRef:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        name: selfsigned
+    {{`{{- if hasPrefix "infra" .ClusterClaim.spec.infra.role }}`}}
+      issuerRefOidc:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+    {{`{{- end }}`}}
+      kubeconfig: false

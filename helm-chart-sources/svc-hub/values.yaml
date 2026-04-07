@@ -1,0 +1,67 @@
+env: dev
+
+hub:
+  image:
+    repository: registry.example.ru/golang/svc-hub
+  config:
+    hub:
+      max_tries: 10
+      input_plugin: rabbit
+      default_subscriber: rabbit
+    api:
+      host: 0.0.0.0
+      port: 8082
+    db:
+      type: redis
+      params:
+        host: 127.0.0.1
+    plugin:
+      rabbit:
+        host: ""
+        port: 5672
+        username: ""
+        password: ""
+        virtual_host: ""
+        exchange: global-events
+    sd:
+      deregister_critical_service_after: "1m"
+      service_port: 8082
+      tags: [example, production, k8s]
+      subscribers:
+        rabbit:
+          tag: rabbitmq
+  env:
+    CONSUL_HTTP_ADDR: consul.example:8500 # $(NODE_IP):8500
+    SVC_HUB_SD_SERVICE_HOST: "$(POD_IP)"
+    SVC_HUB_SD_WATCHK8S: "true"
+    SVC_HUB_HUB_ID: "$(POD_HOSTNAME)"
+    SVC_HUB_DB_HOSTHINT: "$(POD_HOSTNAME)"
+
+redis:
+  image: redis:6.0.5-alpine
+
+replicas: 1
+imagePullSecrets: []
+  # - name: docker-pull
+nameOverride: ""
+fullnameOverride: ""
+
+podSecurityContext: {}
+
+resources:
+  limits:
+    cpu: 400m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations:
+  - operator: Exists
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - topologyKey: "kubernetes.io/hostname"

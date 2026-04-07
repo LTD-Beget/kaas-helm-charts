@@ -1,0 +1,26 @@
+{{- with $.Values.capi.k8s -}}
+  {{- $machineInfrastructureTemplate  := index .machineInfrastructureTemplate .infrastructureType }}
+
+---
+apiVersion: {{ $machineInfrastructureTemplate.apiVersion }}
+kind: {{ $machineInfrastructureTemplate.kind }}
+metadata:
+  name: {{ $.Release.Name }}-{{ $.Values.capi.k8s.infrastructureType }}-machine-template
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ $.Release.Name }}
+spec:
+  template:
+    metadata: null
+    spec:
+      configuration:
+        cpuCount: 4
+        diskSize: 92160
+        memory: 8192
+      networkTag: "vps"
+      serverName: ""
+      usePrivateNetwork: true
+      providerID: ""
+      managedBy: "system"
+      image: ""
+{{- end }}

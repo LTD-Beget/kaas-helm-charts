@@ -1,0 +1,6 @@
+{{- if .Values.addonTemplates.certmanager.enabled }}
+
+{{- tpl (.Files.Get "files/cert-manager/cert-manager-v1.17.1-1/manifest.yaml") . }}
+
+{{- end }}
+

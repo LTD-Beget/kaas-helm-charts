@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "ccm-csr-controller.fullname" . }}-ccmcsrc-editor-role
+  labels:
+  {{- include "ccm-csr-controller.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - controller.in-cloud.io
+  resources:
+  - ccmcsrcs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - controller.in-cloud.io
+  resources:
+  - ccmcsrcs/status
+  verbs:
+  - get

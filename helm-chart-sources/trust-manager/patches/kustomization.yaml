@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./base.yaml
+
+patches:
+  - path: ./deployment.trust-manager.yaml
+    target:
+      kind: Deployment
+      name: trust-manager
+
+  - path: ./service.trust-manager.yaml
+    target:
+      kind: Service
+      name: trust-manager

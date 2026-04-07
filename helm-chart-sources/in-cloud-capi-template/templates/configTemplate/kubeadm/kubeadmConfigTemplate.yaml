@@ -1,0 +1,33 @@
+{{- if eq .Values.capi.k8s.controlPlaneType "kubeadm" }}
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
+kind: KubeadmConfigTemplate
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.capi.k8s.controlPlaneType }}-config-template
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      labels:
+        in-cloud.io/ssa-hack: "true"
+    spec:
+      files:
+      - content: "##### FIX PROBLEM CLUSTER API =(\n###->\nerror computing the desired
+          state of the Cluster topology: failed to\napply patches: failed to apply
+          patches for patch\n\"customKubeadmControlPlaneFiles\": failed to apply patch:
+          error applying\njson patch (RFC6902): add operation does not apply: doc
+          is missing path:\n\"/spec/template/spec/kubeadmConfigSpec/files/-\": missing
+          value\n\n#### Ошибка возникает, потому что если блок files будет пустым
+          массивом, \n#### то при развертывании этот блок будет удален из спецификации,
+          и патч выдаст ошибку.\n"
+        owner: root:root
+        path: /tmp/tempory_file
+        permissions: "0644"
+      format: cloud-config
+      joinConfiguration:
+        # discovery: {}
+        nodeRegistration:
+          imagePullPolicy: IfNotPresent
+      users:
+      - name: default
+{{- end }}

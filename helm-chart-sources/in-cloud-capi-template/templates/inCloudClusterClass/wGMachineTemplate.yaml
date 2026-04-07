@@ -1,0 +1,36 @@
+
+{{- with .Values.capi.k8s -}}
+  {{- $machineInfrastructureTemplate  := index .machineInfrastructureTemplate .infrastructureType }}
+---
+apiVersion: workergroup.in-cloud.io/v1alpha1
+kind: WGMachineTemplate
+metadata:
+  name: {{ $.Release.Name }}-{{ .infrastructureType }}machine-template
+spec:
+  value: |
+    apiVersion: {{ $machineInfrastructureTemplate.apiVersion }}
+    kind: {{ $machineInfrastructureTemplate.kind }}
+    spec:
+      template:
+        spec:
+          configuration:
+            cpuCount: {{`{{ .cpuCount }}`}}
+            diskSize: {{`{{ .diskSize }}`}}
+            memory: {{`{{ .memory }}`}}
+          image: "{{`{{ .image }}`}}"
+          managedBy: system
+          networkTag: "{{`{{ .networkTag }}`}}"
+          providerID: ""
+          {{`{{- if (index . "`}}{{ $.Values.companyPrefix}}{{`VmtDpServerName") }}`}}
+          serverName: "{{`{{ .`}}{{ $.Values.companyPrefix}}{{`VmtDpServerName }}"`}}
+          {{`{{- else }}`}}
+          serverName: ""
+          {{`{{- end }}`}}
+          usePrivateNetwork: {{`{{ .usePrivateNetwork }}`}}
+          {{`{{- if (index . "sshKeyIds") }}`}}
+          sshKeyIds:
+            {{`{{- range .sshKeyIds }}`}}
+          - {{`{{ . }}`}}
+            {{`{{- end }}`}}
+          {{`{{- end }}`}}
+{{- end }}

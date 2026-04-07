@@ -1,0 +1,81 @@
+clickhouse:
+  enabled: true
+
+  global:
+    security:
+      allowInsecureImages: true
+
+  clusterName: distributed_cluster
+  auth:
+    password: "dbpswd"
+
+  image:
+    repository: bitnamilegacy/clickhouse
+
+  initdbScripts:
+    create-db.sh: |
+      #!/bin/bash
+      echo "Creating database swarm"
+      # clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS swarm"
+      clickhouse-client --user default --password dbpswd --query "CREATE DATABASE IF NOT EXISTS metrics; SET allow_experimental_time_series_table = 1; CREATE TABLE IF NOT EXISTS metrics.ts ENGINE = TimeSeries;"
+
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
+
+  existingConfigdConfigmap: clickhouse-vmstorage-extra-configd
+
+  shards: 1
+  replicaCount: 1
+
+  persistence:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+  service:
+    type: LoadBalancer
+    annotations:
+      lb.example.com/algorithm: "round_robin"
+      lb.example.com/type: "internal"
+      lb.example.com/healthcheck-interval-seconds: "60"
+      lb.example.com/healthcheck-timeout-seconds: "5"
+
+  containerSecurityContext:
+    capabilities:
+      add:
+        - SYS_NICE
+        - IPC_LOCK 
+
+  tolerations:
+    - key: "node-role.kubernetes.io/vm-data"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  keeper:
+    replicaCount: 1
+    image:
+      repository: bitnamilegacy/clickhouse-keeper
+
+    persistence:
+      enabled: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
+
+    tolerations:
+      - key: "node-role.kubernetes.io/vm-data"
+        operator: "Exists"
+        effect: "NoSchedule"

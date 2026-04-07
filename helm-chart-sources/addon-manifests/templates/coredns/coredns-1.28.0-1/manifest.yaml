@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.coredns.enabled }}
+
+{{- tpl (.Files.Get "files/coredns/coredns-1.28.0-1/manifest.yaml") . }}
+
+{{- end }}

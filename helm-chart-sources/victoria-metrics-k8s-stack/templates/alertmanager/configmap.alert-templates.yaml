@@ -1,0 +1,86 @@
+{{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
+
+{{- if $vmstack.alertmanager.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-alertmanager-alert-templates"
+  namespace: {{ .Release.Namespace }}
+data:
+  telegram_alerts.tmpl: |
+    {{`
+    {{ define "emoji.status" -}}
+    {{- if eq .Status "firing" -}}🚨{{- else if eq .Status "resolved" -}}✅{{- else -}}❔{{- end -}}
+    {{- end }}
+
+    {{ define "title" -}}
+    {{ template "emoji.status" . }} <b>{{ index .CommonLabels "alertname" }}</b>
+    {{- end }}
+
+    {{ define "status.human" -}}
+    {{- if eq .Status "firing" -}}<code>firing</code>{{- else if eq .Status "resolved" -}}<code>resolved</code>{{- else -}}<code>{{ .Status }}</code>{{- end -}}
+    {{- end }}
+
+    {{ define "tg.message" -}}
+    {{ template "title" . }}
+
+    <b>Cluster:</b> <code>{{ index .CommonLabels "cluster_full_name" }}</code>
+    <b>Severity:</b> <code>{{ index .CommonLabels "severity" }}</code>
+    <b>Status:</b> {{ template "status.human" . }}
+    {{- if .CommonAnnotations.summary }}
+    <b>Summary:</b> {{ .CommonAnnotations.summary }}
+    {{- end }}
+    {{- if .CommonAnnotations.runbook_url }}
+    <b>Runbook:</b> {{ .CommonAnnotations.runbook_url }}
+    {{- end }}
+
+    <b>Alerts [{{ len .Alerts }}]:</b>
+    {{- range $i, $alert := .Alerts }}
+    {{- if lt $i 5 }}
+    ⚠️ ──────────
+    {{- if $alert.Annotations.description }}
+    {{ $alert.Annotations.description }}
+    {{- end }}
+
+    <b>startsAt:</b> <code>{{ $alert.StartsAt }}</code>
+    {{- if eq $.Status "resolved" }}
+    <b>endsAt:</b> <code>{{ $alert.EndsAt }}</code>
+    {{- end }}
+
+    {{- if or (index $alert.Labels "nodename") (index $alert.Labels "node") }}
+    <b>nodename:</b> <code>{{- if (index $alert.Labels "nodename") -}}{{ index $alert.Labels "nodename" }}{{- else -}}{{ index $alert.Labels "node" }}{{- end -}}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "namespace") }}
+    <b>namespace:</b> <code>{{ index $alert.Labels "namespace" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "daemonset") }}
+    <b>daemonset:</b> <code>{{ index $alert.Labels "daemonset" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "statefulset") }}
+    <b>statefulset:</b> <code>{{ index $alert.Labels "statefulset" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "deployment") }}
+    <b>deployment:</b> <code>{{ index $alert.Labels "deployment" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "replicaset") }}
+    <b>replicaset:</b> <code>{{ index $alert.Labels "replicaset" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "horizontalpodautoscaler") }}
+    <b>horizontalpodautoscaler:</b> <code>{{ index $alert.Labels "horizontalpodautoscaler" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "pod") }}
+    <b>pod:</b> <code>{{ index $alert.Labels "pod" }}</code>
+    {{- end }}
+    {{- if (index $alert.Labels "container") }}
+    <b>container:</b> <code>{{ index $alert.Labels "container" }}</code>
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    {{- if gt (len .Alerts) 5 }}
+    <b>More alerts omitted.</b>
+    {{- end }}
+    {{- end }}
+    `}}
+{{- end }}

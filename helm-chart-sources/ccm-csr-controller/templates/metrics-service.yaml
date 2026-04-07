@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ccm-csr-controller.fullname" . }}-metrics-service
+  labels:
+    control-plane: controller-manager
+  {{- include "ccm-csr-controller.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metricsService.type }}
+  selector:
+    {{- include "ccm-csr-controller.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- .Values.metricsService.ports | toYaml | nindent 2 }}

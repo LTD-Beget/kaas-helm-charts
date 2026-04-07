@@ -1,0 +1,19 @@
+{{- if .Values.monitoring.vmServiceScrape.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service
+  labels:
+    monitoring.in-cloud.io/service: {{ include "capi-kubeadm-bootstrap.fullname" . }}-metrics-service
+    {{- include "capi-kubeadm-bootstrap.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metricsService.type }}
+  ports:
+    - port: {{ .Values.metricsService.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "capi-kubeadm-bootstrap.selectorLabels" . | nindent 6 }}
+{{- end }}

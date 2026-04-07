@@ -1,0 +1,32 @@
+{{- with $.Values.capi.k8s -}}
+  {{- $clusterInfrastructureTemplate  := index .clusterInfrastructureTemplate .infrastructureType }}
+---
+apiVersion: {{ $clusterInfrastructureTemplate.apiVersion }}
+kind: {{ $clusterInfrastructureTemplate.kind }}
+metadata:
+  name: {{ $.Release.Name }}-{{ $.Values.capi.k8s.infrastructureType }}-cluster-template
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ $.Release.Name }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{ $.Values.companyDomain }}/environment: "infra"
+    spec:
+      customerLogin: ""
+      region: ""
+      loadBalancerSpec:
+        name: ""
+        displayName: ""
+        listener:
+          internal: false
+          ports:
+            - from: 6443
+              to: 6443
+        loadBalancerType: ""
+        healthcheck:
+          healthcheckTimeoutSec: 10
+          healthcheckIntervalSec: 30
+          healthcheckThreshold: 3
+{{- end }}

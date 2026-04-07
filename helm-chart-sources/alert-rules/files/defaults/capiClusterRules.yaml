@@ -1,0 +1,301 @@
+capiClusterRules:
+  enabled: false
+  groups:
+    capiClusterRules:
+      enabled: false
+      rules:
+        "in_cloud_capi_cluster_deletion_requested":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_deletion_requested"
+            annotations: {}
+            expr: |
+              clamp_max(
+                (
+                  in_cloud_capi_cluster_deleted_timestamp_seconds > bool 0
+                )
+                +
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_status_phase{phase="Deleting"} == bool 1
+                )
+                +
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="Deleting"} == bool 1
+                ),
+                1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_controlplane_condition_consistent":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_controlplane_condition_consistent"
+            annotations: {}
+            expr: |
+              (
+                in_cloud_capi_cluster_condition{type="ControlPlaneAvailable"} == bool 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_condition{type="ControlPlaneMachinesReady"} == bool 1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_controlplane_replica_consistent":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_controlplane_replica_consistent"
+            annotations: {}
+            expr: |
+              (
+                in_cloud_capi_cluster_controlplane_replicas
+                == bool
+                in_cloud_capi_cluster_controlplane_desired_replicas
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_controlplane_ready_replicas
+                == bool
+                in_cloud_capi_cluster_controlplane_desired_replicas
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_controlplane_available_replicas
+                == bool
+                in_cloud_capi_cluster_controlplane_desired_replicas
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_controlplane_update_required":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_controlplane_update_required"
+            annotations: {}
+            expr: |
+              clamp_max(
+                (
+                  in_cloud_capi_cluster_controlplane_uptodate_replicas
+                  !=
+                  bool in_cloud_capi_cluster_controlplane_desired_replicas
+                )
+                +
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="ControlPlaneMachinesUpToDate"} == bool 0
+                ),
+                1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_workers_condition_consistent":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_workers_condition_consistent"
+            annotations: {}
+            expr: |
+              (
+                in_cloud_capi_cluster_condition{type="WorkersAvailable"} == bool 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_condition{type="WorkerMachinesReady"} == bool 1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_workers_replica_consistent":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_workers_replica_consistent"
+            annotations: {}
+            expr: |
+              (
+                in_cloud_capi_cluster_workers_replicas
+                == bool
+                in_cloud_capi_cluster_workers_desired_replicas
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_workers_ready_replicas
+                == bool
+                in_cloud_capi_cluster_workers_desired_replicas
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_workers_available_replicas
+                == bool
+                in_cloud_capi_cluster_workers_desired_replicas
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_workers_update_required":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_workers_update_required"
+            annotations: {}
+            expr: |
+              clamp_max(
+                (
+                  in_cloud_capi_cluster_workers_uptodate_replicas
+                  !=
+                  bool in_cloud_capi_cluster_workers_desired_replicas
+                )
+                +
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="WorkerMachinesUpToDate"} == bool 0
+                ),
+                1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_nodes_consistent":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_nodes_consistent"
+            annotations: {}
+            expr: |
+              (
+                in_cloud_capi_cluster_controlplane_condition_consistent == bool 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_controlplane_replica_consistent == bool 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_workers_condition_consistent == bool 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_workers_replica_consistent == bool 1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_nodes_update_required":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_nodes_update_required"
+            annotations: {}
+            expr: |
+              clamp_max(
+                (
+                  in_cloud_capi_cluster_controlplane_update_required == bool 1
+                )
+                +
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_workers_update_required == bool 1
+                ),
+                1
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_updating":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_updating"
+            annotations: {}
+            expr: |
+              (
+                (
+                  in_cloud_capi_cluster_spec_paused == bool 0
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  clamp_max(
+                    (
+                      in_cloud_capi_cluster_controlplane_update_required == bool 1
+                    )
+                    +
+                    on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                      in_cloud_capi_cluster_workers_update_required == bool 1
+                    ),
+                    1
+                  )
+                )
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_alive":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_alive"
+            annotations: {}
+            expr: |
+              (
+                (
+                  in_cloud_capi_cluster_condition{type="InfrastructureReady"} == bool 1
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+                )
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_ready":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_ready"
+            annotations: {}
+            expr: |
+              (
+                (
+                  in_cloud_capi_cluster_spec_paused == bool 0
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="Available"} == bool 1
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="InfrastructureReady"} == bool 1
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_condition{type="RemoteConnectionProbe"} == bool 1
+                )
+                *
+                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                  in_cloud_capi_cluster_nodes_consistent == bool 1
+                )
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            labels: {}
+
+        "in_cloud_capi_cluster_controlplane_endpoint":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_controlplane_endpoint"
+            annotations: {}
+            expr: |
+              max by(cluster_full_name, cluster_hash, cluster_namespace, cluster_name, server)(
+                label_join(
+                  label_replace(
+                    label_join(
+                      in_cloud_capi_cluster_resource_info,
+                      "__tmp_hostport",
+                      ":",
+                      "controlplane_endpoint_host",
+                      "controlplane_endpoint_port"
+                    ),
+                    "__tmp_prefix",
+                    "https://",
+                    "cluster_name",
+                    ".*"
+                  ),
+                  "server",
+                  "",
+                  "__tmp_prefix",
+                  "__tmp_hostport"
+                )
+              )
+            labels: {}

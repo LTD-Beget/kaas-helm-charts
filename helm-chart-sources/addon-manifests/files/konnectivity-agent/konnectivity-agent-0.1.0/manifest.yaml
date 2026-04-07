@@ -1,0 +1,76 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonTemplate
+metadata:
+  name: konnectivity-agent
+spec:
+  template: |
+    spec:
+      chart: "konnectivity-agent"
+      pluginName: helm-with-values
+      repoURL: "{{ .Values.companyExternalChartRegistry }}"
+      version: "0.1.0"
+      releaseName: konnectivity-agent
+      targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
+      targetNamespace: "{{ .Values.companyPrefix }}-konnectivity-agent"
+      variables:
+        cluster_name: {{ "{{ .Values.spec.variables.cluster }}" }}
+        dependency: "False"
+      valuesSources:
+        - name: parameters-client
+          sourceRef:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: {{ .Values.companyPrefix }}-system
+          extract:
+            - as: cluster.host
+              jsonPath: .data.clusterHost
+            - as: cluster.name
+              jsonPath: .data.clusterName
+            - as: companyPrefix
+              jsonPath: .data.companyPrefix
+            - as: companyDomain
+              jsonPath: .data.companyDomain
+      initDependencies:
+        - name: client-cp-control-plane
+          criteria:
+            - jsonPath: $.status.deployed
+              operator: Equal
+              value: true
+      backend: 
+        finalizer: true
+        type: "argocd"
+        namespace: "{{ .Values.companyPrefix }}-argocd"
+        project: "default"
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: false
+          managedNamespaceMetadata:
+            labels:
+              in-cloud.io/caBundle: approved
+              in-cloud.io/clusterName: {{ "{{ .Values.spec.variables.cluster }}" }}
+          syncOptions:
+            - ApplyOutOfSyncOnly=true
+            - CreateNamespace=true
+      valuesSelectors:
+        - name: default
+          priority: 0
+          matchLabels:
+            addons.in-cloud.io/values: default
+            addons.in-cloud.io/addon: konnectivity-agent
+        - name: custom
+          priority: 90
+          matchLabels:
+            addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
+            addons.in-cloud.io/addon: konnectivity-agent-client
+        - name: client
+          priority: 95
+          matchLabels:
+            addons.in-cloud.io/values: client
+            addons.in-cloud.io/addon: konnectivity-agent
+        - name: immutable
+          priority: 99
+          matchLabels:
+            addons.in-cloud.io/values: immutable
+            addons.in-cloud.io/addon: konnectivity-agent

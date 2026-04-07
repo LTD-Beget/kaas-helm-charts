@@ -1,0 +1,66 @@
+{{- $appValue := .Values.appSpec.applications.providerControllerManager -}}
+
+{{- with $appValue }}
+  {{- if .enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $.Release.Name }}-{{ .name }}-role
+  labels:
+    {{- include "providerControllerManager.labels" $ | nindent 4 }}
+    {{- include "providerControllerManager.applicationSelectorLabels" (list .name $) | nindent 4 }}
+rules:
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - cluster.x-k8s.io
+    resources:
+    - clusters
+    - clusters/status
+    - machines
+    - machines/status
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - infrastructure.cluster.x-k8s.io
+    resources:
+    - {{ $.Values.companyPrefix }}clusters
+    - {{ $.Values.companyPrefix }}machines
+    - {{ $.Values.companyPrefix }}machineupdatetasks
+    verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+  - apiGroups:
+    - infrastructure.cluster.x-k8s.io
+    resources:
+    - {{ $.Values.companyPrefix }}clusters/finalizers
+    - {{ $.Values.companyPrefix }}machines/finalizers
+    verbs:
+    - update
+  - apiGroups:
+    - infrastructure.cluster.x-k8s.io
+    resources:
+    - {{ $.Values.companyPrefix }}clusters/status
+    - {{ $.Values.companyPrefix }}machines/status
+    - {{ $.Values.companyPrefix }}machineupdatetasks/status
+    verbs:
+    - get
+    - patch
+    - update
+
+  {{- end }}
+{{- end }}

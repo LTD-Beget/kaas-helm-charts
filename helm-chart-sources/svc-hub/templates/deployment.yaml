@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+{{ if eq .Values.env "dev" }}
+kind: Deployment
+{{ else }}
+kind: StatefulSet
+{{ end }}
+metadata:
+  name: {{ include "svc-hub.fullname" . }}
+  labels:
+    {{- include "svc-hub.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "svc-hub.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.replicas }}
+  {{ if not (eq .Values.env "dev") -}}
+  serviceName: {{ include "svc-hub.fullname" . }}
+  {{ end -}}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "svc-hub.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "svc-hub.serviceAccountName" . }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "svc-hub.configmap" . }}
+      containers:
+        - name: svc-hub
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          image: "{{ .Values.hub.image.repository }}:{{ .Values.hub.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          command:
+            - /svc-hub
+            - serve
+            - -c
+            - /etc/hub/hubconfig.yml
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+            {{- if eq .Values.env "dev" }}
+            - name: debugger
+              containerPort: 40000
+              protocol: TCP
+            {{- end }}
+          {{- if eq .Values.env "production" }}
+          livenessProbe:
+            httpGet:
+              path: /v1/health/
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: http
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: POD_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            {{- range $name, $value := .Values.hub.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /etc/hub/
+              name: config
+        {{ if eq .Values.env "dev" }}
+        - name: redis
+          image: "{{ .Values.redis.image }}"
+          imagePullPolicy: Always
+          command:
+            - redis-server
+            - --appendonly
+            - "yes"
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: redis
+          readinessProbe:
+              tcpSocket:
+                port: redis
+        {{ end }}
+      {{- if eq .Values.env "dev" }}
+      terminationGracePeriodSeconds: 10
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

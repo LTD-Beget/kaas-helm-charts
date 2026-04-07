@@ -1,0 +1,82 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-cm-client
+spec:
+  apiVersion: v1
+  kind: ConfigMap
+  value: |
+    metadata:
+      labels:
+        xcluster.in-cloud.io/name: {{`{{ .ClusterClaim.metadata.name }}`}}
+    data:
+      environment: client
+      xcluster: {{`{{ .ClusterClaim.metadata.name }}`}}
+      customer: {{`{{ .ClusterClaim.metadata.namespace }}`}}
+      systemNamespace: {{`{{ .ClusterClaim.metadata.namespace }}`}}
+
+      clusterName: {{`{{ .ClusterClaim.metadata.name }}`}}-client
+      clusterHost: {{`{{ .InfraControlPlaneEndpoint.Host }}`}}
+      clusterPort: "{{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}"
+      controlPlaneAvailableReplicas: "{{`{{ .InfraControlPlaneAvailableReplicas }}`}}"
+      controlPlaneDesiredReplicas: "{{`{{ .InfraControlPlaneDesiredReplicas }}`}}"
+
+      clusterClientEnabled: "{{`{{ .ClusterClaim.spec.client.enabled }}`}}"
+      clusterClientName: {{`{{ .ClusterClaim.metadata.name }}`}}-client
+      clusterClientPort: "{{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}"
+      clientVersion: {{`{{ .ClusterClaim.spec.client.componentVersions.kubernetes.version }}`}}
+      clientClusterDomain: cluster.local
+
+      #clientServiceCidrCoredns - deprecated
+      clientServiceCidrCoredns: {{`{{ .ClusterClaim.spec.client.network.clusterDNS }}`}}
+      clusterDNS: {{`{{ .ClusterClaim.spec.client.network.clusterDNS }}`}}
+      serviceCidr: {{`{{ .ClusterClaim.spec.client.network.serviceCidr }}`}}
+      clientServiceCidr: {{`{{ .ClusterClaim.spec.client.network.serviceCidr }}`}}
+      podCidr: {{`{{ .ClusterClaim.spec.client.network.podCidr }}`}}
+      podCidrMaskSize: "{{`{{ .ClusterClaim.spec.client.network.podCidrMaskSize }}`}}"
+
+      argocdDestinationName: {{`{{ .ClusterClaim.metadata.name }}`}}-client
+      argocdDestinationNamespace: {{ .Values.argocdDestinationNamespace }}
+      trackingID: {{`{{ .ClusterClaim.metadata.namespace }}`}}_{{`{{ .ClusterClaim.metadata.name }}`}}:argoproj.io/Application:{{`{{ .ClusterClaim.metadata.namespace }}`}}/{{`{{ .ClusterClaim.metadata.name }}`}}
+
+      systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
+
+      systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
+      argocdServerAdminPassword: {{ .Values.extraArgs.argocdServerAdminPassword }}
+      dexStaticClientsApiserver: {{ .Values.extraArgs.dexStaticClientsApiserver }}
+      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
+      etcdbackupAppArgsStorecontainer: {{ .Values.extraArgs.etcdbackupAppArgsStorecontainer }}
+      etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
+      etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
+      etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
+      grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
+      grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }}
+      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
+      incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
+      companyPrefix: {{ .Values.extraArgs.companyPrefix }}
+      companyDomain: {{ .Values.extraArgs.companyDomain }}
+      companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
+      companyInternalChartRegistry: {{ .Values.extraArgs.companyInternalChartRegistry }}
+      companyInternalChartRegistryPublic: {{ .Values.extraArgs.companyInternalChartRegistryPublic }}
+      companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
+      companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
+      companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
+      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
+      companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
+
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
+      systemIstioGwVip: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwVip: {{ .Values.extraArgs.systemIstioGwVip }}
+    {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomain") }}`}}
+      systemIstioGwDomain: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwDomain: {{ .Values.extraArgs.systemIstioGwDomain }}
+    {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemVmInsertVIP") }}`}}
+      systemVmInsertVIP: {{`{{ .ClusterClaim.spec.extraEnvs.systemVmInsertVIP }}`}}
+    {{`{{- else }}`}}
+      systemVmInsertVIP: {{ .Values.extraArgs.systemVmInsertVIP }}
+    {{`{{- end }}`}}      

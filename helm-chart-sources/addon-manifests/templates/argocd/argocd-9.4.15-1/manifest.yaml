@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.argocd.enabled }}
+
+{{- tpl (.Files.Get "files/argocd/argocd-9.4.15-1/manifest.yaml") . }}
+
+{{- end }}

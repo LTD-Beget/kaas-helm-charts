@@ -1,0 +1,45 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonClaimTemplate
+metadata:
+  name: {{ $.Release.Name }}-{{ .Values.capi.k8s.clientControlPlaneType }}-control-plane-template
+  namespace: {{ $.Release.Namespace }}
+spec:
+  template:
+    metadata:
+      annotations:
+        external-status/type: controlplane
+    spec:
+      addon:
+        name: client-cp-control-plane
+      credentialRef:
+        name: mock-infra-kubeconfig
+      templateRef:
+        name: client-cp-control-plane
+      valueLabels: custom
+      variables:
+        argocdApplicationControlPlaneDestinationName: mock-infra
+        argocdApplicationControlPlaneDestinationNamespace: {{ $.Values.companyPrefix }}-system
+        argocdApplicationControlPlaneName: mock-client-control-plane
+        argocdApplicationControlPlaneNamespace: {{ $.Values.companyPrefix }}-argocd
+        argocdApplicationControlPlaneObjectName: mock-client-control-plane-app
+        argocdApplicationControlPlaneProjectName: default
+        argocdApplicationControlPlaneProviderConfigRefName: mock-infra-kubernetes-provider-config
+        argocdApplicationControlPlaneReleaseName: client-cp
+        argocdApplicationControlPlaneSourceTargetRevision: HEAD
+        argocdApplicationControlPlaneValueArgsClusterVersion: v1.30.4
+        argocdApplicationControlPlaneValueArgsHost: 127.0.0.1
+        argocdApplicationControlPlaneValueArgsPort: 26443
+        certificatesCaName: mock-client-ca
+        certificatesEtcdName: mock-client-etcd
+        clusterName: mock-client
+        compositeDeletePolicy: Foreground
+        controlPlaneReplicas: "1"
+        customer: apmistcs
+        serviceCidr: 29.64.0.0/16
+        serviceCidrAddr: 29.64.0.0
+        serviceCidrBase: 29.64.0
+        serviceCidrCoredns: 29.64.0.10
+        serviceCidrApi: 29.64.0.1
+        xcluster: mock
+        version: v1.30.4
+      version: v1.30.4

@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.konnectivityagent.enabled }}
+
+{{- tpl (.Files.Get "files/konnectivity-agent/konnectivity-agent-0.1.0/manifest.yaml") . }}
+
+{{- end }}

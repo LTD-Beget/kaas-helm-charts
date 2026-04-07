@@ -1,0 +1,32 @@
+{{- if .Values.kubeconfig.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.kubeconfig.name | default "konnectivity-server-kubeconfig" }}
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- $fname := (.Values.kubeconfig.fileName | default "konnectivity-server.conf") -}}
+  {{ $fname }}: |
+    apiVersion: v1
+    kind: Config
+    preferences: {}
+    clusters:
+    - name: {{ .Values.kubeconfig.clusterName | default "my-cluster" }}
+      cluster:
+        server: {{ .Values.kubeconfig.server | default "https://127.0.0.1:443" | quote }}
+        certificate-authority: {{ .Values.kubeconfig.certificateAuthorityPath | default "/etc/kubernetes/pki/ca.crt" | quote }}
+    users:
+    - name: {{ .Values.kubeconfig.userName | default "my-user" }}
+      user:
+        client-certificate: {{ .Values.kubeconfig.clientCertificatePath | default "/etc/kubernetes/pki/konnectivity-client.crt" | quote }}
+        client-key: {{ .Values.kubeconfig.clientKeyPath | default "/etc/kubernetes/pki/konnectivity-client.key" | quote }}
+    contexts:
+    - name: {{ .Values.kubeconfig.contextName | default "my-context" }}
+      context:
+        cluster: {{ .Values.kubeconfig.clusterName | default "my-cluster" }}
+        user: {{ .Values.kubeconfig.userName | default "my-user" }}
+    current-context: {{ .Values.kubeconfig.contextName | default "my-context" }}
+    {{- with .Values.kubeconfig.extra }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

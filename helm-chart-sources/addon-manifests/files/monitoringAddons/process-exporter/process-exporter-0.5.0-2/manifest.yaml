@@ -1,0 +1,67 @@
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonTemplate
+metadata:
+  name: prometheus-process-exporter
+spec:
+  template: |
+    spec:
+      chart: "prometheus-process-exporter"
+      pluginName: helm-with-values
+      repoURL: "{{ .Values.companyExternalChartRegistry }}"
+      version: "0.5.0-2"
+      releaseName: prometheus-process-exporter
+      targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
+      targetNamespace: "{{ .Values.companyPrefix }}-prometheus-process-exporter"
+      variables:
+        cluster_name: {{ "{{ .Values.spec.variables.cluster }}" }}
+        dependency: "False"
+      valuesSources:
+        - name: parameters-client
+          sourceRef:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: {{ .Values.companyPrefix }}-system
+          extract:
+            - as: companyPrefix
+              jsonPath: .data.companyPrefix
+            - as: companyDomain
+              jsonPath: .data.companyDomain
+      initDependencies: []
+      backend: 
+        finalizer: true
+        type: "argocd"
+        namespace: "{{ .Values.companyPrefix }}-argocd"
+        project: "default"
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          managedNamespaceMetadata:
+            labels:
+              in-cloud.io/caBundle: approved
+              in-cloud.io/clusterName: {{ "{{ .Values.spec.variables.cluster }}" }}
+          syncOptions:
+            - ApplyOutOfSyncOnly=true
+            - CreateNamespace=true
+      valuesSelectors:
+        - name: default
+          priority: 0
+          matchLabels:
+            addons.in-cloud.io/values: default
+            addons.in-cloud.io/addon: prometheus-process-exporter
+        - name: custom
+          priority: 90
+          matchLabels:
+            addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
+            addons.in-cloud.io/addon: prometheus-process-exporter-client
+        - name: client
+          priority: 95
+          matchLabels:
+            addons.in-cloud.io/values: client
+            addons.in-cloud.io/addon: prometheus-process-exporter
+        - name: immutable
+          priority: 99
+          matchLabels:
+            addons.in-cloud.io/values: immutable
+            addons.in-cloud.io/addon: prometheus-process-exporter

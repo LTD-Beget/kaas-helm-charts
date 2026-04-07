@@ -1,0 +1,19 @@
+regcred:
+  enabled: false
+  items:
+    - name: regcred
+      namespace: dafault
+      vaultPath: secret/data/docker/harbor  
+      key: dockerconfigjson                 
+      isBase64: true                        
+
+argocd:
+  enabled: false
+  repositories:
+    - name: capi-provider
+      namespace: default
+      url: https://gitlab.test-infrastructure.ru/
+      auth:
+        vaultPath: secret/data/argocd-creds
+        usernameKey: username
+        passwordKey: password

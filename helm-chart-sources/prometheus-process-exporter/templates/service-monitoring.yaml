@@ -1,0 +1,19 @@
+{{- if and .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wrapper-prometheus-process-exporter.fullname" . }}-monitoring
+  namespace: {{ .Release.Namespace }}
+  labels:
+    monitoring.in-cloud.io/service: {{ .Release.Name }}
+spec:
+  ports:
+    - name: https-metrics
+      port: 11046
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    app: {{ template "wrapper-prometheus-process-exporter.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

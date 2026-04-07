@@ -1,0 +1,51 @@
+companyPrefix: example
+companyExternalChartRegistry: example.com
+
+
+addonTemplates:
+  argocd:
+    enabled: true
+  certmanager:
+    enabled: true
+  certmanagercsidriver:
+    enabled: true
+  cilium:
+    enabled: true
+  coredns:
+    enabled: true
+  crossplane:
+    enabled: true
+  etcdbackupsnapshot:
+    enabled: true
+  incloudwebchart:
+    enabled: true
+  incloudwebresources:
+    enabled: false
+  istiobase:
+    enabled: true
+  istiogw:
+    enabled: true
+  istiod:
+    enabled: true
+  kubestatemetrics:
+    enabled: true
+  konnectivityagent:
+    enabled: true
+  metricsserver:
+    enabled: true
+  processexporter:
+    enabled: true
+  prometheusnodeexporter:
+    enabled: true
+  trustmanager:
+    enabled: true
+  vmagent:
+    enabled: true
+  vmoperator:
+    enabled: true
+  
+
+
+
+
+

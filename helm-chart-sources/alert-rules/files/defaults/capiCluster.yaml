@@ -1,0 +1,240 @@
+capiClusterAlerts:
+  enabled: false
+  groups:
+    capiClusterAlerts:
+      enabled: false
+      rules:
+        InCloudCapiClusterNotAlive:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterNotAlive
+            annotations:
+              summary: Cluster is not alive
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} 
+                has no alive signal from CAPI controller for more than 10 minutes.
+
+                This means cluster control loop is not reporting liveness.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster is not alive
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_cluster_alive == 0
+            for: 10m
+            labels:
+              severity: critical
+
+        InCloudCapiClusterNotReady:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterNotReady
+            annotations:
+              summary: Cluster is not ready
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} 
+                is alive but has not reached Ready state for more than 30 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster is not ready
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_alive == 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_ready != 1
+              )
+            for: 30m
+            labels:
+              severity: warning
+
+        InCloudCapiClusterNotReadyTooLong:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterNotReadyTooLong
+            annotations:
+              summary: Cluster is not ready too long
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                has not reached Ready state for more than 90 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster not ready too long
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+                in_cloud_capi_cluster_ready != 1
+            for: 90m
+            labels:
+              severity: critical
+
+        InCloudCapiClusterNodesInconsistent:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterNodesInconsistent
+            annotations:
+              summary: Cluster nodes are inconsistent
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                has inconsistent node state for more than 20 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster nodes inconsistent
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_alive == 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_nodes_consistent == 0
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            for: 20m
+            labels:
+              severity: warning
+
+        InCloudCapiClusterNodesUpdateRequiredTooLong:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterNodesUpdateRequiredTooLong
+            annotations:
+              summary: Cluster update required too long
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                requires node updates for more than 120 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster nodes update pending too long
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_nodes_update_required == 1
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            for: 120m
+            labels:
+              severity: info
+
+        InCloudCapiClusterUpdatingTooLong:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterUpdatingTooLong
+            annotations:
+              summary: Cluster updating too long
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                has been updating for more than 90 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster updating too long
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_cluster_updating == 1
+            for: 90m
+            labels:
+              severity: warning
+
+        InCloudCapiClusterDeletionRequestedTooLong:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterDeletionRequestedTooLong
+            annotations:
+              summary: Cluster deletion takes too long
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                is marked for deletion for more than 60 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster deletion stuck
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_spec_paused == 0
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested == 1
+              )
+            for: 60m
+            labels:
+              severity: warning
+
+        InCloudCapiClusterControlPlaneUpdateRequiredTooLong:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterControlPlaneUpdateRequiredTooLong
+            annotations:
+              summary: Control plane update required too long
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                control plane requires update for more than 60 minutes.
+              message: |
+                {{ $labels.cluster_full_name }}: Control plane update pending too long
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_spec_paused == 0
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_controlplane_update_required == 1
+              )
+              unless
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_deletion_requested > 0
+              )
+            for: 60m
+            labels:
+              severity: critical
+
+        InCloudCapiClusterPausedButUpdateRequired:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterPausedButUpdateRequired
+            annotations:
+              summary: Paused cluster requires update
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
+                is paused but still has pending node updates.
+              message: |
+                {{ $labels.cluster_full_name }}: Paused cluster has pending updates
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              (
+                in_cloud_capi_cluster_spec_paused == 1
+              )
+              *
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                in_cloud_capi_cluster_nodes_update_required == 1
+              )
+            for: 30m
+            labels:
+              severity: info

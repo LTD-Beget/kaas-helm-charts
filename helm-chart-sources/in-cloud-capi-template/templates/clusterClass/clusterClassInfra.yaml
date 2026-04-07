@@ -1,0 +1,142 @@
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: ClusterClass
+metadata:
+  name: {{ .Release.Name }}-cluster-template
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ .Release.Name }}
+spec:
+
+  {{- with .Values.capi.k8s -}}
+    {{- $controlPlaneTemplate           := index .controlPlaneTypeTemplate      .controlPlaneType }}
+    {{- $machineInfrastructureTemplate  := index .machineInfrastructureTemplate .infrastructureType }}
+    {{- $clusterInfrastructureTemplate  := index .clusterInfrastructureTemplate .infrastructureType }}
+
+  controlPlane:
+    templateRef:
+      apiVersion: {{ $controlPlaneTemplate.apiVersion }}
+      kind: {{ $controlPlaneTemplate.kind }}
+      name: {{ $.Release.Name }}-{{ .controlPlaneType }}-control-plane-template
+      # namespace: {{ $.Release.Namespace }}
+    
+    {{- if eq .controlPlaneType "kubeadm" }}
+    machineInfrastructure:
+      templateRef:
+        apiVersion: {{ $machineInfrastructureTemplate.apiVersion }}
+        kind: {{ $machineInfrastructureTemplate.kind }}
+        name: {{ $.Release.Name }}-{{ .infrastructureType }}-machine-template
+        # namespace: {{ $.Release.Namespace }}
+    {{- end }}
+
+  infrastructure:
+    templateRef:
+      apiVersion: {{ $clusterInfrastructureTemplate.apiVersion }}
+      kind: {{ $clusterInfrastructureTemplate.kind }}
+      name: {{ $.Release.Name }}-{{ .infrastructureType }}-cluster-template
+      # namespace: {{ $.Release.Namespace }}
+  
+
+  workers:
+    machineDeployments:
+      - class: worker-class
+        bootstrap:
+          templateRef:
+            apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
+            kind: KubeadmConfigTemplate
+            name: {{ $.Release.Name }}-{{ .controlPlaneType }}-config-template
+            # namespace: {{ $.Release.Namespace }}
+        infrastructure:
+          templateRef:
+            apiVersion: {{ $machineInfrastructureTemplate.apiVersion }}
+            kind: {{ $machineInfrastructureTemplate.kind }}
+            name: {{ $.Release.Name }}-{{ .infrastructureType }}-machine-template
+            # namespace: {{ $.Release.Namespace }}
+        metadata:
+          labels:
+            in-cloud.io/ssa-hack: "true"
+
+  patches:
+    - name: custom:WrapperClusterTemplate
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.clusterTemplate.wrapper.default" $) | nindent 8  }}
+
+    - name: custom:WrapperMachineTemplate:DataPlane
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.machineTemplate.wrapper.customDp" $) | nindent 8  }}
+
+    - name: custom:WrapperMachineTemplate:ControlPlane
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.machineTemplate.wrapper.customCp" $) | nindent 8  }}
+
+    {{- if eq .controlPlaneType "kubeadm" }}
+    - name: custom:KubeadmControlPlane:rollout:rolloutBefore
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.rollout.rolloutBefore" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:ClusterConfiguration:ApiServer
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.clusterConfiguration.apiserver" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:ClusterConfiguration:ETCD
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.clusterConfiguration.etcd" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:ClusterConfiguration:ControllerManager
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.clusterConfiguration.controllerManager" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:ClusterConfiguration:Scheduler
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.clusterConfiguration.scheduler" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:kubeadmConfigSpec:Files
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.files" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:PreKubeadmCommands
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.preKubeadmCommands" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:InitConfiguration:nodeRegistration
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.initConfiguration.nodeRegistration" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:InitConfiguration:Users
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.initConfiguration.users" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:InitConfiguration:Patches
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.initConfiguration.patches" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:JoinConfiguration:nodeRegistration
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.joinConfiguration.nodeRegistration" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:JoinConfiguration:Patches
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.joinConfiguration.patches" $) | nindent 8  }}
+
+    - name: custom:KubeadmControlPlane:KubeadmConfigSpec:PostKubeadmCommands
+      definitions:
+        {{- (include "in-cloud-capi-template.patches.kubeadmControlPlane.kubeadmConfigSpec.postKubeadmCommands" $) | nindent 8  }}
+
+    {{- end }}
+  
+  variables:
+
+    {{- (include "in-cloud-capi-template.variables.wrapper.loadBalancer" $) | nindent 4  }}
+    {{- (include "in-cloud-capi-template.variables.wrapper.infra.base" $) | nindent 4  }}
+    {{- (include "in-cloud-capi-template.variables.wrapper.base" $) | nindent 4  }}
+
+    {{- (include "in-cloud-capi-template.variables.default.apiserverArgs" $) | nindent 4  }}
+
+    {{- (include "in-cloud-capi-template.variables.default.componentVariables" $) | nindent 4  }}
+
+    {{- (include "in-cloud-capi-template.variables.default.componentVersion" $) | nindent 4  }}
+
+    {{- (include "in-cloud-capi-template.variables.default.names" $) | nindent 4  }}
+
+    {{- (include "in-cloud-capi-template.variables.default.networks" $) | nindent 4  }}
+
+  {{- end }}

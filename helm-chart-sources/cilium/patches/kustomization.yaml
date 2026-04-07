@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./base.yaml
+
+patches:
+  - path: ./daemonset.cilium.yaml
+    target:
+      kind: DaemonSet
+      name: cilium
+
+  - path: ./service.cilium-agent.yaml
+    target:
+      kind: Service
+      name: cilium-agent
+
+  - path: ./deployment.cilium-operator.yaml
+    target:
+      kind: Deployment
+      name: cilium-operator

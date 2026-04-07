@@ -1,0 +1,28 @@
+---
+apiVersion: workergroup.in-cloud.io/v1alpha1
+kind: WGBootstrapTemplate
+metadata:
+  name: {{ .Release.Name }}-bootstrap-template
+spec:
+  value: |
+    spec:
+      template:
+        metadata: null
+        spec:
+          files:
+            {{- (include "in-cloud-capi-template.files.all.aggregate.dataPlane" .) | nindent 12  }}
+          format: cloud-config
+          joinConfiguration:
+            discovery: null
+            nodeRegistration:
+              imagePullPolicy: IfNotPresent
+              kubeletExtraArgs:
+                {{- with .Values.capi.k8s.dataPlane.components.kubelet.extraArgs }}
+                {{- range $key, $value := . }}
+                - name: {{ $key }}
+                  value: {{ $value }}
+                {{- end }}
+                {{- end }}
+              taints: []
+          preKubeadmCommands:
+            {{- include "in-cloud-capi-template.commandsDp.all.aggregate" . | nindent 10 }}

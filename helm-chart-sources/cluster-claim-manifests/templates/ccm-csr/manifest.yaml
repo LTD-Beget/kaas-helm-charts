@@ -1,0 +1,129 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-ccm-csr
+spec:
+  apiVersion: controller.in-cloud.io/v1alpha1
+  kind: CcmCsrc
+  value: |
+    metadata:
+      labels:
+        xcluster.in-cloud.io/name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+    spec:
+      ccm:
+        appSpec:
+          applications:
+            ccmInfra:
+              enabled: true
+              containers:
+                manager:
+                  extraArgs:
+                    cloud-provider: {{ .Values.extraArgs.companyPrefix }}
+                  extraEnv:
+                    CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra"
+                    CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+                    {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
+                    USE_INTERNAL_LB: "true"
+                    {{`{{- end }}`}}
+                  image:
+                    repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
+              imagePullSecrets: []
+              nodeSelector:
+                node-role.kubernetes.io/default: ""
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/default
+                  operator: Exists
+              volumes:
+                secret-ccm-kubeconfig:
+                  volume:
+                    items:
+                    - key: value
+                      path: kubeconfig
+                    mode: secret
+                    secretName: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra-kubeconfig"
+            ccmClient:
+              enabled: {{`{{ .ClientControlPlaneInitialized }}`}}
+              containers:
+                manager:
+                  extraArgs:
+                    cloud-provider: {{ .Values.extraArgs.companyPrefix }}
+                  extraEnv:
+                    CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-client"
+                    CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+                    {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
+                    USE_INTERNAL_LB: "true"
+                    {{`{{- end }}`}}
+                  image:
+                    repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
+              imagePullSecrets: []
+              nodeSelector:
+                node-role.kubernetes.io/default: ""
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/default
+                  operator: Exists
+              volumes:
+                secret-ccm-kubeconfig:
+                  volume:
+                    items:
+                    - key: value
+                      path: kubeconfig
+                    mode: secret
+                    secretName: "{{`{{ .ClusterClaim.metadata.name }}`}}-client-kubeconfig"
+      csrc:
+        appSpec:
+          applications:
+            csrcInfra:
+              enabled: true
+              containers:
+                manager:
+                  extraArgs:
+                    cluster-name: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra"
+                    cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
+                  image:
+                    repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
+              imagePullSecrets: []
+              nodeSelector:
+                node-role.kubernetes.io/default: ""
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/default
+                  operator: Exists
+              volumes:
+                secret-ccm-kubeconfig:
+                  volume:
+                    items:
+                    - key: value
+                      path: kubeconfig
+                    mode: secret
+                    secretName: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra-kubeconfig"
+            csrcClient:
+              enabled: {{`{{ .ClientControlPlaneInitialized }}`}}
+              containers:
+                manager:
+                  extraArgs:
+                    cluster-name: "{{`{{ .ClusterClaim.metadata.name }}`}}-client"
+                    cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
+                  image:
+                    repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
+              imagePullSecrets: []
+              nodeSelector:
+                node-role.kubernetes.io/default: ""
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/default
+                  operator: Exists
+              volumes:
+                secret-ccm-kubeconfig:
+                  volume:
+                    items:
+                    - key: value
+                      path: kubeconfig
+                    mode: secret
+                    secretName: "{{`{{ .ClusterClaim.metadata.name }}`}}-client-kubeconfig"
