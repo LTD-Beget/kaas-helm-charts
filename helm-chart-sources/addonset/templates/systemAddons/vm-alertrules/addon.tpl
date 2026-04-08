@@ -8,7 +8,7 @@ spec:
   chart: "alert-rules"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.2"
+  version: "0.1.3"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmalert-rules"
   variables: 
