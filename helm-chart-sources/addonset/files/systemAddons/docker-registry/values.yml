@@ -7,8 +7,10 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: docker-registry
 spec:
-  values: ""
-
+  values: |
+    default:
+      metrics:
+        port: 11043
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

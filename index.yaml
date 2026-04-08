@@ -3,7 +3,11 @@ entries:
   addon-manifests:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.479661+07:00"
+=======
+    created: "2026-04-08T22:23:56.29718+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: e7156dbb0e8433dbd64ce44c92830348c5d7b5265494d5c61f89c711acd9b68f
     name: addon-manifests
@@ -14,7 +18,11 @@ entries:
   addon-operator:
   - apiVersion: v2
     appVersion: v0.0.3-12e5009a
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.48032+07:00"
+=======
+    created: "2026-04-08T22:23:56.297848+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart to distribute the project addon-operator
     digest: 83e11d6735e8e4e12d12900b956dbfbce77e07bf58d652b6303aefd43646da02
     icon: https://example.com/icon.png
@@ -26,9 +34,15 @@ entries:
   addonset:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.483996+07:00"
     description: A Helm chart for Kubernetes
     digest: 0ae717ca93901fb6641694baa7c22bea2521084acb1871e2db341a24ce5255e4
+=======
+    created: "2026-04-08T22:23:56.301279+07:00"
+    description: A Helm chart for Kubernetes
+    digest: cc2c82838cec9e52e01b244a0e1495fff82ac3950e6e7b880778caaf66d6922f
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     name: addonset
     type: application
     urls:
@@ -36,7 +50,11 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 1.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.482784+07:00"
+=======
+    created: "2026-04-08T22:23:56.30009+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 5846fa40dff729f2a260a77c41a203a4c0efacc4a78dfb81ec9bca7853dee653
     name: addonset
@@ -47,6 +65,7 @@ entries:
   alert-rules:
   - apiVersion: v2
     appVersion: 1.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.488029+07:00"
     description: A Helm chart for Kubernetes
     digest: 41efe6a7733565751dc0effe16db0a60b29558792dd179588328494a5d34735b
@@ -58,6 +77,9 @@ entries:
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2026-04-08T22:31:17.486409+07:00"
+=======
+    created: "2026-04-08T22:23:56.303642+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 3912d2f66c6b3cea5a54929c5fba1dcf3f04235368e4fa73f8162d49e9a11821
     name: alert-rules
@@ -75,14 +97,18 @@ entries:
         url: https://argoproj.github.io/argo-helm/pgp_keys.asc
     apiVersion: v2
     appVersion: v3.3.4
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.494753+07:00"
+=======
+    created: "2026-04-08T22:23:56.309921+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: argo-cd
       repository: https://argoproj.github.io/argo-helm
       version: 9.4.15
     description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
       tool for Kubernetes.
-    digest: e0e8266dc715f766eff3e12c2e291ac6368d18fa6adfaf73a32cd7e1fc193460
+    digest: 1f9bfc69329ddd185e2c5764876c743af1afaaee2e4fee643732316f18d7b0f8
     home: https://github.com/argoproj/argo-helm
     icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
     keywords:
@@ -103,7 +129,11 @@ entries:
   bootstrap:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.495326+07:00"
+=======
+    created: "2026-04-08T22:23:56.310348+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for bootstrap addonset
     digest: 981dbca7f48327a3fed4f36c486f73f07c4dffbe97581707f9be255a98222093
     name: bootstrap
@@ -113,7 +143,11 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.494943+07:00"
+=======
+    created: "2026-04-08T22:23:56.310141+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for bootstrap addonset
     digest: 2f760516f309dbc8d13c952971af9fe2403fa3d7f6d48259fa26317f2f15db0a
     name: bootstrap
@@ -124,7 +158,11 @@ entries:
   capi:
   - apiVersion: v2
     appVersion: v1.12.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.498534+07:00"
+=======
+    created: "2026-04-08T22:23:56.314338+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 1dee516c5d9ce3b1a2a01c3a26455103fd26cdb794569e9cefa559d89c3e30ee
     name: capi
@@ -135,7 +173,11 @@ entries:
   capi-kubeadm-bootstrap:
   - apiVersion: v2
     appVersion: v1.12.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.500362+07:00"
+=======
+    created: "2026-04-08T22:23:56.316189+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 961d025edb5f01fc2cb7ebc75b344b3c867f82ccbf115c3b2d8987e9518da123
     name: capi-kubeadm-bootstrap
@@ -146,7 +188,11 @@ entries:
   capi-kubeadm-control-plane:
   - apiVersion: v2
     appVersion: v1.12.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.502453+07:00"
+=======
+    created: "2026-04-08T22:23:56.318296+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: cf03661ff575e43863b7f588ffb0a534169657045aa7a1f44cc98020bcd16fcf
     name: capi-kubeadm-control-plane
@@ -157,7 +203,11 @@ entries:
   capi-provider-controller-manager:
   - apiVersion: v2
     appVersion: v2.1.4
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.50373+07:00"
+=======
+    created: "2026-04-08T22:23:56.319513+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: appSpec
       repository: '@appSpec'
@@ -172,7 +222,11 @@ entries:
   ccm-csr-controller:
   - apiVersion: v2
     appVersion: v0.1.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.503994+07:00"
+=======
+    created: "2026-04-08T22:23:56.319746+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: b717c75b6ee19b64f98e129892c34318c478daeee806b9f1f9046252bc3f9271
     name: ccm-csr-controller
@@ -186,7 +240,11 @@ entries:
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
     appVersion: v1.17.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.507563+07:00"
+=======
+    created: "2026-04-08T22:23:56.323966+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: cert-manager
       repository: https://charts.jetstack.io
@@ -221,7 +279,11 @@ entries:
         - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
     apiVersion: v2
     appVersion: 0.10.4
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.504464+07:00"
+=======
+    created: "2026-04-08T22:23:56.320214+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: cert-manager-csi-driver
       repository: https://charts.jetstack.io
@@ -248,7 +310,11 @@ entries:
   certificate-set:
   - apiVersion: v2
     appVersion: v0.0.1-ea14c168
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.507915+07:00"
+=======
+    created: "2026-04-08T22:23:56.324389+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart to distribute the project certs
     digest: 1834cfef3659270319152f17e6508f3932b97c5948eb5a9e1317e9f048171d81
     icon: https://example.com/icon.png
@@ -260,7 +326,11 @@ entries:
   cilium:
   - apiVersion: v2
     appVersion: 1.18.5
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.513977+07:00"
+=======
+    created: "2026-04-08T22:23:56.33044+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: cilium
       repository: https://helm.cilium.io
@@ -287,7 +357,11 @@ entries:
   clickhouse-vmstorage:
   - apiVersion: v2
     appVersion: 1.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.516453+07:00"
+=======
+    created: "2026-04-08T22:23:56.333518+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - condition: clickhouse.enabled
       name: clickhouse
@@ -303,7 +377,11 @@ entries:
   cluster-claim-manifests:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.516775+07:00"
+=======
+    created: "2026-04-08T22:23:56.333832+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 5c01f4d870ac75b0fa7ac2e84bce4d0d58d14426cca2ae3860472c16323fa95d
     name: cluster-claim-manifests
@@ -314,7 +392,11 @@ entries:
   cluster-claim-operator:
   - apiVersion: v2
     appVersion: v0.0.2-ab7b930f
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.517136+07:00"
+=======
+    created: "2026-04-08T22:23:56.334202+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart to distribute the project cluster-claim-operator
     digest: fe56ee7055ff3e88b6b9fd539a484769cd5d5287223066cb38fd2e653c6264e4
     icon: https://example.com/icon.png
@@ -326,7 +408,11 @@ entries:
   control-plane:
   - apiVersion: v2
     appVersion: v0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.519718+07:00"
+=======
+    created: "2026-04-08T22:23:56.336418+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: appSpec
       repository: file://charts/appspec
@@ -341,7 +427,11 @@ entries:
   coredns:
   - apiVersion: v2
     appVersion: 1.28.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.52065+07:00"
+=======
+    created: "2026-04-08T22:23:56.337179+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: coredns
       repository: https://coredns.github.io/helm
@@ -370,7 +460,11 @@ entries:
   dex:
   - apiVersion: v2
     appVersion: 2.42.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.521375+07:00"
+=======
+    created: "2026-04-08T22:23:56.339119+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: dex
       repository: https://charts.dexidp.io
@@ -397,7 +491,11 @@ entries:
   docker-registry:
   - apiVersion: v1
     appVersion: 3.0.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.522291+07:00"
+=======
+    created: "2026-04-08T22:23:56.339814+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Docker Registry
     digest: 30da6fd286011b95a25ebd2d28073d92a5a613b2b8ba2c65861f3be8db864e0e
     home: https://hub.docker.com/_/registry/
@@ -415,7 +513,11 @@ entries:
   etcd-backup-snapshot:
   - apiVersion: v2
     appVersion: 0.36.3
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.522779+07:00"
+=======
+    created: "2026-04-08T22:23:56.340105+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for the etcd-backup-snapshot
     digest: 50130e51cb6a917ac266a15171c2399fb219a0bd16907ed410d1d7ed33347ec7
     name: etcd-backup-snapshot
@@ -426,7 +528,11 @@ entries:
   gateway:
   - apiVersion: v2
     appVersion: 1.26.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.524066+07:00"
+=======
+    created: "2026-04-08T22:23:56.34074+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: gateway
       repository: https://istio-release.storage.googleapis.com/charts
@@ -447,7 +553,11 @@ entries:
   grafana:
   - apiVersion: v2
     appVersion: 11.3.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.524371+07:00"
+=======
+    created: "2026-04-08T22:23:56.341084+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for the Grafana
     digest: 296ca553eb1f1eb42625ecbf44368b89dff6aaba4be29099c06dcc14ac443baf
     name: grafana
@@ -458,7 +568,11 @@ entries:
   grafana-dashboards:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.526754+07:00"
+=======
+    created: "2026-04-08T22:23:56.343956+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for the Grafana Dashboards
     digest: ed17f2f04bce7b0497e7dc9a338a1dcd75fb79ddebb45e96c0de9b6b76c1ba0f
     name: grafana-dashboards
@@ -469,7 +583,11 @@ entries:
   grafana-operator:
   - apiVersion: v2
     appVersion: 5.18.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.528643+07:00"
+=======
+    created: "2026-04-08T22:23:56.346054+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: grafana-operator
       repository: https://grafana.github.io/helm-charts
@@ -484,7 +602,11 @@ entries:
   helm-inserter:
   - apiVersion: v1
     appVersion: 0.2.3
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.528857+07:00"
+=======
+    created: "2026-04-08T22:23:56.346275+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     deprecated: true
     description: Add raw kuberntes resources to helm chart
     digest: 4d6d050275472f370095eb1c27459de2570e462c0c4cfaea90d368867898a6a9
@@ -496,7 +618,11 @@ entries:
   in-cloud-capi-template:
   - apiVersion: v2
     appVersion: 1.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.530839+07:00"
+=======
+    created: "2026-04-08T22:23:56.348621+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Helm chart for in-cloud CAPI ClusterClass infrastructure
     digest: 8ae470c614d394b25f9f493b38d8e18b6918282bbfc8b229f889149ec3162252
     name: in-cloud-capi-template
@@ -507,7 +633,11 @@ entries:
   incloud-web-chart:
   - apiVersion: v2
     appVersion: 1.3.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.540241+07:00"
+=======
+    created: "2026-04-08T22:23:56.359006+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: incloud-web-chart
       repository: oci://registry-1.docker.io/prorobotech
@@ -530,7 +660,11 @@ entries:
   incloud-web-resources:
   - apiVersion: v2
     appVersion: 1.2.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.542248+07:00"
+=======
+    created: "2026-04-08T22:23:56.361141+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: incloud-web-resources
       repository: oci://registry-1.docker.io/prorobotech
@@ -553,7 +687,11 @@ entries:
   istiod:
   - apiVersion: v2
     appVersion: 1.26.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.543601+07:00"
+=======
+    created: "2026-04-08T22:23:56.362376+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: istiod
       repository: https://istio-release.storage.googleapis.com/charts
@@ -574,7 +712,11 @@ entries:
   konnectivity-agent:
   - apiVersion: v2
     appVersion: 0.31.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.543917+07:00"
+=======
+    created: "2026-04-08T22:23:56.362704+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Konnectivity proxy-agent as a DaemonSet
     digest: add95a7fba8de2f831583856398a559b93e6eb8616890a3ca6627a077771247b
     name: konnectivity-agent
@@ -585,7 +727,11 @@ entries:
   konnectivity-server:
   - apiVersion: v2
     appVersion: 0.31.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.544278+07:00"
+=======
+    created: "2026-04-08T22:23:56.363022+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Konnectivity proxy-server as a DaemonSet
     digest: 3c40674cce8ff0c0454da89c049fb940030432d7caff0960cf7bd34c73e9117a
     name: konnectivity-server
@@ -596,7 +742,11 @@ entries:
   kube-state-metrics:
   - apiVersion: v2
     appVersion: v2.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.54502+07:00"
+=======
+    created: "2026-04-08T22:23:56.363923+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - condition: kube-state-metrics.enabled
       name: kube-state-metrics
@@ -619,7 +769,11 @@ entries:
     version: 6.1.0-4
   kubeadm-resources-client-cp:
   - apiVersion: v2
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.545359+07:00"
+=======
+    created: "2026-04-08T22:23:56.364235+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Deploys kubeadm-resources-client-cp
     digest: 63a48a0fd91e2b0ace950db16d38f91ecec12a3e64637c897d8c3912c79b117c
     name: kubeadm-resources-client-cp
@@ -630,7 +784,11 @@ entries:
   metrics-server:
   - apiVersion: v2
     appVersion: 0.8.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.546041+07:00"
+=======
+    created: "2026-04-08T22:23:56.3649+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: metrics-server
       repository: https://kubernetes-sigs.github.io/metrics-server/
@@ -654,7 +812,11 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: 27.10.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.549818+07:00"
+=======
+    created: "2026-04-08T22:23:56.369042+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: prometheus
       repository: https://prometheus-community.github.io/helm-charts
@@ -677,7 +839,11 @@ entries:
   prometheus-node-exporter:
   - apiVersion: v2
     appVersion: 1.9.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.550548+07:00"
+=======
+    created: "2026-04-08T22:23:56.369808+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: prometheus-node-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -699,7 +865,11 @@ entries:
   prometheus-process-exporter:
   - apiVersion: v2
     appVersion: 0.8.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.550963+07:00"
+=======
+    created: "2026-04-08T22:23:56.370242+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: prometheus-process-exporter
       repository: https://mumoshu.github.io/prometheus-process-exporter
@@ -714,7 +884,11 @@ entries:
   secret-copy-operator:
   - apiVersion: v2
     appVersion: v0.0.1-920ddb18
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.551214+07:00"
+=======
+    created: "2026-04-08T22:23:56.370738+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart to distribute the project secret-copy-operator
     digest: 7a592f05a266df1ccf2f50f6fad0b33f1c6015caf9daa90fe9f3feebb8c83484
     icon: https://example.com/icon.png
@@ -726,7 +900,11 @@ entries:
   signalilo:
   - apiVersion: v1
     appVersion: v0.14.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.551542+07:00"
+=======
+    created: "2026-04-08T22:23:56.371148+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: Alertmanager to Icinga2 bridge
     digest: 7f2606db350f51eff33d9908189a1a331f840c4933d0cfb4f34d864503cf6577
     home: https://git.vshn.net/vshn/signalilo
@@ -747,7 +925,11 @@ entries:
   svc-hub:
   - apiVersion: v2
     appVersion: latest
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.551727+07:00"
+=======
+    created: "2026-04-08T22:23:56.371443+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: d7efdbffb09682581c4f737f110db032443b6c1a5aea5550a7513ae28f7307cc
     name: svc-hub
@@ -758,7 +940,11 @@ entries:
   svc-k8s-proxy:
   - apiVersion: v2
     appVersion: v1.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.552004+07:00"
+=======
+    created: "2026-04-08T22:23:56.371748+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: d0ede6dddbbbe8a440598553b8c377ae37bd14993afc6ea14a95defdd2cb763e
     name: svc-k8s-proxy
@@ -769,7 +955,11 @@ entries:
   trivy-operator:
   - apiVersion: v2
     appVersion: 0.27.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.554669+07:00"
+=======
+    created: "2026-04-08T22:23:56.373709+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: trivy-operator
       repository: https://aquasecurity.github.io/helm-charts/
@@ -790,7 +980,11 @@ entries:
   trust-manager:
   - apiVersion: v2
     appVersion: 0.16.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.555473+07:00"
+=======
+    created: "2026-04-08T22:23:56.374321+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: trust-manager
       repository: https://charts.jetstack.io
@@ -816,7 +1010,11 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: 1.20.1
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.557167+07:00"
+=======
+    created: "2026-04-08T22:23:56.376472+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: vault
       repository: https://helm.releases.hashicorp.com
@@ -847,7 +1045,11 @@ entries:
   vault-secrets:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.557282+07:00"
+=======
+    created: "2026-04-08T22:23:56.376585+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart for Kubernetes
     digest: 727587b6aec64508743c0444b624d693528dde4e6b62900c59b55676afeeae54
     name: vault-secrets
@@ -871,7 +1073,11 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v1.119.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.570992+07:00"
+=======
+    created: "2026-04-08T22:23:56.390274+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: victoria-metrics-k8s-stack
       repository: https://victoriametrics.github.io/helm-charts/
@@ -915,7 +1121,11 @@ entries:
       artifacthub.io/operator: "true"
     apiVersion: v2
     appVersion: v0.60.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.579727+07:00"
+=======
+    created: "2026-04-08T22:23:56.399441+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     dependencies:
     - name: victoria-metrics-operator
       repository: https://victoriametrics.github.io/helm-charts/
@@ -946,7 +1156,11 @@ entries:
   worker-group-claim-operator:
   - apiVersion: v2
     appVersion: 0.1.0
+<<<<<<< HEAD
     created: "2026-04-08T22:31:17.580122+07:00"
+=======
+    created: "2026-04-08T22:23:56.400002+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
     description: A Helm chart to distribute the project worker-group-claim-operator
     digest: dd56305005bd9799aab77080a769638b08775f1f788191e9c5d42d666635b94c
     icon: https://example.com/icon.png
@@ -955,4 +1169,8 @@ entries:
     urls:
     - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.1.tgz
     version: 0.1.1
+<<<<<<< HEAD
 generated: "2026-04-08T22:31:17.479134+07:00"
+=======
+generated: "2026-04-08T22:23:56.296446+07:00"
+>>>>>>> 3b792ee7 (monitoring(argocd/docker-proxy): change monitoring port)
