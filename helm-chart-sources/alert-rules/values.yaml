@@ -4,6 +4,14 @@ companyWikiAlertingUrl: example.com
 additionalLabels: {}
 
 vmrules:
+  alertmanager:
+    enabled: true
+    groups:
+      alertmanager:
+        enabled: true
+        rules:
+          Watchdog:
+            enabled: true
   argocd:
     enabled: true
     groups:

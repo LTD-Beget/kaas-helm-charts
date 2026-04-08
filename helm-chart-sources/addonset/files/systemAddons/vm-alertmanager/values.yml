@@ -336,3 +336,27 @@ spec:
               mainSignaliloInstance:
                 url: "http://signalilo.{{ .Values.companyPrefix }}-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
                 send_resolved: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    istioVirtualService:
+      vmalertmanager:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw/default
+        hosts:
+          - "*"
+        path: "/alertmanager"
+        http:
+          name: vmalertmanager
+          route:
+            host: vmalertmanager
+            port: 9093
