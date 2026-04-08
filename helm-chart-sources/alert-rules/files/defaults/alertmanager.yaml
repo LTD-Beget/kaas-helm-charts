@@ -1,0 +1,20 @@
+alertmanager:
+  enabled: false
+  groups:
+    alertmanager:
+      enabled: false
+      rules:
+        Watchdog:
+          enabled: false
+          spec:
+            alert: Watchdog
+            annotations:
+              summary: "Dead man switch"
+              description: "This alert must always be firing to verify alert delivery."
+              message: |
+                {{ $labels.cluster_full_name }}: Watchdog
+
+                Cluster: {{ $labels.cluster_full_name }}
+            expr: vector(1)
+            labels:
+              severity: info
