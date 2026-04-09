@@ -81,7 +81,7 @@ spec:
 
           kubernetesSDConfigs:
             - role: node
-              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              apiServer: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
               tlsConfig:
                 ca:
                   secret:
@@ -97,7 +97,7 @@ spec:
 
           relabelConfigs:
             - targetLabel: __address__
-              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
             - sourceLabels: [__meta_kubernetes_node_name]
               targetLabel: __metrics_path__
               replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
@@ -148,7 +148,7 @@ spec:
 
           kubernetesSDConfigs:
             - role: node
-              apiServer: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              apiServer: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
               tlsConfig:
                 ca:
                   secret:
@@ -164,7 +164,7 @@ spec:
 
           relabelConfigs:
             - targetLabel: __address__
-              replacement: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+              replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
             - sourceLabels: [__meta_kubernetes_node_name]
               targetLabel: __metrics_path__
               replacement: /api/v1/nodes/$1/proxy/metrics/resource

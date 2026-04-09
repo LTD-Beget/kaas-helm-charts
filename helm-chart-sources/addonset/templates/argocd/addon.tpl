@@ -5,13 +5,9 @@ kind: Addon
 metadata:
   name: argocd
 spec:
-  path: helm-chart-sources/argocd
-  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
-  version: feature/extra-containers
-
-  # chart: "argo-cd"
-  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  # version: "9.4.15-2"
+  chart: "argo-cd"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  version: "9.4.15-2"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-argocd"

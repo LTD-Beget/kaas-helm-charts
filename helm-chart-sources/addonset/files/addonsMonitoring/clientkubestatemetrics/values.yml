@@ -89,7 +89,7 @@ spec:
                 - name: kubernetes
                   cluster:
                     certificate-authority: /kubeconfig/ca.crt
-                    server: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+                    server: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
               users:
                 - name: user
                   user:

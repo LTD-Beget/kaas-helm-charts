@@ -6,9 +6,9 @@ metadata:
   name: client-vm-scrape-config
 spec:
   chart: "helm-inserter"
-  pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.2.5"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmagent"
   variables:
@@ -22,12 +22,8 @@ spec:
         name: parameters-client
         namespace: {{ .Values.companyPrefix }}-system
       extract:
-        - as: cluster.host
-          jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
-        - as: cluster.port
-          jsonPath: .data.clusterPort
         - as: cluster.customer
           jsonPath: .data.customer
         - as: companyPrefix

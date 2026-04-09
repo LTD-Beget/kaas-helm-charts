@@ -5,13 +5,9 @@ kind: Addon
 metadata:
   name: cilium
 spec:
-  path: helm-chart-sources/cilium
-  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
-  version: feature/extra-containers
-
-  # chart: "cilium"
-  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  # version: "1.18.5-1"
+  chart: "cilium"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  version: "1.18.5-1"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cilium"
