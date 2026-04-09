@@ -3,17 +3,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-agent-svc-tls
+  name: {{ .Release.Name }}-agent-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
   secretName: cilium-agent-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}-agent
+  commonName: {{ .Release.Name }}-agent-monitoring
   dnsNames:
-    - {{ .Release.Name }}-agent
-    - {{ .Release.Name }}-agent.{{ .Release.Namespace }}
-    - {{ .Release.Name }}-agent.{{ .Release.Namespace }}.svc
+    - {{ .Release.Name }}-agent-monitoring
+    - {{ .Release.Name }}-agent-monitoring.{{ .Release.Namespace }}
+    - {{ .Release.Name }}-agent-monitoring.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048
