@@ -5,7 +5,7 @@ kind: Addon
 metadata:
   name: coredns
 spec:
-  path: helm-chart-sources/cilium
+  path: helm-chart-sources/coredns
   repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
   version: feature/extra-containers
 
