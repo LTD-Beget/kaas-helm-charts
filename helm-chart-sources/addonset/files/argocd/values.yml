@@ -536,444 +536,7 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
-    # TODO: move to extraContainers
-    argocdPlugins:
-      kustomize: true
-
-
-
     argo-cd:
-      global:
-        deploymentStrategy:
-          type: RollingUpdate
-      configs:
-        cm:
-          application.resourceTrackingMethod: annotation
-          reposerver.default.cache.expiration: 8h0m0s
-          reposerver.repo.cache.expiration: 8h0m0s
-          resource.compareoptions: |
-            ignoreAggregatedRoles: true
-          resource.customizations: |
-            "*.upbound.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "ClusterProviderConfig",
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                  health_status.status = "Healthy"
-                  health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Ready" then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                    end
-                  end
-                end
-
-                return health_status
-
-            "*.crossplane.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "Composition",
-                  "CompositionRevision",
-                  "DeploymentRuntimeConfig",
-                  "ClusterProviderConfig",
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if contains({"Ready", "Healthy", "Offered", "Established", "ValidPipeline", "RevisionHealthy"}, condition.type) then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                    end
-                  end
-                end
-
-                return health_status
-          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
-            jqPathExpressions:
-            - '.webhooks[]?.clientConfig.caBundle'
-          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_ValidatingWebhookConfiguration: |
-            jqPathExpressions:
-            - '.webhooks[]?.clientConfig.caBundle'
-          resource.customizations.ignoreDifferences.all: |
-            jqPathExpressions:
-            - '.spec.template.spec.containers[].volumeMounts[] | select(.name == "ssl-certs")'
-            - '.spec.template.spec.volumes[] | select(.name == "ssl-certs")'
-            - '.spec.template.spec.securityContext'
-            - '.spec.template.spec.containers[].securityContext'
-            - '.spec.template.spec.initContainers[].securityContext'
-            - '.spec.replicas'
-          resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
-            jqPathExpressions:
-            - '.spec.rules[] | select(.name|test("autogen-."))'
-          resource.customizations.ignoreDifferences.kyverno.io_Policy: |
-            jqPathExpressions:
-            - '.spec.rules[] | select(.name|test("autogen-."))'
-          kustomize.buildOptions: --enable-helm
-          timeout.reconciliation: 180s  
-          timeout.reconciliation.jitter: 30s
-        params:
-          application.namespaces: '*'
-          applicationsetcontroller.allowed.scm.providers: {{ .Values.companyInternalGitRepository }}
-          applicationsetcontroller.namespaces: '*'
-          # repo.server: 127.0.0.1:8081
-          # redis.server: 127.0.0.1:6379
-          controller.sharding.algorithm: round-robin
-          server.basehref: /argocd
-          server.rootpath: /argocd
-          server.staticassets: /shared/app
-        secret:
-          argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
-        rbac:
-          policy.default: role:readonly
-          policy.csv: |
-            g, {{ .Values.companyAdminUser }}, role:admin
-      dex:
-        enabled: false
-      notifications:
-        enabled: false
-      redis:
-        image:
-          imagePullPolicy: IfNotPresent
-        replicas: 1
-        # hostNetwork: true
-        exporter:
-          enabled: true
-          resources:
-            limits:
-              cpu: 200m
-              ephemeral-storage: 10Mi
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              ephemeral-storage: 10Mi
-              memory: 64Mi
-        metrics:
-          enabled: true
-        resources:
-          limits:
-            cpu: 200m
-            ephemeral-storage: 100Mi
-            memory: 196Mi
-          requests:
-            cpu: 100m
-            ephemeral-storage: 100Mi
-            memory: 128Mi
-      redisSecretInit:
-        enabled: true
-      repoServer:
-        image:
-          imagePullPolicy: IfNotPresent
-        # hostNetwork: true
-        containerSecurityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        emptyDir:
-          sizeLimit: 10Gi
-        metrics:
-          enabled: true
-        rbac:
-        - apiGroups:
-          - '*'
-          resources:
-          - '*'
-          verbs:
-          - '*'
-        replicas: 1
-        resources:
-          limits:
-            ephemeral-storage: 10Gi
-            memory: 1Gi
-          requests:
-            cpu: 100m
-            ephemeral-storage: 10Gi
-            memory: 150Mi
-        affinity:
-          podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-redis
-                topologyKey: kubernetes.io/hostname
-      server:
-        image:
-          imagePullPolicy: IfNotPresent
-        # hostNetwork: true
-        containerSecurityContext:
-          runAsNonRoot: false
-          runAsUser: 0
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        extraArgs:
-          # - --repo-server
-          # - 127.0.0.1:8081
-          # - --redis
-          # - 127.0.0.1:6379
-          - --kubeconfig
-          - /etc/kubernetes/admin.conf
-        volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: admin-conf
-        volumeMounts:
-          - mountPath: /etc/kubernetes/admin.conf
-            name: admin-conf
-        emptyDir:
-          sizeLimit: 500Mi
-        metrics:
-          enabled: true
-        resources:
-          limits:
-            ephemeral-storage: 100Mi
-          requests:
-            cpu: 50m
-            ephemeral-storage: 100Mi
-            memory: 64Mi
-        affinity:
-          podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-redis
-                topologyKey: kubernetes.io/hostname
-      controller:
-        dynamicClusterDistribution: true
-        replicas: 1
-        image:
-          imagePullPolicy: IfNotPresent
-        # hostNetwork: true
-        containerSecurityContext:
-          runAsNonRoot: false
-          runAsUser: 0
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
-          seccompProfile:
-            type: RuntimeDefault
-        extraArgs:
-          # - --repo-server
-          # - 127.0.0.1:8081
-          # - --redis
-          # - 127.0.0.1:6379
-          - --kubeconfig
-          - /etc/kubernetes/admin.conf
-        volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: admin-conf
-        volumeMounts:
-          - mountPath: /etc/kubernetes/admin.conf
-            name: admin-conf
-        emptyDir:
-          sizeLimit: 500Mi
-        metrics:
-          enabled: true
-        resources:
-          limits:
-            ephemeral-storage: 500Mi
-          requests:
-            cpu: 100m
-            ephemeral-storage: 500Mi
-            memory: 64Mi
-        affinity:
-          podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-redis
-                topologyKey: kubernetes.io/hostname
-      applicationSet:
-        replicas: 0
-        image:
-          imagePullPolicy: IfNotPresent
-        allowAnyNamespace: true
-        emptyDir:
-          sizeLimit: 500Mi
-        metrics:
-          enabled: true
-        resources:
-          limits:
-            cpu: 400m
-            ephemeral-storage: 100Mi
-            memory: 256Mi
-          requests:
-            cpu: 10m
-            ephemeral-storage: 100Mi
-            memory: 32Mi
-        affinity:
-          podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-redis
-                topologyKey: kubernetes.io/hostname
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: argocd-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: argocd
-spec:
-  values: ""
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: argocd-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: argocd
-spec:
-  values: |
-    argo-cd:
-      controller:
-        extraContainers:
-          - name: rbac-proxy
-            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
-            args:
-              - --secure-listen-address=0.0.0.0:11043
-              - --upstream=http://127.0.0.1:8082
-              - --tls-cert-file=/app/config/metrics/tls/tls.crt
-              - --tls-private-key-file=/app/config/metrics/tls/tls.key
-              - --v=2
-            ports:
-              - name: https-metrics
-                containerPort: 11043
-                protocol: TCP
-            resources:
-              requests:
-                memory: "32Mi"
-                cpu: "10m"
-              limits:
-                memory: "64Mi"
-                cpu: "50m"
-            volumeMounts:
-              - mountPath: /app/config/metrics/tls
-                name: rbac-proxy-tls
-                readOnly: true
-        volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: admin-conf
-          - name: rbac-proxy-tls
-            secret:
-              defaultMode: 420
-              secretName: argocd-application-controller-metrics
       redis:
         extraContainers:
           - name: rbac-proxy
@@ -1004,40 +567,6 @@ spec:
             secret:
               defaultMode: 420
               secretName: argocd-redis-metrics
-      server:
-        extraContainers:
-          - name: rbac-proxy
-            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
-            args:
-              - --secure-listen-address=0.0.0.0:11043
-              - --upstream=http://127.0.0.1:8083
-              - --tls-cert-file=/app/config/metrics/tls/tls.crt
-              - --tls-private-key-file=/app/config/metrics/tls/tls.key
-              - --v=2
-            ports:
-              - name: https-metrics
-                containerPort: 11043
-                protocol: TCP
-            resources:
-              requests:
-                memory: "32Mi"
-                cpu: "10m"
-              limits:
-                memory: "64Mi"
-                cpu: "50m"
-            volumeMounts:
-              - mountPath: /app/config/metrics/tls
-                name: rbac-proxy-tls
-                readOnly: true
-        volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: admin-conf
-          - name: rbac-proxy-tls
-            secret:
-              defaultMode: 420
-              secretName: argocd-server-metrics
       repoServer:
         extraContainers:
           - name: helm-with-values
@@ -1091,6 +620,74 @@ spec:
             secret:
               defaultMode: 420
               secretName: argocd-repo-server-metrics
+      server:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8083
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-server-metrics
+      controller:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8082
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-application-controller-metrics
       applicationSet:
         extraContainers:
           - name: rbac-proxy
@@ -1121,12 +718,6 @@ spec:
             secret:
               defaultMode: 420
               secretName: argocd-applicationset-controller-metrics
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
