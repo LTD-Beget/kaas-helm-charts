@@ -10,7 +10,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: argocd-applicationset-controller
+      monitoring.in-cloud.io/service: {{ template "argo-cd-wrapper.applicationSet.fullname" . }}
   endpoints:
     - port: https-metrics
       path: /metrics
