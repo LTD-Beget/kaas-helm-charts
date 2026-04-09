@@ -6,7 +6,7 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: argocd
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   gateways:
     {{- range $d := .Values.istio.virtualService.gateways }}

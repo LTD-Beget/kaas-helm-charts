@@ -5,18 +5,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ .Release.Name }}-application-controller
-  namespace: {{ .Release.Namespace }}
+  name: {{ template "argo-cd-wrapper.controller.fullname" . }}
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: argocd-application-controller
+      monitoring.in-cloud.io/service: {{ template "argo-cd-wrapper.controller.fullname" . }}
   endpoints:
     - port: https-metrics
       path: /metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ .Release.Name }}-application-controller-metrics
+        serverName: {{ template "argo-cd-wrapper.controller.fullname" . }}-metrics
   jobLabel: argocd-application-controller
 {{- end }}

@@ -5,18 +5,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ .Release.Name }}-redis
-  namespace: {{ .Release.Namespace }}
+  name: {{ template "argo-cd-wrapper.redis.fullname" . }}
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: argocd-redis
+      monitoring.in-cloud.io/service: {{ template "argo-cd-wrapper.redis.fullname" . }}
   endpoints:
     - port: https-metrics
       path: /metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ .Release.Name }}-redis-metrics
+        serverName: {{ template "argo-cd-wrapper.redis.fullname" . }}-metrics
   jobLabel: argocd-redis
 {{- end }}

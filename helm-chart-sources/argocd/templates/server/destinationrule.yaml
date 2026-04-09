@@ -6,7 +6,7 @@ apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
   name: argocd-server-tls
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   host: {{ .Values.istio.destinationRule.host }}
   trafficPolicy:
