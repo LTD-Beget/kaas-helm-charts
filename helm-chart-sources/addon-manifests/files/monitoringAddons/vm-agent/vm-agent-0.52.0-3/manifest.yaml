@@ -8,7 +8,7 @@ spec:
       chart: "victoria-metrics-k8s-stack"
       pluginName: helm-with-values
       repoURL: "{{ .Values.companyExternalChartRegistry }}"
-      version: "0.52.0-1"
+      version: "0.52.0-3"
       releaseName: vm-agent
       targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
       targetNamespace: "{{ .Values.companyPrefix }}-vmagent"

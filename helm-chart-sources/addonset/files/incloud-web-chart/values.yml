@@ -32,7 +32,7 @@ spec:
             cookieSecret: "{{ .Values.incloudUICookieSecret }}"
           extraArgs:
             upstream: "http://incloud-web-chart-incloud-web-chart.{{ .Values.companyPrefix }}-incloud-web-chart.svc:8081"
-            redirect-url: "https://{{ .Values.systemIstioGwDomain }}/oauth2/callback"
+            redirect-url: "https://localhost/oauth2/callback"
             oidc-issuer-url: "https://{{ .Values.systemIstioGwDomain }}/dex"
             insecure-oidc-skip-issuer-verification: true
             login-url: "https://{{ .Values.systemIstioGwDomain }}/dex/auth"
@@ -164,6 +164,9 @@ metadata:
 spec:
   values: |
     incloud-web-chart:
+      oauth2-proxy:
+        extraArgs:
+          redirect-url: "https://{{ .Values.systemIstioGwDomain }}/oauth2/callback"
       clusters:
         - name: default
           description: default

@@ -8,7 +8,7 @@ spec:
       chart: "kube-state-metrics"
       pluginName: helm-with-values
       repoURL: "{{ .Values.companyExternalChartRegistry }}"
-      version: "6.1.0-3"
+      version: "6.1.0-4"
       releaseName: kube-state-metrics
       targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
       targetNamespace: "{{ .Values.companyPrefix }}-kube-state-metrics"
