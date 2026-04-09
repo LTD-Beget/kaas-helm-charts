@@ -961,11 +961,15 @@ spec:
               limits:
                 memory: "64Mi"
                 cpu: "50m"
-        volumeMounts:
-          - mountPath: /app/config/metrics/tls
-            name: rbac-proxy-tls
-            readOnly: true
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
         volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
           - name: rbac-proxy-tls
             secret:
               defaultMode: 420
@@ -991,10 +995,10 @@ spec:
               limits:
                 memory: "64Mi"
                 cpu: "50m"
-        volumeMounts:
-          - mountPath: /app/config/metrics/tls
-            name: rbac-proxy-tls
-            readOnly: true
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
         volumes:
           - name: rbac-proxy-tls
             secret:
@@ -1021,17 +1025,35 @@ spec:
               limits:
                 memory: "64Mi"
                 cpu: "50m"
-        volumeMounts:
-          - mountPath: /app/config/metrics/tls
-            name: rbac-proxy-tls
-            readOnly: true
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
         volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
           - name: rbac-proxy-tls
             secret:
               defaultMode: 420
               secretName: argocd-server-metrics
       repoServer:
         extraContainers:
+          - name: helm-with-values
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: helm-with-values.yaml
+                name: cmp-plugin
           - name: rbac-proxy
             image: quay.io/brancz/kube-rbac-proxy:v0.21.0
             args:
@@ -1051,11 +1073,20 @@ spec:
               limits:
                 memory: "64Mi"
                 cpu: "50m"
-        volumeMounts:
-          - mountPath: /app/config/metrics/tls
-            name: rbac-proxy-tls
-            readOnly: true
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
         volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+          - name: {{ .Values.companyPrefix }}-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: {{ .Values.companyPrefix }}-ca.crt
           - name: rbac-proxy-tls
             secret:
               defaultMode: 420
@@ -1081,10 +1112,10 @@ spec:
               limits:
                 memory: "64Mi"
                 cpu: "50m"
-        volumeMounts:
-          - mountPath: /app/config/metrics/tls
-            name: rbac-proxy-tls
-            readOnly: true
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
         volumes:
           - name: rbac-proxy-tls
             secret:
