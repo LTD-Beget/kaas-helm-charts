@@ -713,7 +713,7 @@ spec:
               - mountPath: /app/config/metrics/tls
                 name: rbac-proxy-tls
                 readOnly: true
-        volumes:
+        extraVolumes:
           - name: rbac-proxy-tls
             secret:
               defaultMode: 420
@@ -807,7 +807,6 @@ spec:
             AVP_K8S_ROLE: "credentials-ro"
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
