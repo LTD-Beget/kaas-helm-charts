@@ -8,7 +8,7 @@ spec:
   chart: "argo-cd"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "9.4.15-1"
+  version: "9.4.15-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-argocd"
   variables:
