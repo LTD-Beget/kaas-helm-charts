@@ -5,10 +5,14 @@ kind: Addon
 metadata:
   name: coredns
 spec:
-  chart: "coredns"
+  path: helm-chart-sources/cilium
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  version: feature/extra-containers
+
+  # chart: "coredns"
+  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  # version: "1.28.0-1"
   pluginName: helm-with-values
-  repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.28.0-1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-coredns"
   variables:
