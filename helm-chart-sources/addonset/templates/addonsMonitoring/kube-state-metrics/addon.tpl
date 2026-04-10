@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "kube-state-metrics"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "6.1.0-4"
+  version: "6.1.0-5"
   pluginName: helm-with-values
   releaseName: kube-state-metrics
   targetCluster: in-cluster

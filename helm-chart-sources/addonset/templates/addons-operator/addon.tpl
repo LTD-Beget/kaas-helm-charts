@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "addon-operator"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.2"
+  version: "0.1.3"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addons-operator"
   backend:

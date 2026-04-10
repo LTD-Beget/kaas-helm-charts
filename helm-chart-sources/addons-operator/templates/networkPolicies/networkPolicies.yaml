@@ -1,0 +1,45 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow `addons-operator` to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-{{ .Release.Name }}-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from addons-operator to the Kubernetes API server on
+    6443 for control-plane interactions.
+
+---
+# Allow ingress from `kube-apiserver-and-remote-node` to `addons-operator`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-kapi-and-rnode-to-{{ .Release.Name }}-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+  ingress:
+  - fromEntities:
+    - kube-apiserver
+    - remote-node
+    toPorts:
+    - ports:
+      - port: '9443'
+        protocol: TCP
+  description: Allows ingress from kube-apiserver-and-remote-node to addons-operator
+    on 9443.
+
+{{- end }}
