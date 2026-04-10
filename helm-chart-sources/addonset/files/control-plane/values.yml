@@ -696,5 +696,6 @@ metadata:
     addons.in-cloud.io/addon: client-cp-control-plane
 spec:
   values: |
-    networkPolicies:
-      enabled: true
+    appSpec:
+      networkPolicies:
+        enabled: true
