@@ -51,6 +51,7 @@ metadata:
     addons.in-cloud.io/addon: extra-resources
 spec:
   values: |
+    resources:
       ciliumclusternetpolicyCiliumHealth:
         apiVersion: cilium.io/v2
         kind: CiliumClusterwideNetworkPolicy
