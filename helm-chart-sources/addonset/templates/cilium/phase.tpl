@@ -42,7 +42,7 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: "vm-operator"
           addons.in-cloud.io/addon: cilium
-    - name: infra
+    - name: network-policies
       criteria:
         - source:
             apiVersion: v1
@@ -53,12 +53,12 @@ spec:
           operator: Equal
           value: "infra"
       selector:
-        name: infra
+        name: network-policies
         priority: 35
         matchLabels:
-          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: cilium
-    - name: networking
+    - name: enforcement-always
       criteria:
         - source:
             apiVersion: v1
@@ -71,14 +71,13 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
@@ -86,9 +85,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -96,10 +94,42 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: client-cp-control-plane{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
       selector:
-        name: networking
+        name: enforcement-always
         priority: 40
         matchLabels:
-          addons.in-cloud.io/values: networking
+          addons.in-cloud.io/values: enforcement-always
           addons.in-cloud.io/addon: cilium
 {{- end }}

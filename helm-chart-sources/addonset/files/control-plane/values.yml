@@ -130,8 +130,6 @@ spec:
                                 caBundle: /etc/kubernetes/pki/ca.crt
                                 clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
                                 clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
-    networkPolicies:
-      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -686,3 +684,17 @@ spec:
       applications:
         controlPlane:
           enabled: false
+
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    networkPolicies:
+      enabled: true

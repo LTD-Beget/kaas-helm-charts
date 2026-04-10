@@ -136,7 +136,6 @@ spec:
     {{- $replicas := 1 -}}
     {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
     {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
-    companyPrefix: {{ .Values.companyPrefix }}
     coredns:
       replicaCount: {{ $replicas }}
       tolerations:
@@ -150,6 +149,18 @@ spec:
       secureService:
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
 

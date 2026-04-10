@@ -45,4 +45,27 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: "disable"
           addons.in-cloud.io/addon: client-cp-control-plane
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: network-policies
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: "network-policies"
+          addons.in-cloud.io/addon: client-cp-control-plane
 {{- end }}

@@ -123,4 +123,36 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: coredns
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: network-policies
+        priority: 35
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: coredns
 {{- end }}

@@ -40,6 +40,17 @@ spec:
         spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
       ciliumclusternetpolicyCiliumHealth:
         apiVersion: cilium.io/v2
         kind: CiliumClusterwideNetworkPolicy
