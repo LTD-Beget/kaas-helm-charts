@@ -11,6 +11,8 @@ spec:
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cilium"
+  variables:
+    dependency: "True"
   valuesSources:
     - name: parameters-infra
       sourceRef:
