@@ -1,4 +1,5 @@
 companyPrefix: example
+vmInsertVIP: ""
 
 victoria-metrics-k8s-stack:
   alertmanager:
@@ -11,6 +12,10 @@ victoria-metrics-k8s-stack:
     enabled: false
 
   clickhouseIserter:
+    enabled: false
+
+networkPolicies:
+  vmagent:
     enabled: false
 
 monitoring:

@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: istio-gw
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     gateway:
       priorityClassName: system-cluster-critical
       service:
@@ -96,6 +97,8 @@ spec:
           port:
             protocol: HTTP 
     telemetry:
+      enabled: true
+    networkPolicies:
       enabled: true
 
 ---

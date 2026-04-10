@@ -1,5 +1,6 @@
 argo-cd: {}
 # some values for argocd
+companyPrefix: example
 
 monitoring:
   enabled: false
@@ -31,3 +32,13 @@ istio:
       tls:
         mode: SIMPLE
         insecureSkipVerify: true
+
+networkPolicies:
+  controller:
+    enabled: false
+  repoServer:
+    enabled: false
+  redis:
+    enabled: false
+  server:
+    enabled: false

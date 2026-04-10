@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "victoria-metrics-operator"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.52.0-2"
+  version: "0.52.0-3"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vm-operator"

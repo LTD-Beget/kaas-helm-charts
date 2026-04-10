@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: metrics-server
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     metrics-server:
       resources:
         requests:
@@ -45,6 +46,8 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

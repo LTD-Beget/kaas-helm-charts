@@ -8,7 +8,7 @@ spec:
   chart: "cert-manager-csi-driver"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.10.4-1"
+  version: "0.10.4-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cert-manager-csi-driver"
   variables:

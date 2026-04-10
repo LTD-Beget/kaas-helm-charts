@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "incloud-web-chart"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.3.0-3"
+  version: "1.3.0-4"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-incloud-web-chart"

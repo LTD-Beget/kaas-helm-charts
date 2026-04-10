@@ -1,5 +1,0 @@
-{{- if .Values.addonTemplates.vmoperator.enabled }}
-
-{{- tpl (.Files.Get "files/vm-operator/vm-operator-0.52.0-2/manifest.yaml") . }}
-
-{{- end }}

@@ -1,3 +1,5 @@
+companyPrefix: example
+etcdbackupS3SecretEndpoint: https://s3.example.com
 configmap:
   name: etcd-config
   etcdConfig: |
@@ -92,6 +94,8 @@ app:
 
   envFromSecret: false
 
+networkPolicies:
+  enabled: false
 
 # monitoring:
 #   enabled: false

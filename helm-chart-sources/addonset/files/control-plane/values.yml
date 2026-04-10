@@ -130,6 +130,8 @@ spec:
                                 caBundle: /etc/kubernetes/pki/ca.crt
                                 clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
                                 clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

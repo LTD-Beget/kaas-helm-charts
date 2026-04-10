@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "cilium"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.18.5-1"
+  version: "1.18.5-2"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cilium"
