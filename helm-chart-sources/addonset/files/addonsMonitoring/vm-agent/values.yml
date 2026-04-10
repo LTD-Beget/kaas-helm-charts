@@ -240,6 +240,9 @@ spec:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   serverName: {{ .Values.cluster.name }}-scheduler
             jobLabel: "jobLabel"
+    networkPolicies:
+      vmagent:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -411,17 +414,3 @@ spec:
             cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
             remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
             cluster_type: "system"
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-agent-cilium
-  labels:
-    addons.in-cloud.io/values: cilium
-    addons.in-cloud.io/addon: vm-agent
-spec:
-  values: |
-    networkPolicies:
-      vmagent:
-        enabled: true

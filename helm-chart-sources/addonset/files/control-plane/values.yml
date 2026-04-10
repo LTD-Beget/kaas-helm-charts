@@ -130,6 +130,8 @@ spec:
                                 caBundle: /etc/kubernetes/pki/ca.crt
                                 clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
                                 clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -684,16 +686,3 @@ spec:
       applications:
         controlPlane:
           enabled: false
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-cp-control-plane-cilium
-  labels:
-    addons.in-cloud.io/values: cilium
-    addons.in-cloud.io/addon: client-cp-control-plane
-spec:
-  values: |
-    networkPolicies:
-      enabled: true

@@ -63,6 +63,8 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
     monitoring:
       enabled: true
 
@@ -110,16 +112,3 @@ metadata:
     addons.in-cloud.io/addon: vm-operator
 spec:
   values: ""
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-operator-cilium
-  labels:
-    addons.in-cloud.io/values: cilium
-    addons.in-cloud.io/addon: vm-operator
-spec:
-  values: |
-    networkPolicies:
-      enabled: true

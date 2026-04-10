@@ -66,6 +66,8 @@ spec:
       global:
         defaultPodDisruptionBudget:
           enabled: false
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -128,16 +130,3 @@ spec:
       global:
         defaultPodDisruptionBudget:
           enabled: true
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istiod-cilium
-  labels:
-    addons.in-cloud.io/values: cilium
-    addons.in-cloud.io/addon: istiod
-spec:
-  values: |
-    networkPolicies:
-      enabled: true

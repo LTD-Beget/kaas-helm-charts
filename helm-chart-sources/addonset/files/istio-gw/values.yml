@@ -98,6 +98,8 @@ spec:
             protocol: HTTP 
     telemetry:
       enabled: true
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -158,16 +160,3 @@ spec:
           - 127.0.0.1
           - {{ .Values.systemIstioGwVip }}
           - {{ .Values.clusterHost }}
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-cilium
-  labels:
-    addons.in-cloud.io/values: cilium
-    addons.in-cloud.io/addon: istio-gw
-spec:
-  values: |
-    networkPolicies:
-      enabled: true
