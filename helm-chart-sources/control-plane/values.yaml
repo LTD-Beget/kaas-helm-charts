@@ -1,6 +1,8 @@
 companyPrefix: example
 appSpec:
   companyPrefix: example
+  networkPolicies:
+    enabled: false
   configMap:
     status: false
   globalVars:
