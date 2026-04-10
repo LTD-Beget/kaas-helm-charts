@@ -9,6 +9,7 @@ metadata:
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
+    systemDomain: {{ .Values.systemIstioGwDomain }}
     incloud-web-chart:
       podDisruptionBudget:
         minAvailable: 0
@@ -179,3 +180,15 @@ spec:
           scheme: http
           api: 93.189.231.174  # TODO: dynamicaly cluster-list
 
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-cilium
+  labels:
+    addons.in-cloud.io/values: cilium
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    networkPolicies:
+      enabled: true
