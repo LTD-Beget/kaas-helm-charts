@@ -77,7 +77,7 @@ spec:
           - name: {{ .Values.extraArgs.companyPrefix }}AppNamespace
             value: {{ .Values.extraArgs.companyPrefix }}-argocd
           - name: {{ .Values.extraArgs.companyPrefix }}AppReleaseName
-            value: client-cp
+            value: client-cp-control-plane
 
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerHealthcheckIntervalSec
             value: 30
