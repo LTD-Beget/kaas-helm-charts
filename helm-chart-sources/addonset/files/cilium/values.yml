@@ -111,7 +111,7 @@ spec:
             - --v=2
           ports:
             - name: https-metrics
-              containerPort: 11038
+              containerPort: 11043
               protocol: TCP
           resources:
             requests:

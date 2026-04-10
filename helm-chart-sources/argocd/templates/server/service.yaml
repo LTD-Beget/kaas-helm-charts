@@ -15,5 +15,5 @@ spec:
       protocol: TCP
       targetPort: https-metrics
   selector:
-    {{- include "argo-cd.selectorLabels" (dict "context" . "name" $argocd.server.name) | nindent 4 }}
+    {{- include "argo-cd-wrapper.selectorLabels" (dict "context" . "name" $argocd.server.name) | nindent 4 }}
 {{- end }}
