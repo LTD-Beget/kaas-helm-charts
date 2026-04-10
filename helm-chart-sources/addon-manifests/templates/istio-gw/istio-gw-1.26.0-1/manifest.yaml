@@ -1,5 +1,0 @@
-{{- if .Values.addonTemplates.istiogw.enabled }}
-
-{{- tpl (.Files.Get "files/istio-gw/istio-gw-1.26.0-1/manifest.yaml") . }}
-
-{{- end }}

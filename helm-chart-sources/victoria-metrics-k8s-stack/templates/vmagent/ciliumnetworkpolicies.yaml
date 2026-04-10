@@ -1,0 +1,574 @@
+{{- if .Values.networkPolicies.vmagent.enabled }}
+{{- $vmagentSA := printf "vmagent-%s" (include "victoria-metrics-k8s-stack.fullname" .) }}
+{{- if .Values.vmInsertVIP }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vminsert-vip
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toCIDR:
+    - {{ .Values.vmInsertVIP }}/32
+    toPorts:
+    - ports:
+      - port: "8480"
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the vmInsert VIP
+{{- end }}
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-client-cp-control-plane-26443-20257-20259
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-system
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
+      - port: '20257'
+        protocol: TCP
+      - port: '20259'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the client-cp-control-plane server on 26443, 20257, 20259
+    for control-plane interactions.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-istio-gw-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the istio-gw server on 11043
+    for control-plane interactions.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-client-kube-state-metrics-8080
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: client-kube-state-metrics
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-client-kube-state-metrics
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the client-kube-state-metrics server on 8080.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-kube-state-metrics-8080
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: kube-state-metrics
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-kube-state-metrics
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the kube-state-metrics server on 8080.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-incloud-web-chart-oauth2-proxy-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-incloud-web-chart
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the incloud-web-chart-oauth2-proxy server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-argocd-redis-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: default
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the argocd-redis server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-argocd-repo-server-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the argocd-repo-server server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-argocd-server-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-server
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the argocd-server server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-argocd-application-controller-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the argocd-application-controller server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-coredns-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the coredns server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-cert-manager-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cert-manager
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the cert-manager server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-cert-manager-webhook-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-webhook
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cert-manager
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the cert-manager-webhook server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-cert-manager-cainjector-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-cainjector
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cert-manager
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the cert-manager-cainjector server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-cert-manager-csi-driver-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-csi-driver
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cert-manager-csi-driver
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the cert-manager-csi-driver server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-trust-manager-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: trust-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-trust-manager
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the trust-manager server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-metrics-server-10250
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: metrics-server
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-metrics-server
+    toPorts:
+    - ports:
+      - port: '10250'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to the metrics-server server on 10250.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vm-operator-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vm-operator
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vm-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to vm-operator server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-istiod-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istiod
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to istiod server on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-vmagent-to-host-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+    - toEntities:
+      - host
+      - remote-node
+      toPorts:
+        - ports:
+            - port: "9100"
+              protocol: TCP
+            - port: "10250"
+              protocol: TCP
+            - port: "10257"
+              protocol: TCP
+            - port: "10259"
+              protocol: TCP
+            - port: "2381"
+              protocol: TCP
+            - port: "11038"
+              protocol: TCP
+            - port: "11039"
+              protocol: TCP
+            - port: "11043"
+              protocol: TCP
+            - port: "11046"
+              protocol: TCP
+  description: |
+    Allows egress for vmagent to host metrics endpoints
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+  description: |
+    Allows egress for vmagent to coredns on port 53 for DNS resolution.
+{{- end }}

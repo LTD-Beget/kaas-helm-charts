@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: vm-operator
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     victoria-metrics-operator:
       fullnameOverride: "vm-operator"
       env:
@@ -62,6 +63,8 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
     monitoring:
       enabled: true
 

@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.istiod.enabled }}
+
+{{- tpl (.Files.Get "files/istiod/istiod-1.26.0-2/manifest.yaml") . }}
+
+{{- end }}

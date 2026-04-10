@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: trust-manager
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     trust-manager:
       app:
         trust:
@@ -63,6 +64,8 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: infra
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -119,4 +122,3 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/caBundle: "approved"
-

@@ -1,6 +1,0 @@
-{{- if .Values.addonTemplates.trustmanager.enabled }}
-
-{{- tpl (.Files.Get "files/trust-manager/trust-manager-0.16.0-1/manifest.yaml") . }}
-
-
-{{- end }}

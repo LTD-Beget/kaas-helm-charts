@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.metricsserver.enabled }}
+
+{{- tpl (.Files.Get "files/monitoringAddons/metrics-server/metrics-server-3.13.0-3/manifest.yaml") . }}
+
+{{- end }}
