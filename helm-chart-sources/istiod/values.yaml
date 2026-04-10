@@ -1,5 +1,10 @@
+companyPrefix: example
+
 istiod: {}
-# some values for metallb
+# some values for istiod
+
+networkPolicies:
+  enabled: false
 
 monitoring:
   enabled: false
