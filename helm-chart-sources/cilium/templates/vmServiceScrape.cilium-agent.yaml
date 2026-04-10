@@ -15,6 +15,6 @@ spec:
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ .Release.Name }}-agent
+        serverName: {{ .Release.Name }}-agent-monitoring
   jobLabel: cilium-agent
 {{- end }}
