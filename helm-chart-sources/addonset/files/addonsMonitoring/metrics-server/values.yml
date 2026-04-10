@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: metrics-server
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     metrics-server:
       resources:
         requests:
@@ -78,3 +79,16 @@ spec:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-cilium
+  labels:
+    addons.in-cloud.io/values: cilium
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    networkPolicies:
+      enabled: true
