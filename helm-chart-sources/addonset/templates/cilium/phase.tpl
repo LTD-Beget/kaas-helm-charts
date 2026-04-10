@@ -71,6 +71,12 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
+            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.deployed
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
             name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
           operator: Exists
