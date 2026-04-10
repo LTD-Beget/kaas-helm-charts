@@ -22,6 +22,8 @@ spec:
     metrics:
       enable: true
       port: 8443
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

@@ -27,6 +27,22 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: addons-operator
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 23
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: addons-operator
     - name: system
       criteria:
         - source:

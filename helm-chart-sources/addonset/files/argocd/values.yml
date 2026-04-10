@@ -405,6 +405,7 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     argo-cd:
       global:
         tolerations:
@@ -497,6 +498,15 @@ spec:
               - mountPath: /home/argocd/cmp-server/config/plugin.yaml
                 subPath: helm-with-values.yaml
                 name: cmp-plugin
+    networkPolicies:
+      controller:
+        enabled: true
+      repoServer:
+        enabled: true
+      redis:
+        enabled: true
+      server:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
