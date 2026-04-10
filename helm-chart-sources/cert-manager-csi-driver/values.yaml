@@ -1,6 +1,8 @@
 cert-manager-csi-driver: {}
 # some values for cert-manager-csi-driver
 
+companyPrefix: example
+
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -11,3 +13,6 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+
+networkPolicies:
+  enabled: false  

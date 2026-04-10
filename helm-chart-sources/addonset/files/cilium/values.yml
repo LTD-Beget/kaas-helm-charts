@@ -135,3 +135,30 @@ spec:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-networking
+  labels:
+    addons.in-cloud.io/values: networking
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      policyEnforcementMode: always

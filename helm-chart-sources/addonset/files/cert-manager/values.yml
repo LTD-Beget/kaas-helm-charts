@@ -69,6 +69,7 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     cert-manager:
       clusterResourceNamespace: {{ .Values.companyPrefix }}-system
       cainjector:
@@ -102,6 +103,8 @@ spec:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

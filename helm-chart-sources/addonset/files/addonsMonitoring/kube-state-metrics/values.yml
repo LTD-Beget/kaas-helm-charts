@@ -61,6 +61,7 @@ metadata:
     addons.in-cloud.io/addon: kube-state-metrics
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     kube-state-metrics:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
@@ -69,6 +70,10 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    networkPolicies:
+      kubeStateMetrics:
+        enabled: true
+
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

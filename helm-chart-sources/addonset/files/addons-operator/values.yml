@@ -64,6 +64,20 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: addons-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    networkPolicies:
+      enabled: true 
+      
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: addons-operator-system
   labels:
     addons.in-cloud.io/values: system

@@ -1,0 +1,160 @@
+{{- if .Values.networkPolicies.server.enabled }}
+
+# Allow `argocd-server` to talk to the Kubernetes API server (infra).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-kube-apiserver-6443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  - toEntities:
+    - world
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from argocd-server to the Kubernetes API server
+    on 6443 for control-plane interactions.
+
+# dns
+
+---
+# Allow `argocd-server` to resolve DNS via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-coredns-53
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+      rules:
+        dns:
+        - matchPattern: '*'
+  description: Allows egress from argocd-server to CoreDNS on 53 for DNS resolution.
+
+
+---
+# Allow `argocd-server` to redis.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-redis-6379
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.redis.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+    toPorts:
+    - ports:
+      - port: '6379'
+        protocol: TCP
+  description: Allows egress from argocd-server to Redis on 6379 for data storage.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-argocd-repo-server
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+    toPorts:
+    - ports:
+      - port: '8081'
+        protocol: TCP
+  description: Allows egress from argocd-application-controller to argocd-repo-server on 8081.
+
+# monitoing
+---
+# Allow vmagent to scrape `argocd-server` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmagent-to-argocd-server-11043
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  - {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows ingress from vmagent to argocd-server on 11043 for
+    metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-istio-gw-to-argocd-server-8080
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+  egress:
+  - {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: Allows ingress from istio-gw to argocd-server.
+
+
+
+
+{{- end }}

@@ -1,0 +1,77 @@
+{{- if .Values.networkPolicies.enabled }}
+
+---
+# Allow the etcd backup job to reach the local etcd endpoint.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-etcd-backup-to-host-2379
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: default
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: '2379'
+        protocol: TCP
+  description: Allows egress from the etcd backup job to the host-local etcd endpoint
+    on 2379.
+
+---
+# Allow `etcd-backup` to resolve DNS via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-etcd-backup-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: default
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+      rules:
+        dns:
+        - matchPattern: {{ .Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://" }}
+  description: Allows egress from etcd-backup to CoreDNS on 53 for DNS resolution.
+
+---
+# Allow outbound access to {{ .Values.companyPrefix }} S3 for snapshot upload.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-etcd-backup-to-{{ .Values.companyPrefix }}-s3-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: default
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toFQDNs:
+    - matchName: {{ .Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://" }}
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: Allows egress to {{ .Values.companyPrefix }} S3 on 443 for snapshot upload traffic.
+
+
+{{- end }}

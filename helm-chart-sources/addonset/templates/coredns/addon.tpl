@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "coredns"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.28.0-1"
+  version: "1.28.0-2"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-coredns"

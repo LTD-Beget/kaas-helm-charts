@@ -1,0 +1,104 @@
+{{- if .Values.networkPolicies.clientKubeStateMetrics.enabled }}
+
+---
+# Allow `client-ksm` to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-client-ksm-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from client-ksm to the Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
+# Allow vmagent to scrape `client-ksm` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmagent-to-client-ksm-8080
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: Allows ingress from vmagent to client-ksm on 8080 for metrics collection.
+
+---
+# Allow egress from `client-ksm` to `client-control-plane`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-client-ksm-to-client-control-plane-26443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-system
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
+  # НУЖНО ПЕРЕДЕЛАТЬ  В ВАРИАНТ ВЫШЕ, ДЛЯ ЭТОГО НАДО ПЕРЕДЕЛАТЬ KUBECONFIG НА FQDN КОТОРЫЙ РЕЗОЛВИТСЯ ВНУТРИ КЛАСТЕРА.
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
+  description: Allows egress from client-ksm to client-control-plane on 26443.
+---
+# Allow `client-kube-state-metrics` to coredns.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-client-kube-state-metrics-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+  description: Allows egress for client-kube-state-metrics to coredns on port 53 for DNS resolution.
+
+{{- end }}

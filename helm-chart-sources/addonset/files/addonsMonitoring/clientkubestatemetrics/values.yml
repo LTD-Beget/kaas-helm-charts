@@ -136,6 +136,7 @@ metadata:
     addons.in-cloud.io/addon: client-kube-state-metrics
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     kube-state-metrics:
       enabled: true
       tolerations:
@@ -145,6 +146,9 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    networkPolicies:
+      clientKubeStateMetrics:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

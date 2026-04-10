@@ -8,7 +8,7 @@ spec:
   chart: "cert-manager"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "v1.17.1-1"
+  version: "v1.17.1-2"
   releaseName: cert-manager
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cert-manager"
