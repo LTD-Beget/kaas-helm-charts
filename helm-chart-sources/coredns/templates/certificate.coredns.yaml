@@ -1,19 +1,21 @@
 {{- if .Values.monitoring.secureService.enabled }}
+{{- $svcName := .Values.coredns.service.name | default (include "coredns-wrapper.fullname" .) }}
+
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-coredns-metrics-svc-tls
+  name: {{ .Release.Name }}-metrics-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: coredns-coredns-metrics-svc-tls
+  secretName: coredns-metrics-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}-coredns-metrics
+  commonName: {{ $svcName }}-monitoring
   dnsNames:
-    - {{ .Release.Name }}-coredns-metrics
-    - {{ .Release.Name }}-coredns-metrics.{{ .Release.Namespace }}
-    - {{ .Release.Name }}-coredns-metrics.{{ .Release.Namespace }}.svc
+    - {{ $svcName }}-monitoring
+    - {{ $svcName }}-monitoring.{{ .Release.Namespace }}
+    - {{ $svcName }}-monitoring.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

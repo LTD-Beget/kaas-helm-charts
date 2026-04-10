@@ -1,0 +1,19 @@
+{{- $argocd := index .Values "argo-cd" -}}
+{{- if and (gt ($argocd.redis.replicas | int) 0) .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "argo-cd-wrapper.redis.fullname" . }}-monitoring
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  labels:
+    monitoring.in-cloud.io/service: {{ template "argo-cd-wrapper.redis.fullname" . }}
+spec:
+  ports:
+    - name: https-metrics
+      port: 11043
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    {{- include "argo-cd.selectorLabels" (dict "context" . "name" $argocd.redis.name) | nindent 4 }}
+{{- end }}

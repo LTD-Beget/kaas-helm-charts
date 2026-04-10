@@ -536,9 +536,188 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
-    # TODO: move to extraContainers
-    argocdPlugins:
-      kustomize: true
+    argo-cd:
+      redis:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:9121
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-redis-metrics
+      repoServer:
+        extraContainers:
+          - name: helm-with-values
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: helm-with-values.yaml
+                name: cmp-plugin
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8084
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+          - name: {{ .Values.companyPrefix }}-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: {{ .Values.companyPrefix }}-ca.crt
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-repo-server-metrics
+      server:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8083
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-server-metrics
+      controller:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8082
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-application-controller-metrics
+      applicationSet:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8080
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        extraVolumes:
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-applicationset-controller-metrics
     monitoring:
       enabled: true
       secureService:
@@ -628,7 +807,6 @@ spec:
             AVP_K8S_ROLE: "credentials-ro"
 
 ---
-
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:

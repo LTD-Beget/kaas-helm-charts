@@ -5,18 +5,18 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
-  name: {{ .Release.Name }}-repo-server
-  namespace: {{ .Release.Namespace }}
+  name: {{ template "argo-cd-wrapper.repoServer.fullname" . }}
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: argocd-repo-server
+      monitoring.in-cloud.io/service: {{ template "argo-cd-wrapper.repoServer.fullname" . }}
   endpoints:
     - port: https-metrics
       path: /metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
-        serverName: {{ .Release.Name }}-repo-server-metrics
+        serverName: {{ template "argo-cd-wrapper.repoServer.fullname" . }}-metrics
   jobLabel: argocd-repo-server
 {{- end }}

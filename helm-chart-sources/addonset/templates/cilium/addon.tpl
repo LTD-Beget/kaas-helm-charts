@@ -6,9 +6,9 @@ metadata:
   name: cilium
 spec:
   chart: "cilium"
-  pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "1.18.5-1"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cilium"
   valuesSources:
@@ -58,6 +58,11 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cilium
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: cilium
     - name: immutable
       priority: 99

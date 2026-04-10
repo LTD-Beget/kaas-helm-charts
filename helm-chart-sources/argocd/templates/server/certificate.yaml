@@ -5,17 +5,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-server-metrics
-  namespace: {{ .Release.Namespace }}
+  name: {{ template "argo-cd-wrapper.server.fullname" . }}-metrics
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
 spec:
   secretName: argocd-server-metrics
   duration: 8760h
   renewBefore: 720h
-  commonName: {{ .Release.Name }}-server-metrics
+  commonName: {{ template "argo-cd-wrapper.server.fullname" . }}-metrics
   dnsNames:
-    - {{ .Release.Name }}-server-metrics
-    - {{ .Release.Name }}-server-metrics.{{ .Release.Namespace }}
-    - {{ .Release.Name }}-server-metrics.{{ .Release.Namespace }}.svc
+    - {{ template "argo-cd-wrapper.server.fullname" . }}-metrics
+    - {{ template "argo-cd-wrapper.server.fullname" . }}-metrics.{{ include  "argo-cd-wrapper.namespace" . }}
+    - {{ template "argo-cd-wrapper.server.fullname" . }}-metrics.{{ include  "argo-cd-wrapper.namespace" . }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

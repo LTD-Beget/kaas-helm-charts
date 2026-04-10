@@ -194,9 +194,36 @@ metadata:
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
-    # TODO: move to extraContainers
-    argocdPlugins:
-      kustomize: true
+    coredns:
+      extraContainers:
+        - name: rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+          args:
+            - --secure-listen-address=0.0.0.0:11043
+            - --upstream=http://127.0.0.1:9153
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11043
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - name: rbac-proxy-tls
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+      extraVolumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: coredns-metrics-svc-tls
     monitoring:
       enabled: true
       secureService:

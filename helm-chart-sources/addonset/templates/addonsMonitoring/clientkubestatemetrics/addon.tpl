@@ -22,12 +22,8 @@ spec:
         name: parameters-client
         namespace: {{ .Values.companyPrefix }}-system
       extract:
-        - as: cluster.host
-          jsonPath: .data.clusterHost
         - as: cluster.name
           jsonPath: .data.clusterName
-        - as: cluster.port
-          jsonPath: .data.clusterPort
         - as: cluster.customer
           jsonPath: .data.customer
         - as: companyPrefix
