@@ -1,15 +1,15 @@
-{{- if .Values.networkPolicies.enabled }}
+{{- if $.Values.networkPolicies.enabled }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-egress-client-cp-control-plane-to-host-2379
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   ingress:
   - {}
   egress:
@@ -28,17 +28,17 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-vmagent-to-client-cp-control-plane-20259-20257-26443
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
         k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-vmagent
     toPorts:
     - ports:
       - port: '20259'
@@ -57,12 +57,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-world-to-client-control-plane-26443
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   ingress:
   - fromEntities:
     - world
@@ -80,17 +80,17 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-client-kube-state-metrics-to-client-control-plane-26443
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
         k8s:io.cilium.k8s.policy.serviceaccount: client-kube-state-metrics
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-client-kube-state-metrics
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-client-kube-state-metrics
     toPorts:
     - ports:
       - port: '26443'
@@ -105,12 +105,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-world-to-client-control-plane-8132
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   ingress:
   - fromEntities:
     - world
