@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: vm-agent
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     victoria-metrics-k8s-stack:
       vmagent:
         spec:
@@ -140,6 +141,7 @@ metadata:
     addons.in-cloud.io/addon: vm-agent
 spec:
   values: |
+    vmInsertVIP: {{ .Values.system.vmInsertVIP }}
     victoria-metrics-k8s-stack:
       fullnameOverride: "vmagent"
       vmagent:
@@ -409,3 +411,17 @@ spec:
             cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
             remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
             cluster_type: "system"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-cilium
+  labels:
+    addons.in-cloud.io/values: cilium
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    networkPolicies:
+      vmagent:
+        enabled: true
