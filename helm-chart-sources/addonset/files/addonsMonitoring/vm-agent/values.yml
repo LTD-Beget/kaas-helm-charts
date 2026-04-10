@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: vm-agent
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     victoria-metrics-k8s-stack:
       vmagent:
         spec:
@@ -140,6 +141,7 @@ metadata:
     addons.in-cloud.io/addon: vm-agent
 spec:
   values: |
+    vmInsertVIP: {{ .Values.system.vmInsertVIP }}
     victoria-metrics-k8s-stack:
       fullnameOverride: "vmagent"
       vmagent:
@@ -238,6 +240,9 @@ spec:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   serverName: {{ .Values.cluster.name }}-scheduler
             jobLabel: "jobLabel"
+    networkPolicies:
+      vmagent:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

@@ -8,7 +8,7 @@ spec:
   chart: "istiod"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.26.0-1"
+  version: "1.26.0-2"
   releaseName: istiod
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-istio"

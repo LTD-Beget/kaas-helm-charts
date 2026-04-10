@@ -98,4 +98,3 @@ spec:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: incloud-web-chart
 {{- end }}
-

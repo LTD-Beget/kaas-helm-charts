@@ -8,7 +8,7 @@ spec:
   chart: "metrics-server"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "3.13.0-2"
+  version: "3.13.0-3"
   releaseName: metrics-server
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-metrics-server"

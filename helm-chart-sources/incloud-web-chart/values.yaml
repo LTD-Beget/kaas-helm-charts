@@ -1,7 +1,11 @@
 companyPrefix: example
+systemDomain: system.example.com
 
 incloud-web-chart: {}
 # some values for incloud-web-chart
+
+networkPolicies:
+  enabled: false
 
 istio:
   virtualService:

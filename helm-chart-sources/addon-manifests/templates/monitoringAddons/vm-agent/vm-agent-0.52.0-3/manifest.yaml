@@ -1,5 +1,0 @@
-{{- if .Values.addonTemplates.vmagent.enabled }}
-
-{{- tpl (.Files.Get "files/monitoringAddons/vm-agent/vm-agent-0.52.0-3/manifest.yaml") . }}
-
-{{- end }}

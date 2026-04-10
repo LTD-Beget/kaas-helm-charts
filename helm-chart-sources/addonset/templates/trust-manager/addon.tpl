@@ -8,7 +8,7 @@ spec:
   chart: "trust-manager"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.16.0-1"
+  version: "0.16.0-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-trust-manager"
   variables:
