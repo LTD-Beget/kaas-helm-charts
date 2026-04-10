@@ -92,7 +92,7 @@ spec:
           operator: Equal
           value: "True"
       selector:
-        name: vm-operator
+        name: cilium
         priority: 50
         matchLabels:
           addons.in-cloud.io/values: cilium

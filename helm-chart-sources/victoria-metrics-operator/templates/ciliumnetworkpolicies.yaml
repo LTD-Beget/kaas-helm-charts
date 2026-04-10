@@ -1,4 +1,4 @@
-{{- if .Values.networkPolicies.vmagent.enabled }}
+{{- if .Values.networkPolicies.enabled }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
