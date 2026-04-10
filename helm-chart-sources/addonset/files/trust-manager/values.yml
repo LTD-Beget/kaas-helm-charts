@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: trust-manager
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     trust-manager:
       app:
         trust:
@@ -120,3 +121,15 @@ spec:
           matchLabels:
             in-cloud.io/caBundle: "approved"
 
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-cilium
+  labels:
+    addons.in-cloud.io/values: cilium
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    networkPolicies:
+      enabled: true
