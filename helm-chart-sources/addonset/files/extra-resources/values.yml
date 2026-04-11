@@ -160,7 +160,7 @@ spec:
             kind: ClusterIssuer
             name: selfsigned
           kubeconfig: false
-          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
+          kubeconfigEndpoint: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
       issuer:
         apiVersion: cert-manager.io/v1
         kind: ClusterIssuer
