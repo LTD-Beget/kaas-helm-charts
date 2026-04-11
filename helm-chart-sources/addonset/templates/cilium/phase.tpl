@@ -71,12 +71,6 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.deployed
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
             name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
           operator: Exists
@@ -88,44 +82,32 @@ spec:
           operator: Equal
           value: "True"
         - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+            apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            name: allow-egress-argocd-repo-server-to-fqdns
+            namespace: {{ .Values.companyPrefix }}-argocd
+          jsonPath: $.status.conditions[?(@.type=='Valid' && @.status=='True')]
           operator: Exists
         - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: coredns{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+            apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            name: allow-egress-argocd-application-controller-to-coredns-53
+            namespace: {{ .Values.companyPrefix }}-coredns
+          jsonPath: $.status.conditions[?(@.type=='Valid' && @.status=='True')]
           operator: Exists
         - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: coredns{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+            apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            name: allow-ingress-kapi-and-rnode-to-addons-operator-9443
+            namespace: {{ .Values.companyPrefix }}-addons-operator
+          jsonPath: $.status.conditions[?(@.type=='Valid' && @.status=='True')]
           operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: extra-resources{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
