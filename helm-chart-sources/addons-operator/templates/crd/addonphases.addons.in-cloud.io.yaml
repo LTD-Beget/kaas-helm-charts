@@ -298,6 +298,12 @@ spec:
                                 items:
                                     description: RuleStatus reports the evaluation state of a single rule.
                                     properties:
+                                        deployed:
+                                            description: |-
+                                                Deployed is a latching flag indicating that this rule was at least once
+                                                matched while the linked Addon was successfully deployed. Once set to
+                                                true, it is never cleared, even if the rule later stops matching.
+                                            type: boolean
                                         lastEvaluated:
                                             description: LastEvaluated is the timestamp of the last evaluation.
                                             format: date-time
