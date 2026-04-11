@@ -1,5 +1,4 @@
 {{- if .Values.networkPolicies.server.enabled }}
-
 # Allow `argocd-server` to talk to the Kubernetes API server (infra).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -22,8 +21,6 @@ spec:
   description: Allows egress from argocd-server to the Kubernetes API server
     on 6443 for control-plane interactions.
 
-# dns
-
 ---
 # Allow `argocd-server` to resolve DNS via CoreDNS.
 apiVersion: cilium.io/v2
@@ -36,8 +33,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -67,8 +62,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -91,8 +84,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -117,8 +108,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -141,8 +130,6 @@ spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -153,8 +140,4 @@ spec:
       - port: '8080'
         protocol: TCP
   description: Allows ingress from istio-gw to argocd-server.
-
-
-
-
 {{- end }}

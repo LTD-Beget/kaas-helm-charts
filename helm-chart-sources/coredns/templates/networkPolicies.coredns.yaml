@@ -1,5 +1,4 @@
 {{ if .Values.networkPolicies.enabled }}
-
 ---
 # Allow `vmagent` to coredns.
 apiVersion: cilium.io/v2
@@ -21,8 +20,6 @@ spec:
     - ports:
       - port: '11043'
         protocol: TCP
-  egress:
-  - {}
   description: Allows egress for vmagent to coredns on port 11043 for scrape metrics.
 
 ---
@@ -48,8 +45,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for vmagent to coredns on port 53 for scrape metrics.
 
 ---
@@ -75,8 +70,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for argocd-repo-server to coredns on port 53 for DNS resolution.
 
 ---
@@ -102,8 +95,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for argocd-application-controller to coredns on port 53 for DNS resolution.
 
 ---
@@ -127,8 +118,6 @@ spec:
     - fields:
       - type: 8
         family: IPv4
-  egress:
-  - {}
   description: Allows egress for argocd-application-controller to coredns on port 53 for DNS resolution.
 
 ---
@@ -154,8 +143,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for argocd-server to coredns on port 53 for DNS resolution.
 
 ---
@@ -181,8 +168,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for istio-gw to coredns on port 53 for DNS resolution.
 
 ---
@@ -208,8 +193,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for client-kube-state-metrics to coredns on port 53 for DNS resolution.
 
 ---
@@ -235,8 +218,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for kube-state-metrics to coredns on port 53 for DNS resolution.
 
 ---
@@ -260,8 +241,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toCIDRSet:
     - cidrGroupRef: external-dns
@@ -284,8 +263,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -316,8 +293,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows egress for remote-node to coredns on port 53 for DNS resolution.
 
 ---
@@ -343,8 +318,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows ingress from etcd-backup to CoreDNS on 53 for DNS resolution.
 
 ---
@@ -370,8 +343,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows ingress from hubble-relay to CoreDNS on 53 for DNS resolution.
 
 ---
@@ -397,8 +368,6 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows ingress from hubble-ui to CoreDNS on 53 for DNS resolution.
 
 ---
@@ -424,9 +393,5 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  egress:
-  - {}
   description: Allows ingress from incloud-ui to CoreDNS on 53 for DNS resolution.
-
-
 {{- end }}

@@ -71,6 +71,20 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
+            name: client-cp-control-plane
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: client-cp-control-plane
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
             name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
           jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
           operator: Exists

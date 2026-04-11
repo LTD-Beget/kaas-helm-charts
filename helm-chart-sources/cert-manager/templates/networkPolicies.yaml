@@ -1,5 +1,4 @@
 {{- if .Values.networkPolicies.enabled }}
-
 ---
 # Allow vmagent to scrape `cert-manager-webhook` metrics.
 apiVersion: cilium.io/v2
@@ -179,5 +178,4 @@ spec:
         protocol: TCP
   description: Allows ingress from the Kubernetes API server to cert-manager on 6080
     for webhook or callback traffic.
-
 {{- end }}

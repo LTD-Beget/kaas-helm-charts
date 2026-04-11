@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: hubble-relay
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - host
@@ -59,8 +57,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: hubble-relay
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -173,5 +169,4 @@ spec:
         protocol: TCP
   description: Allows the required traffic between Hubble Relay and node-side relay
     peers on the declared port.
-
 {{- end }}

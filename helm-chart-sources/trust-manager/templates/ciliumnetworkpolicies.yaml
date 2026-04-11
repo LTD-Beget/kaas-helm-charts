@@ -10,8 +10,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: trust-manager
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -43,8 +41,6 @@ spec:
     - ports:
       - port: '11043'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress from vmagent to trust-manager on 11043 for metrics collection.
 {{- end }}

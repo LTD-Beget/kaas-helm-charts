@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -36,8 +34,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -66,8 +62,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -90,8 +84,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -114,8 +106,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -138,8 +128,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toFQDNs:
     - matchName: github.com
@@ -174,9 +162,6 @@ spec:
     - ports:
       - port: '11043'
         protocol: TCP
-  egress:
-  - {}
   description: Allows ingress from vmagent to argocd-repo-server on 11043 for
     metrics collection.
-
 {{- end }}

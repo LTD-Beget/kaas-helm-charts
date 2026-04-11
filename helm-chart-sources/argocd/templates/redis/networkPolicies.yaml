@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.redis.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -35,8 +33,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.redis.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -59,8 +55,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.redis.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -83,8 +77,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.redis.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -117,9 +109,6 @@ spec:
     - ports:
       - port: '11043'
         protocol: TCP
-  egress:
-  - {}
   description: Allows ingress from vmagent to argocd-redis on 11043 for
     metrics collection.
-
 {{- end }}
