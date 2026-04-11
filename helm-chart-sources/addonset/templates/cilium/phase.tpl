@@ -71,7 +71,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: client-cp-control-plane{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: client-cp-control-plane
           jsonPath: $.status.deployed
           operator: Equal
           value: true
@@ -79,7 +79,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: client-cp-control-plane{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: client-cp-control-plane
           jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
           operator: Exists
         - source:
