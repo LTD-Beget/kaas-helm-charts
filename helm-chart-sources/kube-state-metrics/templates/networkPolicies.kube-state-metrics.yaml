@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -60,8 +58,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:

@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.controller.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - world
@@ -37,8 +35,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.controller.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - world
@@ -62,8 +58,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.controller.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -92,8 +86,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.controller.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -116,8 +108,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.controller.serviceAccountName" . }}
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -150,9 +140,6 @@ spec:
     - ports:
       - port: '11043'
         protocol: TCP
-  egress:
-  - {}
   description: Allows ingress from vmagent to argocd-application-controller on 11043 for
     metrics collection.
-
 {{- end }}

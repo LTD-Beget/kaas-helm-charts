@@ -12,8 +12,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toCIDR:
     - {{ .Values.vmInsertVIP }}/32
@@ -36,8 +34,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -60,8 +56,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -90,8 +84,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -116,8 +108,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -141,8 +131,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -166,8 +154,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -191,8 +177,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -216,8 +200,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -241,8 +223,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -266,8 +246,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -291,8 +269,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -316,8 +292,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -341,8 +315,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -366,8 +338,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -391,8 +361,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -416,8 +384,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -441,8 +407,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -466,8 +430,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -491,8 +453,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -516,8 +476,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
     - toEntities:
       - host
@@ -556,8 +514,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:

@@ -17,8 +17,6 @@ spec:
     - ports:
       - port: '6443'
         protocol: TCP
-  ingress:
-  - {}
   description: |
     Allows egress from metrics-server to the Kubernetes API server on 6443
     for control-plane interactions.
@@ -42,8 +40,6 @@ spec:
     - ports:
       - port: '10250'
         protocol: TCP
-  ingress:
-  - {}
   description: |
     Allows egress from metrics-server to host and remote-node endpoints
     on 10250 for kubelet scraping.
@@ -59,8 +55,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: metrics-server
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -85,8 +79,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: metrics-server
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEntities:
     - kube-apiserver

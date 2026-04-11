@@ -10,8 +10,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
       k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - host
@@ -47,8 +45,6 @@ spec:
         protocol: TCP
       - port: '20257'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress from vmagent to client-cp-control-plane on 20259, 20257, 26443 for metrics collection.
 
@@ -70,8 +66,6 @@ spec:
     - ports:
       - port: '26443'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress from world to client-control-plane on 26443.
 
@@ -95,8 +89,6 @@ spec:
     - ports:
       - port: '26443'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress from client-kube-state-metrics to client-control-plane on 26443.
 
@@ -118,8 +110,6 @@ spec:
     - ports:
       - port: '8132'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress from world to client-control-plane on 8132.
 {{- end }}

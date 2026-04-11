@@ -10,8 +10,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -34,8 +32,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -58,8 +54,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -89,8 +83,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
     - toFQDNs:
         - matchName: {{ .Values.systemDomain }}
@@ -110,8 +102,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEndpoints:
     - matchLabels:
@@ -145,8 +135,6 @@ spec:
     - ports:
       - port: '8081'
         protocol: TCP
-  egress:
-  - {}
   description: |
     Allows ingress to incloud-web-chart from oauth2-proxy on 8081.
 
@@ -161,8 +149,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -186,8 +172,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -211,8 +195,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:

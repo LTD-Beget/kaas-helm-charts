@@ -10,8 +10,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: istiod
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - {}
   egress:
   - toEntities:
     - kube-apiserver
@@ -34,8 +32,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: istiod
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -59,8 +55,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: istiod
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -85,8 +79,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: istiod
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  egress:
-  - {}
   ingress:
   - fromEntities:
     - remote-node
