@@ -69,11 +69,7 @@ metadata:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: addons-operator
 spec:
-  values: |
-    networkPolicies:
-      enabled: true 
-      
-
+  values: ""
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
@@ -87,3 +83,15 @@ spec:
     managerClaim:
       enable: true
 
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    networkPolicies:
+      enabled: true 
