@@ -78,10 +78,11 @@ spec:
           keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
+            kind: AddonPhase
             name: argocd{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
-          operator: Exists
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          operator: Equal
+          value: true
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -92,10 +93,11 @@ spec:
           keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: addons-operator
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
-          operator: Exists
+            kind: AddonPhase
+            name: addons-operator{{ if eq .Values.environment "client" }}-client{{ end }}
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          operator: Equal
+          value: true
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -106,10 +108,11 @@ spec:
           keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
+            kind: AddonPhase
             name: coredns{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='network-policies')]
-          operator: Exists
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          operator: Equal
+          value: true
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
