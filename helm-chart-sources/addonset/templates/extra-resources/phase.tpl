@@ -166,6 +166,7 @@ spec:
             name: argocd
           jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
           operator: NotExists
+          keep: false
           # value: false
         {{- end }}
       selector:
