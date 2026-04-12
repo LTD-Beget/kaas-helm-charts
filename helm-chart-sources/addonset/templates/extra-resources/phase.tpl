@@ -198,7 +198,7 @@ spec:
         name: cluster-network-policies
         priority: 57
         matchLabels:
-          addons.in-cloud.io/values: network-policies
-          addons.in-cloud.io/addon: cluster-network-policies
+          addons.in-cloud.io/values: cluster-network-policies
+          addons.in-cloud.io/addon: extra-resources
     {{- end }}
 {{- end }}
