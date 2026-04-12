@@ -153,7 +153,7 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: AddonPhase
             name: extra-resources
-          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
           operator: Equal
           value: true
       selector:
