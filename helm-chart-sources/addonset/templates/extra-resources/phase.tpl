@@ -193,8 +193,7 @@ spec:
             kind: Addon
             name: cilium
           jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')]
-          operator: Equal
-          value: true
+          operator: Exists
       selector:
         name: cluster-network-policies
         priority: 57
