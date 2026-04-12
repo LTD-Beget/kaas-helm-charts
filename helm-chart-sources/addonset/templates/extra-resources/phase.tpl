@@ -192,7 +192,7 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cilium
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')].deployed
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')]
           operator: Equal
           value: true
       selector:
