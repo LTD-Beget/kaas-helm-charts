@@ -68,19 +68,24 @@ spec:
                 - ports:
                     - port: "6443"
                       protocol: TCP
-
+            - toEntities:
+                - world
+              toPorts:
+                - ports:
+                    - port: "26443"
+                      protocol: TCP
             # RepoServer отправляет запросы в эти списки
             - toFQDNs:
                 - matchName: github.com
-                - matchName: blog.beget.com
+                - matchName: blog.{{ .Values.companyPrefix }}.com
                 - matchName: istio-release.storage.googleapis.com
               toPorts:
                 - ports:
                     - port: "443"
                       protocol: TCP
-                  rules:
-                    dns:
-                      - matchPattern: "*"
+                  # rules:
+                  #   dns:
+                  #     - matchPattern: "*"
 
             # ApplicationController отправляет запросы в эти списки
             # ArgocdServer отправляет запросы в эти списки
@@ -148,9 +153,19 @@ spec:
             - fromEndpoints:
                 - matchLabels:
                     k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-server
               toPorts:
                 - ports:
                     - port: "8081"
+                      protocol: TCP
+            - fromEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+                    k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+              toPorts:
+                - ports:
+                    - port: "11043"
                       protocol: TCP
 
 ---
