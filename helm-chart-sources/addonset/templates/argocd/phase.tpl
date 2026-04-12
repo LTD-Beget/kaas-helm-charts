@@ -183,12 +183,15 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system-and-initialized
           addons.in-cloud.io/addon: argocd
+    
+    
+    {{- if eq .Values.environment "infra" }}
     - name: network-policies
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            name: parameters-infra
             namespace: {{ .Values.companyPrefix }}-system
           jsonPath: $.data.environment
           operator: Equal
@@ -196,22 +199,23 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: cilium
           jsonPath: $.status.deployed
           operator: Equal
           value: true
           keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Exists
+          # value: true
       selector:
         name: network-policies
         priority: 70
         matchLabels:
           addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: argocd
+    {{- end }}
 {{- end }}

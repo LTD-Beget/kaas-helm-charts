@@ -149,6 +149,13 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          operator: Equal
+          value: true
       selector:
         name: network-policies
         priority: 35

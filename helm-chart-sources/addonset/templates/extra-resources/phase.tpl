@@ -128,12 +128,14 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system-migrated
           addons.in-cloud.io/addon: extra-resources
-    - name: network-policies
+
+    {{- if eq .Values.environment "infra" }}
+    - name: network-policies-argocd
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            name: parameters-infra
             namespace: {{ .Values.companyPrefix }}-system
           jsonPath: $.data.environment
           operator: Equal
@@ -142,7 +144,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: argocd
           jsonPath: $.status.deployed
           operator: Equal
           value: true
@@ -150,15 +152,54 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: cilium{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
+            name: cilium
+          jsonPath: $.status.deployed
           operator: Equal
-          value: "True"
+          value: true
           keep: false
+        # TODO политику нужно отключить после добавления целевых политик
+        # добавить критерий
+        {{- if eq .Values.environment "infra" }}
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: argocd
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+          operator: NotExists
+          # value: false
+        {{- end }}
       selector:
-        name: network-policies
+        name: network-policies-argocd
         priority: 55
         matchLabels:
-          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/values: network-policies-argocd
           addons.in-cloud.io/addon: extra-resources
+    {{- end }}
+
+    {{- if eq .Values.environment "infra" }}
+    - name: cluster-network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: cluster-network-policies
+        priority: 57
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: cluster-network-policies
+    {{- end }}
 {{- end }}

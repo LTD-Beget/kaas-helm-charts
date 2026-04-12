@@ -31,7 +31,7 @@ spec:
             kind: ClusterIssuer
             name: selfsigned-cluster-issuer
           kubeconfig: false
-          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
+          kubeconfigEndpoint: https://kubernetes.default.svc
       issuer:
         apiVersion: cert-manager.io/v1
         kind: ClusterIssuer
@@ -47,7 +47,119 @@ kind: AddonValue
 metadata:
   name: extra-resources-network-policies
   labels:
-    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/values: network-policies-argocd
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      ciliumnetworkpoliciesArgocdCommon:
+        apiVersion: cilium.io/v2
+        kind: CiliumNetworkPolicy
+        metadata:
+          name: argocd-common
+          namespace: {{ .Values.companyPrefix }}-argocd
+        spec:
+          endpointSelector: {}
+          egress:
+            - toEntities:
+                - kube-apiserver
+                - world
+              toPorts:
+                - ports:
+                    - port: "6443"
+                      protocol: TCP
+
+            # RepoServer отправляет запросы в эти списки
+            - toFQDNs:
+                - matchName: github.com
+                - matchName: blog.beget.com
+                - matchName: istio-release.storage.googleapis.com
+              toPorts:
+                - ports:
+                    - port: "443"
+                      protocol: TCP
+                  rules:
+                    dns:
+                      - matchPattern: "*"
+
+            # ApplicationController отправляет запросы в эти списки
+            # ArgocdServer отправляет запросы в эти списки
+            - toEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
+                    k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-system
+              toPorts:
+                - ports:
+                    - port: "26443"
+                      protocol: TCP
+
+            # ApplicationController отправляет запросы в эти списки
+            # ArgocdServer отправляет запросы в эти списки
+            # Redis отправляет запросы в эти списки
+            # RepoServer отправляет запросы в эти списки
+            - toEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: coredns
+                    k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+              toPorts:
+                - ports:
+                    - port: "53"
+                      protocol: TCP
+                    - port: "53"
+                      protocol: UDP
+                  rules:
+                    dns:
+                      - matchPattern: "*"
+
+            # ApplicationController отправляет запросы в эти списки
+            # RepoServer отправляет запросы в эти списки
+            - toEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: default
+              toPorts:
+                - ports:
+                    - port: "6379"
+                      protocol: TCP
+
+            # ApplicationController отправляет запросы в эти списки
+            - toEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+              toPorts:
+                - ports:
+                    - port: "8081"
+                      protocol: TCP
+
+          ingress:
+            # REDIS принимает запрос от этого списка
+            - fromEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-server
+              toPorts:
+                - ports:
+                    - port: "6379"
+                      protocol: TCP
+
+            # RepoServer принимает запрос от этого списка
+            - fromEndpoints:
+                - matchLabels:
+                    k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+              toPorts:
+                - ports:
+                    - port: "8081"
+                      protocol: TCP
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-cluster-network-policies
+  labels:
+    addons.in-cloud.io/values: cluster-network-policies
     addons.in-cloud.io/addon: extra-resources
 spec:
   values: |
