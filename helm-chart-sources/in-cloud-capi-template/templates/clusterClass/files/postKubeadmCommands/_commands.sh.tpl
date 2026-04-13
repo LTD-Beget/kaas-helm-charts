@@ -429,9 +429,9 @@
             cpu: "4"
             ephemeral-storage: 10Gi
           requests:
-            cpu: 1
+            cpu: 200m
             ephemeral-storage: 500Mi
-            memory: 1Gi
+            memory: 200Mi
         volumes:
           - hostPath:
               path: /etc/kubernetes/admin.conf
@@ -520,7 +520,7 @@
     EOF
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade addon-operator..."
-    cat <<EOF | helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator -n {{ $.Values.companyPrefix }}-addons-operator --create-namespace --version 0.1.2 -f -
+    cat <<EOF | helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator -n {{ $.Values.companyPrefix }}-addons-operator --create-namespace --version 0.1.3 -f -
     certManager:
       enable: false
     manager:
