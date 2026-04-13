@@ -163,6 +163,8 @@ spec:
             - '.spec.template.spec.containers[].securityContext'
             - '.spec.template.spec.initContainers[].securityContext'
             - '.spec.replicas'
+            jsonPointers:
+            - /metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
           resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
             jqPathExpressions:
             - '.spec.rules[] | select(.name|test("autogen-."))'
