@@ -112,4 +112,25 @@ spec:
         protocol: TCP
   description: |
     Allows ingress from world to client-control-plane on 8132.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-client-control-plane-from-argocd-application-controller-26443
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
 {{- end }}

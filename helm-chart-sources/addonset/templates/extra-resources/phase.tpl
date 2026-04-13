@@ -159,16 +159,16 @@ spec:
           keep: false
         # TODO политику нужно отключить после добавления целевых политик
         # добавить критерий
-        {{- if eq .Values.environment "infra" }}
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: AddonPhase
-            name: argocd
-          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
-          operator: NotExists
-          keep: false
-          # value: false
-        {{- end }}
+        # {{- if eq .Values.environment "infra" }}
+        # - source:
+        #     apiVersion: addons.in-cloud.io/v1alpha1
+        #     kind: AddonPhase
+        #     name: argocd
+        #   jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+        #   operator: NotExists
+        #   keep: false
+        #   # value: false
+        # {{- end }}
       selector:
         name: network-policies-argocd
         priority: 55
