@@ -102,6 +102,11 @@ spec:
                                 x-kubernetes-validations:
                                     - message: kubeconfigEndpoint cannot be changed once set
                                       rule: oldSelf == '' || self == oldSelf
+                            argocdEndpoint:
+                              description: |-
+                                ArgocdEndpoint is the server URL used in the ArgoCD cluster secret.
+                                Required when argocdCluster is enabled.
+                              type: string
                         required:
                             - environment
                             - issuerRef
@@ -110,6 +115,10 @@ spec:
                         x-kubernetes-validations:
                             - message: kubeconfigEndpoint is required when kubeconfig or argocdCluster is enabled
                               rule: (!self.kubeconfig && (!has(self.argocdCluster) || !self.argocdCluster)) || (has(self.kubeconfigEndpoint) && self.kubeconfigEndpoint !='')
+                            - message: kubeconfigEndpoint is required when kubeconfig is enabled
+                              rule: '!self.kubeconfig || (has(self.kubeconfigEndpoint) && self.kubeconfigEndpoint != '''')'
+                            - message: argocdEndpoint is required when argocdCluster is enabled
+                              rule: (!has(self.argocdCluster) || !self.argocdCluster) || (has(self.argocdEndpoint) && self.argocdEndpoint != '')
                     status:
                         description: status defines the observed state of CertificateSet
                         properties:
