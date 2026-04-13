@@ -22,6 +22,7 @@ spec:
         spec:
           environment: infra
           argocdCluster: true
+          argocdEndpoint: https://kubernetes.default.svc
           issuerRef:
             apiVersion: cert-manager.io/v1
             kind: ClusterIssuer
@@ -282,7 +283,7 @@ spec:
         spec:
           environment: client
           argocdCluster: true
-          argocdEndpoint: https://client-cp-control-plane-control-plane.svc.{{ .Values.companyPrefix }}-system.svc:26443
+          argocdEndpoint: https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443
           issuerRef:
             apiVersion: cert-manager.io/v1
             kind: ClusterIssuer
@@ -322,6 +323,7 @@ spec:
         spec:
           environment: system
           argocdCluster: true
+          argocdEndpoint: https://kubernetes.default.svc
           issuerRef:
             apiVersion: cert-manager.io/v1
             kind: ClusterIssuer
