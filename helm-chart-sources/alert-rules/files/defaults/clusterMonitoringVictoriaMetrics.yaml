@@ -19,6 +19,8 @@ clusterMonitoringVictoriaMetrics:
               group by (cluster_full_name,remotewrite_cluster,cluster_type)(kube_node_info{cluster_type!="client"})
                 unless on(cluster_full_name)
                   up{job="vmagent"} == 1
+                unless on(cluster_full_name)
+                  in_cloud_capi_cluster_mute == 1
             for: 2m
             labels:
               severity: critical
