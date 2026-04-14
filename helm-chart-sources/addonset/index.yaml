@@ -1,0 +1,799 @@
+ 
+addons:
+- addon_name: argocd
+  app_name: Argocd
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: v3.3.4
+  chart_version: 9.4.15-3
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - ecr-public.aws.com/docker/library/redis:8.2.3-alpine
+  - ghcr.io/oliver006/redis_exporter:v1.82.0
+  - quay.io/argoproj/argocd:v3.3.4
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  descryption:
+    rus: |
+      Argo CD — это инструмент для непрерывной доставки в Kubernetes, реализующий 
+      практики GitOps. Он автоматически синхронизирует состояние кластера с 
+      конфигурацией, описанной в Git-репозитории, обеспечивая предсказуемость и 
+      контроль версий развертываний приложений.
+    eng: |
+      Argo CD is a continuous delivery tool for Kubernetes that implements GitOps 
+      practices. It automatically synchronizes cluster state with the configuration 
+      described in the Git repository, ensuring predictability and version control of 
+      application deployments.
+  links: |-
+    Официальный сайт: https://argoproj.github.io/cd/
+    Документация: https://argo-cd.readthedocs.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/argo-cd-64.png
+
+- addon_name: cert-manager-csi-driver
+  app_name: Cert-manager CSI Driver
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: 0.10.4
+  chart_version: 0.10.4-2
+  chart_k8s_min_version: ""
+  images:
+  - quay.io/jetstack/cert-manager-csi-driver:v0.10.4
+  - registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.14.0
+  - registry.k8s.io/sig-storage/livenessprobe:v2.16.0
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0 # only system and infra
+  descryption:
+    rus: |
+      cert-manager-csi — аддон для Kubernetes, который выдает и монтирует TLS-сертификаты в 
+      Pod через CSI volume, работая поверх cert-manager. Позволяет отказаться от хранения 
+      сертификатов в виде ресурса Secret и монтировать их напрямую в файловую систему контейнера.
+    eng: |
+      Cert-manager CSI Driver is a CSI driver for Kubernetes that integrates with 
+      cert-manager and enables dynamic provisioning of TLS certificates to pod 
+      containers via mounted volumes.
+  links: |-
+    Оффициальный сайт: https://cert-manager.io/
+    Документация: https://cert-manager.io/docs/usage/csi-driver/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/cert-manager-64.png
+
+- addon_name: cert-manager
+  app_name: Cert-manager
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v1.17.1
+  chart_version: v1.17.1-2
+  chart_k8s_min_version: 1.22.0-0
+  images:
+  - quay.io/jetstack/cert-manager-cainjector:v1.17.1
+  - quay.io/jetstack/cert-manager-controller:v1.17.1
+  - quay.io/jetstack/cert-manager-webhook:v1.17.1
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0 # only system and infra
+  descryption:
+    rus: |
+      Cert-manager — это автоматический менеджер TLS-сертификатов для Kubernetes. 
+      Он упрощает получение, обновление и управление сертификатами от различных источников, 
+      таких как Let's Encrypt, а также внутренними центрами сертификации (CA).
+    eng: |
+      cert-manager-csi is a Kubernetes addon that issues and mounts TLS certificates into 
+      Pods via a CSI volume, built on top of cert-manager. It eliminates the need to store 
+      certificates as Kubernetes Secrets and mounts them directly into the container filesystem.
+  links: |
+    Официальный сайт: https://cert-manager.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/cert-manager-64.png
+  
+- addon_name: cilium
+  app_name: Cilium
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: 1.18.5
+  chart_version: 1.18.5-2
+  chart_k8s_min_version: 1.21.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - quay.io/cilium/cilium:v1.18.5
+  - quay.io/cilium/operator-generic:v1.18.5
+  descryption:
+    rus: |
+      Cilium — это открытое облачное решение для обеспечения, защиты и контроля сетевого 
+      соединения между рабочими нагрузками, использующее революционную технологию ядра eBPF.
+    eng: |
+      Cilium is an open cloud solution for provisioning, securing, and monitoring network 
+      connectivity between workloads, leveraging the revolutionary eBPF core technology.
+  links: |-
+    Официальный сайт: https://cilium.io/
+    Документация: https://docs.cilium.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/cilium-64.png
+
+- addon_name: coredns
+  app_name: CoreDNS
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: 1.11.1
+  chart_version: 1.28.0-2
+  chart_k8s_min_version: ''
+  images:
+  - coredns/coredns:1.11.1
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  descryption:
+    rus: |
+      CoreDNS — это гибкий и расширяемый DNS-сервер, который является стандартным 
+      сервисом обнаружения (service discovery) в Kubernetes.
+    eng: |
+      CoreDNS is a flexible and extensible DNS server that is the default service 
+      discovery in Kubernetes.
+  links: |
+    Официальный сайт: https://coredns.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/coredns-64.png
+
+- addon_name: dex
+  app_name: Dex
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: v2.42.0
+  chart_version: 0.23.0-1
+  chart_k8s_min_version: '1.14.0-0'
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - ghcr.io/dexidp/dex:v2.42.0
+  descryption:
+    rus: |
+      Dex — это система идентификации, которая выступает в роли шлюза между Kubernetes 
+      и существующими провайдерами OIDC, SAML или LDAP. Она позволяет централизованно 
+      управлять аутентификацией пользователей в кластере, делегируя её внешним поставщикам удостоверений.
+    eng: |
+      Dex is an identity system that acts as a gateway between Kubernetes and existing OIDC, 
+      SAML, or LDAP providers. It allows for centralized management of user authentication within 
+      a cluster, delegating it to external identity providers.
+  links: |
+    Официальный сайт: https://dexidp.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/dex-64.png
+
+- addon_name: grafana-operator
+  app_name: Grafana Operator
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: v5.18.0
+  chart_version: 5.18.0-1
+  chart_k8s_min_version: ''
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - ghcr.io/grafana/grafana-operator:v5.18.0
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/Grafana-64.png
+
+- addon_name: null
+  app_name: Grafana
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: 11.3.0
+  chart_version: 0.1.0
+  chart_k8s_min_version: ''
+  images:
+  - docker.io/grafana/grafana:11.3.0
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/Grafana-64.png
+
+- addon_name: incloud-web-chart
+  app_name: Incloud UI
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: null
+  chart_version: 1.3.0-4
+  chart_k8s_min_version: 1.22.0-0
+  images:
+  - prorobotech/openapi-ui-k8s-bff:release-1.3.0-3f37f37a
+  - prorobotech/openapi-ui:release-1.3.0-888db8eb
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - quay.io/oauth2-proxy/oauth2-proxy:v7.11.0
+  - nginxinc/nginx-unprivileged:1.29-alpine
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/windowApps-64-outlined.png
+
+- addon_name: istio-base
+  app_name: Istio Base
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: ""
+  chart_version: 1.26.0
+  chart_k8s_min_version: ''
+  images: []
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/istio-64.png
+
+- addon_name: istiod
+  app_name: Istiod
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: 1.26.0
+  chart_version: 1.26.0-2
+  chart_k8s_min_version: 1.24.0-0
+  images:
+  - docker.io/istio/pilot:1.26.0
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/istio-64.png
+
+- addon_name: istio-gw
+  app_name: Istio Gateway
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: 1.26.0
+  chart_version: 1.26.0-2
+  chart_k8s_min_version: 1.24.0-0
+  images:
+  - docker.io/istio/proxyv2:1.26.0
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/istio-64.png
+
+- addon_name: konnectivity-agent
+  app_name: konnectivity-agent
+  deploy_to:
+    system: false
+    infra: false
+    client: true
+  enabled_for_client: true
+  app_version: 0.31.0
+  chart_version: 0.1.0
+  chart_k8s_min_version: null
+  images:
+  - us.gcr.io/k8s-artifacts-prod/kas-network-proxy/proxy-agent:v0.0.36
+  descryption:
+    rus: |
+      Запускается на рабочих узлах. Инициирует исходящее соединение с Konnectivity Server, создавая обратный туннель. Это позволяет API Server связываться с узлом, даже если узел находится в частной сети и недоступен напрямую
+    eng: ""
+  links: |
+    Документация: https://kamaji.clastix.io/concepts/konnectivity/
+  labels: []
+  tooltip:
+    rus: |
+      Обеспечивает безопасный обратный туннель между API Server и рабочими узлами кластера. 
+      Служит концентратором, через который API Server может безопасно выполнять команды
+    eng: |
+      Provide a secure reverse tunnel between the API server and the required cluster nodes. 
+      This serves as a hub through which the API server can securely execute commands.
+  icon: assets/logos/Addons/kuber-64.png
+
+- addon_name: kube-state-metrics
+  app_name: kube-state-metrics
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v2.16.0
+  chart_version: 6.1.0-5
+  chart_k8s_min_version: ''
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.16.0
+  descryption:
+    rus: |
+      Kube-state-metrics - сервис мониторинга, который генерирует метрики о 
+      состоянии объектов Kubernetes. Он предоставляет метрики о работе deployments, 
+      nodes, pods и других ресурсов, преобразуя информацию из Kubernetes API в Prometheus формат
+    eng: |
+      Kube-state-metrics is a monitoring service that generates metrics about the state of 
+      Kubernetes objects. It provides metrics about the operation of deployments, nodes, pods, 
+      and other resources, converting information from the Kubernetes API into Prometheus format.
+  links: |
+    Проект: https://github.com/kubernetes/kube-state-metrics
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/kuber-64.png
+
+- addon_name: metallb
+  app_name: MetalLB
+  deploy_to:
+    system: false
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: null
+  chart_version: 0.15.2-1
+  chart_k8s_min_version: null
+  images: []
+  descryption:
+    rus: |
+      MetalLB — это реализация балансировщика нагрузки для Kubernetes-кластеров, использующая 
+      стандартные протоколы маршрутизации.
+    eng: |
+      MetalLB is a load balancer implementation for Kubernetes clusters that uses standard 
+      routing protocols.
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/metallb-64.png
+
+- addon_name: metrics-server
+  app_name: Metrics Server
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v0.8.0
+  chart_version: 3.13.0-3
+  chart_k8s_min_version: 1.31.0-0
+  images:
+  - registry.k8s.io/metrics-server/metrics-server:v0.8.0
+  descryption:
+    rus: |
+      Metrics Server — компонент Kubernetes, агрегирующий данные об использовании 
+      ресурсов в кластере. Собирает метрики CPU и памяти с узлов и подов, предоставляя 
+      их через API для горизонтального (HPA) и вертикального (VPA) автомасштабирования подов.
+    eng: |
+      Metrics Server is a Kubernetes component that aggregates cluster resource usage 
+      data. It collects CPU and memory metrics from nodes and pods, providing them 
+      through an API for horizontal (HPA) and vertical (VPA) pod autoscaling.
+  links: |
+    Проект: https://github.com/kubernetes-sigs/metrics-server
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/kuber-64.png
+
+- addon_name: prometheus-process-exporter
+  app_name: Process Exporter
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: 0.8.1
+  chart_version: 0.5.0-3
+  chart_k8s_min_version: '-'
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - ncabatoff/process-exporter:0.8.1
+  descryption:
+    rus: |
+      Process Exporter — инструмент мониторинга, собирающий метрики о процессах 
+      запущенных на узлах кластера. Предоставляет информацию о потреблении ресурсов 
+      (CPU, память) отдельными процессами, группируя их по заданным шаблонам имен.
+    eng: |
+      Process Exporter is a monitoring tool that collects metrics about processes 
+      running on cluster nodes. It provides information on resource consumption 
+      (CPU, memory) by individual processes, grouping them by specified name patterns.
+  links: |
+    Проект: https://github.com/ncabatoff/process-exporter
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/windowApps-64-outlined.png
+
+- addon_name: prometheus-node-exporter
+  app_name: Prometheus Node Exporter
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v1.10.2
+  chart_version: 4.49.2-1
+  chart_k8s_min_version: null
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - quay.io/prometheus/node-exporter:v1.10.2
+  descryption:
+    rus: |
+      Prometheus-экспортер для сбора аппаратных метрик и метрик операционной 
+      системы, предоставляемых ядрами *NIX.
+    eng: |
+      Prometheus exporter for collecting hardware and operating system metrics 
+      provided by *NIX kernels.
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/prometheus-64.png
+
+- addon_name: prometheus
+  app_name: Prometheus
+  deploy_to:
+    system: false
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: 2.53.2
+  chart_version: 27.10.0
+  chart_k8s_min_version: 1.19.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - prompp/prompp:2.53.2-0.3.1
+  - quay.io/prometheus-operator/prometheus-config-reloader:v0.82.0
+  descryption:
+    rus: |
+      Prometheus — это система мониторинга и оповещения с открытым исходным кодом. 
+      Собирает и хранит метрики, предоставляя язык запросов PromQL для их анализа и агрегации. 
+      Используется для мониторинга инфраструктуры и приложений, поддерживая механизмы оповещений 
+      на основе заданных правил.
+    eng: |
+      Prometheus is an open-source monitoring and alerting system. It collects and stores metrics, 
+      providing the PromQL query language for their analysis and aggregation. It is used for 
+      infrastructure and application monitoring, supporting rule-based alerting.
+  links: |
+    Официальный сайт: https://prometheus.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/prometheus-64.png
+
+- addon_name: trivy-operator
+  app_name: Trivy Operator
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: 0.27.0
+  chart_version: 0.29.0-1
+  chart_k8s_min_version: null
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - mirror.gcr.io/aquasec/trivy-operator:0.27.0
+  descryption:
+    rus: |
+      Trivy Operator — оператор, обеспечивающий сканирование образов контейнеров 
+      и рабочих нагрузок на наличие уязвимостей. Автоматически проверяет развернутые 
+      поды, образы и конфигурации кластера на соответствие стандартам безопасности.
+    eng: |
+      Trivy Operator is an operator that scans container images and workloads for 
+      vulnerabilities. It automatically checks deployed pods, images, and cluster 
+      configurations for compliance with security standards.
+  links: |
+    Официальный сайт: https://aquasecurity.github.io/trivy-operator/latest/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/trivy-64.png
+
+- addon_name: trust-manager
+  app_name: Trust Manager
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v0.16.0
+  chart_version: 0.16.0-2
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - quay.io/jetstack/trust-manager:v0.16.0
+  - quay.io/jetstack/trust-pkg-debian-bookworm:20230311.0
+  descryption:
+    rus: |
+      Trust Manager — компонент обеспечивающий хранение и распространение цепочек 
+      доверенных сертификатов между подами при использовании частных центров сертификации (CA)
+    eng:|
+      Trust Manager is a component that provides storage and distribution of trusted 
+      certificate chains between pods when using private certification authorities (CAs)
+  links: |
+    Официальный сайт: https://cert-manager.io/docs/trust/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/cert-manager-64.png
+
+- addon_name: vault
+  app_name: Vault
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: 1.20.1
+  chart_version: 0.30.1-1
+  chart_k8s_min_version: 1.20.0-0
+  images:
+  - hashicorp/vault-k8s:1.7.0
+  - hashicorp/vault:1.20.1
+  descryption:
+    rus: |
+      Vault — система для безопасного управления секретами и защиты данных. Предоставляет 
+      хранилище для паролей, сертификатов, ключей шифрования и других конфиденциальных данных 
+      с управляемым доступом.
+    eng: |
+      Vault is a system for secure secret management and data protection. It provides 
+      storage for passwords, certificates, encryption keys, and other sensitive data 
+      with controlled access.
+  links: |
+    Официальный сайт: https://www.vaultproject.io/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vault-64.png
+
+- addon_name: vault-secrets
+  app_name: Vault Secrets
+  deploy_to:
+    system: false
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: null
+  chart_version: null
+  chart_k8s_min_version: null
+  images: []
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/kuber-64.png
+
+- addon_name: vm-agent
+  app_name: VictoriaMetrics Agent
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v1.119.0
+  chart_version: 0.52.0-4
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - quay.io/prometheus-operator/prometheus-config-reloader:v0.82.1
+  - victoriametrics/vmagent:v1.119.0
+  descryption:
+    rus: |
+      VictoriaMetrics Agent — компонент сбора и передачи метрик в систему мониторинга 
+      VictoriaMetrics. Собирает метрики с различных источников, включая 
+      Prometheus-совместимые эндпоинты, и передает их для долгосрочного хранения.
+    eng: |
+      VictoriaMetrics Agent is a component for collecting and transmitting metrics to the 
+      VictoriaMetrics monitoring system. It collects metrics from various sources, including 
+      Prometheus-compatible endpoints, and transmits them for long-term storage.
+  links: |
+    Официальный сайт: https://victoriametrics.com/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
+
+- addon_name: null
+  app_name: VictoriaMetrics Alertmanager
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: null
+  chart_version: 0.52.0-4
+  chart_k8s_min_version: 1.25.0-0
+  images: []
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
+
+- addon_name: null
+  app_name: VictoriaMetrics Alert Rules
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: '-'
+  chart_version: '-'
+  chart_k8s_min_version: '-'
+  images: []
+  descryption:
+    rus: ""
+    eng: ""
+  links: null
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
+
+- addon_name: null
+  app_name: VictoriaMetrics Alert
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: false
+  app_version: v1.119.0
+  chart_version: 0.52.0-4
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - jimmidyson/configmap-reload:v0.3.0
+  - victoriametrics/vmalert:v1.119.0
+  descryption:
+    rus: |
+      VictoriaMetrics Alert — компонент системы мониторинга VictoriaMetrics, отвечающий 
+      за обработку правил оповещений и уведомления через подключенные системы.
+    eng: |
+      VictoriaMetrics Alert is a component of the VictoriaMetrics monitoring system 
+      responsible for processing alert rules and notifications through connected systems.
+  links: |
+    Официальный сайт: https://victoriametrics.com/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
+
+- addon_name: vm-operator
+  app_name: VictoriaMetrics Operator
+  deploy_to:
+    system: true
+    infra: true
+    client: false
+  enabled_for_client: true
+  app_version: v0.60.0
+  chart_version: 0.52.0-3
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - quay.io/brancz/kube-rbac-proxy:v0.21.0
+  - victoriametrics/operator:v0.60.0
+  descryption:
+    rus: |
+      VictoriaMetrics Operator — оператор управления жизненным циклом VictoriaMetrics 
+      в кластере. Автоматизирует развертывание, настройку и обновление компонентов 
+      VictoriaMetrics, включая хранение, сбор метрик и настройку оповещений.
+    eng: |
+      VictoriaMetrics Operator — a lifecycle management operator for VictoriaMetrics 
+      within a cluster. It automates the deployment, configuration, and updates of 
+      VictoriaMetrics components, including storage, metric collection, and alert configuration.
+  links: |
+    Официальный сайт: https://victoriametrics.com/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
+
+- addon_name: null
+  app_name: VictoriaMetrics Cluster
+  deploy_to:
+    system: true
+    infra: false
+    client: false
+  enabled_for_client: false
+  app_version: v1.119.0-cluster
+  chart_version: 0.52.0-4
+  chart_k8s_min_version: 1.25.0-0
+  images:
+  - victoriametrics/vmselect:v1.119.0-cluster
+  - victoriametrics/vmstorage:v1.119.0-cluster
+  - victoriametrics/vminsert:v1.119.0-cluster
+  descryption:
+    rus: |
+      VictoriaMetrics cluster — набор компоненов VictoriaMetrics для хранения (vmStorage), 
+      чтения (vmSelect), записи (vmInsert) большого объема метрик.
+    eng: |
+      VictoriaMetrics cluster is a set of VictoriaMetrics components for storing (vmStorage), 
+      reading (vmSelect), and writing (vmInsert) large volumes of metrics.
+  links: |
+    Официальный сайт: https://victoriametrics.com/
+  labels: []
+  tooltip:
+    rus: ""
+    eng: ""
+  icon: assets/logos/Addons/vmagent-64.png
