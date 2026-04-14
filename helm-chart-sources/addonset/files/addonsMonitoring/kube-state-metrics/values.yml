@@ -172,8 +172,9 @@ spec:
                   kind: Cluster
                 metricNamePrefix: in_cloud_capi_cluster
                 labelsFromPath:
-                  name: [metadata, name]
-                  namespace: [metadata, namespace]
+                  cluster_name: [metadata, name]
+                  cluster_namespace: [metadata, namespace]
+                  cluster_hash: [metadata, "xcluster.in-cloud.io/name"]
                 metrics:
                   - name: resource_info
                     help: "Cluster inventory info."
