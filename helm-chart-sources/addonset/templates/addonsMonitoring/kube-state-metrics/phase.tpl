@@ -68,4 +68,22 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: kube-state-metrics
+    {{- if eq .Values.environment "infra" }}
+    - name: capi
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: capi
+        priority: 35
+        matchLabels:
+          addons.in-cloud.io/values: capi
+          addons.in-cloud.io/addon: kube-state-metrics
+    {{- end }}
 {{- end }}
