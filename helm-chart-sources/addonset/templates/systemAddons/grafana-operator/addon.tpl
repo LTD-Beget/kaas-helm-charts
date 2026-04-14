@@ -37,6 +37,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: grafana-operator
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: grafana-operator
     - name: immutable
       priority: 99
       matchLabels:

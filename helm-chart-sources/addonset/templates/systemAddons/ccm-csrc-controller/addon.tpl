@@ -35,6 +35,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: ccm-csrc-controller
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: ccm-csrc-controller
     - name: immutable
       priority: 99
       matchLabels:

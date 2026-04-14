@@ -89,4 +89,9 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: initialized
         addons.in-cloud.io/addon: client-vm-scrape-config
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: client-vm-scrape-config
 {{- end }}
