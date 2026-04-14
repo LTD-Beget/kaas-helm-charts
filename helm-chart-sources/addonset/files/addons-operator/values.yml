@@ -13,6 +13,8 @@ spec:
     managerClaim:
       image:
         repository: prorobotech/addons-operator-addonclaim
+    webhook:
+      enable: false
     manager:
       env:
       - name: ENABLE_WEBHOOKS
@@ -50,6 +52,8 @@ metadata:
     addons.in-cloud.io/addon: addons-operator
 spec:
   values: |
+    webhook:
+      enable: true
     certManager:
       enable: true
     manager:
@@ -94,4 +98,4 @@ metadata:
 spec:
   values: |
     networkPolicies:
-      enabled: true 
+      enabled: true

@@ -40,6 +40,12 @@ spec:
           operator: Equal
           value: true
           keep: false
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
   backend:
     finalizer: true
     type: "argocd"

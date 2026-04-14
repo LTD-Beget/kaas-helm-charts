@@ -41,6 +41,19 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
   valuesSelectors:
     - name: default
       priority: 0

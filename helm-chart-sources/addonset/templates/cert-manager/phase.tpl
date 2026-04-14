@@ -50,22 +50,22 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: initialized-2
           addons.in-cloud.io/addon: cert-manager
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
-            namespace: {{ .Values.companyPrefix }}-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: cert-manager
+    # - name: infra
+    #   criteria:
+    #     - source:
+    #         apiVersion: v1
+    #         kind: ConfigMap
+    #         name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+    #         namespace: {{ .Values.companyPrefix }}-system
+    #       jsonPath: $.data.environment
+    #       operator: Equal
+    #       value: "infra"
+    #   selector:
+    #     name: infra
+    #     priority: 15
+    #     matchLabels:
+    #       addons.in-cloud.io/values: infra
+    #       addons.in-cloud.io/addon: cert-manager
     - name: vm-operator
       criteria:
         - source:

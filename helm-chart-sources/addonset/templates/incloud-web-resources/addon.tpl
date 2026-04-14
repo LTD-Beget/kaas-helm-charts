@@ -16,6 +16,18 @@ spec:
     dependency: "True"
   valuesSources:  []
   initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
 {{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:

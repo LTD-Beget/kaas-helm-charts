@@ -39,6 +39,18 @@ spec:
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
   initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
     - name: cilium
       criteria:
         - jsonPath: $.status.deployed

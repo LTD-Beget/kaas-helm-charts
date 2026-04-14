@@ -26,8 +26,20 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
-{{- if .Values.clientClusterEnabled }}
   initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+{{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed

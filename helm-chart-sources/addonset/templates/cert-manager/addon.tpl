@@ -27,6 +27,19 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
   backend:
     finalizer: true
     type: "argocd"
@@ -42,11 +55,17 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
+        - ServerSideApply=true
   valuesSelectors:
     - name: default
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: cert-manager
+    - name: infra
+      priority: 10
+      matchLabels:
+        addons.in-cloud.io/values: infra
         addons.in-cloud.io/addon: cert-manager
     - name: custom
       priority: 90

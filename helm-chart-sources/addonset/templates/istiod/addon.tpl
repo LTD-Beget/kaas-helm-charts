@@ -32,6 +32,18 @@ spec:
         - as: controlPlaneDesiredReplicas
           jsonPath: .data.controlPlaneDesiredReplicas
   initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
     - name: istio-base
       criteria:
         - jsonPath: $.status.deployed
