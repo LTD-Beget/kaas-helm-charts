@@ -10,10 +10,7 @@ etcd:
             alert: "EtcdHighFsyncDurationsIncreasing"
             annotations:
               summary: Etcd high deviv fsync durations (instance {{ $labels.instance }})
-              description: |
-                Etcd WAL fsync duration increasing is over 15%
-                  VALUE = {{ $value }}
-                  LABELS = {{ $labels }}
+              description: Etcd WAL fsync duration increasing is over 15%
               message: |
                 {{ $labels.cluster_full_name }}: etcd WAL fsync duration increasing
 
@@ -36,10 +33,7 @@ etcd:
             alert: "EtcdHighFsyncDurations"
             annotations:
               summary: Etcd high fsync durations (instance {{ $labels.instance }})
-              description: |
-                Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
-                  VALUE = {{ $value }}
-                  LABELS = {{ $labels }}
+              description: Etcd WAL fsync duration increasing, 99th percentile is over 0.5s
               message: |
                 {{ $labels.cluster_full_name }}: etcd WAL fsync 99th percentile above threshold
 
@@ -57,10 +51,7 @@ etcd:
             alert: "EtcdHighCommitDurations"
             annotations:
               summary: Etcd high commit durations (instance {{ $labels.instance }})
-              description: |
-                Etcd commit duration increasing, 99th percentile is over 0.25s
-                  VALUE = {{ $value }}
-                  LABELS = {{ $labels }}
+              description: Etcd commit duration increasing, 99th percentile is over 0.25s
               message: |
                 {{ $labels.cluster_full_name }}: etcd backend commit duration 99th percentile above threshold
 
@@ -78,10 +69,7 @@ etcd:
             alert: "EtcdNoLeader"
             annotations:
               summary: Etcd no Leader (instance {{ $labels.instance }})
-              description: |
-                Etcd cluster have no leader
-                  VALUE = {{ $value }}
-                  LABELS = {{ $labels }}
+              description: Etcd cluster have no leader
               message: |
                 {{ $labels.cluster_full_name }}: etcd cluster has no leader
 
@@ -98,10 +86,7 @@ etcd:
             alert: "EtcdHighNumberOfLeaderChanges"
             annotations:
               summary: Etcd high number of leader changes (instance {{ $labels.instance }})
-              description: |
-                Etcd leader changed more than 1 times during 5 minutes
-                  VALUE = {{ $value }}
-                  LABELS = {{ $labels }}
+              description: Etcd leader changed more than 1 times during 5 minutes
               message: |
                 {{ $labels.cluster_full_name }}: etcd leader changes above threshold
 
