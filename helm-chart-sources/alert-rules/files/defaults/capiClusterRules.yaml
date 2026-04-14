@@ -299,3 +299,18 @@ capiClusterRules:
                 )
               )
             labels: {}
+
+        "in_cloud_capi_cluster_mute":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_mute"
+            annotations: {}
+            expr: |
+              (
+                (time() - in_cloud_capi_cluster_created_timestamp_seconds) < bool 600
+              )
+              or
+              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name, server)(
+                in_cloud_capi_cluster_deletion_requested == bool 1
+              )
+            labels: {}
