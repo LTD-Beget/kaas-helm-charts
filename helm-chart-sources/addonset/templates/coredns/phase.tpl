@@ -104,6 +104,14 @@ spec:
             kind: ConfigMap
             name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
             namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: {{ .Values.companyPrefix }}-system
           jsonPath: $.data.controlPlaneAvailableReplicas
           operator: GreaterThan
           value: 1
