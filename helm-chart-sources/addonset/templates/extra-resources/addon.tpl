@@ -86,4 +86,10 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
+  valuesSelectors:
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: extra-resources
 {{- end }}

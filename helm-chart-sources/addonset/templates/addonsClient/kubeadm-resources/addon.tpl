@@ -88,4 +88,9 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: client
         addons.in-cloud.io/addon: kubeadm-resources
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: kubeadm-resources
 {{- end }}

@@ -79,6 +79,11 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: konnectivity-agent
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: konnectivity-agent
     - name: immutable
       priority: 99
       matchLabels:

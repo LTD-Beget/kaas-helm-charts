@@ -170,7 +170,7 @@ spec:
                   group: cluster.x-k8s.io
                   version: v1beta2
                   kind: Cluster
-                metricNamePrefix: capi_cluster
+                metricNamePrefix: in_cloud_capi_cluster
                 labelsFromPath:
                   name: [metadata, name]
                   namespace: [metadata, namespace]
