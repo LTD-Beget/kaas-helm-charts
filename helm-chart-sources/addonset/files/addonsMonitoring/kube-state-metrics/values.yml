@@ -172,8 +172,8 @@ spec:
                   kind: ClusterClaim
                 metricNamePrefix: in_cloud_capi_clusterclaim
                 labelsFromPath:
-                  name: [metadata, name]
-                  namespace: [metadata, namespace]
+                  cluster_name: [metadata, name]
+                  cluster_namespace: [metadata, namespace]
                 metrics:
                 # common
                   - name: resource_info
