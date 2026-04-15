@@ -225,22 +225,41 @@ capiClusterAlerts:
             labels:
               severity: info
 
-        InCloudCapiClusterSuspended:
+        InCloudCapiInfraClusterSuspended:
           enabled: false
           spec:
-            alert: InCloudCapiClusterSuspended
+            alert: InCloudCapiInfraClusterSuspended
             annotations:
-              summary: Cluster is suspended
+              summary: Infra cluster is suspended
               description: |
-                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is suspended.
+                Infra cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is suspended.
               message: |
-                {{ $labels.cluster_full_name }}: Cluster is suspended
+                {{ $labels.cluster_full_name }}: Infra cluster is suspended
 
                 Cluster: {{ $labels.cluster_full_name }}
                 Namespace: {{ $labels.cluster_namespace }}
                 Name: {{ $labels.cluster_name }}
             expr: |
-              in_cloud_capi_clusterclaim_resource_info{cluster_suspend="true"}
+              in_cloud_capi_clusterclaim_infra_cluster_info{cluster_suspend="true"}
+            labels:
+              severity: info
+
+        InCloudCapiClientClusterSuspended:
+          enabled: false
+          spec:
+            alert: InCloudCapiClientClusterSuspended
+            annotations:
+              summary: Client cluster is suspended
+              description: |
+                Client cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is suspended.
+              message: |
+                {{ $labels.cluster_full_name }}: Client cluster is suspended
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_clusterclaim_client_cluster_info{cluster_suspend="true"}
             labels:
               severity: info
 

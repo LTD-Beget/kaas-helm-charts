@@ -164,10 +164,11 @@ spec:
             equal:
               - cluster_full_name
 
-          # Алерт InCloudCapiClusterSuspended нам говорит о том, что кластер заблокирован 
-          # и не обслуживается. На время блокировки все алерты приостановлены
+          # Алерт InCloudCapiInfraClusterSuspended/InCloudCapiClientClusterSuspended 
+          # нам говорит о том, что кластер заблокирован и не обслуживается. 
+          # На время блокировки все алерты приостановлены
           - source_matchers:
-              - alertname="InCloudCapiClusterSuspended"
+              - alertname=~"InCloudCapiInfraClusterSuspended|InCloudCapiClientClusterSuspended"
             target_matchers:
               - alertname!=""
             equal:

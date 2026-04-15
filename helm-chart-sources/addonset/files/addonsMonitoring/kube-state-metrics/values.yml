@@ -147,6 +147,18 @@ spec:
             target_label: cluster_full_name
             replacement: "$1-$2"
             action: replace
+          - source_labels: [__name__, namespace, name]
+            separator: "-"
+            regex: "^in_cloud_capi_clusterclaim_infra_.*-(.+)-(.+)$"
+            target_label: cluster_full_name
+            replacement: "$1-$2-infra"
+            action: replace
+          - source_labels: [__name__, namespace, name]
+            separator: "-"
+            regex: "^in_cloud_capi_clusterclaim_client_.*-(.+)-(.+)$"
+            target_label: cluster_full_name
+            replacement: "$1-$2-client"
+            action: replace
 
 ---
 # TODO: Describe AddonPhase for CAPI
@@ -172,8 +184,8 @@ spec:
                   kind: ClusterClaim
                 metricNamePrefix: in_cloud_capi_clusterclaim
                 labelsFromPath:
-                  cluster_name: [metadata, name]
-                  cluster_namespace: [metadata, namespace]
+                  name: [metadata, name]
+                  namespace: [metadata, namespace]
                 metrics:
                 # common
                   - name: resource_info
@@ -244,6 +256,8 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
+                          customer_login: [spec, extraEnvs, begetClusterCustomerLogin]
+                          cluster_suspend: [spec, extraEnvs, begetCltSuspend]
                           kubernetes_version: [spec, infra, componentVersions, kubernetes, version]
                           certificate_set_template: [spec, certificateSetTemplateRef, infra, name]
                           cluster_template: [spec, clusterTemplateRef, infra, name]
@@ -260,7 +274,7 @@ spec:
                         valueFrom: [status]
 
                   - name: infra_status_phase
-                    help: "Cluster status phase."
+                    help: "Infra cluster status phase."
                     each:
                       type: StateSet
                       stateSet:
@@ -289,6 +303,8 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
+                          customer_login: [spec, extraEnvs, begetClusterCustomerLogin]
+                          cluster_suspend: [spec, extraEnvs, begetCltSuspend]
                           enabled: [spec, client, enabled]
                           kubernetes_version: [spec, client, componentVersions, kubernetes, version]
                           certificate_set_template: [spec, certificateSetTemplateRef, client, name]
@@ -296,7 +312,7 @@ spec:
                           configmap_template: [spec, configMapTemplateRef, client, name]
 
                   - name: client_cluster_condition
-                    help: "Cluster conditions."
+                    help: "Client cluster conditions."
                     each:
                       type: Gauge
                       gauge:
@@ -306,7 +322,7 @@ spec:
                         valueFrom: [status]
 
                   - name: client_status_phase
-                    help: "Cluster status phase."
+                    help: "Client cluster status phase."
                     each:
                       type: StateSet
                       stateSet:
@@ -320,8 +336,8 @@ spec:
                           - Failed
                           - Unknown
 
-                  - name: infra_spec_paused
-                    help: "Infra cluster paused flag."
+                  - name: client_spec_paused
+                    help: "Client cluster paused flag."
                     each:
                       type: Gauge
                       gauge:
