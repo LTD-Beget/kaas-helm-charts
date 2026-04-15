@@ -98,10 +98,6 @@ capiClusterAlerts:
               on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 in_cloud_capi_cluster_nodes_consistent == 0
               )
-              unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
-                in_cloud_capi_cluster_mute > 0
-              )
             for: 20m
             labels:
               severity: warning
@@ -122,13 +118,7 @@ capiClusterAlerts:
                 Namespace: {{ $labels.cluster_namespace }}
                 Name: {{ $labels.cluster_name }}
             expr: |
-              (
-                in_cloud_capi_cluster_nodes_update_required == 1
-              )
-              unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
-                in_cloud_capi_cluster_mute > 0
-              )
+              in_cloud_capi_cluster_nodes_update_required == 1
             for: 120m
             labels:
               severity: info
@@ -204,10 +194,6 @@ capiClusterAlerts:
               on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                 in_cloud_capi_cluster_controlplane_update_required == 1
               )
-              unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
-                in_cloud_capi_cluster_mute > 0
-              )
             for: 60m
             labels:
               severity: critical
@@ -236,5 +222,45 @@ capiClusterAlerts:
                 in_cloud_capi_cluster_nodes_update_required == 1
               )
             for: 30m
+            labels:
+              severity: info
+
+        InCloudCapiClusterSuspended:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterSuspended
+            annotations:
+              summary: Cluster is suspended
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is suspended.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster is suspended
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_clusterclaim_resource_info{cluster_suspend="true"}
+            labels:
+              severity: info
+
+        InCloudCapiClusterMuted:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterMuted
+            annotations:
+              summary: Сluster was created in the last 10 minutes or is in the process of being deleted.
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} 
+                was created in the last 10 minutes or is in the process of being deleted..
+              message: |
+                {{ $labels.cluster_full_name }}:  Сluster was created in the 
+                last 10 minutes or is in the process of being deleted.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_cluster_mute > 0
             labels:
               severity: info

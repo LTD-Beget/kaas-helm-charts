@@ -71,6 +71,10 @@ vmrules:
             enabled: true
           InCloudCapiClusterPausedButUpdateRequired:
             enabled: true
+          InCloudCapiClusterSuspended:
+            enabled: true
+          InCloudCapiClusterMuted:
+            enabled: true
   capiClusterRules:
     enabled: true
     groups:

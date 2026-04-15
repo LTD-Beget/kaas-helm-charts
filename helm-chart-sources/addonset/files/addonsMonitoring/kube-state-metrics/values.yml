@@ -167,6 +167,168 @@ spec:
           spec:
             resources:
               - groupVersionKind:
+                  group: clusterclaim.in-cloud.io
+                  version: v1alpha1
+                  kind: ClusterClaim
+                metricNamePrefix: in_cloud_capi_clusterclaim
+                labelsFromPath:
+                  name: [metadata, name]
+                  namespace: [metadata, namespace]
+                metrics:
+                # common
+                  - name: resource_info
+                    help: "ClusterClaim inventory info."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          customer_login: [spec, extraEnvs, begetClusterCustomerLogin]
+                          cluster_suspend: [spec, extraEnvs, begetCltSuspend]
+                          ccm_csr_template: [spec, ccmCsrTemplateRef, name]
+                          observe_template: [spec, observeTemplateRef, name]
+                          replicas: [spec, replicas]
+
+                  - name: created_timestamp_seconds
+                    help: "Cluster creation timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, creationTimestamp]
+
+                  - name: deleted_timestamp_seconds
+                    help: "Cluster deletion timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, deletionTimestamp]
+                        nilIsZero: true
+
+                  - name: status_phase
+                    help: "Cluster status phase."
+                    each:
+                      type: StateSet
+                      stateSet:
+                        labelName: phase
+                        path: [status, phase]
+                        list:
+                          - Provisioning
+                          - WaitingDependency
+                          - Ready
+                          - Failed
+                          - Degraded
+                          - Paused
+                          - Deleting
+
+                  - name: spec_paused
+                    help: "Cluster paused flag."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [spec, paused]
+                        nilIsZero: true
+
+                  - name: condition
+                    help: "Cluster conditions."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, conditions]
+                        labelsFromPath:
+                          type: [type]
+                        valueFrom: [status]
+
+                # infra
+                  - name: infra_cluster_info
+                    help: "Infra cluster inventory info."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          kubernetes_version: [spec, infra, componentVersions, kubernetes, version]
+                          certificate_set_template: [spec, certificateSetTemplateRef, infra, name]
+                          cluster_template: [spec, clusterTemplateRef, infra, name]
+                          configmap_template: [spec, configMapTemplateRef, infra, name]
+
+                  - name: infra_condition
+                    help: "Infra cluster conditions."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, clusters, infra, conditions]
+                        labelsFromPath:
+                          type: [type]
+                        valueFrom: [status]
+
+                  - name: infra_status_phase
+                    help: "Cluster status phase."
+                    each:
+                      type: StateSet
+                      stateSet:
+                        labelName: phase
+                        path: [status, clusters, infra, phase]
+                        list:
+                          - Pending
+                          - Provisioning
+                          - Provisioned
+                          - Deleting
+                          - Failed
+                          - Unknown
+
+                  - name: infra_spec_paused
+                    help: "Infra cluster paused flag."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [spec, infra, paused]
+                        nilIsZero: true
+
+                # client
+                  - name: client_cluster_info
+                    help: "Client cluster inventory info."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          enabled: [spec, client, enabled]
+                          kubernetes_version: [spec, client, componentVersions, kubernetes, version]
+                          certificate_set_template: [spec, certificateSetTemplateRef, client, name]
+                          cluster_template: [spec, clusterTemplateRef, client, name]
+                          configmap_template: [spec, configMapTemplateRef, client, name]
+
+                  - name: client_cluster_condition
+                    help: "Cluster conditions."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, clusters, client, conditions]
+                        labelsFromPath:
+                          type: [type]
+                        valueFrom: [status]
+
+                  - name: client_status_phase
+                    help: "Cluster status phase."
+                    each:
+                      type: StateSet
+                      stateSet:
+                        labelName: phase
+                        path: [status, clusters, client, phase]
+                        list:
+                          - Pending
+                          - Provisioning
+                          - Provisioned
+                          - Deleting
+                          - Failed
+                          - Unknown
+
+                  - name: infra_spec_paused
+                    help: "Infra cluster paused flag."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [spec, client, paused]
+                        nilIsZero: true
+
+              - groupVersionKind:
                   group: cluster.x-k8s.io
                   version: v1beta2
                   kind: Cluster
@@ -337,6 +499,13 @@ spec:
               - cluster.x-k8s.io
             resources:
               - clusters
+            verbs:
+              - list
+              - watch
+          - apiGroups:
+              - clusterclaim.in-cloud.io
+            resources:
+              - clusterclaims
             verbs:
               - list
               - watch
