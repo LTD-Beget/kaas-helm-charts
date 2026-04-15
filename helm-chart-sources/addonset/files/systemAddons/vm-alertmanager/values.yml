@@ -105,6 +105,7 @@ spec:
                 message: '{{`{{ template "tg.message" . }}`}}'
 
         inhibit_rules:
+          # Более критичный алерт InCloudCapiClusterNotAlive глушит каскадные алерты
           - source_matchers:
               - alertname="InCloudCapiClusterNotAlive"
             target_matchers:
@@ -112,6 +113,7 @@ spec:
             equal:
               - cluster_full_name
 
+          # Более критичный алерт глушит аналогичный предупредительный
           - source_matchers:
               - alertname="ArgoCdClusterConnectionError"
             target_matchers:
@@ -119,6 +121,7 @@ spec:
             equal:
               - cluster_full_name
 
+          # Более критичный алерт глушит аналогичный предупредительный
           - source_matchers:
               - alertname="CoreDNSErrorsHighCritical"
             target_matchers:
@@ -126,6 +129,7 @@ spec:
             equal:
               - cluster_full_name
 
+          # Более критичный алерт глушит аналогичный предупредительный
           - source_matchers:
               - alertname="ExtremelyHighIndividualControlPlaneCPU"
             target_matchers:
@@ -133,6 +137,7 @@ spec:
             equal:
               - cluster_full_name
 
+          # Более критичный алерт глушит аналогичный предупредительный
           - source_matchers:
               - alertname="InCloudCapiClusterNotReadyTooLong"
             target_matchers:
@@ -140,10 +145,31 @@ spec:
             equal:
               - cluster_full_name
 
+          # Более критичный алерт глушит аналогичный предупредительный
           - source_matchers:
               - alertname="VMAgentTooManyScrapePoolWithoutTargets"
             target_matchers:
               - alertname="VMAgentScrapePoolHasNoTargets"
+            equal:
+              - cluster_full_name
+
+          # Пока работает info алерт InCloudCapiClusterMuted (С момента 
+          # создания клатсера прошло менее 10 минут или клатсер в процессе удаления)
+          # Глушатся все алерты кроме InCloudCapiClusterDeletionRequestedTooLong, на 
+          # случай, если процесс удаления длится более 15 минут
+          - source_matchers:
+              - alertname="InCloudCapiClusterMuted"
+            target_matchers:
+              - alertname!="InCloudCapiClusterDeletionRequestedTooLong"
+            equal:
+              - cluster_full_name
+
+          # Алерт InCloudCapiClusterSuspended нам говорит о том, что кластер заблокирован 
+          # и не обслуживается. На время блокировки все алерты приостановлены
+          - source_matchers:
+              - alertname="InCloudCapiClusterSuspended"
+            target_matchers:
+              - alertname!=""
             equal:
               - cluster_full_name
 
