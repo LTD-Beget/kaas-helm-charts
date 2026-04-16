@@ -164,7 +164,7 @@ capiClusterAlerts:
                 in_cloud_capi_cluster_spec_paused == 0
               )
               *
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+              on(cluster_full_name) (
                 in_cloud_capi_cluster_deletion_requested == 1
               )
             for: 15m

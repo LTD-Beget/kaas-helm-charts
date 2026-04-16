@@ -117,8 +117,13 @@ spec:
                 name: vmselect
                 labels:
                   monitoring.in-cloud.io/service: vmselect
+                annotations:
+                  lb.{{ .Values.companyDomain }}/algorithm: "round_robin"
+                  lb.{{ .Values.companyDomain }}/type: "internal"
+                  lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+                  lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
               spec:
-                type: ClusterIP
+                type: LoadBalancer
                 ports:
                   - name: http
                     port: 8481

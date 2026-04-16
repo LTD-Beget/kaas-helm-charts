@@ -10,23 +10,25 @@ capiClusterRules:
             record: "in_cloud_capi_cluster_deletion_requested"
             annotations: {}
             expr: |
-              clamp_max(
+              max by (cluster_full_name) (
                 (
                   in_cloud_capi_clusterclaim_infra_clusterclaim_deleted_timestamp_seconds > bool 0
                 )
-                +
+                or
+                on(cluster_full_name)
                 (
                   in_cloud_capi_clusterclaim_client_clusterclaim_deleted_timestamp_seconds > bool 0
                 )
-                +
-                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                or
+                on(cluster_full_name)
+                (
                   in_cloud_capi_cluster_status_phase{phase="Deleting"} == bool 1
                 )
-                +
-                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+                or
+                on(cluster_full_name)
+                (
                   in_cloud_capi_cluster_condition{type="Deleting"} == bool 1
-                ),
-                1
+                )
               )
             labels: {}
 
@@ -216,7 +218,7 @@ capiClusterRules:
                 )
               )
               unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+              on(cluster_full_name) (
                 in_cloud_capi_cluster_deletion_requested > 0
               )
             labels: {}
@@ -237,7 +239,7 @@ capiClusterRules:
                 )
               )
               unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+              on(cluster_full_name) (
                 in_cloud_capi_cluster_deletion_requested > 0
               )
             labels: {}
@@ -270,7 +272,7 @@ capiClusterRules:
                 )
               )
               unless
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
+              on(cluster_full_name) (
                 in_cloud_capi_cluster_deletion_requested > 0
               )
             labels: {}
@@ -314,7 +316,7 @@ capiClusterRules:
                 (time() - in_cloud_capi_cluster_created_timestamp_seconds) < bool 900
               )
               or
-              on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name, server)(
+              on(cluster_full_name)(
                 in_cloud_capi_cluster_deletion_requested == bool 1
               )
             labels: {}
