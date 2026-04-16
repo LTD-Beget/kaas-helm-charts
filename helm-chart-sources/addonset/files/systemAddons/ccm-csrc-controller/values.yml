@@ -14,11 +14,11 @@ spec:
           repository: {{ .Values.companyInternalDockerRegistry }}/k8s-charts-public/charts/ccm-csr-controller
         resources:
           limits:
-            cpu: 4000m
+            cpu: 6 # In trottling case need delete limits.cpu
             memory: 2048Mi
           requests:
-            cpu: 128m
-            memory: 128Mi
+            cpu: 500m
+            memory: 512Mi
       tolerations:
       - effect: NoSchedule
         operator: Exists
