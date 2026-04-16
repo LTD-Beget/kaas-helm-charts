@@ -8,7 +8,7 @@ metadata:
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         control-plane: controller-manager
-    name: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+    name: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager-metrics" "context" $) }}
     namespace: {{ .Release.Namespace }}
 spec:
     ports:
