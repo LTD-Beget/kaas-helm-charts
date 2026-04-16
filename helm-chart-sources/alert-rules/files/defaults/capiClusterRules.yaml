@@ -12,7 +12,11 @@ capiClusterRules:
             expr: |
               clamp_max(
                 (
-                  in_cloud_capi_cluster_deleted_timestamp_seconds > bool 0
+                  in_cloud_capi_clusterclaim_infra_clusterclaim_deleted_timestamp_seconds > bool 0
+                )
+                +
+                (
+                  in_cloud_capi_clusterclaim_client_clusterclaim_deleted_timestamp_seconds > bool 0
                 )
                 +
                 on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
@@ -307,7 +311,7 @@ capiClusterRules:
             annotations: {}
             expr: |
               (
-                (time() - in_cloud_capi_cluster_created_timestamp_seconds) < bool 600
+                (time() - in_cloud_capi_cluster_created_timestamp_seconds) < bool 900
               )
               or
               on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name, server)(

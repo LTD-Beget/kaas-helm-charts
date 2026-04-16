@@ -201,14 +201,14 @@ spec:
                           replicas: [spec, replicas]
 
                   - name: created_timestamp_seconds
-                    help: "Cluster creation timestamp."
+                    help: "ClusterClaim creation timestamp."
                     each:
                       type: Gauge
                       gauge:
                         path: [metadata, creationTimestamp]
 
                   - name: deleted_timestamp_seconds
-                    help: "Cluster deletion timestamp."
+                    help: "ClusterClaim deletion timestamp."
                     each:
                       type: Gauge
                       gauge:
@@ -216,7 +216,7 @@ spec:
                         nilIsZero: true
 
                   - name: status_phase
-                    help: "Cluster status phase."
+                    help: "ClusterClaim status phase."
                     each:
                       type: StateSet
                       stateSet:
@@ -232,7 +232,7 @@ spec:
                           - Deleting
 
                   - name: spec_paused
-                    help: "Cluster paused flag."
+                    help: "ClusterClaim paused flag."
                     each:
                       type: Gauge
                       gauge:
@@ -240,7 +240,7 @@ spec:
                         nilIsZero: true
 
                   - name: condition
-                    help: "Cluster conditions."
+                    help: "ClusterClaim conditions."
                     each:
                       type: Gauge
                       gauge:
@@ -262,6 +262,21 @@ spec:
                           certificate_set_template: [spec, certificateSetTemplateRef, infra, name]
                           cluster_template: [spec, clusterTemplateRef, infra, name]
                           configmap_template: [spec, configMapTemplateRef, infra, name]
+
+                  - name: infra_clusterclaim_created_timestamp_seconds
+                    help: "Infra clusterclaim creation timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, creationTimestamp]
+
+                  - name: infra_clusterclaim_deleted_timestamp_seconds
+                    help: "Infra clusterclaim deletion timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, deletionTimestamp]
+                        nilIsZero: true
 
                   - name: infra_condition
                     help: "Infra cluster conditions."
@@ -310,6 +325,21 @@ spec:
                           certificate_set_template: [spec, certificateSetTemplateRef, client, name]
                           cluster_template: [spec, clusterTemplateRef, client, name]
                           configmap_template: [spec, configMapTemplateRef, client, name]
+
+                  - name: client_clusterclaim_created_timestamp_seconds
+                    help: "Client clusterclaim creation timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, creationTimestamp]
+
+                  - name: client_clusterclaim_deleted_timestamp_seconds
+                    help: "Client clusterclaim deletion timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [metadata, deletionTimestamp]
+                        nilIsZero: true
 
                   - name: client_cluster_condition
                     help: "Client cluster conditions."
