@@ -1,9 +1,9 @@
-{{- define "certificate-set.phase" }}
+{{- define "secret-copy-operator.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: certificate-set{{ if eq .Values.environment "client" }}-client{{ end }}
+  name: secret-copy-operator{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   rules:
     - name: system
@@ -21,5 +21,5 @@ spec:
         priority: 25
         matchLabels:
           addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: certificate-set
+          addons.in-cloud.io/addon: secret-copy-operator
 {{- end }}

@@ -7,19 +7,7 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: "{{ .Values.companyPrefix }}-cm-provider"
 spec:
-  values: |
-    appSpec:
-      applications:
-        providerControllerManager:
-          containers:
-            manager:
-              extraResources:
-                limits:
-                  cpu: 500m
-                  memory: 512Mi
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
+  values: ""
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -76,6 +64,10 @@ spec:
               image:
                 repository: {{ .Values.companyInternalDockerRegistry }}/cloud/k8s/controllers/capi-provider-{{ .Values.companyPrefix }}
                 pullPolicy: Always
+              extraResources:
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
           enabled: true
           tolerations:
           - effect: NoExecute
