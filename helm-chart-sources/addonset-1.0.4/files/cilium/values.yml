@@ -1,0 +1,137 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      ciliumEndpointSlice:
+        enabled: true
+      image:
+        pullPolicy: IfNotPresent
+      envoy:
+        enabled: false
+      hubble:
+        enabled: false
+      kubeProxyReplacement: true
+      podLabels:
+        in-cloud.io/clusterName: "{{ .Values.cluster.name }}"
+      nodePort:
+        enabled: true
+      operator:
+        replicas: 1
+        image:
+          pullPolicy: IfNotPresent
+      dnsPolicy: ClusterFirstWithHostNet
+      prometheus:
+        metricsService: true
+        enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+      tls:
+        readSecretsOnlyFromSecretsNamespace: false
+        secretSync:
+          enabled: false
+        secretsNamespace:
+          create: false
+          name: ~
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      k8sServiceHost: "{{ .Values.cluster.host }}"
+      k8sServicePort: "{{ .Values.cluster.port }}"
+      ipam:
+        operator:
+          clusterPoolIPv4MaskSize: {{ .Values.podCidrMaskSize }}
+          clusterPoolIPv4PodCIDRList: [ "{{ .Values.podCidr }}" ]
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      operator:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+        tolerations:
+          - operator: Exists
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: Exists
+          - key: "node-role.kubernetes.io/master" #deprecated
+            operator: Exists
+          - key: "node.kubernetes.io/not-ready"
+            operator: Exists
+          - key: "node.cloudprovider.kubernetes.io/uninitialized"
+            operator: Exists
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-vm-operator
+  labels:
+    addons.in-cloud.io/values: "vm-operator"
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    cilium:
+      extraContainers:
+        - name: rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+          args:
+            - --secure-listen-address=0.0.0.0:11043
+            - --upstream=http://127.0.0.1:9962
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11043
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - name: rbac-proxy-tls
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+      extraVolumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: cilium-agent-svc-tls
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

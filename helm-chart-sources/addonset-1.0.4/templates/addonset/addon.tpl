@@ -1,0 +1,83 @@
+{{- define "addonset.addon" }}
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: addonset
+spec:
+  chart: "addonset"
+  pluginName: helm-with-values
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  version: "{{ .Values.addonRevision }}"
+  targetCluster: in-cluster
+  targetNamespace: "{{ .Values.companyPrefix }}-addonset"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: clusterClaim	
+          jsonPath: .data.xcluster
+        - as: cluster.client.name
+          jsonPath: .data.clusterClientName
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: addonRevision
+          jsonPath: .data.addonRevision
+        - as: cluster.systemEnabled
+          jsonPath: .data.systemEnabled
+        - as: cluster.clusterClientEnabled
+          jsonPath: .data.clusterClientEnabled
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+        - as: companyExternalChartRegistry
+          jsonPath: .data.companyExternalChartRegistry
+        - as: companyInternalChartRegistry
+          jsonPath: .data.companyInternalChartRegistry
+        - as: companyInternalChartRegistryPublic
+          jsonPath: .data.companyInternalChartRegistryPublic
+        - as: companyInternalDockerRegistry
+          jsonPath: .data.companyInternalDockerRegistry
+        - as: companyExternalGitRepository
+          jsonPath: .data.companyExternalGitRepository
+        - as: companyInternalGitRepository
+          jsonPath: .data.companyInternalGitRepository
+        - as: companyWikiAlertingUrl
+          jsonPath: .data.companyWikiAlertingUrl
+        - as: companyAdminUser
+          jsonPath: .data.companyAdminUser
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-set
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: addon-set
+{{- end }}

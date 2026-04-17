@@ -1,0 +1,13 @@
+{{- if .Values.addons.certmanager.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "cert-manager.addon" . }}
+
+  {{- .Files.Get "files/cert-manager/values.yml" | nindent 0 }}
+
+  {{- include "cert-manager.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "cert-manager.phase" $clientContext }}
+  {{- end }}
+{{- end }}
