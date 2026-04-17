@@ -19,18 +19,27 @@ spec:
         operator: Exists
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 128m
-          memory: 128Mi
     metrics:
       enable: true
       port: 8443
     networkPolicies:
       enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+    manager:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

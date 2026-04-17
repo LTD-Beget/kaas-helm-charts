@@ -27,13 +27,6 @@ spec:
         operator: Exists
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
-      resources:
-        limits:
-            cpu: 500m
-            memory: 512Mi
-        requests:
-            cpu: 100m
-            memory: 128Mi
     metrics:
       enable: false
       port: 8443
@@ -93,6 +86,11 @@ spec:
   values: |
     managerClaim:
       enable: true
+    manager:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
