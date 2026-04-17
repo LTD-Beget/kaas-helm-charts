@@ -259,7 +259,9 @@ capiClusterAlerts:
                 Namespace: {{ $labels.cluster_namespace }}
                 Name: {{ $labels.cluster_name }}
             expr: |
-              in_cloud_capi_clusterclaim_client_cluster_info{cluster_suspend="true"}
+              max_over_time(
+                in_cloud_capi_clusterclaim_client_cluster_info{cluster_suspend="true"}[15m]
+              ) > 0
             labels:
               severity: info
 

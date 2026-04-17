@@ -17,6 +17,16 @@ spec:
         operator: Exists
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
+      args:
+        - --leader-elect
+        - --max-concurrent-reconciles=10
+      resources:
+        limits:
+            cpu: 500m
+            memory: 512Mi
+        requests:
+            cpu: 100m
+            memory: 128Mi
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

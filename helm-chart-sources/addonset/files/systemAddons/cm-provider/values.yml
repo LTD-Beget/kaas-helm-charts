@@ -7,7 +7,19 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: "{{ .Values.companyPrefix }}-cm-provider"
 spec:
-  values: ""
+  values: |
+    appSpec:
+      applications:
+        providerControllerManager:
+          containers:
+            manager:
+              extraResources:
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

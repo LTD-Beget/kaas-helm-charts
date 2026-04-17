@@ -319,6 +319,8 @@ vmrules:
             enabled: true
           KubeInfraPodCrashLooping:
             enabled: true
+          KubeInfraPodOOMKilled:
+            enabled: true
           KubeJobFailed:
             enabled: true
           KubeJobNotCompleted:

@@ -1,0 +1,28 @@
+{{- if .Values.metrics.enable }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "addon-operator.name" . }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    control-plane: controller-manager
+  name: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    path: /metrics
+    port: https
+    scheme: HTTPS
+    tlsConfig:
+      insecureSkipVerify: true
+      serverName: localhost
+  jobLabel: addons-operator
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "addon-operator.name" . }}
+      control-plane: controller-manager
+{{- end }}
