@@ -64,6 +64,41 @@ kubernetesApps:
             labels:
               severity: critical
 
+        KubeInfraPodOOMKilled:
+          enabled: false
+          spec:
+            alert: "KubeInfraPodOOMKilled"
+            annotations:
+              description: |-
+                Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled.
+              summary: "Container OOMKilled"
+              message: |
+                {{ $labels.cluster_full_name }}: Infrastructure Pod was OOMKilled.
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.namespace }}
+                Pod: {{ $labels.pod }}
+                Container: {{ $labels.container }}
+            expr: |
+              sum by (cluster_full_name, namespace, pod, container) (
+                increase(
+                  kube_pod_container_status_restarts_total{
+                    namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
+                    cluster_type!="client"
+                  }[5m]
+                )
+                and
+                on(namespace, pod, container) (
+                  kube_pod_container_status_last_terminated_reason{
+                    reason="OOMKilled",
+                    namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
+                    cluster_type!="client"
+                  } == 1
+                )
+              ) > 0
+            labels:
+              severity: critical
+
         KubePodNotReady:
           enabled: false
           spec:
