@@ -225,6 +225,25 @@ capiClusterAlerts:
             labels:
               severity: info
 
+        InCloudCapiClusterIsPaused:
+          enabled: false
+          spec:
+            alert: InCloudCapiClusterIsPaused
+            annotations:
+              summary: Cluster is paused
+              description: |
+                Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} is paused.
+              message: |
+                {{ $labels.cluster_full_name }}: Cluster is paused
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Namespace: {{ $labels.cluster_namespace }}
+                Name: {{ $labels.cluster_name }}
+            expr: |
+              in_cloud_capi_cluster_spec_paused > 0
+            labels:
+              severity: info
+
         InCloudCapiInfraClusterSuspended:
           enabled: false
           spec:

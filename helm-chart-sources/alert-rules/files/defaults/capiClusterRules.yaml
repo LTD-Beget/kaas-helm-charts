@@ -252,10 +252,6 @@ capiClusterRules:
             expr: |
               (
                 (
-                  in_cloud_capi_cluster_spec_paused == bool 0
-                )
-                *
-                on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                   in_cloud_capi_cluster_condition{type="Available"} == bool 1
                 )
                 *
@@ -270,10 +266,6 @@ capiClusterRules:
                 on(cluster_full_name, cluster_hash, cluster_namespace, cluster_name) (
                   in_cloud_capi_cluster_nodes_consistent == bool 1
                 )
-              )
-              unless
-              on(cluster_full_name) (
-                in_cloud_capi_cluster_deletion_requested > 0
               )
             labels: {}
 
