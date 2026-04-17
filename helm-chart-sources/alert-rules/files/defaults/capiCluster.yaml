@@ -270,13 +270,13 @@ capiClusterAlerts:
           spec:
             alert: InCloudCapiClusterMuted
             annotations:
-              summary: Сluster was created in the last 10 minutes or is in the process of being deleted.
+              summary: Сluster was created in the last 15 minutes or is in the process of being deleted.
               description: |
                 Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }} 
-                was created in the last 10 minutes or is in the process of being deleted..
+                was created in the last 15 minutes or is in the process of being deleted..
               message: |
                 {{ $labels.cluster_full_name }}:  Сluster was created in the 
-                last 10 minutes or is in the process of being deleted.
+                last 15 minutes or is in the process of being deleted.
 
                 Cluster: {{ $labels.cluster_full_name }}
                 Namespace: {{ $labels.cluster_namespace }}

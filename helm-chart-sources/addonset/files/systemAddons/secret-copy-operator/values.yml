@@ -20,13 +20,6 @@ spec:
       args:
         - --leader-elect
         - --max-concurrent-reconciles=10
-      resources:
-        limits:
-            cpu: 500m
-            memory: 512Mi
-        requests:
-            cpu: 100m
-            memory: 128Mi
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -38,3 +31,22 @@ metadata:
     addons.in-cloud.io/addon: secret-copy-operator
 spec:
   values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: secret-copy-operator-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: secret-copy-operator
+spec:
+  values: |
+    manager:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
