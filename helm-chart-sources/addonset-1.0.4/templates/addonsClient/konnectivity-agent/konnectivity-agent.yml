@@ -1,5 +1,0 @@
-{{- if .Values.addons.konnectivityagent.enabled }}
-{{- include "konnectivity-agent.addon" . }}
-{{- end }}
-
-{{- .Files.Get "files/addonsClient/konnectivity-agent/values.yml" | nindent 0 }}

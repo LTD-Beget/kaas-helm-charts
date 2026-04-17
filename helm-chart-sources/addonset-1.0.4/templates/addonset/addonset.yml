@@ -1,9 +1,0 @@
-{{- if .Values.addons.addonset.enabled }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-
-  {{- include "addonset.addon" . }}
-
-  {{- .Files.Get "files/addonset/values.yml" | nindent 0 }}
-
-  {{- include "addonset.phase" . }}
-{{- end }}
