@@ -29,6 +29,22 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: certificate-set-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+    manager:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: certificate-set-immutable
   labels:
     addons.in-cloud.io/values: immutable
