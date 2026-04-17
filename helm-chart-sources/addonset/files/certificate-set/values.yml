@@ -19,6 +19,13 @@ spec:
         operator: Exists
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 128m
+          memory: 128Mi
     metrics:
       enable: true
       port: 8443
