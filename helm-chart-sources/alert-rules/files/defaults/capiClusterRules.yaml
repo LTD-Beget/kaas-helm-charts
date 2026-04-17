@@ -317,6 +317,8 @@ capiClusterRules:
               )
               or
               on(cluster_full_name)(
-                in_cloud_capi_cluster_deletion_requested == bool 1
+                max_over_time(
+                  in_cloud_capi_cluster_deletion_requested[15m]
+                ) == bool 1
               )
             labels: {}
