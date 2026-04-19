@@ -13,7 +13,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: validating-admission-policies-default
+  name: validating-admission-policies-immutable
   labels:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: validating-admission-policies
