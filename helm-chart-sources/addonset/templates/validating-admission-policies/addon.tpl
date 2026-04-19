@@ -3,13 +3,17 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: validating-admission-policies
+  name: validating-admission-policies{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
   chart: "validating-admission-policies"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.0"
   pluginName: helm-with-values
+  {{- if eq .Values.environment "client" }}
+  targetCluster: {{ .Values.clientName }}
+  {{- else }}
   targetCluster: in-cluster
+  {{- end }}
   targetNamespace: "{{ .Values.companyPrefix }}-system"
   variables:
     cluster_name: in-cluster
