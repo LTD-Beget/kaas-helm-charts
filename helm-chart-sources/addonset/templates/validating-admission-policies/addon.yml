@@ -1,12 +1,9 @@
 {{- if .Values.addons.validatingadmissionpolicies.enabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-  {{- .Files.Get "files/validating-admission-policies/values.yml" | nindent 0 }}
 
   {{- include "validating-admission-policies.addon" . }}
-  {{- include "validating-admission-policies.phase" . }}
 
   {{- if eq .Values.environment "infra" }}
     {{- include "validating-admission-policies.addon" $clientContext }}
-    {{- include "validating-admission-policies.phase" $clientContext }}
   {{- end }}
 {{- end }}

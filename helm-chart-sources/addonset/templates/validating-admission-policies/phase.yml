@@ -1,0 +1,9 @@
+{{- if .Values.addons.validatingadmissionpolicies.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "validating-admission-policies.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "validating-admission-policies.phase" $clientContext }}
+  {{- end }}
+{{- end }}
