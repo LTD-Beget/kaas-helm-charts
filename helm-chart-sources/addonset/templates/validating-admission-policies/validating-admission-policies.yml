@@ -5,9 +5,9 @@
 
   {{- .Files.Get "files/validating-admission-policies/values.yml" | nindent 0 }}
 
-  # {{- include "validating-admission-policies.phase" . }}
+  {{- include "validating-admission-policies.phase" . }}
 
-  # {{- if eq .Values.environment "infra" }}
-  #   {{- include "validating-admission-policies.phase" $clientContext }}
-  # {{- end }}
+  {{- if eq .Values.environment "infra" }}
+    {{- include "validating-admission-policies.phase" $clientContext }}
+  {{- end }}
 {{- end }}
