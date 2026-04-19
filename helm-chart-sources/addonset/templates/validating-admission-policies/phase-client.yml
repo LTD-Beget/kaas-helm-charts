@@ -3,24 +3,24 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: validating-admission-policies
+  name: validating-admission-policies-client
 spec:
   rules:
-    - name: infra
+    - name: client
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-infra
+            name: parameters-client
             namespace: {{ .Values.companyPrefix }}-system
           jsonPath: $.data.environment
           operator: Equal
-          value: "infra"
+          value: "client"
           keep: false
       selector:
-        name: infra
-        priority: 20
+        name: client
+        priority: 30
         matchLabels:
-          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/values: client
           addons.in-cloud.io/addon: validating-admission-policies
 {{- end }}
