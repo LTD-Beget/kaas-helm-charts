@@ -173,6 +173,52 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: extra-resources-cluster-pdb-limits
+  labels:
+    addons.in-cloud.io/values: cluster-pdb-limits
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      vapPdbSaneLimits:
+        apiVersion: admissionregistration.k8s.io/v1
+        kind: ValidatingAdmissionPolicy
+        metadata:
+          name: pdb-sane-limits
+        spec:
+          failurePolicy: Fail
+          matchConstraints:
+            resourceRules:
+              - apiGroups: ["policy"]
+                apiVersions: ["v1"]
+                operations: ["CREATE", "UPDATE"]
+                resources: ["poddisruptionbudgets"]
+          validations:
+            # 1. Запрещаем maxUnavailable: 0
+            - expression: "!(has(object.spec.maxUnavailable) && object.spec.maxUnavailable == 0)"
+              message: "PDB with maxUnavailable=0 blocks node drain"
+
+            # 2. Запрещаем minAvailable = replicas (через % = 100%)
+            - expression: "!(has(object.spec.minAvailable) && object.spec.minAvailable == '100%')"
+              message: "PDB with minAvailable=100% blocks node drain"
+
+            # 3. Должно быть задано только одно из полей
+            - expression: "!(has(object.spec.minAvailable) && has(object.spec.maxUnavailable))"
+              message: "Specify only one of minAvailable or maxUnavailable"
+
+      vapbPdbSaneLimits:
+        apiVersion: admissionregistration.k8s.io/v1
+        kind: ValidatingAdmissionPolicyBinding
+        metadata:
+          name: pdb-sane-limits-binding
+        spec:
+          policyName: pdb-sane-limits
+          validationActions: [Deny]
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: extra-resources-cluster-network-policies
   labels:
     addons.in-cloud.io/values: cluster-network-policies
@@ -338,6 +384,7 @@ spec:
         spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
+
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue

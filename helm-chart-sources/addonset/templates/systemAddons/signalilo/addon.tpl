@@ -11,14 +11,6 @@ spec:
   version: "0.12.1-1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-signalilo"
-  variables:
-    uuid: "da4c0b1d-da4c-4f3b-9e5d-c23f5fcd751a"
-    icingaUrl: "https://1.2.3.4:25665"
-    icingaHostname: "K8SSIGNALILO"
-    icingaUsername: "k8ssignalilo"
-    icingaPassword: "1234test"
-    alertmanagerSignaliloPort: "8888"
-    alertmanagerSignaliloToken: "HrVSzDOrZthErVJwxddMJHefHYkvr/XWVc1XGcazh1I="
   valuesSources: 
     - name: parameters
       sourceRef:
@@ -27,6 +19,8 @@ spec:
         name: parameters-infra
         namespace: {{ .Values.companyPrefix }}-system
       extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
         - as: signaliloUuid
           jsonPath: .data.signaliloUuid
         - as: icingaHostname
