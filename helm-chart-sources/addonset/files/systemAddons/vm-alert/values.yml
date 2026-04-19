@@ -252,13 +252,13 @@ spec:
             #       configMap:
             #         name: ca
             #         key: ca.crt
-            - url: "https://vmalertmanager-vm-alertmanager-0.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093"
+            - url: "https://vmalertmanager-vm-alertmanager-0.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093/alertmanager"
               tlsConfig:
                 ca:
                   configMap:
                     name: ca
                     key: ca.crt
-            - url: "https://vmalertmanager-vm-alertmanager-1.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093"
+            - url: "https://vmalertmanager-vm-alertmanager-1.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093/alertmanager"
               tlsConfig:
                 ca:
                   configMap:

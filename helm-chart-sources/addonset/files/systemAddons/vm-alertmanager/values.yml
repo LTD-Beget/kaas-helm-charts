@@ -16,6 +16,9 @@ spec:
           enabled: false
         spec:
           replicaCount: 2
+          extraArgs:
+            web.route-prefix: /alertmanager
+            web.external-url: /alertmanager
           affinity:
             podAntiAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:

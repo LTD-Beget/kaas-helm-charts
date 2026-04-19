@@ -58,6 +58,7 @@ spec:
         rules:
           - nonResourceURLs:
               - "/grafana/metrics"
+              - "/alertmanager/metrics"
             verbs:
               - get
           - apiGroups:
