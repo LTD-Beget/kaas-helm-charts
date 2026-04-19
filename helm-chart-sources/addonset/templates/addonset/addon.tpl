@@ -5,10 +5,14 @@ kind: Addon
 metadata:
   name: addonset
 spec:
-  chart: "addonset"
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  path: helm-chart-sources/addonset
+  version: feature/add-pdb-limits
+
+  # chart: "addonset"
+  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  # version: "{{ .Values.addonRevision }}"
   pluginName: helm-with-values
-  repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "{{ .Values.addonRevision }}"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addonset"
   variables:

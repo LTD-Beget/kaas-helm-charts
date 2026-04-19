@@ -5,9 +5,13 @@ kind: Addon
 metadata:
   name: validating-admission-policies{{ if eq .Values.environment "client" }}-client{{ end }}
 spec:
-  chart: "validating-admission-policies"
-  repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  path: helm-chart-sources/validating-admission-policies
+  version: feature/add-pdb-limits
+
+  # chart: "validating-admission-policies"
+  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  # version: "0.1.0"
   pluginName: helm-with-values
   {{- if eq .Values.environment "client" }}
   targetCluster: {{ .Values.clientName }}
