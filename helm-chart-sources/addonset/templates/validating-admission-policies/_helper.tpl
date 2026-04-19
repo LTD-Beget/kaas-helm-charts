@@ -3,6 +3,7 @@ chart: "validating-admission-policies"
 repoURL: "{{ .Values.companyExternalChartRegistry }}"
 version: "0.1.0"
 pluginName: helm-with-values
+targetNamespace: "{{ .Values.companyPrefix }}-system"
 variables:
   cluster_name: in-cluster
 valuesSources: []
