@@ -1,11 +1,7 @@
 {{- define "validating-admission-policies.addon-spec" }}
-repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
-path: helm-chart-sources/validating-admission-policies
-version: feature/add-pdb-limits
-
-# chart: "validating-admission-policies"
-# repoURL: "{{ .Values.companyExternalChartRegistry }}"
-# version: "0.1.0"
+chart: "validating-admission-policies"
+repoURL: "{{ .Values.companyExternalChartRegistry }}"
+version: "0.1.0"
 pluginName: helm-with-values
 variables:
   cluster_name: in-cluster
