@@ -202,24 +202,4 @@ spec:
           addons.in-cloud.io/values: cluster-network-policies
           addons.in-cloud.io/addon: extra-resources
     {{- end }}
-
-    {{- if eq .Values.environment "infra" }}
-    - name: cluster-pdb-limits
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: {{ .Values.companyPrefix }}-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-          keep: false
-      selector:
-        name: cluster-pdb-limits
-        priority: 60
-        matchLabels:
-          addons.in-cloud.io/values: cluster-pdb-limits
-          addons.in-cloud.io/addon: extra-resources
-    {{- end }}
 {{- end }}
