@@ -42,18 +42,11 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: signalilo{{ if eq .Values.environment "client" }}-client{{ end }}
+            name: signalilo
           jsonPath: $.status.deployed
           operator: Equal
           value: true
           keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: signalilo{{ if eq .Values.environment "client" }}-client{{ end }}
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
       selector:
         name: signalilo
         priority: 30

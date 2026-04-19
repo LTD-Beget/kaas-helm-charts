@@ -338,6 +338,7 @@ spec:
         spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
+
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue

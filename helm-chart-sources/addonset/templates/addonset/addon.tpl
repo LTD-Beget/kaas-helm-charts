@@ -6,9 +6,9 @@ metadata:
   name: addonset
 spec:
   chart: "addonset"
-  pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "{{ .Values.addonRevision }}"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addonset"
   variables:

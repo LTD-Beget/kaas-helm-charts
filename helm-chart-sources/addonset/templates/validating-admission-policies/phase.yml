@@ -1,0 +1,26 @@
+{{- if .Values.addons.validatingadmissionpolicies.enabled }}
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: validating-admission-policies
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: validating-admission-policies
+{{- end }}

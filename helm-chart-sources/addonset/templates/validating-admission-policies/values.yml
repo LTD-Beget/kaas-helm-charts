@@ -1,0 +1,3 @@
+{{- if .Values.addons.validatingadmissionpolicies.enabled }}
+  {{- .Files.Get "files/validating-admission-policies/values.yml" | nindent 0 }}
+{{- end }}

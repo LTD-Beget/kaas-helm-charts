@@ -1,0 +1,10 @@
+{{- if and .Values.addons.validatingadmissionpolicies.enabled }}
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: validating-admission-policies
+spec:
+  targetCluster: in-cluster
+  {{- include "validating-admission-policies.addon-spec" . | nindent 2 }}
+{{- end }}
