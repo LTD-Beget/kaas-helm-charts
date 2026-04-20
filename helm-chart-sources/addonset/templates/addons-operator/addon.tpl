@@ -10,6 +10,16 @@ spec:
   version: "0.1.4"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addons-operator"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
   backend:
     finalizer: true
     type: "argocd"
