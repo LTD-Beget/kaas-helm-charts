@@ -42,4 +42,28 @@ spec:
   description: Allows ingress from kube-apiserver-and-remote-node to addons-operator
     on 9443.
 
+---
+# Allow vmagent to scrape `addons-operator` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmagent-to-addons-operator-8443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "addon-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress from vmagent to addons-operator on 8443 for
+    metrics collection.
+
 {{- end }}
