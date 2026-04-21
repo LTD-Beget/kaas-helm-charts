@@ -179,29 +179,39 @@ spec:
             matchExpressions:
               - operator: Exists
                 key: "incloud.io/clusterName"
+
+          inlineRelabelConfig:
+            - source_labels: [__name__]
+              regex: "apiserver_request_sli_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "etcd_request_duration_seconds_bucket"
+              action: drop
+
+            # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+            - action: replace
+              source_labels: [exported_cluster_full_name]
+              regex: (.+)
+              target_label: cluster_full_name
+              replacement: $1
+
+            - action: replace
+              source_labels: [exported_remotewrite_cluster]
+              regex: (.+)
+              target_label: remotewrite_cluster
+              replacement: $1
+
+            - action: replace
+              source_labels: [exported_cluster_type]
+              regex: (.+)
+              target_label: cluster_type
+              replacement: $1
+
           remoteWrite:
             - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
               tlsConfig:
                 caFile: /tls/cabundle/ca.crt
-              inlineUrlRelabelConfig:
-                # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
-                - action: replace
-                  source_labels: [exported_cluster_full_name]
-                  regex: (.+)
-                  target_label: cluster_full_name
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_remotewrite_cluster]
-                  regex: (.+)
-                  target_label: remotewrite_cluster
-                  replacement: $1
-
-                - action: replace
-                  source_labels: [exported_cluster_type]
-                  regex: (.+)
-                  target_label: cluster_type
-                  replacement: $1
           volumeMounts:
             - name: trusted-ca-certs
               mountPath: /tls/cabundle

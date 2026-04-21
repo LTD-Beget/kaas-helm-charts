@@ -789,7 +789,7 @@ nodeExporter:
             alert: NodeMemoryHighUtilization
             annotations:
               description: |
-                Memory is filling up at {{ $labels.instance }}, has been above 70% for 
+                Memory is filling up at {{ $labels.instance }}, has been above 80% for 
                 the last 15 minutes, is currently at {{ printf "%.2f" $value }}%.
               runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
               summary: Host is running out of memory.
@@ -808,7 +808,7 @@ nodeExporter:
                 node_memory_MemTotal_bytes{
                   job="prometheus-node-exporter"
                 } * 100
-              ) > 70
+              ) > 80
             for: 15m
             labels:
               severity: critical

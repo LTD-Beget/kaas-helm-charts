@@ -47,6 +47,13 @@ spec:
           operator: Equal
           value: true
           keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: signalilo
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: signalilo
         priority: 30

@@ -11,6 +11,9 @@ spec:
   version: "0.12.1-1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-signalilo"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
   valuesSources: 
     - name: parameters
       sourceRef:

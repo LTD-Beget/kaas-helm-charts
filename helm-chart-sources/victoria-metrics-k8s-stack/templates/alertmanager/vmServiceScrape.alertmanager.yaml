@@ -13,7 +13,7 @@ spec:
       monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
     - port: https-metrics
-      path: /metrics
+      path: /alertmanager/metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
