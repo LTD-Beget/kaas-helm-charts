@@ -1,4 +1,4 @@
-{{- if .Values.istioVirtualService.vmalertmanager.enabled }}
+{{- if and .Values.istioVirtualService.vmalertmanager .Values.istioVirtualService.vmalertmanager.enabled }}
 ---
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
