@@ -16,9 +16,7 @@ spec:
           enabled: false
         spec:
           replicaCount: 2
-          extraArgs:
-            web.route-prefix: /alertmanager
-            web.external-url: /alertmanager
+          routePrefix: /alertmanager
           affinity:
             podAntiAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
@@ -399,5 +397,5 @@ spec:
         http:
           name: vmalertmanager
           route:
-            host: vmalertmanager
+            host: vmalertmanager.{{ .Values.companyPrefix }}-alertmanager
             port: 9093

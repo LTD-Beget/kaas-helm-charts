@@ -1,0 +1,17 @@
+{{- if .Values.istioVirtualService.vmalertmanager.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: vmalertmanager.{{ .Release.Namespace }}
+  trafficPolicy:
+    portLevelSettings:
+    - port:
+        number: 9093
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true
+{{- end }}
