@@ -26,6 +26,7 @@ spec:
                 secure-port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
                 egress-selector-config-file: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
                 service-cluster-ip-range: "{{ .Variables.serviceCidr }}"
+                watch-cache: false
               extraLivenessProbe:
                 httpGet:
                   port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
