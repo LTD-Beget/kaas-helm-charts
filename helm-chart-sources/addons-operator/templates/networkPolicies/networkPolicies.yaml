@@ -47,7 +47,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-vmagent-to-addons-operator-8443
+  name: allow-ingress-addons-operator-from-vm-agent-8443
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -63,7 +63,6 @@ spec:
     - ports:
       - port: '8443'
         protocol: TCP
-  description: Allows ingress from vmagent to addons-operator on 8443 for
-    metrics collection.
+  description: Allows ingress to addons-operator from vmagent on 8443 for metrics collection.
 
 {{- end }}
