@@ -14,11 +14,15 @@ spec:
         enabled: true
       ciliumAgent:
         enabled: true
+      capiCluster:
+        enabled: true
       cpu:
         enabled: true
       crossplaneCustom:
         enabled: true
       dockerRegistry:
+        enabled: true
+      goOperator:
         enabled: true
       processLA:
         enabled: true

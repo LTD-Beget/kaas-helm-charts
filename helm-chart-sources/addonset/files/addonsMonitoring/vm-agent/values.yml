@@ -189,6 +189,46 @@ spec:
               regex: "etcd_request_duration_seconds_bucket"
               action: drop
 
+            - source_labels: [__name__]
+              regex: "apiserver_watch_list_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_response_sizes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_request_body_size_bytes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "workqueue_queue_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "workqueue_work_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_watch_events_sizes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "kubernetes_feature_enabled"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_watch_cache_read_wait_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "container_tasks_state"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "container_memory_failures_total"
+              action: drop
+
             # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
             - action: replace
               source_labels: [exported_cluster_full_name]

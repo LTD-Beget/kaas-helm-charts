@@ -1,0 +1,165 @@
+{{- if .Values.grafanaDashboards.capiCluster.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-capi-cluster
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  resyncPeriod: 30s
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: |-
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 25,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "f0cf3734-7ffc-4865-b99b-9783a4ac465a"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 7
+                  },
+                  {
+                    "color": "red",
+                    "value": 15
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "apmistcs-f2be80-infra"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": []
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 15,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "(\n  (\n    (\n      min by (cluster_full_name) (\n        tfirst_over_time(\n          (\n            in_cloud_capi_cluster_condition{\n              type=\"Available\",\n              cluster_full_name=~\"$cluster_full_name\"\n            } == 1\n          )[$__range]\n        )\n      )\n      -\n      on(cluster_full_name)\n      (\n        in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds{\n          cluster_full_name=~\"$cluster_full_name\"\n        }\n        or\n        in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds{\n          cluster_full_name=~\"$cluster_full_name\"\n        }\n      )\n    )\n    or\n    min by (cluster_full_name) (\n      time()\n      -\n      (\n        in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds{\n          cluster_full_name=~\"$cluster_full_name\"\n        }\n        or\n        in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds{\n          cluster_full_name=~\"$cluster_full_name\"\n        }\n      )\n    )\n  )\n  / 60\n)\n\nunless on(cluster_full_name)\n(\n  in_cloud_capi_clusterclaim_infra_cluster_info{\n    cluster_full_name=~\"$cluster_full_name\",\n    cluster_suspend=\"true\"\n  } == 1\n  or\n  in_cloud_capi_clusterclaim_client_cluster_info{\n    cluster_full_name=~\"$cluster_full_name\",\n    cluster_suspend=\"true\"\n  } == 1\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Clusters deploy time in minutes",
+          "type": "stat"
+        }
+      ],
+      "preload": false,
+      "schemaVersion": 40,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "definition": "query_result(group by(cluster_full_name)(  (    (      in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds >= $__from / 1000    )    and    (      in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds <= $__to / 1000    )  )  or  (    (      in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds >= $__from / 1000    )    and    (      in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds <= $__to / 1000    )  )))",
+            "includeAll": true,
+            "label": "cluster_full_name",
+            "multi": true,
+            "name": "cluster_full_name",
+            "options": [],
+            "query": {
+              "qryType": 3,
+              "query": "query_result(group by(cluster_full_name)(  (    (      in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds >= $__from / 1000    )    and    (      in_cloud_capi_clusterclaim_infra_clusterclaim_created_timestamp_seconds <= $__to / 1000    )  )  or  (    (      in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds >= $__from / 1000    )    and    (      in_cloud_capi_clusterclaim_client_clusterclaim_created_timestamp_seconds <= $__to / 1000    )  )))",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "/cluster_full_name=\"([^\"]+)\"/",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "CAPI / Clusters",
+      "uid": "bfju9qyhngj5se",
+      "version": 18,
+      "weekStart": ""
+    }
+{{- end }}
