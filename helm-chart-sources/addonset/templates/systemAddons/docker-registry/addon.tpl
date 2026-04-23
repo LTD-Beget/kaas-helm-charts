@@ -22,6 +22,8 @@ spec:
         name: parameters-infra
         namespace: {{ .Values.companyPrefix }}-system
       extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: companyDomain
