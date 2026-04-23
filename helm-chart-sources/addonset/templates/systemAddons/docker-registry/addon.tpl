@@ -28,6 +28,14 @@ spec:
           jsonPath: .data.companyDomain
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
+        - as: dockerRegistryS3AccessKey
+          jsonPath: .data.dockerRegistryS3AccessKey
+        - as: dockerRegistryS3SecretKey
+          jsonPath: .data.dockerRegistryS3SecretKey
+        - as: dockerRegistryS3Bucket
+          jsonPath: .data.dockerRegistryS3Bucket
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
   backend:
     finalizer: true
     type: "argocd"

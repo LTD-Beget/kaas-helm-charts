@@ -97,6 +97,14 @@ spec:
       metrics:
         enabled: true
       config:
+        storage:
+          type: s3
+          s3:
+            accessKey: {{ .Values.dockerRegistryS3AccessKey }}
+            secretKey: {{ .Values.dockerRegistryS3SecretKey }}
+            region: us-east-1
+            bucket: {{ .Values.dockerRegistryS3Bucket }}
+            endpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
         log:
           level: info
     mainRegistryName: registry-{{ .Values.companyPrefix }}-ru
