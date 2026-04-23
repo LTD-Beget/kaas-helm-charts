@@ -24,10 +24,6 @@ spec:
             serve_from_sub_path: "true"
             protocol: http
             http_port: "3000"
-          plugins:
-            plugin_admin_enabled: "true"
-            preinstall: "grafana-clickhouse-datasource@4.13.0@https://grafana.com/api/plugins/grafana-clickhouse-datasource/versions/4.13.0/download"
-            preinstall_disabled: "false"
           auth.generic_oauth:
             enabled: "true"
             name: "Dex"
@@ -82,26 +78,6 @@ spec:
             name: victoriametrics
             type: prometheus
             url: https://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus
-          instanceSelector:
-            matchLabels:
-              dashboards: grafana
-          resyncPeriod: 10m0s
-      # TODO добавить подстановку кредов из vault (сейчас задеплоили руками)
-      grafana-clickhouse-datasource:
-        enabled: true
-        spec:
-          allowCrossNamespaceImport: false
-          datasource:
-            access: proxy
-            jsonData:
-              timeInterval: 5s
-              host: example.com/api
-              port: 9000
-              username: default
-            secureJsonData:
-              password: dbpswd
-            name: clickhouse-tsdb
-            type: grafana-clickhouse-datasource
           instanceSelector:
             matchLabels:
               dashboards: grafana
