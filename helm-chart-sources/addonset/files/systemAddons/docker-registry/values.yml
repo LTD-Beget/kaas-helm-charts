@@ -92,11 +92,21 @@ spec:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 400m
-          memory: 512Mi
+          cpu: 600m
+          memory: 768Mi
       metrics:
         enabled: true
       config:
+        storage:
+          type: s3
+          s3:
+            accesskey: {{ .Values.dockerRegistryS3AccessKey }}
+            secretkey: {{ .Values.dockerRegistryS3SecretKey }}
+            encrypt: false
+            region: us-east-1
+            regionendpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
+            bucket: {{ .Values.dockerRegistryS3Bucket }}
+            loglevel: info
         log:
           level: info
     mainRegistryName: registry-{{ .Values.companyPrefix }}-ru
@@ -117,60 +127,100 @@ spec:
                 name: docker-io-creds
                 key: password
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/registry-1-docker-io
           proxy:
             remoteurl: https://registry-1.docker.io
 
       europe-docker-pkg-dev:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/europe-docker-pkg-dev
           proxy:
             remoteurl: https://europe-docker.pkg.dev
 
       gcr-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/gcr-io
           proxy:
             remoteurl: https://gcr.io
 
       ghcr-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/ghcr-io
           proxy:
             remoteurl: https://ghcr.io
 
       mirror-gcr-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/mirror-gcr-io
           proxy:
             remoteurl: https://mirror.gcr.io
 
       public-ecr-aws:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/public-ecr-aws
           proxy:
             remoteurl: https://public.ecr.aws
 
       quay-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/quay-io
           proxy:
             remoteurl: https://quay.io
 
       registry-k8s-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/registry-k8s-io
           proxy:
             remoteurl: https://registry.k8s.io
 
       xpkg-crossplane-io:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/xpkg-crossplane-io
           proxy:
             remoteurl: https://xpkg.crossplane.io
 
       registry-{{ .Values.companyPrefix }}-ru:
         enabled: true
         config:
+          storage:
+            type: s3
+            s3:
+              rootdirectory: /{{ .Values.clusterName }}/registry-{{ .Values.companyPrefix }}-ru
           proxy:
             remoteurl: https://{{ .Values.companyInternalDockerRegistry }}
 
