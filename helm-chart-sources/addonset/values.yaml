@@ -30,10 +30,6 @@ addons:
     enabled: true
   coredns:
     enabled: true
-  clickhouseinserter:
-    enabled: true
-  clickhousevmstorage:
-    enabled: false
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
@@ -126,7 +122,6 @@ addons:
     enabled: true
   system:
     enabled: false
-    clickhouseInserter: false
   workergroupclaimoperator:
     enabled: true
 environment: infra
