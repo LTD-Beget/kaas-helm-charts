@@ -96,6 +96,12 @@ spec:
                   key: tls.key
 
           relabelConfigs:
+            - action: keep
+              sourceLabels: [__meta_kubernetes_node_annotation_cluster_x_k8s_io_machine]
+              regex: .+
+            - action: keep
+              sourceLabels: [__meta_kubernetes_node_label_node_group_beget_com_name]
+              regex: .+
             - targetLabel: __address__
               replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
             - sourceLabels: [__meta_kubernetes_node_name]
@@ -163,6 +169,12 @@ spec:
                   key: tls.key
 
           relabelConfigs:
+            - action: keep
+              sourceLabels: [__meta_kubernetes_node_annotation_cluster_x_k8s_io_machine]
+              regex: .+
+            - action: keep
+              sourceLabels: [__meta_kubernetes_node_label_node_group_beget_com_name]
+              regex: .+
             - targetLabel: __address__
               replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
             - sourceLabels: [__meta_kubernetes_node_name]
