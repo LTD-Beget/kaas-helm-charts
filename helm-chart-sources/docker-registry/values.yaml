@@ -239,7 +239,7 @@ default:
         accelerate: false                     # Use S3 transfer acceleration
         bucket: bucketname                    # S3 bucket name
         encrypt: true                         # Use server-side encryption
-        keyid: mykeyid                        # KMS key id for encryption
+        # keyid: mykeyid                        # KMS key id for encryption
         secure: true                          # Use HTTPS for S3 connections
         v4auth: true                          # Use AWS V4 authentication
         chunksize: 5242880                    # Upload chunk size

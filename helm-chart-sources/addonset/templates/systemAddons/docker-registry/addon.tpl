@@ -22,7 +22,7 @@ spec:
         name: parameters-infra
         namespace: {{ .Values.companyPrefix }}-system
       extract:
-        - as: cluster.name
+        - as: clusterName
           jsonPath: .data.clusterName
         - as: companyPrefix
           jsonPath: .data.companyPrefix

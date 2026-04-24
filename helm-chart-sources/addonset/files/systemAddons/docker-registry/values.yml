@@ -92,19 +92,20 @@ spec:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 400m
-          memory: 512Mi
+          cpu: 600m
+          memory: 768Mi
       metrics:
         enabled: true
       config:
         storage:
           type: s3
           s3:
-            accessKey: {{ .Values.dockerRegistryS3AccessKey }}
-            secretKey: {{ .Values.dockerRegistryS3SecretKey }}
+            accesskey: {{ .Values.dockerRegistryS3AccessKey }}
+            secretkey: {{ .Values.dockerRegistryS3SecretKey }}
+            encrypt: false
             region: us-east-1
+            regionendpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
             bucket: {{ .Values.dockerRegistryS3Bucket }}
-            endpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
         log:
           level: info
     mainRegistryName: registry-{{ .Values.companyPrefix }}-ru
