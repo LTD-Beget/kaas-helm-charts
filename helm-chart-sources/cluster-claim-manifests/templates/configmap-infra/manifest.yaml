@@ -43,9 +43,6 @@ spec:
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
       argocdServerAdminPassword: {{ .Values.extraArgs.argocdServerAdminPassword }}
       dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
-      dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
-      dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
-      dockerRegistryS3Bucket: {{ .Values.extraArgs.dockerRegistryS3Bucket }}
       etcdbackupAppArgsStorecontainer: {{ .Values.extraArgs.etcdbackupAppArgsStorecontainer }}
       etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
       etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
@@ -65,6 +62,9 @@ spec:
       companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+      dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
+      dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
+      dockerRegistryS3Bucket: {{ .Values.extraArgs.dockerRegistryS3Bucket }}
       signaliloUuid: "{{`{{ .ClusterClaim.spec.extraEnvs.signaliloUuid }}`}}"
       icingaHostname: {{`{{ .ClusterClaim.spec.extraEnvs.icingaHostname }}`}}
       icingaUrl: {{`{{ .ClusterClaim.spec.extraEnvs.icingaUrl }}`}}
