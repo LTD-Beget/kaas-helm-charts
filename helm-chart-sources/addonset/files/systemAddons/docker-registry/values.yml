@@ -106,6 +106,7 @@ spec:
             region: us-east-1
             regionendpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
             bucket: {{ .Values.dockerRegistryS3Bucket }}
+            loglevel: info
         log:
           level: info
     mainRegistryName: registry-{{ .Values.companyPrefix }}-ru
