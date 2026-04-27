@@ -1,0 +1,69 @@
+{{- if .Values.extraService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.extraService.name | default (printf "%s-extra" (include "gateway-wrapper.name" .)) }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.extraService.name | default (printf "%s-extra" (include "gateway-wrapper.name" .)) }}
+    {{- include "istio.labels" . | nindent 4}}
+    {{- include "gateway-wrapper.labels" . | nindent 4 }}
+    {{- with .Values.gateway.networkGateway }}
+    topology.istio.io/network: "{{.}}"
+    {{- end }}
+  annotations:
+    {{- merge (deepCopy (.Values.extraService.annotations | default dict)) (.Values.gateway.annotations | default dict) | toYaml | nindent 4 }}
+spec:
+{{- with .Values.extraService.loadBalancerIP }}
+  loadBalancerIP: "{{ . }}"
+{{- end }}
+{{- if eq .Values.extraService.type "LoadBalancer" }}
+  {{- if hasKey .Values.extraService "allocateLoadBalancerNodePorts" }}
+  allocateLoadBalancerNodePorts: {{ .Values.extraService.allocateLoadBalancerNodePorts }}
+  {{- end }}
+  {{- if hasKey .Values.extraService "loadBalancerClass" }}
+  loadBalancerClass: {{ .Values.extraService.loadBalancerClass }}
+  {{- end }}
+{{- end }}
+{{- if .Values.extraService.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ .Values.extraService.ipFamilyPolicy }}
+{{- end }}
+{{- if .Values.extraService.ipFamilies }}
+  ipFamilies:
+{{- range .Values.extraService.ipFamilies }}
+  - {{ . }}
+{{- end }}
+{{- end }}
+{{- with .Values.extraService.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.extraService.externalTrafficPolicy }}
+  externalTrafficPolicy: "{{ . }}"
+{{- end }}
+  type: {{ .Values.extraService.type }}
+  ports:
+{{- if .Values.gateway.networkGateway }}
+  - name: status-port
+    port: 15021
+    targetPort: 15021
+  - name: tls
+    port: 15443
+    targetPort: 15443
+  - name: tls-istiod
+    port: 15012
+    targetPort: 15012
+  - name: tls-webhook
+    port: 15017
+    targetPort: 15017
+{{- else }}
+{{ .Values.extraService.ports | toYaml | indent 4 }}
+{{- end }}
+{{- if .Values.extraService.externalIPs }}
+  externalIPs: {{- range .Values.extraService.externalIPs }}
+    - {{.}}
+  {{- end }}
+{{- end }}
+  selector:
+    {{- include "gateway-wrapper.selectorLabels" . | nindent 4 }}
+{{- end }}
