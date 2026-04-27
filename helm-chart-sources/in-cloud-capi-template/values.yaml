@@ -15,6 +15,15 @@ capi:
         - openssl genrsa -out /etc/kubernetes/pki/scheduler-server.key 2048
         - openssl req -new -key /etc/kubernetes/pki/scheduler-server.key -config /etc/kubernetes/pki/scheduler-server.cnf -out /etc/kubernetes/pki/scheduler-server.csr
         - openssl x509 -req -in /etc/kubernetes/pki/scheduler-server.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/scheduler-server.crt -days 365 -sha256 -extfile /etc/kubernetes/pki/scheduler-server.cnf -extensions req_ext
+    rbacProxy:
+      enabled: false
+      targetComands:
+        - openssl genrsa -out /etc/kubernetes/pki/rbac-proxy-server.key 2048
+        - openssl req -new -key /etc/kubernetes/pki/rbac-proxy-server.key -config /etc/kubernetes/pki/rbac-proxy-server.cnf -out /etc/kubernetes/pki/rbac-proxy-server.csr
+        - openssl x509 -req -in /etc/kubernetes/pki/rbac-proxy-server.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/rbac-proxy-server.crt -days 365 -sha256 -extfile /etc/kubernetes/pki/rbac-proxy-server.cnf -extensions req_ext
+        - openssl genrsa -out /etc/kubernetes/pki/rbac-proxy-client.key 2048
+        - openssl req -new -key /etc/kubernetes/pki/rbac-proxy-client.key -config /etc/kubernetes/pki/rbac-proxy-client.cnf -out /etc/kubernetes/pki/rbac-proxy-client.csr
+        - openssl x509 -req -in /etc/kubernetes/pki/rbac-proxy-client.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/rbac-proxy-client.crt -days 365 -sha256 -extfile /etc/kubernetes/pki/rbac-proxy-client.cnf -extensions req_ext
 
   k8s:
     infrastructureType: wrapper
