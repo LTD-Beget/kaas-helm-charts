@@ -31,12 +31,16 @@ spec:
           controllerManager:
             extraArgs:
               - name: bind-address
-                value: 0.0.0.0
+                value: "127.0.0.1"
+              - name: secure-port
+                value: "10257"
 
           scheduler:
             extraArgs:
               - name: bind-address
-                value: 0.0.0.0
+                value: "127.0.0.1"
+              - name: secure-port
+                value: "10259"
               - name: leader-elect
                 value: "true"
 
@@ -46,6 +50,7 @@ spec:
               dataDir: /var/lib/etcd
 
           imageRepository: registry.k8s.io
+
         files:
           - content: |
               ##### FIX PROBLEM CLUSTER API =( 
@@ -63,6 +68,252 @@ spec:
             path: /tmp/tempory_file
             permissions: "0644"
 
+          - path: /etc/kubernetes/patches/kube-scheduler+json.json
+            owner: root:root
+            permissions: "0644"
+            content: |
+              [
+                {
+                  "op": "add",
+                  "path": "/spec/containers/-",
+                  "value": {
+                    "name": "rbac-proxy",
+                    "image": "quay.io/brancz/kube-rbac-proxy:v0.21.0",
+                    "args": [
+                      "--secure-listen-address=0.0.0.0:11043",
+                      "--upstream=https://127.0.0.1:10259",
+                      "--tls-cert-file=/etc/kubernetes/pki/rbac-proxy-server.crt",
+                      "--tls-private-key-file=/etc/kubernetes/pki/rbac-proxy-server.key",
+                      "--kubeconfig=/etc/kubernetes/rbac-proxy.conf",
+                      "--auth-header-fields-enabled",
+                      "--v=2"
+                    ],
+                    "ports": [
+                      {
+                        "name": "https-metrics",
+                        "containerPort": 11043,
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "resources": {
+                      "requests": {
+                        "memory": "32Mi",
+                        "cpu": "10m"
+                      },
+                      "limits": {
+                        "memory": "64Mi",
+                        "cpu": "50m"
+                      }
+                    },
+                    "volumeMounts": [
+                      {
+                        "name": "rbac-proxy-server-crt",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-server.crt",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-server-key",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-server.key",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-client-crt",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-client.crt",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-client-key",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-client.key",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-kubeconfig",
+                        "mountPath": "/etc/kubernetes/rbac-proxy.conf",
+                        "readOnly": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-server-crt",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-server.crt",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-server-key",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-server.key",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-client-crt",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-client.crt",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-client-key",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-client.key",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-kubeconfig",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/rbac-proxy.conf",
+                      "type": "File"
+                    }
+                  }
+                }
+              ]
+
+          - path: /etc/kubernetes/patches/kube-controller-manager+json.json
+            owner: root:root
+            permissions: "0644"
+            content: |
+              [
+                {
+                  "op": "add",
+                  "path": "/spec/containers/-",
+                  "value": {
+                    "name": "rbac-proxy",
+                    "image": "quay.io/brancz/kube-rbac-proxy:v0.21.0",
+                    "args": [
+                      "--secure-listen-address=0.0.0.0:11044",
+                      "--upstream=https://127.0.0.1:10257",
+                      "--tls-cert-file=/etc/kubernetes/pki/rbac-proxy-server.crt",
+                      "--tls-private-key-file=/etc/kubernetes/pki/rbac-proxy-server.key",
+                      "--kubeconfig=/etc/kubernetes/rbac-proxy.conf",
+                      "--auth-header-fields-enabled",
+                      "--v=2"
+                    ],
+                    "ports": [
+                      {
+                        "name": "https-metrics",
+                        "containerPort": 11044,
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "resources": {
+                      "requests": {
+                        "memory": "32Mi",
+                        "cpu": "10m"
+                      },
+                      "limits": {
+                        "memory": "64Mi",
+                        "cpu": "50m"
+                      }
+                    },
+                    "volumeMounts": [
+                      {
+                        "name": "rbac-proxy-server-crt",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-server.crt",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-server-key",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-server.key",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-client-crt",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-client.crt",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-client-key",
+                        "mountPath": "/etc/kubernetes/pki/rbac-proxy-client.key",
+                        "readOnly": true
+                      },
+                      {
+                        "name": "rbac-proxy-kubeconfig",
+                        "mountPath": "/etc/kubernetes/rbac-proxy.conf",
+                        "readOnly": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-server-crt",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-server.crt",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-server-key",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-server.key",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-client-crt",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-client.crt",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-client-key",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/pki/rbac-proxy-client.key",
+                      "type": "File"
+                    }
+                  }
+                },
+                {
+                  "op": "add",
+                  "path": "/spec/volumes/-",
+                  "value": {
+                    "name": "rbac-proxy-kubeconfig",
+                    "hostPath": {
+                      "path": "/etc/kubernetes/rbac-proxy.conf",
+                      "type": "File"
+                    }
+                  }
+                }
+              ]
+
         format: cloud-config
 
         initConfiguration:
@@ -70,6 +321,8 @@ spec:
             advertiseAddress: 127.0.0.1
           nodeRegistration:
             imagePullPolicy: IfNotPresent
+          patches:
+            directory: /etc/kubernetes/patches
           skipPhases:
             - addon
 
@@ -79,6 +332,8 @@ spec:
               advertiseAddress: 127.0.0.1
           nodeRegistration:
             imagePullPolicy: IfNotPresent
+          patches:
+            directory: /etc/kubernetes/patches
 
       machineTemplate:
         spec:
