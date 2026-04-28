@@ -22,6 +22,9 @@ spec:
     - vmselect
     - vmselect.{{ .Release.Namespace }}
     - vmselect.{{ .Release.Namespace }}.svc
+    - vmauth
+    - vmauth.{{ .Release.Namespace }}
+    - vmauth.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

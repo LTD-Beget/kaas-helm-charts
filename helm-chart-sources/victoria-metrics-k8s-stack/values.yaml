@@ -11,6 +11,12 @@ victoria-metrics-k8s-stack:
   vmalert:
     enabled: false
 
+  vmcluster:
+    enabled: false
+    spec:
+      requestsLoadBalancer:
+        enabled: false
+
 networkPolicies:
   vmagent:
     enabled: false
@@ -64,6 +70,23 @@ tls:
       dnsNames:
         - vmselect.default.svc
         - vmselect.default.svc.cluster.local
+      ipAddresses:
+        - "127.0.0.1"
+
+  vmAuth:
+    enabled: false
+    issuer:
+      kind: ClusterIssuer
+      name: default-issuer-name
+    certificate:
+      name: vmauth-tls
+      secretName: vmauth-tls
+      duration: 8760h
+      renewBefore: 720h
+      commonName: vmauth
+      dnsNames:
+        - vmauth.default.svc
+        - vmauth.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
 
