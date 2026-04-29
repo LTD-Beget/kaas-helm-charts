@@ -33,6 +33,7 @@
     {{- include "in-cloud-capi-template.files.controllerManager.aggregate.controlPlane"    $ | nindent 0 }}
     {{- include "in-cloud-capi-template.files.scheduler.aggregate.controlPlane"            $ | nindent 0 }}
     {{- include "in-cloud-capi-template.files.apiserver.aggregate.controlPlane"            $ | nindent 0 }}
+    {{- include "in-cloud-capi-template.files.rbacProxy.aggregate.controlPlane"            $ | nindent 0 }}
 {{- end -}}
 
 {{- define "in-cloud-capi-template.files.all.aggregate.dataPlane" -}}
