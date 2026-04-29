@@ -1,6 +1,4 @@
 {{- if .Values.addons.coredns.enabled }}
-{{- $context  := set (deepCopy .) "Values" (set (deepCopy .Values) "addonName" "coredns") -}}
-
   {{- range $name := list
     "default"
     "immutable"
@@ -12,8 +10,15 @@
     "system"
     "multi-control-plane"
   }}
-    {{- $_        := set $context.Values "addonValueName" $name -}}
-    {{- include "common.addonValue" $context }}
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-{{ $name }}
+  labels:
+    addons.in-cloud.io/values: {{ $name }}
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
     {{- $.Files.Get (printf "files/coredns/%s.goyaml" $name) | nindent 4 }}
   {{- end }}
 
