@@ -1,0 +1,7 @@
+{{- $a := .Values.controlPlaneDesiredReplicas -}}
+{{- $b := .Values.controlPlaneAvailableReplicas -}}
+{{- $replicas := 1 -}}
+{{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
+{{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
+coredns:
+  replicaCount: {{ $replicas }}

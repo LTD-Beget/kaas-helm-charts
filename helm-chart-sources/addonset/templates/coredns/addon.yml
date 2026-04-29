@@ -1,4 +1,4 @@
-{{- define "coredns.addon" }}
+{{- if .Values.addons.coredns.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon

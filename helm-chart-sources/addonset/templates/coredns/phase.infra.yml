@@ -1,0 +1,18 @@
+{{- if .Values.addons.coredns.enabled }}
+{{- $context  := set (deepCopy .) "Values" (set (deepCopy .Values) "suffix" "") -}}
+{{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: coredns
+spec:
+  rules:
+    {{- include "coredns.phase.initialized"         $context | nindent 4 }}
+    {{- include "coredns.phase.infra"               $context | nindent 4 }}
+    {{- include "coredns.phase.vm-operator"         $context | nindent 4 }}
+    {{- include "coredns.phase.system"              $context | nindent 4 }}
+    {{- include "coredns.phase.multi-control-plane" $context | nindent 4 }}
+    {{- include "coredns.phase.network-policies"    $context | nindent 4 }}
+{{- end }}

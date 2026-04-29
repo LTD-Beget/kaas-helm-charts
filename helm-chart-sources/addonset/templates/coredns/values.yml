@@ -1,0 +1,40 @@
+{{- if .Values.addons.coredns.enabled }}
+{{- $context  := set (deepCopy .) "Values" (set (deepCopy .Values) "addonName" "coredns") -}}
+
+{{- $_        := set $context.Values "addonValueName" "default" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/default.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "immutable" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/immutable.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "infra" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/infra.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "network-policies" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/network-policies.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "client" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/client.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "initialized" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/initialized.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "vm-operator" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/vm-operator.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "system" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/system.goyaml" | nindent 4 }}
+
+{{- $_        := set $context.Values "addonValueName" "multi-control-plane" -}}
+{{- include "common.addonValue" $context }}
+{{- .Files.Get "files/coredns/multi-control-plane.goyaml" | nindent 4 }}
+
+{{- end }}
