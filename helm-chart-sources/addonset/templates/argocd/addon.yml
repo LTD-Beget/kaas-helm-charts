@@ -1,4 +1,4 @@
-{{- define "argocd.addon" }}
+{{- if .Values.addons.argocd.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
