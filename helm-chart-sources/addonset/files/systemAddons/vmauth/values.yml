@@ -1,0 +1,153 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-auth-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-auth
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmcluster:
+        spec:
+          requestsLoadBalancer:
+            enabled: true
+            spec:
+              userSelector:
+                matchLabels:
+                  monitoring.in-cloud.io/vmuser: infra
+              userNamespaceSelector: {}
+              extraArgs:
+                log.level: info
+              serviceSpec:
+                metadata:
+                  name: vmauth
+                  labels:
+                    monitoring.in-cloud.io/service: vmauth
+                  annotations:
+                    lb.{{ .Values.companyDomain }}/algorithm: "round_robin"
+                    lb.{{ .Values.companyDomain }}/type: "internal"
+                    lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+                    lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+                spec:
+                  type: LoadBalancer
+                  ports:
+                    - name: http
+                      port: 8427
+                      protocol: TCP
+                      targetPort: 8427
+                  useAsDefault: true
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-auth-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: vm-auth
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmcluster:
+        spec:
+          requestsLoadBalancer:
+            spec:
+              containers:
+                - name: rbac-proxy
+                  image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+                  args:
+                    - --secure-listen-address=0.0.0.0:11043
+                    - --upstream=https://127.0.0.1:8427
+                    - --upstream-ca-file=/app/config/vmauth/tls/ca.crt
+                    - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                    - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                    - --v=2
+                  ports:
+                    - name: https-metrics
+                      containerPort: 11043
+                      protocol: TCP
+                  resources:
+                    requests:
+                      memory: "32Mi"
+                      cpu: "10m"
+                    limits:
+                      memory: "64Mi"
+                      cpu: "50m"
+                  volumeMounts:
+                    - name: rbac-proxy-tls
+                      mountPath: /app/config/metrics/tls
+                      readOnly: true
+                    - mountPath: /etc/ssl/certs/ca.crt
+                      subPath: ca.crt
+                      name: trusted-ca-certs
+                      readOnly: true
+                    - name: vmauth-tls
+                      mountPath: /app/config/vmauth/tls
+                      readOnly: true
+              extraArgs:
+                tls: "true"
+                tlsCertFile: "/tls/tls.crt"
+                tlsKeyFile: "/tls/tls.key"
+              volumes:
+                - name: vmauth-tls
+                  secret:
+                    secretName: vmauth-tls
+                - name: rbac-proxy-tls
+                  secret:
+                    defaultMode: 420
+                    secretName: vmcluster-monitoring-svc-tls
+                - name: trusted-ca-certs
+                  configMap:
+                    name: ca
+              volumeMounts:
+                - name: vmauth-tls
+                  mountPath: /tls
+                  readOnly: true
+              serviceSpec:
+                spec:
+                  ports:
+                    - name: http
+                      port: 8427
+                      protocol: TCP
+                      targetPort: 8427
+                    - name: https-metrics
+                      port: 11043
+                      protocol: TCP
+                      targetPort: https-metrics
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      vmAuth:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: vmauth-tls
+          secretName: vmauth-tls
+          commonName: vmauth
+          dnsNames:
+            - "vmauth"
+            - "vmauth.{{ .Values.companyPrefix }}-vmcluster"
+            - "vmauth.{{ .Values.companyPrefix }}-vmcluster.svc"
+          ipAddresses:
+            - 127.0.0.1
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-auth-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-auth
+spec:
+  values: ""

@@ -1,27 +1,21 @@
 {{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
 
-{{- if and .Values.monitoring.secureService.enabled $vmstack.vmcluster.enabled }}
+{{- if and .Values.monitoring.secureService.enabled $vmstack.vmauth.enabled }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vmcluster-monitoring-svc-tls
+  name: vmauth-monitoring-svc-tls
   namespace: {{ .Release.Namespace }}
 spec:
-  secretName: vmcluster-monitoring-svc-tls
+  secretName: vmauth-monitoring-svc-tls
   duration: 8760h
   renewBefore: 720h
-  commonName: vmcluster
+  commonName: vmauth
   dnsNames:
-    - vminsert
-    - vminsert.{{ .Release.Namespace }}
-    - vminsert.{{ .Release.Namespace }}.svc
-    - vmstorage
-    - vmstorage.{{ .Release.Namespace }}
-    - vmstorage.{{ .Release.Namespace }}.svc
-    - vmselect
-    - vmselect.{{ .Release.Namespace }}
-    - vmselect.{{ .Release.Namespace }}.svc
+    - vmauth
+    - vmauth.{{ .Release.Namespace }}
+    - vmauth.{{ .Release.Namespace }}.svc
   privateKey:
     algorithm: RSA
     size: 2048

@@ -1,6 +1,6 @@
 {{- $vmstack := index .Values "victoria-metrics-k8s-stack" -}}
 
-{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") $vmstack.vmcluster.enabled $vmstack.vmcluster.spec.requestsLoadBalancer.enabled }}
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.type "VictoriaMetrics") $vmstack.vmauth.enabled }}
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape

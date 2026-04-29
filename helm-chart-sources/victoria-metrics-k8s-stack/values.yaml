@@ -11,11 +11,11 @@ victoria-metrics-k8s-stack:
   vmalert:
     enabled: false
 
+  vmauth:
+    enabled: false
+
   vmcluster:
     enabled: false
-    spec:
-      requestsLoadBalancer:
-        enabled: false
 
 networkPolicies:
   vmagent:
