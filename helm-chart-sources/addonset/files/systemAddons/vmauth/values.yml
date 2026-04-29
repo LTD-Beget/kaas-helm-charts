@@ -150,4 +150,47 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: vm-auth
 spec:
-  values: ""
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: false
+      defaultRules:
+        create: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: false
+      vmauth:
+        enabled: true
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
