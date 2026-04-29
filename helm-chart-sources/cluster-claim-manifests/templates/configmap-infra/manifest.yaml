@@ -78,6 +78,11 @@ spec:
       svcHubRabbitVirtualHost: "{{`{{ .ClusterClaim.spec.extraEnvs.svcHubRabbitVirtualHost }}`}}"
       telegramToken: {{`{{ .ClusterClaim.spec.extraEnvs.telegramToken }}`}}
       telegramChatId: {{`{{ .ClusterClaim.spec.extraEnvs.telegramChatId | quote }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVipInternal") }}`}}
+      systemIstioGwVipInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVipInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwVipInternal: {{ .Values.extraArgs.systemIstioGwVipInternal }}
+    {{`{{- end }}`}}
     {{`{{- end }}`}}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
