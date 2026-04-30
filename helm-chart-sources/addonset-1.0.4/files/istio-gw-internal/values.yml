@@ -52,17 +52,17 @@ spec:
             port: 15021
             protocol: TCP
             targetPort: 15021
-            nodePort: 33021
+            nodePort: 31021
           - name: http2
             port: 80
             protocol: TCP
             targetPort: 80
-            nodePort: 33080
+            nodePort: 31080
           - name: https
             port: 443
             protocol: TCP
             targetPort: 443
-            nodePort: 33443
+            nodePort: 31443
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
