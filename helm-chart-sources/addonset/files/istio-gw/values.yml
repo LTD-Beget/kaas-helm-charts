@@ -40,6 +40,8 @@ metadata:
 spec:
   values: |
     gateway:
+      labels:
+        monitoring.in-cloud.io/service: istio-gw
       service:
         type: LoadBalancer
         annotations:
@@ -63,6 +65,10 @@ spec:
             protocol: TCP
             targetPort: 443
             nodePort: 32443
+          - name: https-metrics
+            port: 11043
+            protocol: TCP
+            targetPort: https-metrics
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

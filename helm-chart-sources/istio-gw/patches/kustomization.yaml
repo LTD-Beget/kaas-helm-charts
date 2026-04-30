@@ -10,17 +10,7 @@ patches:
       kind: Deployment
       name: istio-gw
 
-  - path: ./service.istio-gw.yaml
-    target:
-      kind: Service
-      name: istio-gw
-
   - path: ./deployment.istio-gw-internal.yaml
     target:
       kind: Deployment
-      name: istio-gw-internal
-
-  - path: ./service.istio-gw-internal.yaml
-    target:
-      kind: Service
       name: istio-gw-internal
