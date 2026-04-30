@@ -1,0 +1,11 @@
+#Определение минимального числа реплик вычисляется по принципу наименьшего между desired и available репликами CP и больше 0.
+#Задаем значения desired и available и дефолтное значение реплик 1.
+{{- $desired   := .Values.controlPlaneDesiredReplicas -}}
+{{- $available := .Values.controlPlaneAvailableReplicas -}}
+{{- $replicas := 1 -}}
+#Если desired больше available и available больше 1, тогда число реплик задаем как available.
+{{- if and ( gt $desired   $available ) ( gt $available 1 ) }}{{ $replicas = $available }}{{ end -}}
+#Если available больше desired и desired больше 1, тогда число реплик задаем как desired.
+{{- if and ( gt $available $desired   ) ( gt $desired   1 ) }}{{ $replicas = $desired   }}{{ end -}}
+coredns:
+  replicaCount: {{ $replicas }}
