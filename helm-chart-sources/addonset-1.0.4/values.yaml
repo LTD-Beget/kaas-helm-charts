@@ -1,0 +1,135 @@
+companyPrefix: example
+companyDomain: example.com
+companyExternalChartRegistry: example.com
+companyInternalChartRegistry: example.com
+companyInternalChartRegistryPublic: example.com
+companyInternalDockerRegistry: example.com
+companyExternalGitRepository: example.com
+companyInternalGitRepository: example.com
+companyWikiAlertingUrl: example.com
+companyAdminUser: adm@example.com
+
+addons:
+  addonsoperator:
+    enabled: true
+  addonmanifests:
+    enabled: true
+  addonset:
+    enabled: true
+  argocd:
+    enabled: true
+  cmprovider:
+    enabled: true
+  certificateset:
+    enabled: true
+  certmanager:
+    enabled: true
+  certmanagercsidriver:
+    enabled: true
+  cilium:
+    enabled: true
+  coredns:
+    enabled: true
+  clickhouseinserter:
+    enabled: true
+  clickhousevmstorage:
+    enabled: false
+  clientkubestatemetrics:
+    enabled: false
+  clientvmscrapeconfig:
+    enabled: false
+  clusterclaimoperator:
+    enabled: true
+  ccmcsrcsystem:
+    enabled: true
+  ccmcsrccontroller:
+    enabled: true
+  capi:
+    enabled: true
+  capiclusterclass:
+    enabled: true
+  capikubeadmbootstrap:
+    enabled: true
+  capikubeadmcontrolplane:
+    enabled: true
+  controlplane:
+    enabled: true
+  dex:
+    enabled: true
+  dockerregistry:
+    enabled: true
+  etcdbackupsnapshot:
+    enabled: true
+  extraresources:
+    enabled: true
+  helminserter:
+    enabled: true
+  grafana:
+    enabled: true
+  grafanadashboards:
+    enabled: true
+  grafanaoperator:
+    enabled: true
+  kubestatemetrics:
+    enabled: true
+  konnectivityagent:
+    enabled: false
+  metricsserver:
+    enabled: true
+  prometheusprocessexporter:
+    enabled: true
+  prometheusnodeexporter:
+    enabled: true
+  incloudwebchart:
+    enabled: true
+  incloudwebresources:
+    enabled: false
+  istiobase:
+    enabled: true
+  istiod:
+    enabled: true
+  istiogw:
+    enabled: true
+  secretcopyoperator:
+    enabled: true
+  signalilo:
+    enabled: true
+  svck8sproxy:
+    enabled: true
+  svchub:
+    enabled: true
+  template:
+    enabled: true
+  test:
+    enabled: true
+  trustmanager:
+    enabled: true
+  vmagent:
+    enabled: true
+  vmagentadditionalrbac:
+    enabled: true
+  trivyoperator:
+    enabled: true
+  vmoperator:
+    enabled: true
+  vault:
+    enabled: false
+  vmalert:
+    enabled: true
+  vmalertmanager:
+    enabled: true
+  vmalertrules:
+    enabled: true
+  vmcluster:
+    enabled: true
+  system:
+    enabled: false
+    clickhouseInserter: false
+  workergroupclaimoperator:
+    enabled: true
+environment: infra
+clusterClaim: cluster
+clientName: client
+clusterName: infra
+addonRevision: 0.1.0
+clientClusterEnabled: true

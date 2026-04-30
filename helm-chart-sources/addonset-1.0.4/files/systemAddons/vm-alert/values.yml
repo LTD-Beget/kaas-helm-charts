@@ -1,0 +1,290 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vm-alert"
+      vmalert:
+        spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalert
+          serviceSpec:
+            metadata:
+              name: vmalert
+              labels:
+                monitoring.in-cloud.io/service: vm-alert
+            spec:
+              ports:
+                - name: http
+                  port: 8080
+                  protocol: TCP
+                  targetPort: 8080
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          extraArgs:
+            external.url: "https://{{ .Values.systemIstioGwDomain }}"
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: "4"
+          evaluationInterval: 60s
+          selectAllByDefault: false
+          ruleNamespaceSelector: {}
+          ruleSelector:
+            matchLabels:
+              monitoring.in-cloud.io/vmrules: infra
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '100m'
+              memory: 128Mi
+          replicaCount: 2
+          updateStrategy: RollingUpdate
+          rollingUpdate:
+            maxSurge: 10%
+            maxUnavailable: 0
+          remoteWrite:
+            url: "http://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+          remoteRead:
+            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+          datasource:
+            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: false
+      defaultRules:
+        create: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: true
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmalert:
+        spec:
+          serviceSpec:
+            spec:
+              ports:
+                - name: http
+                  port: 8080
+                  protocol: TCP
+                  targetPort: 8080
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+          containers:
+            - name: rbac-proxy
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=http://127.0.0.1:8080
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+                - mountPath: /etc/ssl/certs
+                  name: trusted-ca-certs
+                  readOnly: true
+          volumes:
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vm-alert-monitoring-svc-tls
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+          remoteWrite:
+            url: "https://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+            concurrency: 4
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
+          remoteRead:
+            url: "https://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
+          datasource:
+            url: "https://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+            tlsConfig:
+              ca:
+                configMap:
+                  name: ca
+                  key: ca.crt
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-vm-alertmanager
+  labels:
+    addons.in-cloud.io/values: vm-alertmanager
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmalert:
+        spec:
+          notifiers:
+            # Bug with set -notifier.tlsCAFile=... arg to deployment
+            # https://github.com/vmware-tanzu/vm-operator/issues/1530
+            # - selector:
+            #     namespaceSelector:
+            #       matchNames:
+            #         - {{ .Values.companyPrefix }}-alertmanager
+            #     labelSelector:
+            #       matchLabels:
+            #         app.kubernetes.io/instance: vmalertmanager
+            #   tlsConfig:
+            #     ca:
+            #       configMap:
+            #         name: ca
+            #         key: ca.crt
+            - url: "https://vmalertmanager-vm-alertmanager-0.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+            - url: "https://vmalertmanager-vm-alertmanager-1.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc:9093"
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    istioVirtualService:
+      vmalert:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+        hosts:
+          - "*"
+        path: "/vmalert"
+        http:
+          name: vmalert
+          route:
+            host: vmalert
+            port: 8080
