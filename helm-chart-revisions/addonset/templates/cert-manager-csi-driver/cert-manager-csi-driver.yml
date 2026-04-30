@@ -1,0 +1,13 @@
+{{- if .Values.addons.certmanagercsidriver.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "cert-manager-csi-driver.addon" . }}
+
+  {{- .Files.Get "files/cert-manager-csi-driver/values.yml" | nindent 0 }}
+
+  {{- include "cert-manager-csi-driver.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "cert-manager-csi-driver.phase" $clientContext }}
+  {{- end }}
+{{- end }}

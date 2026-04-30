@@ -83,6 +83,11 @@ spec:
     {{`{{- else }}`}}
       systemIstioGwVipInternal: {{ .Values.extraArgs.systemIstioGwVipInternal }}
     {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomainInternal") }}`}}
+      systemIstioGwDomainInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomainInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwDomainInternal: {{ .Values.extraArgs.systemIstioGwDomainInternal }}
+    {{`{{- end }}`}}
     {{`{{- end }}`}}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}

@@ -1,0 +1,9 @@
+{{- if and .Values.addons.capikubeadmcontrolplane.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "capi-kubeadm-control-plane.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/capi-kubeadm-control-plane/values.yml" | nindent 0 }}
+
+  {{- include "capi-kubeadm-control-plane.phase" . }}
+{{- end }}
