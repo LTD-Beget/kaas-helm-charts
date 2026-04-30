@@ -20,7 +20,7 @@ spec:
           auth:
             disable_login_form: "true"
           server:
-            root_url: /grafana/
+            root_url: {{ printf "https://%s/grafana/" .Values.systemIstioGwVipInternal }}
             serve_from_sub_path: "true"
             protocol: http
             http_port: "3000"
@@ -198,7 +198,7 @@ spec:
       virtualService:
         enabled: true
         gateways:
-          - {{ .Values.companyPrefix }}-istio-gw/default
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
         hosts:
           - "*"
         http:

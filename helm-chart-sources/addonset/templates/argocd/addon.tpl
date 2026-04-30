@@ -30,6 +30,10 @@ spec:
           jsonPath: .data.systemIstioGwDomain
         - as: istioGwVip
           jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: companyDomain

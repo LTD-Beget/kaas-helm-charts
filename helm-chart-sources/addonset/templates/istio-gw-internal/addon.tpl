@@ -1,45 +1,59 @@
-{{- define "grafana.addon" }}
+{{- define "istio-gw-internal.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: grafana
+  name: istio-gw-internal
 spec:
-  chart: "grafana"
+  chart: "gateway"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "1.26.0-3"
   targetCluster: in-cluster
-  targetNamespace: "{{ .Values.companyPrefix }}-grafana"
+  targetNamespace: "{{ .Values.companyPrefix }}-istio-gw-internal"
   variables:
-    oidcClientID: "grafana"
-    systemIstioGwVip: ""
-  valuesSources: 
-    - name: parameters
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
         namespace: {{ .Values.companyPrefix }}-system
       extract:
-        - as: systemIstioGwDomain
-          jsonPath: .data.systemIstioGwDomain
-        - as: systemIstioGwVip
-          jsonPath: .data.systemIstioGwVip
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: clusterHost
+          jsonPath: .data.clusterHost
         - as: systemIstioGwDomainInternal
           jsonPath: .data.systemIstioGwDomainInternal
         - as: systemIstioGwVipInternal
           jsonPath: .data.systemIstioGwVipInternal
-        - as: oidcClientSecret
-          jsonPath: .data.grafanaDeploymentEnvOidcSecret
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
-        - as: companyAdminUser
-          jsonPath: .data.companyAdminUser
   initDependencies:
-    - name: grafana-operator
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+    - name: istiod
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
@@ -48,12 +62,16 @@ spec:
   backend:
     finalizer: true
     type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
     namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -66,15 +84,16 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: grafana
+        addons.in-cloud.io/addon: istio-gw-internal
     - name: custom
       priority: 90
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: grafana
+        addons.in-cloud.io/addon: istio-gw-internal
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: grafana
+        addons.in-cloud.io/addon: istio-gw-internal
 {{- end }}
+

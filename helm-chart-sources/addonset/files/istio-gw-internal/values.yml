@@ -2,10 +2,10 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-default
+  name: istio-gw-internal-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: istio-gw
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
@@ -22,10 +22,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-immutable
+  name: istio-gw-internal-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: istio-gw
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
   values: ""
 
@@ -33,15 +33,15 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-infra
+  name: istio-gw-internal-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: istio-gw
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
   values: |
     gateway:
       labels:
-        monitoring.in-cloud.io/service: istio-gw
+        monitoring.in-cloud.io/service: istio-gw-internal
       service:
         type: LoadBalancer
         annotations:
@@ -54,17 +54,17 @@ spec:
             port: 15021
             protocol: TCP
             targetPort: 15021
-            nodePort: 32021
+            nodePort: 33021
           - name: http2
             port: 80
             protocol: TCP
             targetPort: 80
-            nodePort: 32080
+            nodePort: 33080
           - name: https
             port: 443
             protocol: TCP
             targetPort: 443
-            nodePort: 32443
+            nodePort: 33443
           - name: https-metrics
             port: 11043
             protocol: TCP
@@ -105,30 +105,16 @@ spec:
     telemetry:
       enabled: true
     networkPolicies:
-      enabled: true
+      enabled: false
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: istio-gw
-spec:
-  values: |
-    gateway:
-      tolerations:
-        - operator: "Exists"
-
----
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-vm-operator
+  name: istio-gw-internal-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istio-gw
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
   values: |
     argocdPlugins:
@@ -144,10 +130,10 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: istio-gw-system
+  name: istio-gw-internal-system
   labels:
     addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: istio-gw
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
   values: |
     gateway:
@@ -161,8 +147,8 @@ spec:
     tls:
       certificate:
         dnsNames:
-          - {{ .Values.systemIstioGwDomain }}
+          - {{ .Values.systemIstioGwDomainInternal }}
         ipAddresses:
           - 127.0.0.1
-          - {{ .Values.systemIstioGwVip }}
+          - {{ .Values.systemIstioGwVipInternal }}
           - {{ .Values.clusterHost }}
