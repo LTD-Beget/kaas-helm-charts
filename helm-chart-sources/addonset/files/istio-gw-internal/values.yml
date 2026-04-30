@@ -68,7 +68,7 @@ spec:
           - name: https-metrics
             port: 11043
             protocol: TCP
-            targetPort: https-metrics
+            targetPort: 11043
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
