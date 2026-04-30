@@ -739,7 +739,7 @@ spec:
       virtualService:
         enabled: true
         gateways:
-          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+          - {{ .Values.companyPrefix }}-istio-gw/default
         hosts:
           - "*"
         http:
@@ -805,6 +805,10 @@ spec:
             AVP_AUTH_TYPE: "k8s"
             VAULT_ADDR: "http://vault.{{ .Values.companyPrefix }}-vault.svc.cluster.local:8200"
             AVP_K8S_ROLE: "credentials-ro"
+    istio:
+      virtualService:
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

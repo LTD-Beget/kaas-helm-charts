@@ -145,7 +145,7 @@ spec:
       virtualService:
         enabled: true
         gateways:
-          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+          - {{ .Values.companyPrefix }}-istio-gw/default
         hosts:
           - "*"
         http:
@@ -178,4 +178,8 @@ spec:
           tenant: dev
           scheme: http
           api: 93.189.231.174
+    istio:
+      virtualService:
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
 

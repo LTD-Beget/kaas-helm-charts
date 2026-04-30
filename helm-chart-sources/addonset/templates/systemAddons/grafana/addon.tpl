@@ -8,7 +8,7 @@ spec:
   chart: "grafana"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-grafana"
   variables:
