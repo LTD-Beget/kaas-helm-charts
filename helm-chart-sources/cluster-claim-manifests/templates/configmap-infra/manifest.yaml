@@ -78,16 +78,6 @@ spec:
       svcHubRabbitVirtualHost: "{{`{{ .ClusterClaim.spec.extraEnvs.svcHubRabbitVirtualHost }}`}}"
       telegramToken: {{`{{ .ClusterClaim.spec.extraEnvs.telegramToken }}`}}
       telegramChatId: {{`{{ .ClusterClaim.spec.extraEnvs.telegramChatId | quote }}`}}
-    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVipInternal") }}`}}
-      systemIstioGwVipInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVipInternal }}`}}
-    {{`{{- else }}`}}
-      systemIstioGwVipInternal: {{ .Values.extraArgs.systemIstioGwVipInternal }}
-    {{`{{- end }}`}}
-    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomainInternal") }}`}}
-      systemIstioGwDomainInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomainInternal }}`}}
-    {{`{{- else }}`}}
-      systemIstioGwDomainInternal: {{ .Values.extraArgs.systemIstioGwDomainInternal }}
-    {{`{{- end }}`}}
     {{`{{- end }}`}}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
@@ -95,10 +85,20 @@ spec:
     {{`{{- else }}`}}
       systemIstioGwVip: {{ .Values.extraArgs.systemIstioGwVip }}
     {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVipInternal") }}`}}
+      systemIstioGwVipInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVipInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwVipInternal: {{ .Values.extraArgs.systemIstioGwVipInternal }}
+    {{`{{- end }}`}}
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomain") }}`}}
       systemIstioGwDomain: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
     {{`{{- else }}`}}
       systemIstioGwDomain: {{ .Values.extraArgs.systemIstioGwDomain }}
+    {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomainInternal") }}`}}
+      systemIstioGwDomainInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomainInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwDomainInternal: {{ .Values.extraArgs.systemIstioGwDomainInternal }}
     {{`{{- end }}`}}
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemVmInsertVIP") }}`}}
       systemVmInsertVIP: {{`{{ .ClusterClaim.spec.extraEnvs.systemVmInsertVIP }}`}}

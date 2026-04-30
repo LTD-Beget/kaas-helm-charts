@@ -26,6 +26,10 @@ spec:
           jsonPath: .data.systemIstioGwDomain
         - as: systemIstioGwVip
           jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
         - as: oidcClientSecret
           jsonPath: .data.grafanaDeploymentEnvOidcSecret
         - as: companyPrefix

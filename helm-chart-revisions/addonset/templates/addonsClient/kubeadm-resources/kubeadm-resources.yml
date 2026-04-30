@@ -1,7 +1,0 @@
-{{ if .Values.clientClusterEnabled }}
-
-{{- include "kubeadm-resources.addon" . }}
-
-{{ .Files.Get "files/addonsClient/kubeadm-resources/values.yml" | nindent 0 }}
-
-{{- end }}
