@@ -32,6 +32,7 @@ spec:
             secret: super-secret-grafana
             redirectURIs:
               - /grafana/login/generic_oauth
+              - {{ printf "https://%s/grafana/login/generic_oauth" .Values.systemIstioGwVipInternal }}
           - id: kubernetes
             name: incloud-web-chart-oauth2-proxy
             secret: incloud-web-chart-super-secret
