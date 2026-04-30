@@ -8,7 +8,7 @@ spec:
   chart: "gateway"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.26.0-2"
+  version: "1.26.0-3"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-istio-gw-internal"
   variables:

@@ -14,3 +14,13 @@ patches:
     target:
       kind: Service
       name: istio-gw
+
+  - path: ./deployment.istio-gw-internal.yaml
+    target:
+      kind: Deployment
+      name: istio-gw-internal
+
+  - path: ./service.istio-gw-internal.yaml
+    target:
+      kind: Service
+      name: istio-gw-internal

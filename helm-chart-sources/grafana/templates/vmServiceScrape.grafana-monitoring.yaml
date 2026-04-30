@@ -11,7 +11,7 @@ spec:
       monitoring.in-cloud.io/service: grafana
   endpoints:
     - port: https-metrics
-      path: /metrics
+      path: /grafana/metrics
       scheme: HTTPS
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
