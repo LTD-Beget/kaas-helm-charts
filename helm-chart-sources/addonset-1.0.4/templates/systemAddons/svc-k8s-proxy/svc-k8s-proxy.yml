@@ -1,7 +1,0 @@
-{{- if and .Values.addons.svck8sproxy.enabled .Values.addons.system.enabled }}
-
-  {{- include "svc-k8s-proxy.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/svc-k8s-proxy/values.yml" | nindent 0 }}
-
-{{- end }}

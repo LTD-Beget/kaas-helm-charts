@@ -1,7 +1,0 @@
-{{- if and .Values.addons.clusterclaimoperator.enabled .Values.addons.system.enabled }}
-
-  {{- include "cluster-claim-operator.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/cluster-claim-operator/values.yml" | nindent 0 }}
-
-{{- end }}
