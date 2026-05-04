@@ -168,13 +168,13 @@ spec:
     incloud-web-chart:
       oauth2-proxy:
         extraArgs:
-          redirect-url: "https://{{ .Values.systemIstioGwVipInternal }}/oauth2/callback"
+          redirect-url: "https://{{ .Values.systemIstioGwDomainInternal }}/oauth2/callback"
       clusters:
         - name: default
           description: default
           tenant: dev
           scheme: http
-          api: {{ .Values.systemIstioGwVipInternal }}
+          api: {{ .Values.systemIstioGwDomainInternal }}
         - name: cluster2
           description: cluster2
           tenant: dev

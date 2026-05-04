@@ -32,18 +32,18 @@ spec:
             secret: super-secret-grafana
             redirectURIs:
               - /grafana/login/generic_oauth
-              - {{ printf "https://%s/grafana/login/generic_oauth" .Values.systemIstioGwVipInternal }}
+              - {{ printf "https://%s/grafana/login/generic_oauth" .Values.systemIstioGwDomainInternal }}
           - id: kubernetes
             name: incloud-web-chart-oauth2-proxy
             secret: incloud-web-chart-super-secret
             redirectURIs:
-              - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwVipInternal }}
+              - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwDomainInternal }}
               - "https://localhost/oauth2/callback"
           - id: argocd
             name: argocd
             secret: argo-cd-super-secret
             redirectURIs:
-              - {{ printf "https://%s/argocd/auth/callback" .Values.systemIstioGwVipInternal }}
+              - {{ printf "https://%s/argocd/auth/callback" .Values.systemIstioGwDomainInternal }}
               - "https://localhost/argocd/auth/callback"
           - id: apiserver
             name: apiserver
