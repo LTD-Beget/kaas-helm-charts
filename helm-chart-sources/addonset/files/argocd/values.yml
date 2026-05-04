@@ -807,7 +807,7 @@ spec:
     argo-cd:
       configs:
         cm:
-          url: "https://{{ .Values.systemIstioGwVipInternal }}/argocd"
+          url: "https://{{ .Values.systemIstioGwDomainInternal }}/argocd"
         envFrom:
           - secretRef:
               name: avp-config
