@@ -30,7 +30,7 @@ kubernetesSystemKubelet:
         KubeSystemNodeNotReady:
           enabled: false
           spec:
-            alert: KubeNodeNotReady
+            alert: KubeSystemNodeNotReady
             annotations:
               description: |
                 {{ $labels.node }} has been unready for more than 15 minutes
@@ -44,14 +44,12 @@ kubernetesSystemKubelet:
                 Node: {{ $labels.node }}
             expr: |-
               kube_node_status_condition{
-                cluster_type="system", 
                 job="kube-state-metrics-monitoring", 
                 condition="Ready",
                 status="true"
               } == 0
               and on (node,cluster_full_name)
               kube_node_spec_unschedulable{
-                cluster_type="system",
                 job="kube-state-metrics-monitoring"
               } == 0
             for: 15m
