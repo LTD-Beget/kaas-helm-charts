@@ -28,7 +28,7 @@ kubernetesResources:
               (
                 sum(
                   kube_node_status_allocatable{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     resource="cpu",
                     cluster_type!="client"
                   }
@@ -36,7 +36,7 @@ kubernetesResources:
                 -
                 max(
                   kube_node_status_allocatable{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     resource="cpu",
                     cluster_type!="client"
                   }
@@ -45,7 +45,7 @@ kubernetesResources:
               (
                 sum(
                   kube_node_status_allocatable{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     resource="cpu",
                     cluster_type!="client"
                   }
@@ -53,7 +53,7 @@ kubernetesResources:
                 -
                 max(
                   kube_node_status_allocatable{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     resource="cpu",
                     cluster_type!="client"
                   }
@@ -87,7 +87,7 @@ kubernetesResources:
                 sum(
                   kube_node_status_allocatable{
                     resource="memory",
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     cluster_type!="client"
                   }
                 ) by (cluster_full_name)
@@ -95,7 +95,7 @@ kubernetesResources:
                 max(
                   kube_node_status_allocatable{
                     resource="memory",
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     cluster_type!="client"
                   }
                 ) by (cluster_full_name)
@@ -105,7 +105,7 @@ kubernetesResources:
                 sum(
                   kube_node_status_allocatable{
                     resource="memory",
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     cluster_type!="client"
                   }
                 ) by (cluster_full_name)
@@ -113,7 +113,7 @@ kubernetesResources:
                 max(
                   kube_node_status_allocatable{
                     resource="memory",
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     cluster_type!="client"
                   }
                 ) by (cluster_full_name)
@@ -140,7 +140,7 @@ kubernetesResources:
               sum(
                 min without(resource) (
                   kube_resourcequota{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     type="hard",
                     resource=~"(cpu|requests.cpu)",
                     cluster_type!="client"
@@ -151,7 +151,7 @@ kubernetesResources:
               sum(
                 kube_node_status_allocatable{
                   resource="cpu",
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   cluster_type!="client"
                 }
               ) by (cluster_full_name) > 1.5
@@ -175,7 +175,7 @@ kubernetesResources:
               sum(
                 min without(resource) (
                   kube_resourcequota{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     type="hard",
                     resource=~"(memory|requests.memory)",
                     cluster_type!="client"
@@ -186,7 +186,7 @@ kubernetesResources:
               sum(
                 kube_node_status_allocatable{
                   resource="memory",
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   cluster_type!="client"
                 }
               ) by (cluster_full_name) > 1.5
@@ -214,14 +214,14 @@ kubernetesResources:
 
             expr: |
               kube_resourcequota{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 type="used",
                 cluster_type!="client"
               }
               /
               ignoring(instance, job, type) (
                 kube_resourcequota{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   type="hard",
                   cluster_type!="client"
                 } > 0
@@ -250,14 +250,14 @@ kubernetesResources:
 
             expr: |
               kube_resourcequota{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 type="used",
                 cluster_type!="client"
               }
               /
               ignoring(instance, job, type) (
                 kube_resourcequota{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   type="hard",
                   cluster_type!="client"
                 } > 0
@@ -286,14 +286,14 @@ kubernetesResources:
 
             expr: |
               kube_resourcequota{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 type="used",
                 cluster_type!="client"
               }
               /
               ignoring(instance, job, type) (
                 kube_resourcequota{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   type="hard",
                   cluster_type!="client"
                 } > 0

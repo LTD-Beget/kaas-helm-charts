@@ -67,7 +67,7 @@
     kubectl wait --timeout=-1s node -l node-role.kubernetes.io/control-plane \
       --for=jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}'
 
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install cilium {{ $.Values.companyPrefix }}/cilium -n {{ $.Values.companyPrefix }}-cilium --create-namespace --version 1.18.5-1 -f -
     cilium:
       ciliumEndpointSlice:
@@ -107,7 +107,7 @@
     EOF
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade coredns..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install coredns {{ $.Values.companyPrefix }}/coredns -n {{ $.Values.companyPrefix }}-coredns --create-namespace --version 1.28.0-1 -f -
     coredns:
       livenessProbe:
@@ -195,7 +195,7 @@
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/instance=coredns -n {{ $.Values.companyPrefix }}-coredns
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade argocd..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<'EOF' | helm install argocd {{ $.Values.companyPrefix }}/argo-cd -n {{ $.Values.companyPrefix }}-argocd --create-namespace --version 9.4.15-1 -f -
     argo-cd:
       fullnameOverride: "argocd"
@@ -523,7 +523,7 @@
     EOF
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade addon-operator..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator -n {{ $.Values.companyPrefix }}-addons-operator --create-namespace --version 0.1.4 -f -
     certManager:
       enable: false

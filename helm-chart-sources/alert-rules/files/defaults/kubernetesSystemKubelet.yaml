@@ -20,12 +20,43 @@ kubernetesSystemKubelet:
                 Cluster: {{ $labels.cluster_full_name }}
                 Node: {{ $labels.node }}
             expr: |-
-              kube_node_status_condition{job="kube-state-metrics",condition="Ready",status="true"} == 0
+              kube_node_status_condition{condition="Ready",status="true"} == 0
               and on (node,cluster_full_name)
-              kube_node_spec_unschedulable{job="kube-state-metrics"} == 0
+              kube_node_spec_unschedulable == 0
             for: 15m
             labels:
               severity: warning
+
+        KubeSystemNodeNotReady:
+          enabled: false
+          spec:
+            alert: KubeNodeNotReady
+            annotations:
+              description: |
+                {{ $labels.node }} has been unready for more than 15 minutes
+                on cluster {{ $labels.cluster_full_name }}.
+              runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodenotready
+              summary: Node is not ready.
+              message: |
+                {{ $labels.cluster_full_name }}: Node NotReady >15m
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Node: {{ $labels.node }}
+            expr: |-
+              kube_node_status_condition{
+                cluster_type="system", 
+                job="kube-state-metrics-monitoring", 
+                condition="Ready",
+                status="true"
+              } == 0
+              and on (node,cluster_full_name)
+              kube_node_spec_unschedulable{
+                cluster_type="system",
+                job="kube-state-metrics-monitoring"
+              } == 0
+            for: 15m
+            labels:
+              severity: critical
 
         KubeNodePressure:
           enabled: false
@@ -45,9 +76,13 @@ kubernetesSystemKubelet:
                 Node: {{ $labels.node }}
                 Condition: {{ $labels.condition }}
             expr: |-
-              kube_node_status_condition{job="kube-state-metrics",condition=~"(MemoryPressure|DiskPressure|PIDPressure)",status="true"} == 1
+              kube_node_status_condition{
+                condition=~"(MemoryPressure|DiskPressure|PIDPressure)",
+                status="true",
+                cluster_type!="client"
+              } == 1
               and on (node,cluster_full_name)
-              kube_node_spec_unschedulable{job="kube-state-metrics"} == 0
+              kube_node_spec_unschedulable == 0
             for: 10m
             labels:
               severity: warning
@@ -67,8 +102,17 @@ kubernetesSystemKubelet:
 
                 Cluster: {{ $labels.cluster_full_name }}
                 Node: {{ $labels.node }}
-            expr: (kube_node_spec_taint{job="kube-state-metrics",key="node.kubernetes.io/unreachable",effect="NoSchedule"}
-              unless ignoring(key,value) kube_node_spec_taint{job="kube-state-metrics",key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"})
+            expr: |
+              (
+                kube_node_spec_taint{
+                  key="node.kubernetes.io/unreachable",
+                  effect="NoSchedule"
+                }
+                unless ignoring(key,value)
+                kube_node_spec_taint{
+                  key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"
+                }
+              )
               == 1
             for: 15m
             labels:
@@ -102,7 +146,7 @@ kubernetesSystemKubelet:
               )
               / on (node,cluster_full_name) group_left()
               max by (node,cluster_full_name) (
-                kube_node_status_capacity{job="kube-state-metrics", resource="pods"} != 1
+                kube_node_status_capacity{resource="pods"} != 1
               ) > 0.95
             for: 15m
             labels:
@@ -125,9 +169,9 @@ kubernetesSystemKubelet:
                 Node: {{ $labels.node }}
                 Changes: {{ $value }}
             expr: |-
-              sum(changes(kube_node_status_condition{job="kube-state-metrics",status="true",condition="Ready"}[15m])) by (node,cluster_full_name) > 2
+              sum(changes(kube_node_status_condition{status="true",condition="Ready"}[15m])) by (node,cluster_full_name) > 2
               and on (node,cluster_full_name)
-              kube_node_spec_unschedulable{job="kube-state-metrics"} == 0
+              kube_node_spec_unschedulable == 0
             for: 15m
             labels:
               severity: warning
