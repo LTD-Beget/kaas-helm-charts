@@ -25,7 +25,7 @@ kubernetesApps:
               max_over_time(
                 kube_pod_container_status_waiting_reason{
                   reason="CrashLoopBackOff",
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }[5m]
@@ -55,7 +55,7 @@ kubernetesApps:
               max_over_time(
                 kube_pod_container_status_waiting_reason{
                   reason="CrashLoopBackOff",
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"^({{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-argocd|{{ .Values.companyPrefix }}-cert-manager|{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-vmagent|{{ .Values.companyPrefix }}-trust-manager|{{ .Values.companyPrefix }}-system|kube-system)$",
                   cluster_type!="client"
                 }[5m]
@@ -119,7 +119,7 @@ kubernetesApps:
               sum by (namespace,pod,cluster_full_name) (
                 max by (namespace,pod,cluster_full_name) (
                   kube_pod_status_phase{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     phase=~"Pending|Unknown|Failed",
                     cluster_type!="client"
@@ -151,13 +151,13 @@ kubernetesApps:
                 Deployment: {{ $labels.deployment }}
             expr: |-
               kube_deployment_status_observed_generation{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
               !=
               kube_deployment_metadata_generation{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
@@ -185,13 +185,13 @@ kubernetesApps:
             expr: |-
               (
                 kube_deployment_spec_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 >
                 kube_deployment_status_replicas_available{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
@@ -200,7 +200,7 @@ kubernetesApps:
               (
                 changes(
                   kube_deployment_status_replicas_updated{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }[10m]
@@ -230,14 +230,14 @@ kubernetesApps:
             expr: |-
               (
                 kube_deployment_spec_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"^({{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-argocd|{{ .Values.companyPrefix }}-cert-manager|{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-vmagent|{{ .Values.companyPrefix }}-trust-manager|{{ .Values.companyPrefix }}-system|kube-system)$",
                   deployment!="client-kube-state-metrics",
                   cluster_type!="client"
                 }
                   >
                 kube_deployment_status_replicas_available{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"^({{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-argocd|{{ .Values.companyPrefix }}-cert-manager|{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-vmagent|{{ .Values.companyPrefix }}-trust-manager|{{ .Values.companyPrefix }}-system|kube-system)$",
                   deployment!="client-kube-state-metrics",
                   cluster_type!="client"
@@ -245,7 +245,7 @@ kubernetesApps:
               ) and (
                 changes(
                   kube_deployment_status_replicas_updated{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"^({{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-argocd|{{ .Values.companyPrefix }}-cert-manager|{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-vmagent|{{ .Values.companyPrefix }}-trust-manager|{{ .Values.companyPrefix }}-system|kube-system)$",
                     deployment!="client-kube-state-metrics",
                     cluster_type!="client"
@@ -276,7 +276,7 @@ kubernetesApps:
               kube_deployment_status_condition{
                 condition="Progressing",
                 status="false",
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               } != 0
@@ -304,7 +304,7 @@ kubernetesApps:
               kube_deployment_status_condition{
                 condition="Progressing",
                 status="false",
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"^({{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-argocd|{{ .Values.companyPrefix }}-cert-manager|{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-vmagent|{{ .Values.companyPrefix }}-trust-manager|{{ .Values.companyPrefix }}-system|kube-system)$",
                 deployment!="client-kube-state-metrics",
                 cluster_type!="client"
@@ -334,13 +334,13 @@ kubernetesApps:
             expr: |-
               (
                 kube_statefulset_status_replicas_ready{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 !=
                 kube_statefulset_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
@@ -349,7 +349,7 @@ kubernetesApps:
               (
                 changes(
                   kube_statefulset_status_replicas_updated{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }[10m]
@@ -378,13 +378,13 @@ kubernetesApps:
                 StatefulSet: {{ $labels.statefulset }}
             expr: |-
               kube_statefulset_status_observed_generation{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
               !=
               kube_statefulset_metadata_generation{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
@@ -412,13 +412,13 @@ kubernetesApps:
               (
                 max by (namespace,statefulset,job,cluster_full_name) (
                   kube_statefulset_status_current_revision{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
                   unless
                   kube_statefulset_status_update_revision{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
@@ -426,13 +426,13 @@ kubernetesApps:
                 *
                 (
                   kube_statefulset_replicas{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
                   !=
                   kube_statefulset_status_replicas_updated{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
@@ -442,7 +442,7 @@ kubernetesApps:
               (
                 changes(
                   kube_statefulset_status_replicas_updated{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }[5m]
@@ -472,13 +472,13 @@ kubernetesApps:
               (
                 (
                   kube_daemonset_status_current_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
@@ -486,7 +486,7 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_number_misscheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   } != 0
@@ -494,13 +494,13 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_updated_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
@@ -508,13 +508,13 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_number_available{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }
@@ -524,7 +524,7 @@ kubernetesApps:
               (
                 changes(
                   kube_daemonset_status_updated_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                     cluster_type!="client"
                   }[5m]
@@ -554,13 +554,13 @@ kubernetesApps:
               (
                 (
                   kube_daemonset_status_current_number_scheduled{
-                    job="kube-state-metrics", 
+                    job="kube-state-metrics-monitoring", 
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
@@ -568,7 +568,7 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_number_misscheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   } != 0
@@ -576,13 +576,13 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_updated_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
@@ -590,13 +590,13 @@ kubernetesApps:
                 or
                 (
                   kube_daemonset_status_number_available{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
                   !=
                   kube_daemonset_status_desired_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                   }
@@ -606,7 +606,7 @@ kubernetesApps:
               (
                 changes(
                   kube_daemonset_status_updated_number_scheduled{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     namespace=~"{{ .Values.companyPrefix }}-cert-manager-csi-driver|{{ .Values.companyPrefix }}-cilium|{{ .Values.companyPrefix }}-system",
                     cluster_type!="client"
                     }[5m]
@@ -638,7 +638,7 @@ kubernetesApps:
             expr: |
               kube_pod_container_status_waiting_reason{
                 reason!="CrashLoopBackOff",
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               } > 0
@@ -665,13 +665,13 @@ kubernetesApps:
                 NotScheduledPods: {{ $value }}
             expr: |-
               kube_daemonset_status_desired_number_scheduled{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
               -
               kube_daemonset_status_current_number_scheduled{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               } > 0
@@ -698,7 +698,7 @@ kubernetesApps:
                 MisScheduledPods: {{ $value }}
             expr: |
               kube_daemonset_status_number_misscheduled{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               } > 0
@@ -727,13 +727,13 @@ kubernetesApps:
                 -
               max by (namespace,job_name,cluster_full_name) (
                 kube_job_status_start_time{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 and
                 kube_job_status_active{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 } > 0
@@ -760,7 +760,7 @@ kubernetesApps:
                 Job: {{ $labels.job_name }}
             expr: |
               kube_job_failed{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               } > 0
@@ -788,13 +788,13 @@ kubernetesApps:
             expr: |-
               (
                 kube_horizontalpodautoscaler_status_desired_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 !=
                 kube_horizontalpodautoscaler_status_current_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
@@ -802,13 +802,13 @@ kubernetesApps:
               and
               (
                 kube_horizontalpodautoscaler_status_current_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 >
                 kube_horizontalpodautoscaler_spec_min_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
@@ -816,13 +816,13 @@ kubernetesApps:
               and
               (
                 kube_horizontalpodautoscaler_status_current_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 <
                 kube_horizontalpodautoscaler_spec_max_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
@@ -830,7 +830,7 @@ kubernetesApps:
               and
               changes(
                 kube_horizontalpodautoscaler_status_current_replicas{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }[15m]
@@ -858,13 +858,13 @@ kubernetesApps:
                 HPA: {{ $labels.horizontalpodautoscaler }}
             expr: |-
               kube_horizontalpodautoscaler_status_current_replicas{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
               ==
               kube_horizontalpodautoscaler_spec_max_replicas{
-                job="kube-state-metrics",
+                job="kube-state-metrics-monitoring",
                 namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                 cluster_type!="client"
               }
@@ -896,13 +896,13 @@ kubernetesApps:
             expr: |-
               (
                 kube_poddisruptionbudget_status_desired_healthy{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
                 -
                 kube_poddisruptionbudget_status_current_healthy{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   namespace=~"{{ .Values.companyPrefix }}.*|kube.*|default",
                   cluster_type!="client"
                 }
