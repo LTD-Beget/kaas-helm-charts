@@ -5,5 +5,6 @@
     {{- else }}
         # Предпочтительнее использовать этот подход тк всегда можем быть уверены что ttl сертификата начнет тикать сразу после создания ноды
         {{ include "in-cloud-capi-template.files.rbacProxy.rbacProxyServer.cnf" $ | nindent 0 }}
+        {{ include "in-cloud-capi-template.files.rbacProxy.rbacProxyClient.cnf" $ | nindent 0 }}
     {{- end }}
 {{- end -}}
