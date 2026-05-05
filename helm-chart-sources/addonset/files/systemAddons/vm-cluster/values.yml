@@ -112,7 +112,7 @@ spec:
               - key: "node-role.kubernetes.io/vm-stream"
                 operator: "Exists"
                 effect: "NoSchedule"
-            serviceSpec:
+            serviceSpec: # TODO: Удалить после переезда на vmauth-lb
               metadata:
                 name: vmselect
                 labels:
@@ -169,7 +169,7 @@ spec:
               - key: "node-role.kubernetes.io/vm-stream"
                 operator: "Exists"
                 effect: "NoSchedule"
-            serviceSpec:
+            serviceSpec: # TODO: Удалить после переезда на vmauth-lb
               metadata:
                 name: vminsert
                 labels:
@@ -203,7 +203,6 @@ spec:
                           values:
                             - vminsert
                     topologyKey: kubernetes.io/hostname
-    # additionalService: Сервис vminsert определен через spec.[vminsert|vmselect|vmstorage].serviceSpec
     monitoring:
       enabled: true
 ---
@@ -449,7 +448,6 @@ spec:
                     port: 11043
                     protocol: TCP
                     targetPort: https-metrics
-    # additionalService: Сервис vminsert определен через spec.[vminsert|vmselect|vmstorage].serviceSpec
     monitoring:
       enabled: true
       secureService:
