@@ -7,4 +7,5 @@
         {{ include "in-cloud-capi-template.files.rbacProxy.rbacProxyServer.cnf" $ | nindent 0 }}
         {{ include "in-cloud-capi-template.files.rbacProxy.rbacProxyClient.cnf" $ | nindent 0 }}
     {{- end }}
+        {{ include "in-cloud-capi-template.files.rbacProxy.rbacProxy.conf" $ | nindent 0 }}
 {{- end -}}
