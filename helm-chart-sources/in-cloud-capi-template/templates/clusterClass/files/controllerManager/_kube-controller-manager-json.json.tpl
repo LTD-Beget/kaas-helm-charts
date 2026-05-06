@@ -54,6 +54,61 @@
             }
           ]
         }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "rbac-proxy-server-crt",
+          "hostPath": {
+            "path": "/etc/kubernetes/pki/rbac-proxy-server.crt",
+            "type": "File"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "rbac-proxy-server-key",
+          "hostPath": {
+            "path": "/etc/kubernetes/pki/rbac-proxy-server.key",
+            "type": "File"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "rbac-proxy-client-crt",
+          "hostPath": {
+            "path": "/etc/kubernetes/pki/rbac-proxy-client.crt",
+            "type": "File"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "rbac-proxy-client-key",
+          "hostPath": {
+            "path": "/etc/kubernetes/pki/rbac-proxy-client.key",
+            "type": "File"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "rbac-proxy-kubeconfig",
+          "hostPath": {
+            "path": "/etc/kubernetes/rbac-proxy.conf",
+            "type": "File"
+          }
+        }
       }
     ]
 {{- end }}
