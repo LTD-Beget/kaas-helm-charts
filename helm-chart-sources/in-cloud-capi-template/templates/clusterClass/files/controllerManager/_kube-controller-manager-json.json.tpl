@@ -51,8 +51,24 @@
               "name": "rbac-proxy-kubeconfig",
               "mountPath": "/etc/kubernetes/rbac-proxy.conf",
               "readOnly": true
+            },
+            {
+              "name": "kube-ca",
+              "mountPath": "/etc/kubernetes/pki/ca.crt",
+              "readOnly": true
             }
           ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/volumes/-",
+        "value": {
+          "name": "kube-ca",
+          "hostPath": {
+            "path": "/etc/kubernetes/pki/ca.crt",
+            "type": "File"
+          }
         }
       },
       {
