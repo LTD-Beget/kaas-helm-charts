@@ -10,6 +10,10 @@
         "value": {
           "name": "rbac-proxy",
           "image": "quay.io/brancz/kube-rbac-proxy:v0.21.0",
+          "securityContext": {
+            "runAsUser": 0,
+            "runAsGroup": 0
+          },
           "args": [
             "--secure-listen-address=0.0.0.0:11044",
             "--upstream=https://127.0.0.1:10257",
