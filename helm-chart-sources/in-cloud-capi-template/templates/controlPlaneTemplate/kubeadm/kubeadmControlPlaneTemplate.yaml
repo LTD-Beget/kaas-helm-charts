@@ -34,27 +34,6 @@ spec:
                 value: "127.0.0.1"
               - name: secure-port
                 value: "10257"
-            extraVolumes:
-              - name: rbac-proxy-server-crt
-                hostPath: /etc/kubernetes/pki/rbac-proxy-server.crt
-                mountPath: /etc/kubernetes/pki/rbac-proxy-server.crt
-                pathType: File
-              - name: rbac-proxy-server-key
-                hostPath: /etc/kubernetes/pki/rbac-proxy-server.key
-                mountPath: /etc/kubernetes/pki/rbac-proxy-server.key
-                pathType: File
-              - name: rbac-proxy-client-crt
-                hostPath: /etc/kubernetes/pki/rbac-proxy-client.crt
-                mountPath: /etc/kubernetes/pki/rbac-proxy-client.crt
-                pathType: File
-              - name: rbac-proxy-client-key
-                hostPath: /etc/kubernetes/pki/rbac-proxy-client.key
-                mountPath: /etc/kubernetes/pki/rbac-proxy-client.key
-                pathType: File
-              - name: rbac-proxy-kubeconfig
-                hostPath: /etc/kubernetes/rbac-proxy.conf
-                mountPath: /etc/kubernetes/rbac-proxy.conf
-                pathType: File
 
           scheduler:
             extraArgs:
@@ -64,27 +43,6 @@ spec:
                 value: "10259"
               - name: leader-elect
                 value: "true"
-            extraVolumes:
-              - name: rbac-proxy-server-crt
-                hostPath: /etc/kubernetes/pki/rbac-proxy-server.crt
-                mountPath: /etc/kubernetes/pki/rbac-proxy-server.crt
-                pathType: File
-              - name: rbac-proxy-server-key
-                hostPath: /etc/kubernetes/pki/rbac-proxy-server.key
-                mountPath: /etc/kubernetes/pki/rbac-proxy-server.key
-                pathType: File
-              - name: rbac-proxy-client-crt
-                hostPath: /etc/kubernetes/pki/rbac-proxy-client.crt
-                mountPath: /etc/kubernetes/pki/rbac-proxy-client.crt
-                pathType: File
-              - name: rbac-proxy-client-key
-                hostPath: /etc/kubernetes/pki/rbac-proxy-client.key
-                mountPath: /etc/kubernetes/pki/rbac-proxy-client.key
-                pathType: File
-              - name: rbac-proxy-kubeconfig
-                hostPath: /etc/kubernetes/rbac-proxy.conf
-                mountPath: /etc/kubernetes/rbac-proxy.conf
-                pathType: File
 
           etcd:
             local:
