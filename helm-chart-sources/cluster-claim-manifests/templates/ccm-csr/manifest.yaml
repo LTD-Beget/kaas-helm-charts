@@ -30,7 +30,7 @@ spec:
                     {{`{{- end }}`}}
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
-                    tag: "{{ .Values.extraArgs.versions.ccm }}"
+                    tag: "{{ .Values.versions.ccm }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -62,7 +62,7 @@ spec:
                     {{`{{- end }}`}}
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
-                    tag: "{{ .Values.extraArgs.versions.ccm }}"
+                    tag: "{{ .Values.versions.ccm }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -90,7 +90,7 @@ spec:
                     cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
-                    tag: "{{ .Values.extraArgs.versions.csrc }}"
+                    tag: "{{ .Values.versions.csrc }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -115,7 +115,7 @@ spec:
                     cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
-                    tag: "{{ .Values.extraArgs.versions.csrc }}"
+                    tag: "{{ .Values.versions.csrc }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
