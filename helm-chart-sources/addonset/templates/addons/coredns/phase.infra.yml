@@ -1,5 +1,7 @@
 {{- if .Values.addons.coredns.enabled }}
-{{- $context  := set (deepCopy .) "Values" (set (deepCopy .Values) "suffix" "") -}}
+{{- $context  := deepCopy . -}}
+{{- $_        := set $context.Values "addonName"      "coredns") -}}
+{{- $_        := set $context.Values "suffix"         "") -}}
 {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
 
 ---
