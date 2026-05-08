@@ -1,4 +1,4 @@
-{{- define "coredns.phase.multi-control-plane" }}
+{{- define "common.phase.rules.40-multi-control-plane" }}
 - name: multi-control-plane
   criteria:
     - source:
@@ -29,8 +29,8 @@
       keep: false
   selector:
     name: multi-control-plane
-    priority: 30
+    priority: 40
     matchLabels:
       addons.in-cloud.io/values: multi-control-plane
-      addons.in-cloud.io/addon: coredns
+      addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

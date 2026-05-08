@@ -1,4 +1,4 @@
-{{- define "coredns.phase.network-policies" }}
+{{- define "common.phase.rules.50-network-policies" }}
 - name: network-policies
   criteria:
     - source:
@@ -34,8 +34,8 @@
       value: true
   selector:
     name: network-policies
-    priority: 35
+    priority: 50
     matchLabels:
       addons.in-cloud.io/values: network-policies
-      addons.in-cloud.io/addon: coredns
+      addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

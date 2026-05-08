@@ -1,4 +1,4 @@
-{{- define "coredns.phase.system" }}
+{{- define "common.phase.rules.60-system" }}
 - name: system
   criteria:
     - source:
@@ -11,8 +11,8 @@
       value: "true"
   selector:
     name: system
-    priority: 40
+    priority: 60
     matchLabels:
       addons.in-cloud.io/values: system
-      addons.in-cloud.io/addon: coredns
+      addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

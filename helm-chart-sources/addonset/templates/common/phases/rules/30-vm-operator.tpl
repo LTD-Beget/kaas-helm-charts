@@ -1,4 +1,4 @@
-{{- define "coredns.phase.vm-operator" }}
+{{- define "common.phase.rules.30-vm-operator" }}
 - name: vm-operator
   criteria:
     - source:
@@ -34,5 +34,5 @@
     priority: 30
     matchLabels:
       addons.in-cloud.io/values: vm-operator
-      addons.in-cloud.io/addon: coredns
+      addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

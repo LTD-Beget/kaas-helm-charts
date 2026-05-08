@@ -1,4 +1,4 @@
-{{- define "coredns.phase.infra" }}
+{{- define "common.phase.rules.20-infra" }}
 - name: infra
   criteria:
     - source:
@@ -11,8 +11,8 @@
       value: "infra"
   selector:
     name: infra
-    priority: 15
+    priority: 20
     matchLabels:
       addons.in-cloud.io/values: infra
-      addons.in-cloud.io/addon: coredns
+      addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}
