@@ -510,19 +510,19 @@ spec:
               protocol: TCP
             - port: "10250"
               protocol: TCP
-            - port: "10257"
-              protocol: TCP
-            - port: "10259"
-              protocol: TCP
             - port: "2381"
               protocol: TCP
             - port: "11038"
               protocol: TCP
-            - port: "11039"
+            - port: "11039" # cilium-operator
+              protocol: TCP 
+            - port: "11043" # cilium-agent
               protocol: TCP
-            - port: "11043"
+            - port: "11044" # controller-manager
               protocol: TCP
-            - port: "11046"
+            - port: "11045" # scheduler
+              protocol: TCP
+            - port: "11046" # process-exporter
               protocol: TCP
   description: |
     Allows egress for vmagent to host metrics endpoints

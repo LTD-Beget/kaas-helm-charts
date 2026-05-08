@@ -15,7 +15,7 @@
             "runAsGroup": 0
           },
           "args": [
-            "--secure-listen-address=0.0.0.0:11043",
+            "--secure-listen-address=0.0.0.0:11045",
             "--upstream=https://127.0.0.1:10259",
             "--tls-cert-file=/etc/kubernetes/pki/rbac-proxy-server.crt",
             "--tls-private-key-file=/etc/kubernetes/pki/rbac-proxy-server.key",
@@ -26,7 +26,7 @@
           "ports": [
             {
               "name": "https-metrics",
-              "containerPort": 11043,
+              "containerPort": 11045,
               "protocol": "TCP"
             }
           ],
