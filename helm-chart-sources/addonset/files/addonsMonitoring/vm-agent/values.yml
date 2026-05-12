@@ -269,6 +269,9 @@ spec:
             cluster_type: "infra"
       kubeControllerManager:
         enabled: true
+        service:
+          port: 11044
+          targetPort: 11044
         vmScrape:
           spec:
             endpoints:
@@ -277,9 +280,12 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-controller-manager
+                  serverName: {{ .Values.cluster.name }}-rbac-proxy
       kubeScheduler:
         enabled: true
+        service:
+          port: 11045
+          targetPort: 11045
         vmScrape:
           spec:
             endpoints:
@@ -288,7 +294,7 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-scheduler
+                  serverName: {{ .Values.cluster.name }}-rbac-proxy
             jobLabel: "jobLabel"
     networkPolicies:
       vmagent:

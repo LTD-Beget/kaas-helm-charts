@@ -19,6 +19,9 @@
             "--upstream=https://127.0.0.1:10257",
             "--tls-cert-file=/etc/kubernetes/pki/rbac-proxy-server.crt",
             "--tls-private-key-file=/etc/kubernetes/pki/rbac-proxy-server.key",
+            "--upstream-ca-file=/etc/kubernetes/pki/ca.crt",
+            "--upstream-client-cert-file=/etc/kubernetes/pki/rbac-proxy-client.crt",
+            "--upstream-client-key-file=/etc/kubernetes/pki/rbac-proxy-client.key",
             "--kubeconfig=/etc/kubernetes/rbac-proxy.conf",
             "--auth-header-fields-enabled",
             "--v=2"
