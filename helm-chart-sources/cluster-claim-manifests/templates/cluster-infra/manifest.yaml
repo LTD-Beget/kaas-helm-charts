@@ -123,7 +123,17 @@ spec:
 {{- end }}
 
           - name: containerdMirrorUrl
-            value: https://{{ .Values.extraArgs.companyInternalDockerRegistry }}
+        {{`{{- if .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
+            value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
+        {{`{{- else if .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
+            value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
+        {{`{{- else }}`}}
+          {{- if .Values.extraArgs.systemIstioGwDomain }}
+            value: https://{{ .Values.extraArgs.systemIstioGwDomain }}
+          {{- else }}
+            value: https://{{ .Values.extraArgs.systemIstioGwVip }}
+          {{- end }}
+        {{`{{- end }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterClaimName
             value: {{`{{ .ClusterClaim.metadata.name }}`}}
         {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_serverName") }}`}}
