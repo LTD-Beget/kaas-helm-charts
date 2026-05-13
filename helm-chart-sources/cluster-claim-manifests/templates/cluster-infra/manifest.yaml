@@ -123,9 +123,9 @@ spec:
 {{- end }}
 
           - name: containerdMirrorUrl
-        {{`{{- if .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomain") }}`}}
             value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
-        {{`{{- else if .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
+        {{`{{- else if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
             value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
         {{`{{- else }}`}}
           {{- if .Values.extraArgs.systemIstioGwDomain }}
