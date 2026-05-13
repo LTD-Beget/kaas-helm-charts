@@ -25,6 +25,7 @@ spec:
               storage.cacheSizeIndexDBDataBlocksSparse: 2Gib
               storage.cacheSizeIndexDBIndexBlocks: 12Gib
               storage.cacheSizeIndexDBTagFilters: 4Gib
+              storage.trackMetricNamesStats: "true"
               storageDataPath: /opt/monitoring/data
             claimTemplates: []
             storage:
