@@ -22,6 +22,8 @@ spec:
 
         clusterConfiguration:
           apiServer:
+            certSANs:
+              - "127.0.0.1"
             extraVolumes:
               - name: k8s-audit
                 hostPath: /var/log/kubernetes/audit/
