@@ -339,6 +339,7 @@ capi:
           certSANs:
             - "api.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
             - "api-int.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
+            - "127.0.0.1"
 
           extraVolumes:
             - name: k8s-audit-policy
