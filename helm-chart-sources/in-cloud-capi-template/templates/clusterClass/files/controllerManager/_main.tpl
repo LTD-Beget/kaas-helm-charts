@@ -6,4 +6,5 @@
         # Предпочтительнее использовать этот подход тк всегда можем быть уверены что ttl сертификата начнет тикать сразу после создания ноды
         {{ include "in-cloud-capi-template.files.controllerManager.controllerManagerServer.cnf" $ | nindent 0 }}
     {{- end }}
+        {{ include "in-cloud-capi-template.files.controllerManager.kubeControllerManagerJson.json" $ | nindent 0 }}
 {{- end -}}

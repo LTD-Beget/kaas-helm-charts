@@ -88,7 +88,7 @@ Usage: include "...common.tlsCnf"
         "cn"   "system:kube-controller-manager-server"
         "withFQDN" false)
 */}}
-{{- define "in-cloud-capi-template.files.common.tlsCnf" -}}
+{{- define "in-cloud-capi-template.files.common.serverTlsCnf" -}}
 - path: /etc/kubernetes/pki/{{ .name }}-server.cnf
   owner: root:root
   permissions: '0644'

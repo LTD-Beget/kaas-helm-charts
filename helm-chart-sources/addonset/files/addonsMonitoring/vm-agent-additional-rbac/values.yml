@@ -87,3 +87,40 @@ spec:
           - kind: ServiceAccount
             name: vmagent-vmagent
             namespace: {{ .Values.companyPrefix }}-vmagent
+
+      metricsSystemRbacProxyAuthDelegatorClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: kube-rbac-proxy-auth-delegator
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: system:auth-delegator
+        subjects:
+          - kind: User
+            name: system:kube-rbac-proxy
+
+      metricsSystemRbacProxyClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: kube-rbac-proxy-metrics
+        rules:
+          - nonResourceURLs:
+              - "/metrics"
+            verbs:
+              - get
+
+      metricsSystemRbacProxyAuthDelegatorClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: kube-rbac-proxy-metrics
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: kube-rbac-proxy-metrics
+        subjects:
+          - kind: User
+            name: system:kube-rbac-proxy

@@ -9,7 +9,7 @@
     clusters:
     - name: my-cluster
       cluster:
-        server: https://127.0.0.1:443
+        server: https://127.0.0.1:6443
         certificate-authority: /etc/kubernetes/pki/ca.crt
     users:
     - name: my-user

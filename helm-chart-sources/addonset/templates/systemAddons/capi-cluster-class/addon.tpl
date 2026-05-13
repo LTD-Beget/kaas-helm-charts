@@ -8,7 +8,7 @@ spec:
   chart: "in-cloud-capi-template"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.5"
+  version: "0.1.6"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-capi"
   variables:

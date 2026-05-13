@@ -339,6 +339,7 @@ capi:
           certSANs:
             - "api.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
             - "api-int.{{ .builtin.cluster.name }}.{{ .externalClusterDomain }}"
+            - "127.0.0.1"
 
           extraVolumes:
             - name: k8s-audit-policy
@@ -422,7 +423,7 @@ capi:
               readOnly: true
               pathType: File
           extraArgs:
-            bind-address: "0.0.0.0"
+            bind-address: "127.0.0.1"
             # tls
             tls-cert-file: "/etc/kubernetes/pki/controller-manager-server.crt"
             tls-private-key-file: "/etc/kubernetes/pki/controller-manager-server.key"
@@ -474,7 +475,7 @@ capi:
               pathType: File
           extraArgs:
             leader-elect: "true"
-            bind-address: "0.0.0.0"
+            bind-address: "127.0.0.1"
             tls-cert-file: "/etc/kubernetes/pki/scheduler-server.crt"
             tls-private-key-file: "/etc/kubernetes/pki/scheduler-server.key"
 
