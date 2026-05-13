@@ -175,19 +175,6 @@ capi:
                 mirror: https://registry.k8s.io
             server: https://registry.k8s.io
 
-          xpkg.crossplane.io:
-            mirrors:
-              - args:
-                  ca: /etc/kubernetes/pki/ca-oidc.crt
-                  priority: 1
-                  skip_verify: false
-                mirror: '{{  .containerdMirrorUrl }}/repository/xpkg-crossplane-io'
-              - args:
-                  priority: 2
-                  skip_verify: false
-                mirror: https://xpkg.crossplane.io
-            server: https://xpkg.crossplane.io
-
           #### EXAMPLE #####################################################
           # registry-1.docker.io:
           #   server: https://registry-1.docker.io
