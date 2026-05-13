@@ -1,0 +1,15 @@
+{{- if .Values.addons.vmauth.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- if .Values.addons.system.enabled }}
+    {{- include "vm-auth.addon" . }}
+  {{- end }}
+
+  {{- .Files.Get "files/systemAddons/vmauth/values.yml" | nindent 0 }}
+
+  {{- include "vm-auth.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-auth.phase" $clientContext }}
+  {{- end }}
+{{- end }}

@@ -11,122 +11,124 @@ companyAdminUser: adm@example.com
 
 addons:
   addonsoperator:
-    enabled: true
+    enabled: false
   addonmanifests:
-    enabled: true
+    enabled: false
   addonset:
-    enabled: true
+    enabled: false
   argocd:
-    enabled: true
+    enabled: false
   cmprovider:
-    enabled: true
+    enabled: false
   certificateset:
-    enabled: true
+    enabled: false
   certmanager:
-    enabled: true
+    enabled: false
   certmanagercsidriver:
-    enabled: true
+    enabled: false
   cilium:
-    enabled: true
+    enabled: false
   coredns:
-    enabled: true
+    enabled: false
   clientkubestatemetrics:
     enabled: false
   clientvmscrapeconfig:
     enabled: false
   clusterclaimoperator:
-    enabled: true
+    enabled: false
   ccmcsrcsystem:
-    enabled: true
+    enabled: false
   ccmcsrccontroller:
-    enabled: true
+    enabled: false
   capi:
-    enabled: true
+    enabled: false
   capiclusterclass:
-    enabled: true
+    enabled: false
   capikubeadmbootstrap:
-    enabled: true
+    enabled: false
   capikubeadmcontrolplane:
-    enabled: true
+    enabled: false
   controlplane:
-    enabled: true
+    enabled: false
   dex:
-    enabled: true
+    enabled: false
   dockerregistry:
-    enabled: true
+    enabled: false
   etcdbackupsnapshot:
-    enabled: true
+    enabled: false
   extraresources:
-    enabled: true
+    enabled: false
   helminserter:
-    enabled: true
+    enabled: false
   grafana:
-    enabled: true
+    enabled: false
   grafanadashboards:
-    enabled: true
+    enabled: false
   grafanaoperator:
-    enabled: true
+    enabled: false
   kubestatemetrics:
-    enabled: true
+    enabled: false
   konnectivityagent:
     enabled: false
   metricsserver:
-    enabled: true
+    enabled: false
   prometheusprocessexporter:
-    enabled: true
+    enabled: false
   prometheusnodeexporter:
-    enabled: true
+    enabled: false
   incloudwebchart:
-    enabled: true
+    enabled: false
   incloudwebresources:
     enabled: false
   istiobase:
-    enabled: true
+    enabled: false
   istiod:
-    enabled: true
+    enabled: false
   istiogw:
-    enabled: true
+    enabled: false
   secretcopyoperator:
-    enabled: true
+    enabled: false
   signalilo:
-    enabled: true
+    enabled: false
   svck8sproxy:
-    enabled: true
+    enabled: false
   svchub:
-    enabled: true
+    enabled: false
   template:
-    enabled: true
+    enabled: false
   test:
-    enabled: true
+    enabled: false
   trustmanager:
-    enabled: true
+    enabled: false
   vmagent:
-    enabled: true
+    enabled: false
   vmagentadditionalrbac:
-    enabled: true
+    enabled: false
   trivyoperator:
-    enabled: true
+    enabled: false
   vmoperator:
-    enabled: true
+    enabled: false
   vault:
     enabled: false
   validatingadmissionpolicies:
-    enabled: true
+    enabled: false
   vmalert:
-    enabled: true
+    enabled: false
   vmalertmanager:
-    enabled: true
+    enabled: false
   vmalertrules:
-    enabled: true
+    enabled: false
   vmcluster:
+    enabled: false
+  vmauth:
     enabled: true
   system:
-    enabled: false
-  workergroupclaimoperator:
     enabled: true
+  workergroupclaimoperator:
+    enabled: false
 environment: infra
 clusterClaim: cluster
 clientName: client
 clusterName: infra
 addonRevision: 0.1.0
-clientClusterEnabled: true
+clientClusterEnabled: false
