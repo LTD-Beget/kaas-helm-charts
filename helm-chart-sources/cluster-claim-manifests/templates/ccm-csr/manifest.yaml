@@ -23,7 +23,7 @@ spec:
                   extraEnv:
                     CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra"
                     CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
-                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterCustomerLogin }}`}}"
                     PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
                     {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
                     USE_INTERNAL_LB: "true"
@@ -55,7 +55,7 @@ spec:
                   extraEnv:
                     CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-client"
                     CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
-                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterCustomerLogin }}`}}"
                     PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
                     {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
                     USE_INTERNAL_LB: "true"
