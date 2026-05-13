@@ -280,7 +280,7 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-rbac-proxy
+                  serverName: 127.0.0.1
       kubeScheduler:
         enabled: true
         service:
@@ -294,7 +294,7 @@ spec:
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 tlsConfig:
                   caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-                  serverName: {{ .Values.cluster.name }}-rbac-proxy
+                  serverName: 127.0.0.1
             jobLabel: "jobLabel"
     networkPolicies:
       vmagent:
