@@ -19,8 +19,6 @@ spec:
     companyPrefix: {{`{{ .Values.companyPrefix }}`}}
     companyDomain: {{`{{ .Values.companyDomain }}`}}
     companyExternalChartRegistry: {{`{{ .Values.companyExternalChartRegistry }}`}}
-    companyInternalChartRegistry: {{`{{ .Values.companyInternalChartRegistry }}`}}
-    companyInternalChartRegistryPublic: {{`{{ .Values.companyInternalChartRegistryPublic }}`}}
     companyInternalDockerRegistry: {{`{{ .Values.companyInternalDockerRegistry }}`}}
     companyExternalGitRepository: {{`{{ .Values.companyExternalGitRepository }}`}}
     companyInternalGitRepository: {{`{{ .Values.companyInternalGitRepository }}`}}

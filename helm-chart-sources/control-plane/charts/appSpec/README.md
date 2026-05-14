@@ -20,7 +20,7 @@ export CHANNEL="dev"
 
 ### Publish
 
-Execute command below in your terminal. After that the current version of chart will be published into gitlab package-registry `{{ .Values.companyInternalChartRegistry }}appspec/-/packages/`.
+Execute command below in your terminal. After that the current version of chart will be published into gitlab package-registry `regisry/appspec/-/packages/`.
 
 ``` bash
 curl --fail-with-body --request POST \
