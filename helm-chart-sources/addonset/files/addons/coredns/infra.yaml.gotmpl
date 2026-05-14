@@ -1,0 +1,24 @@
+{{/*
+replicaCount = min(controlPlaneDesiredReplicas, controlPlaneAvailableReplicas), but not less than 1.
+*/}}
+{{- $desired := int .Values.controlPlaneDesiredReplicas -}}
+{{- $available := int .Values.controlPlaneAvailableReplicas -}}
+{{- $replicas := $desired -}}
+
+{{- if lt $available $replicas -}}
+  {{- $replicas = $available -}}
+{{- end -}}
+
+{{- if lt $replicas 1 -}}
+  {{- $replicas = 1 -}}
+{{- end }}
+
+coredns:
+  replicaCount: {{ $replicas }}
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
