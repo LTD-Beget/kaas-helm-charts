@@ -19,6 +19,19 @@
         cacheAuthorizedTTL: 0s
         cacheUnauthorizedTTL: 0s
     cgroupDriver: systemd
+    kubeReserved:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: "2Gi"
+
+    systemReserved:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: "2Gi"
+
+    evictionHard:
+      memory.available: "750Mi"
+    evictionPressureTransitionPeriod: 1m
 
     # Для того, что бы сделать эту часть конфигурации статичной
     # все динамичные части будут определены через переменные окружения 
@@ -34,7 +47,6 @@
     containerLogMaxSize: "50Mi"
     containerRuntimeEndpoint: "{{ .Values.capi.k8s.containerRuntime.socket }}"
     cpuManagerReconcilePeriod: 0s
-    evictionPressureTransitionPeriod: 5s
     fileCheckFrequency: 0s
     healthzBindAddress: 127.0.0.1
     healthzPort: 10248

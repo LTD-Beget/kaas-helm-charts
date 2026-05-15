@@ -15,8 +15,8 @@ spec:
           csiDriver: true
           clusterName: "{{ .Variables.clusterName }}"
           clusterCustomer: "{{ .Variables.customer }}"
-          extraPriority: 0
-          extraPriorityClassName: ""
+          extraPriority: 2000001000
+          extraPriorityClassName: system-node-critical
           containers:
             kubeApiserver:
               image:
@@ -81,6 +81,10 @@ spec:
                 mode: http-connect
                 server-count: "{{ .Variables.controlPlaneReplicas }}"
                 v: 2
+              extraResources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
           service:
             enabled: true
             type: NodePort

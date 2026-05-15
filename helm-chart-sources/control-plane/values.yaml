@@ -653,8 +653,8 @@ appSpec:
 
           extraResources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 100m
+              memory: 256Mi
 
           extraSecurityContext:
             readOnlyRootFilesystem: false
