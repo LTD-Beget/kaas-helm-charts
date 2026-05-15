@@ -205,7 +205,7 @@ appSpec:
               path: /readyz
               port: 443
               scheme: HTTPS
-            periodSeconds: 1
+            periodSeconds: 5
             timeoutSeconds: 15
 
           extraPorts:
@@ -215,8 +215,8 @@ appSpec:
 
           extraResources:
             requests:
-              cpu: 250m
-              memory: 256Mi
+              cpu: 500m
+              memory: 512Mi
 
           extraSecurityContext:
             readOnlyRootFilesystem: true
@@ -430,7 +430,7 @@ appSpec:
             secondary-node-eviction-rate: 0.01
             secure-port: 20257
             service-account-private-key-file: /etc/kubernetes/pki/sa.key
-            terminated-pod-gc-threshold: 0
+            terminated-pod-gc-threshold: 500
             unhealthy-zone-threshold: 0.55
             use-service-account-credentials: true
             v: 2
@@ -634,7 +634,7 @@ appSpec:
             server-key: /etc/kubernetes/pki/tls.key
             server-cert: /etc/kubernetes/pki/tls.crt
             server-ca-cert: /etc/kubernetes/pki/ca.crt
-            v: 8
+            v: 2
             enable-lease-controller: null
 
           livenessProbeEnabled: true
