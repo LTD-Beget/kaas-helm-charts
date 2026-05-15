@@ -56,8 +56,8 @@
     kubeAPIBurst: 100
     maxPods: 250
     memorySwap: {}
-    nodeStatusReportFrequency: 1s
-    nodeStatusUpdateFrequency: 1s
+    nodeStatusReportFrequency: 5s
+    nodeStatusUpdateFrequency: 5s
     podPidsLimit: 4096
     registerNode: true
     resolvConf: /run/systemd/resolve/resolv.conf

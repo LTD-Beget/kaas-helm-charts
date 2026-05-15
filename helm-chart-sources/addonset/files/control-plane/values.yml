@@ -26,7 +26,7 @@ spec:
                 secure-port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
                 egress-selector-config-file: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
                 service-cluster-ip-range: "{{ .Variables.serviceCidr }}"
-                watch-cache: false
+                watch-cache: true
               extraLivenessProbe:
                 httpGet:
                   port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
@@ -56,18 +56,22 @@ spec:
                       readOnly: true 
               extraResources:
                 requests:
-                  cpu: 128m
-                  memory: 128Mi
+                  cpu: 500m
+                  memory: 1Gi
             kubeControllerManager:
               image:
                 tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
               extraResources:
                 requests:
-                  cpu: 100m
-                  memory: 128Mi 
+                  cpu: 200m
+                  memory: 256Mi
             kubeScheduler:
               image:
                 tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+              extraResources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
             konnectivityServer:
               certIPs:
                 - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
@@ -76,6 +80,7 @@ spec:
                 agent-namespace: {{ .Values.companyPrefix }}-konnectivity-agent
                 mode: http-connect
                 server-count: "{{ .Variables.controlPlaneReplicas }}"
+                v: 2
           service:
             enabled: true
             type: NodePort
