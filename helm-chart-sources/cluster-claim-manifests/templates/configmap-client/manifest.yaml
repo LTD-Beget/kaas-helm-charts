@@ -52,12 +52,8 @@ spec:
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
-      companyInternalChartRegistry: {{ .Values.extraArgs.companyInternalChartRegistry }}
-      companyInternalChartRegistryPublic: {{ .Values.extraArgs.companyInternalChartRegistryPublic }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
-      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
       systemIstioGwVip: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}

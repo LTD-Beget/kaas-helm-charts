@@ -49,14 +49,11 @@ spec:
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
-      companyInternalChartRegistry: {{ .Values.extraArgs.companyInternalChartRegistry }}
-      companyInternalChartRegistryPublic: {{ .Values.extraArgs.companyInternalChartRegistryPublic }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
-      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
       dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
