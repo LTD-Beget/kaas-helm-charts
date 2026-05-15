@@ -46,8 +46,6 @@ spec:
           timeout.reconciliation.jitter: 30s
         params:
           application.namespaces: '*'
-          applicationsetcontroller.allowed.scm.providers: https://example.ru
-          applicationsetcontroller.namespaces: '*'
           # repo.server: 127.0.0.1:8081
           # redis.server: 127.0.0.1:6379
           controller.sharding.algorithm: round-robin
@@ -234,7 +232,7 @@ spec:
         replicas: 0
         image:
           imagePullPolicy: IfNotPresent
-        allowAnyNamespace: true
+        allowAnyNamespace: false # if true, should be set applicationsetcontroller.allowed.scm.providers to non-empty value
         emptyDir:
           sizeLimit: 500Mi
         metrics:
