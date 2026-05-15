@@ -59,7 +59,6 @@ spec:
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
       companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
 

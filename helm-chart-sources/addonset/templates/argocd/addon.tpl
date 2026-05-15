@@ -38,8 +38,6 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
-        - as: companyInternalGitRepository
-          jsonPath: .data.companyInternalGitRepository
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
   initDependencies:

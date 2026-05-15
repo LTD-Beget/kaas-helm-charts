@@ -44,8 +44,6 @@ spec:
           jsonPath: .data.companyInternalDockerRegistry
         - as: companyExternalGitRepository
           jsonPath: .data.companyExternalGitRepository
-        - as: companyInternalGitRepository
-          jsonPath: .data.companyInternalGitRepository
         - as: companyWikiAlertingUrl
           jsonPath: .data.companyWikiAlertingUrl
         - as: companyAdminUser

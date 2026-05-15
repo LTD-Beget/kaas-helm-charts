@@ -20,7 +20,6 @@ spec:
     companyDomain: {{`{{ .Values.companyDomain }}`}}
     companyExternalChartRegistry: {{`{{ .Values.companyExternalChartRegistry }}`}}
     companyInternalDockerRegistry: {{`{{ .Values.companyInternalDockerRegistry }}`}}
-    companyExternalGitRepository: {{`{{ .Values.companyExternalGitRepository }}`}}
-    companyInternalGitRepository: {{`{{ .Values.companyInternalGitRepository }}`}}
+    companyExternalGitRepository: {{`{{ .Values.companyExternalGitRepository }}`}
     companyWikiAlertingUrl: {{`{{ .Values.companyWikiAlertingUrl }}`}}
     companyAdminUser: {{`{{ .Values.companyAdminUser }}`}}
