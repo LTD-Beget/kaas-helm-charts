@@ -50,8 +50,6 @@ spec:
       etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
       etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
-      grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
-      grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }}
       grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
@@ -63,7 +61,6 @@ spec:
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
       companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
       companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
-      companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
       systemIstioGwVip: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
