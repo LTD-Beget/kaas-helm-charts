@@ -44,22 +44,16 @@ spec:
 
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
       argocdServerAdminPassword: {{ .Values.extraArgs.argocdServerAdminPassword }}
-      dexStaticClientsApiserver: {{ .Values.extraArgs.dexStaticClientsApiserver }}
-      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       etcdbackupAppArgsStorecontainer: {{ .Values.extraArgs.etcdbackupAppArgsStorecontainer }}
       etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
       etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
-      grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
-      grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }}
-      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
       systemIstioGwVip: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
