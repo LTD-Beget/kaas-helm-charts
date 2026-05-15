@@ -31,7 +31,7 @@
       value: "True"
   selector:
     name: vm-operator
-    priority: 80
+    priority: 45
     matchLabels:
       addons.in-cloud.io/values: vm-operator
       addons.in-cloud.io/addon: {{ .Values.addonName }}

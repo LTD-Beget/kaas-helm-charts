@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.40-multi-control-plane" }}
+{{- define "common.phase.rules.multi-control-plane" }}
 - name: multi-control-plane
   criteria:
     - source:
@@ -29,7 +29,7 @@
       keep: false
   selector:
     name: multi-control-plane
-    priority: 40
+    priority: 60
     matchLabels:
       addons.in-cloud.io/values: multi-control-plane
       addons.in-cloud.io/addon: {{ .Values.addonName }}

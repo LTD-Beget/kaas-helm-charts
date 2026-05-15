@@ -19,7 +19,7 @@
       keep: false
   selector:
     name: system-and-initialized
-    priority: 140
+    priority: 75
     matchLabels:
       addons.in-cloud.io/values: system-and-initialized
       addons.in-cloud.io/addon: {{ .Values.addonName }}

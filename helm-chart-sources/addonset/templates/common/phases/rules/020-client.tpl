@@ -1,18 +1,18 @@
-{{- define "common.phase.rules.60-system" }}
-- name: system
+{{- define "common.phase.rules.client" }}
+- name: client
   criteria:
     - source:
         apiVersion: v1
         kind: ConfigMap
         name: {{ .Values.parametersName }}
         namespace: {{ .Values.companyPrefix }}-system
-      jsonPath: $.data.systemEnabled
+      jsonPath: $.data.environment
       operator: Equal
-      value: "true"
+      value: "client"
   selector:
-    name: system
-    priority: 60
+    name: client
+    priority: 20
     matchLabels:
-      addons.in-cloud.io/values: system
+      addons.in-cloud.io/values: client
       addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

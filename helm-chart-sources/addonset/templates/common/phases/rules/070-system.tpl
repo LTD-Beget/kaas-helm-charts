@@ -1,18 +1,18 @@
-{{- define "common.phase.rules.20-infra" }}
-- name: infra
+{{- define "common.phase.rules.system" }}
+- name: system
   criteria:
     - source:
         apiVersion: v1
         kind: ConfigMap
         name: {{ .Values.parametersName }}
         namespace: {{ .Values.companyPrefix }}-system
-      jsonPath: $.data.environment
+      jsonPath: $.data.systemEnabled
       operator: Equal
-      value: "infra"
+      value: "true"
   selector:
-    name: infra
-    priority: 20
+    name: system
+    priority: 70
     matchLabels:
-      addons.in-cloud.io/values: infra
+      addons.in-cloud.io/values: system
       addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}

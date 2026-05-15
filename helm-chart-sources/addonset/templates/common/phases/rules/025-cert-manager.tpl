@@ -16,7 +16,7 @@
       value: "True"
   selector:
     name: cert-manager
-    priority: 30
+    priority: 25
     matchLabels:
       addons.in-cloud.io/values: cert-manager
       addons.in-cloud.io/addon: {{ .Values.addonName }}

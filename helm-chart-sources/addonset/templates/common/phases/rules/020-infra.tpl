@@ -11,7 +11,7 @@
       value: "infra"
   selector:
     name: infra
-    priority: 30
+    priority: 20
     matchLabels:
       addons.in-cloud.io/values: infra
       addons.in-cloud.io/addon: {{ .Values.addonName }}

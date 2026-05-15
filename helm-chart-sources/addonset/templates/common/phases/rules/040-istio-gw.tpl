@@ -26,7 +26,7 @@
       keep: false
   selector:
     name: istio-gw
-    priority: 70
+    priority: 40
     matchLabels:
       addons.in-cloud.io/values: istio-gw
       addons.in-cloud.io/addon: {{ .Values.addonName }}

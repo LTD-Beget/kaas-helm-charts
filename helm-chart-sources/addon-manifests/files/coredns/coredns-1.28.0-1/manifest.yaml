@@ -62,17 +62,17 @@ spec:
             addons.in-cloud.io/values: default
             addons.in-cloud.io/addon: coredns
         - name: custom
-          priority: 980
+          priority: 90
           matchLabels:
             addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
             addons.in-cloud.io/addon: coredns-client
         - name: client
-          priority: 990
+          priority: 95
           matchLabels:
             addons.in-cloud.io/values: client
             addons.in-cloud.io/addon: coredns
         - name: immutable
-          priority: 1000
+          priority: 99
           matchLabels:
             addons.in-cloud.io/values: immutable
             addons.in-cloud.io/addon: coredns

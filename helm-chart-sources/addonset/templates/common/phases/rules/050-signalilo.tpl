@@ -18,7 +18,7 @@
       value: "True"
   selector:
     name: signalilo
-    priority: 90
+    priority: 50
     matchLabels:
       addons.in-cloud.io/values: signalilo
       addons.in-cloud.io/addon: {{ .Values.addonName }}

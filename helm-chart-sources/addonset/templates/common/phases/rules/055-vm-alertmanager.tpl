@@ -1,5 +1,5 @@
-{{- define "common.phase.rules.trust-manager" }}
-- name: trust-manager
+{{- define "common.phase.rules.vm-alertmanager" }}
+- name: vm-alertmanager
   criteria:
     - source:
         apiVersion: addons.in-cloud.io/v1alpha1
@@ -29,10 +29,25 @@
       jsonPath: $.spec.variables.dependency
       operator: Equal
       value: "True"
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: Addon
+        name: vm-alertmanager{{ .Values.suffix }}
+      jsonPath: $.status.deployed
+      operator: Equal
+      value: true
+      keep: false
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: Addon
+        name: vm-alertmanager{{ .Values.suffix }}
+      jsonPath: $.spec.variables.dependency
+      operator: Equal
+      value: "True"
   selector:
-    name: trust-manager
-    priority: 50
+    name: vm-alertmanager
+    priority: 55
     matchLabels:
-      addons.in-cloud.io/values: trust-manager
+      addons.in-cloud.io/values: vm-alertmanager
       addons.in-cloud.io/addon: {{ .Values.addonName }}
 {{- end }}
