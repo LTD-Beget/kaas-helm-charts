@@ -45,7 +45,6 @@ spec:
       etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
       etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
-      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
@@ -54,13 +53,14 @@ spec:
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
-      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
+      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
       dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
       dockerRegistryS3Bucket: {{ .Values.extraArgs.dockerRegistryS3Bucket }}
       grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
       grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }} 
+      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       signaliloUuid: "{{`{{ .ClusterClaim.spec.extraEnvs.signaliloUuid }}`}}"
       icingaHostname: {{`{{ .ClusterClaim.spec.extraEnvs.icingaHostname }}`}}
       icingaUrl: {{`{{ .ClusterClaim.spec.extraEnvs.icingaUrl }}`}}
