@@ -56,9 +56,9 @@ spec:
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
       dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
       dockerRegistryS3Bucket: {{ .Values.extraArgs.dockerRegistryS3Bucket }}
