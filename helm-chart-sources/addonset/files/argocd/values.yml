@@ -19,136 +19,6 @@ spec:
           reposerver.repo.cache.expiration: 8h0m0s
           resource.compareoptions: |
             ignoreAggregatedRoles: true
-          resource.customizations: |
-            "*.upbound.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "ClusterProviderConfig",
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                  health_status.status = "Healthy"
-                  health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Ready" then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                    end
-                  end
-                end
-
-                return health_status
-
-            "*.crossplane.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "Composition",
-                  "CompositionRevision",
-                  "DeploymentRuntimeConfig",
-                  "ClusterProviderConfig",
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if (obj.kind == "ProviderConfig" or obj.kind == "ClusterProviderConfig") and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if contains({"Ready", "Healthy", "Offered", "Established", "ValidPipeline", "RevisionHealthy"}, condition.type) then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                    end
-                  end
-                end
-
-                return health_status
           resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
             jqPathExpressions:
             - '.webhooks[]?.clientConfig.caBundle'
@@ -176,8 +46,6 @@ spec:
           timeout.reconciliation.jitter: 30s
         params:
           application.namespaces: '*'
-          applicationsetcontroller.allowed.scm.providers: {{ .Values.companyInternalGitRepository }}
-          applicationsetcontroller.namespaces: '*'
           # repo.server: 127.0.0.1:8081
           # redis.server: 127.0.0.1:6379
           controller.sharding.algorithm: round-robin
@@ -364,7 +232,7 @@ spec:
         replicas: 0
         image:
           imagePullPolicy: IfNotPresent
-        allowAnyNamespace: true
+        allowAnyNamespace: false # if true, should be set applicationsetcontroller.allowed.scm.providers to non-empty value
         emptyDir:
           sizeLimit: 500Mi
         metrics:
@@ -807,7 +675,7 @@ spec:
     argo-cd:
       configs:
         cm:
-          url: "https://{{ .Values.systemIstioGwDomain }}/argocd"
+          url: "https://{{ .Values.systemIstioGwDomainInternal }}/argocd"
         envFrom:
           - secretRef:
               name: avp-config
@@ -827,6 +695,10 @@ spec:
             AVP_AUTH_TYPE: "k8s"
             VAULT_ADDR: "http://vault.{{ .Values.companyPrefix }}-vault.svc.cluster.local:8200"
             AVP_K8S_ROLE: "credentials-ro"
+    istio:
+      virtualService:
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

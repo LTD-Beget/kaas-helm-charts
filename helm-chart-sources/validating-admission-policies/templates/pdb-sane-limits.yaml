@@ -1,31 +1,134 @@
 {{- $policy := index .Values "pdb-sane-limits" -}}
 {{- if $policy.enabled }}
----
+# ---------------------------------------------------------------------
+# Политика безопасности PodDisruptionBudget
+# ---------------------------------------------------------------------
+#
+# Цель policy:
+#   - предотвратить PDB, блокирующие drain нод
+#   - снизить риск stuck upgrades / CAPI reconcile failures
+#   - сохранить возможность использовать minAvailable
+#     для HA/quorum workload'ов
+# ---------------------------------------------------------------------
+#
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: pdb-sane-limits
 spec:
   failurePolicy: Fail
+
   matchConstraints:
+    matchPolicy: Equivalent
+
     resourceRules:
       - apiGroups: ["policy"]
         apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["poddisruptionbudgets"]
+
+        operations:
+          - CREATE
+          - UPDATE
+
+        resources:
+          - poddisruptionbudgets
+
+        scope: "Namespaced"
+
   validations:
-    # 1. Запрещаем maxUnavailable: 0
-    - expression: "!(has(object.spec.maxUnavailable) && object.spec.maxUnavailable == 0)"
-      message: "PDB with maxUnavailable=0 blocks node drain"
 
-    # 2. Запрещаем minAvailable = replicas (через % = 100%)
-    - expression: "!(has(object.spec.minAvailable) && object.spec.minAvailable == '100%')"
-      message: "PDB with minAvailable=100% blocks node drain"
+    # -----------------------------------------------------------------
+    # Требуем непустой selector
+    # -----------------------------------------------------------------
+    #
+    - expression: >
+        has(object.spec.selector) &&
+        (
+          (
+            has(object.spec.selector.matchLabels) &&
+            size(object.spec.selector.matchLabels) > 0
+          ) ||
+          (
+            has(object.spec.selector.matchExpressions) &&
+            size(object.spec.selector.matchExpressions) > 0
+          )
+        )
+      message: >
+        PDB must have a non-empty selector.
 
-    # 3. Должно быть задано только одно из полей
-    - expression: "!(has(object.spec.minAvailable) && has(object.spec.maxUnavailable))"
-      message: "Specify only one of minAvailable or maxUnavailable"
+    # -----------------------------------------------------------------
+    # Нельзя одновременно использовать:
+    #
+    #   minAvailable
+    #   maxUnavailable
+    #
+    - expression: >
+        !(
+          has(object.spec.minAvailable) &&
+          has(object.spec.maxUnavailable)
+        )
+      message: >
+        Specify only one of minAvailable or maxUnavailable.
 
+    # -----------------------------------------------------------------
+    # Запрещаем minAvailable: 1
+    # -----------------------------------------------------------------
+    #
+    # Часто используется в singleton workload:
+    #
+    #   replicas: 1
+    #   minAvailable: 1
+    #
+    # что приводит к:
+    #
+    #   disruptionsAllowed = 0
+    #
+    # и блокирует drain.
+    #
+    - expression: >
+        !(
+          has(object.spec.minAvailable) &&
+          object.spec.minAvailable == 1
+        )
+      message: >
+        PDB with minAvailable=1 can block node drain for singleton workloads.
+        Use maxUnavailable instead or increase replicas.
+
+    # -----------------------------------------------------------------
+    # Запрещаем minAvailable: "100%"
+    # -----------------------------------------------------------------
+    #
+    # Полностью запрещает voluntary disruptions.
+    #
+    - expression: >
+        !(
+          has(object.spec.minAvailable) &&
+          object.spec.minAvailable == "100%"
+        )
+      message: >
+        PDB with minAvailable=100% blocks node drain.
+
+    # -----------------------------------------------------------------
+    # Запрещаем maxUnavailable=0
+    # -----------------------------------------------------------------
+    #
+    # Полностью запрещает eviction/drain.
+    #
+    - expression: >
+        !(
+          has(object.spec.maxUnavailable) &&
+          (
+            object.spec.maxUnavailable == 0 ||
+            object.spec.maxUnavailable == "0" ||
+            object.spec.maxUnavailable == "0%"
+          )
+        )
+      message: >
+        PDB with maxUnavailable=0 or 0%
+        blocks node drain.
+
+# ---------------------------------------------------------------------
+# Binding policy
+# ---------------------------------------------------------------------
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
@@ -33,5 +136,6 @@ metadata:
   name: pdb-sane-limits
 spec:
   policyName: pdb-sane-limits
-  validationActions: [Deny]
+  validationActions:
+    - Deny
 {{- end }}

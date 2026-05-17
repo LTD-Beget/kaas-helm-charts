@@ -30,12 +30,14 @@ spec:
           jsonPath: .data.systemIstioGwDomain
         - as: istioGwVip
           jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
-        - as: companyInternalGitRepository
-          jsonPath: .data.companyInternalGitRepository
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
   initDependencies:

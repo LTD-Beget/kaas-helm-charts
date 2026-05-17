@@ -25,7 +25,7 @@ kubeStateMetrics:
                 sum(
                   rate(
                     kube_state_metrics_list_total{
-                      job="kube-state-metrics",
+                      job="kube-state-metrics-monitoring",
                       result="error",
                       cluster_type!="client"
                     }[5m]
@@ -35,7 +35,7 @@ kubeStateMetrics:
                 sum(
                   rate(
                     kube_state_metrics_list_total{
-                      job="kube-state-metrics",
+                      job="kube-state-metrics-monitoring",
                       cluster_type!="client"
                     }[5m]
                   )
@@ -67,7 +67,7 @@ kubeStateMetrics:
                 sum(
                   rate(
                     kube_state_metrics_watch_total{
-                      job="kube-state-metrics",
+                      job="kube-state-metrics-monitoring",
                       result="error",
                       cluster_type!="client"
                     }[5m]
@@ -77,7 +77,7 @@ kubeStateMetrics:
                 sum(
                   rate(
                     kube_state_metrics_watch_total{
-                      job="kube-state-metrics",
+                      job="kube-state-metrics-monitoring",
                       cluster_type!="client"
                     }[5m]
                   )
@@ -106,7 +106,7 @@ kubeStateMetrics:
             expr: |
               stdvar (
                 kube_state_metrics_total_shards{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   cluster_type!="client"
                 }
               ) by (cluster_full_name) != 0
@@ -130,7 +130,7 @@ kubeStateMetrics:
             expr: |-
               2^max(
                 kube_state_metrics_total_shards{
-                  job="kube-state-metrics",
+                  job="kube-state-metrics-monitoring",
                   cluster_type!="client"
                 }
               ) by (cluster_full_name) - 1
@@ -138,7 +138,7 @@ kubeStateMetrics:
               sum(
                 2 ^ max by (shard_ordinal,cluster_full_name) (
                   kube_state_metrics_shard_ordinal{
-                    job="kube-state-metrics",
+                    job="kube-state-metrics-monitoring",
                     cluster_type!="client"
                   }
                 )

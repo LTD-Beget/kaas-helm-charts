@@ -27,7 +27,6 @@ spec:
     {{`{{- if .ClusterClaim.spec.client.enabled }}`}}
       clusterClientPort: "{{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}"
       clientServiceCidr: {{`{{ .ClusterClaim.spec.client.network.serviceCidr }}`}}
-      dexStaticClientsApiserver: {{ .Values.extraArgs.dexStaticClientsApiserver }}
     {{`{{- end }}`}}
 
       clusterDNS: {{`{{ .ClusterClaim.spec.infra.network.clusterDNS }}`}}
@@ -42,29 +41,26 @@ spec:
 
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
       argocdServerAdminPassword: {{ .Values.extraArgs.argocdServerAdminPassword }}
-      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       etcdbackupAppArgsStorecontainer: {{ .Values.extraArgs.etcdbackupAppArgsStorecontainer }}
       etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
       etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
-      grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
-      grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }}
-      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
-      companyInternalChartRegistry: {{ .Values.extraArgs.companyInternalChartRegistry }}
-      companyInternalChartRegistryPublic: {{ .Values.extraArgs.companyInternalChartRegistryPublic }}
       companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
-      companyInternalGitRepository: {{ .Values.extraArgs.companyInternalGitRepository }}
-      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+      companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
+      dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}
       dockerRegistryS3SecretKey: {{ .Values.extraArgs.dockerRegistryS3SecretKey }}
       dockerRegistryS3Bucket: {{ .Values.extraArgs.dockerRegistryS3Bucket }}
+      grafanaConfigAdminPassword: {{ .Values.extraArgs.grafanaConfigAdminPassword }}
+      grafanaConfigAdminUser: {{ .Values.extraArgs.grafanaConfigAdminUser }} 
+      grafanaDeploymentEnvOidcSecret: {{ .Values.extraArgs.grafanaDeploymentEnvOidcSecret }}
       signaliloUuid: "{{`{{ .ClusterClaim.spec.extraEnvs.signaliloUuid }}`}}"
       icingaHostname: {{`{{ .ClusterClaim.spec.extraEnvs.icingaHostname }}`}}
       icingaUrl: {{`{{ .ClusterClaim.spec.extraEnvs.icingaUrl }}`}}
@@ -85,10 +81,20 @@ spec:
     {{`{{- else }}`}}
       systemIstioGwVip: {{ .Values.extraArgs.systemIstioGwVip }}
     {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVipInternal") }}`}}
+      systemIstioGwVipInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVipInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwVipInternal: {{ .Values.extraArgs.systemIstioGwVipInternal }}
+    {{`{{- end }}`}}
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomain") }}`}}
       systemIstioGwDomain: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
     {{`{{- else }}`}}
       systemIstioGwDomain: {{ .Values.extraArgs.systemIstioGwDomain }}
+    {{`{{- end }}`}}
+    {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomainInternal") }}`}}
+      systemIstioGwDomainInternal: {{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomainInternal }}`}}
+    {{`{{- else }}`}}
+      systemIstioGwDomainInternal: {{ .Values.extraArgs.systemIstioGwDomainInternal }}
     {{`{{- end }}`}}
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemVmInsertVIP") }}`}}
       systemVmInsertVIP: {{`{{ .ClusterClaim.spec.extraEnvs.systemVmInsertVIP }}`}}

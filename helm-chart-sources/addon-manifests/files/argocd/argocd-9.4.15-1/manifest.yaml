@@ -33,8 +33,6 @@ spec:
               jsonPath: .data.companyPrefix
             - as: companyDomain
               jsonPath: .data.companyDomain
-            - as: companyInternalGitRepository
-              jsonPath: .data.companyInternalGitRepository
             - as: companyAdminUser
               jsonPath: .data.companyAdminUser
       initDependencies: []
@@ -46,7 +44,7 @@ spec:
         syncPolicy:
           automated:
             prune: true
-            selfHeal: false
+            selfHeal: true
           managedNamespaceMetadata:
             labels:
               in-cloud.io/caBundle: approved

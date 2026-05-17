@@ -23,13 +23,14 @@ spec:
                   extraEnv:
                     CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra"
                     CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
-                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterCustomerLogin }}`}}"
                     PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
                     {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
                     USE_INTERNAL_LB: "true"
                     {{`{{- end }}`}}
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
+                    tag: "{{ .Values.versions.ccm }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -54,13 +55,14 @@ spec:
                   extraEnv:
                     CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}-client"
                     CLUSTER_NAMESPACE: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
-                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}"
+                    CUSTOMER_LOGIN: "{{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterCustomerLogin }}`}}"
                     PARENT_CLUSTER_NAME: "{{`{{ .ClusterClaim.metadata.name }}`}}"
                     {{`{{- if hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}
                     USE_INTERNAL_LB: "true"
                     {{`{{- end }}`}}
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-ccm
+                    tag: "{{ .Values.versions.ccm }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -88,6 +90,7 @@ spec:
                     cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
+                    tag: "{{ .Values.versions.csrc }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""
@@ -112,6 +115,7 @@ spec:
                     cluster-namespace: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
                   image:
                     repository: registry.{{ .Values.extraArgs.companyPrefix }}.ru/k8s-charts-public/capi-csr-approver
+                    tag: "{{ .Values.versions.csrc }}"
               imagePullSecrets: []
               nodeSelector:
                 node-role.kubernetes.io/default: ""

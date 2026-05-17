@@ -11,7 +11,7 @@ nodeRules:
             expr: |-
               topk by (namespace,pod,cluster_full_name) (1,
                 max by (node,namespace,pod,cluster_full_name) (
-                  label_replace(kube_pod_info{job="kube-state-metrics",node!=""}, "pod", "$1", "pod", "(.*)")
+                  label_replace(kube_pod_info{node!=""}, "pod", "$1", "pod", "(.*)")
               ))
             labels: {}
             record: 'node_namespace_pod:kube_pod_info:'

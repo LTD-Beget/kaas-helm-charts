@@ -22,6 +22,8 @@ spec:
 
         clusterConfiguration:
           apiServer:
+            certSANs:
+              - "127.0.0.1"
             extraVolumes:
               - name: k8s-audit
                 hostPath: /var/log/kubernetes/audit/
@@ -31,12 +33,16 @@ spec:
           controllerManager:
             extraArgs:
               - name: bind-address
-                value: 0.0.0.0
+                value: "127.0.0.1"
+              - name: secure-port
+                value: "10257"
 
           scheduler:
             extraArgs:
               - name: bind-address
-                value: 0.0.0.0
+                value: "127.0.0.1"
+              - name: secure-port
+                value: "10259"
               - name: leader-elect
                 value: "true"
 
@@ -46,6 +52,7 @@ spec:
               dataDir: /var/lib/etcd
 
           imageRepository: registry.k8s.io
+
         files:
           - content: |
               ##### FIX PROBLEM CLUSTER API =( 
@@ -70,6 +77,8 @@ spec:
             advertiseAddress: 127.0.0.1
           nodeRegistration:
             imagePullPolicy: IfNotPresent
+          patches:
+            directory: /etc/kubernetes/patches
           skipPhases:
             - addon
 
@@ -79,6 +88,8 @@ spec:
               advertiseAddress: 127.0.0.1
           nodeRegistration:
             imagePullPolicy: IfNotPresent
+          patches:
+            directory: /etc/kubernetes/patches
 
       machineTemplate:
         spec:

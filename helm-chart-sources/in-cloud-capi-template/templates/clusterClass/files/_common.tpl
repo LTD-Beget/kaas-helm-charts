@@ -88,7 +88,7 @@ Usage: include "...common.tlsCnf"
         "cn"   "system:kube-controller-manager-server"
         "withFQDN" false)
 */}}
-{{- define "in-cloud-capi-template.files.common.tlsCnf" -}}
+{{- define "in-cloud-capi-template.files.common.serverTlsCnf" -}}
 - path: /etc/kubernetes/pki/{{ .name }}-server.cnf
   owner: root:root
   permissions: '0644'
@@ -116,6 +116,33 @@ Usage: include "...common.tlsCnf"
     DNS.4 = {{ `{{ .builtin.cluster.name }}` }}-{{ .name }}.kube-system.svc.cluster.local
     {{- end }}
     IP.1 = 127.0.0.1
+{{- end }}
+
+{{/*
+Generic OpenSSL CNF cloud-init file for a kube component client TLS certificate.
+Usage:
+include "in-cloud-capi-template.files.common.clientTlsCnf"
+  (dict "name" "rbac-proxy"
+        "cn"   "system:rbac-proxy")
+*/}}
+{{- define "in-cloud-capi-template.files.common.clientTlsCnf" -}}
+- path: /etc/kubernetes/pki/{{ .name }}-client.cnf
+  owner: root:root
+  permissions: '0644'
+  content: |
+    [req]
+    default_bits = 2048
+    prompt = no
+    default_md = sha256
+    distinguished_name = dn
+    req_extensions = req_ext
+
+    [dn]
+    CN = {{ .cn }}
+
+    [req_ext]
+    keyUsage = critical, digitalSignature, keyEncipherment
+    extendedKeyUsage = clientAuth
 {{- end }}
 
 {{/*

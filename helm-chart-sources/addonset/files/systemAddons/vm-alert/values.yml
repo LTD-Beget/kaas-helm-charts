@@ -279,7 +279,7 @@ spec:
       vmalert:
         enabled: true
         gateways:
-          - {{ .Values.companyPrefix }}-istio-gw/default
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
         hosts:
           - "*"
         path: "/vmalert"

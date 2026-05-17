@@ -40,18 +40,10 @@ spec:
           jsonPath: .data.companyDomain
         - as: companyExternalChartRegistry
           jsonPath: .data.companyExternalChartRegistry
-        - as: companyInternalChartRegistry
-          jsonPath: .data.companyInternalChartRegistry
-        - as: companyInternalChartRegistryPublic
-          jsonPath: .data.companyInternalChartRegistryPublic
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
         - as: companyExternalGitRepository
           jsonPath: .data.companyExternalGitRepository
-        - as: companyInternalGitRepository
-          jsonPath: .data.companyInternalGitRepository
-        - as: companyWikiAlertingUrl
-          jsonPath: .data.companyWikiAlertingUrl
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
   backend:

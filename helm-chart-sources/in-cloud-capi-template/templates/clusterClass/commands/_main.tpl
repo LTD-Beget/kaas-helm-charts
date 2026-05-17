@@ -20,6 +20,9 @@
 {{- if not .Values.capi.externalSecrets.scheduler.enabled }}
 {{- .Values.capi.externalSecrets.scheduler.targetComands                  | toYaml | nindent 0 }}
 {{- end }}
+{{- if not .Values.capi.externalSecrets.rbacProxy.enabled }}
+{{- .Values.capi.externalSecrets.rbacProxy.targetComands                  | toYaml | nindent 0 }}
+{{- end }}
 {{- .Values.capi.k8s.controlPlane.components.etcd.bin.targetComands       | toYaml | nindent 0 }}
 {{- .Values.capi.k8s.controlPlane.components.runc.bin.targetComands       | toYaml | nindent 0 }}
 {{- .Values.capi.k8s.controlPlane.components.crictl.bin.targetComands     | toYaml | nindent 0 }}

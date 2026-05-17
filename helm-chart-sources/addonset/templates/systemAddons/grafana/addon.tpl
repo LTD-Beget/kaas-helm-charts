@@ -8,7 +8,7 @@ spec:
   chart: "grafana"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-grafana"
   variables:
@@ -26,6 +26,10 @@ spec:
           jsonPath: .data.systemIstioGwDomain
         - as: systemIstioGwVip
           jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
         - as: oidcClientSecret
           jsonPath: .data.grafanaDeploymentEnvOidcSecret
         - as: companyPrefix

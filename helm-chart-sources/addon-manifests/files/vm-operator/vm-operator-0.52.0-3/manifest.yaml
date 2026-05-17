@@ -36,7 +36,7 @@ spec:
         syncPolicy:
           automated:
             prune: true
-            selfHeal: false
+            selfHeal: true
           managedNamespaceMetadata:
             labels:
               in-cloud.io/caBundle: approved

@@ -67,7 +67,7 @@
     kubectl wait --timeout=-1s node -l node-role.kubernetes.io/control-plane \
       --for=jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}'
 
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install cilium {{ $.Values.companyPrefix }}/cilium -n {{ $.Values.companyPrefix }}-cilium --create-namespace --version 1.18.5-1 -f -
     cilium:
       ciliumEndpointSlice:
@@ -107,7 +107,7 @@
     EOF
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade coredns..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install coredns {{ $.Values.companyPrefix }}/coredns -n {{ $.Values.companyPrefix }}-coredns --create-namespace --version 1.28.0-1 -f -
     coredns:
       livenessProbe:
@@ -195,7 +195,7 @@
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/instance=coredns -n {{ $.Values.companyPrefix }}-coredns
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade argocd..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<'EOF' | helm install argocd {{ $.Values.companyPrefix }}/argo-cd -n {{ $.Values.companyPrefix }}-argocd --create-namespace --version 9.4.15-1 -f -
     argo-cd:
       fullnameOverride: "argocd"
@@ -208,137 +208,6 @@
           reposerver.repo.cache.expiration: 8h0m0s
           resource.compareoptions: |
             ignoreAggregatedRoles: true
-          resource.customizations: |
-            "*.upbound.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                  health_status.status = "Healthy"
-                  health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Ready" then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                      return health_status
-                    end
-                  end
-                end
-
-                return health_status
-
-            "*.crossplane.io/*":
-              health.lua: |
-                health_status = {
-                  status = "Progressing",
-                  message = "Provisioning ..."
-                }
-
-                local function contains (table, val)
-                  for i, v in ipairs(table) do
-                    if v == val then
-                      return true
-                    end
-                  end
-                  return false
-                end
-
-                local has_no_status = {
-                  "Composition",
-                  "CompositionRevision",
-                  "DeploymentRuntimeConfig",
-                  "ControllerConfig",
-                  "ProviderConfig",
-                  "ProviderConfigUsage"
-                }
-                if obj.status == nil or next(obj.status) == nil and contains(has_no_status, obj.kind) then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is up-to-date."
-                  return health_status
-                end
-
-                if obj.status == nil or next(obj.status) == nil or obj.status.conditions == nil then
-                  if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
-                    health_status.status = "Healthy"
-                    health_status.message = "Resource is in use."
-                    return health_status
-                  end
-                  return health_status
-                end
-
-                for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "LastAsyncOperation" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if condition.type == "Synced" then
-                    if condition.status == "False" then
-                      health_status.status = "Degraded"
-                      health_status.message = condition.message
-                      return health_status
-                    end
-                  end
-
-                  if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
-                    if condition.status == "True" then
-                      health_status.status = "Healthy"
-                      health_status.message = "Resource is up-to-date."
-                      return health_status
-                    end
-                  end
-                end
-
-                return health_status
           resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
             jqPathExpressions:
             - '.webhooks[]?.clientConfig.caBundle'
@@ -523,7 +392,7 @@
     EOF
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade addon-operator..."
-    TODO: delete chart version hardcode
+    # TODO: delete chart version hardcode
     cat <<EOF | helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator -n {{ $.Values.companyPrefix }}-addons-operator --create-namespace --version 0.1.4 -f -
     certManager:
       enable: false

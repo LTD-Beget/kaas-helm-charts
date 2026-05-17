@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: istio-gw
+      monitoring.in-cloud.io/service: {{ .Release.Name }}
   endpoints:
     - port: https-metrics
       path: /metrics
@@ -16,5 +16,5 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}
-  jobLabel: istio-gw
+  jobLabel: {{ .Release.Name }}
 {{- end }}

@@ -39,17 +39,17 @@ spec:
 
         variables:
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterCustomerLogin
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_customer_login }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterCustomerLogin }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterRegion
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_region }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterRegion }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}VmtCpManagedBy
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_managed_by }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpManagedBy }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerType
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_cluster_load_balancer_type }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterLoadBalancerType }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}VmtCpUsePrivateNetwork
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_usePrivateNetwork }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpUsePrivateNetwork }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}VmtCpNetworkTag
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_networkTag }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpNetworkTag }}`}}
 
           - name: clusterDnsSvc
             value: {{`{{ .ClusterClaim.spec.infra.network.clusterDNS }}`}}
@@ -123,16 +123,26 @@ spec:
 {{- end }}
 
           - name: containerdMirrorUrl
-            value: https://{{ .Values.extraArgs.companyInternalDockerRegistry }}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwDomain") }}`}}
+            value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwDomain }}`}}
+        {{`{{- else if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}
+            value: https://{{`{{ .ClusterClaim.spec.extraEnvs.systemIstioGwVip }}`}}
+        {{`{{- else }}`}}
+          {{- if .Values.extraArgs.systemIstioGwDomain }}
+            value: https://{{ .Values.extraArgs.systemIstioGwDomain }}
+          {{- else }}
+            value: https://{{ .Values.extraArgs.systemIstioGwVip }}
+          {{- end }}
+        {{`{{- end }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterClaimName
             value: {{`{{ .ClusterClaim.metadata.name }}`}}
-        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_serverName") }}`}}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpServerName") }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}VmtCpServerName
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_serverName }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpServerName }}`}}
         {{`{{- end }}`}}
-        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_master_image") }}`}}
+        {{`{{- if (index .ClusterClaim.spec.extraEnvs "`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpMasterImage") }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}VmtCpMasterImage
-            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`_vmt_cp_master_image }}`}}
+            value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`VmtCpMasterImage }}`}}
         {{`{{- end }}`}}
 
         version: {{`{{ .ClusterClaim.spec.infra.componentVersions.kubernetes.version }}`}}

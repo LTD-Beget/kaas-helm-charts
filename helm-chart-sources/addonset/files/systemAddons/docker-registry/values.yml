@@ -204,16 +204,6 @@ spec:
           proxy:
             remoteurl: https://registry.k8s.io
 
-      xpkg-crossplane-io:
-        enabled: true
-        config:
-          storage:
-            type: s3
-            s3:
-              rootdirectory: /{{ .Values.clusterName }}/xpkg-crossplane-io
-          proxy:
-            remoteurl: https://xpkg.crossplane.io
-
       registry-{{ .Values.companyPrefix }}-ru:
         enabled: true
         config:

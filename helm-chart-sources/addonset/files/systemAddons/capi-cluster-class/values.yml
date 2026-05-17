@@ -168,18 +168,6 @@ spec:
                     args:
                       skip_verify: false
                       priority: 2
-              xpkg.crossplane.io:
-                server: https://xpkg.crossplane.io
-                mirrors:
-                  - mirror: '{{ "{{ if index . `containerdMirrorUrl` }}{{ .containerdMirrorUrl }}{{ else }}" }}{{ .Values.systemIstioGwDomain }}{{ "{{ end }}" }}/repository/xpkg-crossplane-io'
-                    args:
-                      skip_verify: false
-                      ca: "/etc/kubernetes/pki/ca-oidc.crt"
-                      priority: 1
-                  - mirror: "https://xpkg.crossplane.io"
-                    args:
-                      skip_verify: false
-                      priority: 2
               {{ .Values.companyInternalDockerRegistry }}:
                 server: https://{{ .Values.companyInternalDockerRegistry }}
                 mirrors:

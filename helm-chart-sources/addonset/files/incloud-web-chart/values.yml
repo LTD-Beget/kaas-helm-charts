@@ -9,7 +9,6 @@ metadata:
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
-    systemDomain: {{ .Values.systemIstioGwDomain }}
     incloud-web-chart:
       podDisruptionBudget:
         minAvailable: 0
@@ -169,15 +168,20 @@ spec:
     incloud-web-chart:
       oauth2-proxy:
         extraArgs:
-          redirect-url: "https://{{ .Values.systemIstioGwDomain }}/oauth2/callback"
+          redirect-url: "https://{{ .Values.systemIstioGwDomainInternal }}/oauth2/callback"
       clusters:
         - name: default
           description: default
           tenant: dev
           scheme: http
-          api: {{ .Values.systemIstioGwDomain }}
+          api: {{ .Values.systemIstioGwDomainInternal }}
         - name: cluster2
           description: cluster2
           tenant: dev
           scheme: http
           api: 93.189.231.174  # TODO: dynamicaly cluster-list
+    istio:
+      virtualService:
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+
