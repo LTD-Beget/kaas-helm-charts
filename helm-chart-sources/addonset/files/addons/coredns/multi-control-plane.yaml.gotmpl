@@ -1,0 +1,9 @@
+coredns:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: coredns
+              app.kubernetes.io/instance: coredns
+          topologyKey: kubernetes.io/hostname
