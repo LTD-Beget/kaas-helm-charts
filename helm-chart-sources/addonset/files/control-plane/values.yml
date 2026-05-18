@@ -56,22 +56,18 @@ spec:
                       readOnly: true 
               extraResources:
                 requests:
-                  cpu: 500m
-                  memory: 1Gi
+                  cpu: 128m
+                  memory: 128Mi
             kubeControllerManager:
-              image:
-                tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
-              extraResources:
-                requests:
-                  cpu: 200m
-                  memory: 256Mi
-            kubeScheduler:
               image:
                 tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
               extraResources:
                 requests:
                   cpu: 100m
                   memory: 128Mi
+            kubeScheduler:
+              image:
+                tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
             konnectivityServer:
               certIPs:
                 - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
@@ -81,10 +77,6 @@ spec:
                 mode: http-connect
                 server-count: "{{ .Variables.controlPlaneReplicas }}"
                 v: 2
-              extraResources:
-                requests:
-                  cpu: 100m
-                  memory: 256Mi
           service:
             enabled: true
             type: NodePort

@@ -4,7 +4,7 @@
   required: false
   schema:
     openAPIV3Schema:
-      default: "true"
+      default: "false"
       type: string
 
 - name: oidcIssuerUrl
