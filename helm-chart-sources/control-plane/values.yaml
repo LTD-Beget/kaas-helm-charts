@@ -57,7 +57,7 @@ appSpec:
             api-audiences: konnectivity-server
             apiserver-count: 1
             audit-log-batch-buffer-size: 10000
-            audit-log-batch-max-size: 100
+            audit-log-batch-max-size: 50
             audit-log-batch-max-wait: 5s
             audit-log-batch-throttle-burst: 0
             audit-log-batch-throttle-enable: false
@@ -215,8 +215,8 @@ appSpec:
 
           extraResources:
             requests:
-              cpu: 500m
-              memory: 512Mi
+              cpu: 250m
+              memory: 256Mi
 
           extraSecurityContext:
             readOnlyRootFilesystem: true
@@ -653,8 +653,8 @@ appSpec:
 
           extraResources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 128Mi
 
           extraSecurityContext:
             readOnlyRootFilesystem: false
