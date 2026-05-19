@@ -20,13 +20,13 @@
         cacheUnauthorizedTTL: 0s
     cgroupDriver: systemd
     kubeReserved:
-      cpu: 500m
+      cpu: 250m
       memory: 512Mi
       ephemeral-storage: "2Gi"
 
     systemReserved:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi
       ephemeral-storage: "2Gi"
 
     evictionHard:
