@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -67,6 +67,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -91,7 +92,149 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: argocd
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: argocd-client
+spec:
+  rules:
+    - name: trust-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: trust-manager
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: trust-manager
+          addons.in-cloud.io/addon: argocd
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: argocd
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-base
+        priority: 35
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-gw
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
+          addons.in-cloud.io/addon: argocd
+---
+# Source: addonset/templates/addons/argocd/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -110,12 +253,25 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: argocd
     - name: trust-manager
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -133,7 +289,7 @@ spec:
           value: "True"
       selector:
         name: trust-manager
-        priority: 20
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: trust-manager
           addons.in-cloud.io/addon: argocd
@@ -169,7 +325,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: argocd
@@ -200,7 +356,7 @@ spec:
           keep: false
       selector:
         name: istio-base
-        priority: 40
+        priority: 35
         matchLabels:
           addons.in-cloud.io/values: istio-base
           addons.in-cloud.io/addon: argocd
@@ -231,7 +387,7 @@ spec:
           keep: false
       selector:
         name: istio-gw
-        priority: 45
+        priority: 40
         matchLabels:
           addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: argocd
@@ -247,7 +403,7 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: argocd
@@ -271,7 +427,7 @@ spec:
           keep: false
       selector:
         name: system-and-initialized
-        priority: 60
+        priority: 75
         matchLabels:
           addons.in-cloud.io/values: system-and-initialized
           addons.in-cloud.io/addon: argocd
@@ -285,6 +441,7 @@ spec:
           jsonPath: $.data.environment
           operator: Equal
           value: "infra"
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -295,204 +452,26 @@ spec:
           keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
             kind: AddonPhase
             name: extra-resources
           jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
-          operator: Exists
-          # value: true
+          operator: Equal
+          value: true
       selector:
         name: network-policies
-        priority: 70
+        priority: 65
         matchLabels:
           addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: argocd
 ---
-# Source: addonset/templates/argocd/argocd.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: argocd-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: argocd
-    - name: trust-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: trust-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: trust-manager
-          addons.in-cloud.io/addon: argocd
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: argocd
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-      selector:
-        name: istio-base
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: argocd
-    - name: istio-gw
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-gw-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-gw-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-      selector:
-        name: istio-gw
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: istio-gw
-          addons.in-cloud.io/addon: argocd
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: argocd
-    - name: system-and-initialized
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-      selector:
-        name: system-and-initialized
-        priority: 60
-        matchLabels:
-          addons.in-cloud.io/values: system-and-initialized
-          addons.in-cloud.io/addon: argocd
----
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -748,7 +727,7 @@ spec:
                     app.kubernetes.io/name: argocd-redis
                 topologyKey: kubernetes.io/hostname
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -757,9 +736,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: argocd
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -862,7 +841,7 @@ spec:
                 subPath: helm-with-values.yaml
                 name: cmp-plugin
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -883,7 +862,7 @@ spec:
       server:
         enabled: true
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -911,7 +890,7 @@ spec:
             subPath: {{ .Values.companyPrefix }}-ca.crt
             readOnly: true
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -1110,7 +1089,7 @@ spec:
         issuer:
           name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -1140,7 +1119,7 @@ spec:
             mode: SIMPLE
             insecureSkipVerify: true
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -1156,7 +1135,7 @@ spec:
           timeout.reconciliation: 180s
           timeout.reconciliation.jitter: 60s
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -1194,7 +1173,7 @@ spec:
         gateways:
           - {{ .Values.companyPrefix }}-istio-gw-internal/default
 ---
-# Source: addonset/templates/argocd/argocd.yml
+# Source: addonset/templates/addons/argocd/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
