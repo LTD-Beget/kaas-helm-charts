@@ -85,7 +85,7 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
     - toFQDNs:
-        - matchName: {{ .Values.systemDomain }}
+        - matchName: {{ .Values.istioGwDomain }} # Dex/Gateway endpoint
       toPorts:
         - ports:
             - port: "443"
@@ -232,4 +232,29 @@ spec:
         protocol: TCP
   description: |
     Allows ingress from incloud-web-chart to incloud-web-chart-oauth2-proxy on 4180 for OAuth2 proxy functionality.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-oauth2-proxy-to-incloud-web-chart-8081
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+
+  description: |
+    Allows egress from oauth2-proxy to incloud-web-chart on 8081.
 {{- end }}
