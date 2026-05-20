@@ -49,6 +49,31 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: validating-admission-policies
 ---
+# Source: addonset/templates/validating-admission-policies/phase-client.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: validating-admission-policies-client
+spec:
+  rules:
+    - name: client
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "client"
+          keep: false
+      selector:
+        name: client
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: client
+          addons.in-cloud.io/addon: validating-admission-policies
+---
 # Source: addonset/templates/validating-admission-policies/addon.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -98,31 +123,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: validating-admission-policies
----
-# Source: addonset/templates/validating-admission-policies/phase-client.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: validating-admission-policies-client
-spec:
-  rules:
-    - name: client
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "client"
-          keep: false
-      selector:
-        name: client
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: client
-          addons.in-cloud.io/addon: validating-admission-policies
 ---
 # Source: addonset/templates/validating-admission-policies/phase.yml
 apiVersion: addons.in-cloud.io/v1alpha1

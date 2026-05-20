@@ -90,7 +90,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: etcd-backup-snapshot
+  name: etcd-backup-snapshot-client
 spec:
   rules:
     - name: infra
@@ -98,7 +98,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-infra
+            name: parameters-client
             namespace: example-system
           jsonPath: $.data.environment
           operator: Equal
@@ -114,7 +114,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: etcd-backup-snapshot-client
+  name: etcd-backup-snapshot
 spec:
   rules:
     - name: infra
@@ -122,7 +122,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-client
+            name: parameters-infra
             namespace: example-system
           jsonPath: $.data.environment
           operator: Equal
