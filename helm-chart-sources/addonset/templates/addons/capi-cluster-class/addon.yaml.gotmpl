@@ -1,4 +1,4 @@
-{{- define "capi-cluster-class.addon" }}
+{{- if and .Values.addons.capiclusterclass.enabled .Values.addons.system.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -43,6 +43,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
