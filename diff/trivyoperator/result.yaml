@@ -1,0 +1,276 @@
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: trivy-operator
+spec:
+  chart: "trivy-operator"
+  pluginName: helm-with-values
+  repoURL: example.com
+  version: "0.29.0-1"
+  targetCluster: in-cluster
+  targetNamespace: "example-trivy-operator"
+  variables:
+    cluster_name: in-cluster
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: trivy-operator
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: trivy-operator
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: trivy-operator
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: trivy-operator-client
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: trivy-operator
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: system
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: trivy-operator
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: trivy-operator
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: trivy-operator
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+      selector:
+        name: cert-manager
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: trivy-operator
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: system
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: trivy-operator
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: trivy-operator
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    trivy-operator:
+      trivyOperator:
+        scanJobNodeSelector:
+          node-role.kubernetes.io/control-plane: ""
+        scanJobTolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/argocd"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/vm-stream"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/vm-data"
+            operator: "Exists"
+            effect: "NoSchedule"
+      nodeCollector:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/argocd"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/vm-stream"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/vm-data"
+            operator: "Exists"
+            effect: "NoSchedule"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    trivy-operator:
+      trivy:
+        storageClassEnabled: false
+        severity: HIGH,CRITICAL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64M
+          limits:
+            cpu: 750m
+            memory: 750M
+        server:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addonset/templates/systemAddons/trivy-operator/trivy-operator.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trivy-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: trivy-operator
+spec:
+  values: ""

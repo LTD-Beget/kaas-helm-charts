@@ -1,0 +1,275 @@
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac
+spec:
+  chart: "helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.2.5"
+  targetCluster: in-cluster
+  targetNamespace: "example-vmagent"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: ""
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: ""
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-vm-agent-additional-rbac-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+spec:
+  values: |
+    resources:
+      tokenreviewClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: kube-rbac-proxy-tokenreview
+        rules:
+          - apiGroups:
+              - authentication.k8s.io
+            resources:
+              - tokenreviews
+            verbs:
+              - create
+          - apiGroups:
+              - authorization.k8s.io
+            resources:
+              - subjectaccessreviews
+            verbs:
+              - create
+
+      metricsClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: vmagent-metrics
+        rules:
+          - nonResourceURLs:
+              - "/grafana/metrics"
+              - "/alertmanager/metrics"
+            verbs:
+              - get
+          - apiGroups:
+              - ""
+            resources:
+              - "services/kube-state-metrics"
+              - "services/client-kube-state-metrics"
+              - "services/prometheus-node-exporter"
+            resourceNames:
+              - "kube-state-metrics"
+              - "client-kube-state-metrics"
+              - "prometheus-node-exporter"
+            verbs:
+              - "get"
+
+      metricsClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: vmagent-metrics
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: vmagent-metrics
+        subjects:
+          - kind: ServiceAccount
+            name: vmagent-vmagent
+            namespace: {{ .Values.companyPrefix }}-vmagent
+
+      metricsSystemRbacProxyAuthDelegatorClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: kube-rbac-proxy-auth-delegator
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: system:auth-delegator
+        subjects:
+          - kind: User
+            name: system:kube-rbac-proxy
+
+      metricsSystemRbacProxyClusterRole:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: kube-rbac-proxy-metrics
+        rules:
+          - nonResourceURLs:
+              - "/metrics"
+            verbs:
+              - get
+
+      metricsSystemRbacProxyMetricsClusterRoleBinding:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: kube-rbac-proxy-metrics
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: kube-rbac-proxy-metrics
+        subjects:
+          - kind: User
+            name: system:kube-rbac-proxy

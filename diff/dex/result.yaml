@@ -1,0 +1,366 @@
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: dex
+spec:
+  chart: "dex"
+  pluginName: helm-with-values
+  repoURL: example.com
+  version: "0.23.0-1"
+  targetCluster: in-cluster
+  targetNamespace: "example-dex"
+  variables:
+    cluster_name: in-cluster
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: dexStaticPasswordsAdmin
+          jsonPath: .data.dexStaticPasswordsAdmin
+        - as: clusterName
+          jsonPath: .data.clusterName
+        - as: systemIstioGwDomain
+          jsonPath: .data.systemIstioGwDomain
+        - as: systemIstioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+        - as: companyAdminUser
+          jsonPath: .data.companyAdminUser
+  initDependencies:
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: dex
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: dex
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: dex
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: dex-client
+spec:
+  rules:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: dex
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: dex
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: dex
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: dex
+spec:
+  rules:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: dex
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: dex
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.conditions[?(@.type=='Ready')].status
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: dex
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    dex:
+      config:
+        issuer: {{ printf "https://%s" .Values.systemIstioGwDomain }}
+        storage:
+          type: kubernetes
+          config: { inCluster: true }
+        web:
+          https: 0.0.0.0:5554
+          tlsCert: /etc/dex/tls/tls.crt
+          tlsKey:  /etc/dex/tls/tls.key
+        enablePasswordDB: true
+        staticPasswords:
+          - email: {{ .Values.companyAdminUser }}
+            username: admin
+            userID: 00000000-0000-0000-0000-000000000001
+            hash: {{ .Values.dexStaticPasswordsAdmin }}
+        staticClients:
+          - id: grafana
+            name: Grafana
+            secret: super-secret-grafana
+            redirectURIs:
+              - /grafana/login/generic_oauth
+              - {{ printf "https://%s/grafana/login/generic_oauth" .Values.systemIstioGwDomainInternal }}
+          - id: kubernetes
+            name: incloud-web-chart-oauth2-proxy
+            secret: incloud-web-chart-super-secret
+            redirectURIs:
+              - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwDomainInternal }}
+              - "https://localhost/oauth2/callback"
+          - id: argocd
+            name: argocd
+            secret: argo-cd-super-secret
+            redirectURIs:
+              - {{ printf "https://%s/argocd/auth/callback" .Values.systemIstioGwDomainInternal }}
+              - "https://localhost/argocd/auth/callback"
+          - id: apiserver
+            name: apiserver
+            redirectURIs:
+              - http://localhost:8000
+              - http://127.0.0.1:8000
+            secret: {{ .Values.dexStaticPasswordsAdmin }}
+      https:
+        enabled: true
+      volumeMounts:
+        - name: tls
+          mountPath: /etc/dex/tls
+          readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ .Values.clusterName }}-dex-tls
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    tls:
+      enabled: true
+      issuer:
+        name: oidc-ca
+        secretName: selfsigned-infra-cluster-ca
+      certificate:
+        name: {{ .Values.clusterName }}-dex-tls
+        secretName: {{ .Values.clusterName }}-dex-tls
+        commonName: dex
+        ipAddresses:
+          - "127.0.0.1"
+        dnsNames:
+          - dex.{{ .Values.companyPrefix }}-dex.svc
+          - dex.{{ .Values.companyPrefix }}-dex.svc.cluster.local
+    rbac:
+      enabled: true
+      clusterRoleBinding:
+        subjects:
+          kind: User
+          name: "{{ .Values.companyAdminUser }}"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    dex:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: dex
+spec:
+  values: ""
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addonset/templates/systemAddons/dex/dex.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          name: dex
+          route:
+            host: dex
+            port: 5554
+      destinationRule:
+        enabled: true
+        host: dex
+        trafficPolicy:
+          tls:
+            mode: SIMPLE
+            insecureSkipVerify: true

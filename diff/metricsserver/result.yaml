@@ -1,0 +1,282 @@
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: metrics-server
+spec:
+  chart: "metrics-server"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "3.13.0-3"
+  releaseName: metrics-server
+  targetCluster: in-cluster
+  targetNamespace: "example-metrics-server"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: metrics-server
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: metrics-server
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: metrics-server
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: metrics-server-client
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: metrics-server
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: metrics-server
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: metrics-server
+spec:
+  rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: metrics-server
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: metrics-server
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    metrics-server:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: ""
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

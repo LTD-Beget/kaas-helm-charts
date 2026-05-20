@@ -1,0 +1,235 @@
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: incloud-web-resources
+spec:
+  chart: "incloud-web-resources"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "1.2.0-1"
+  targetCluster: in-cluster
+  targetNamespace: "example-incloud-web-chart"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:  []
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+    - name: incloud-web-chart
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: incloud-web-resources
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: incloud-web-resources
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: incloud-web-resources
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: incloud-web-resources-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: incloud-web-resources
+    - name: system-trivy
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-trivy
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system-trivy
+          addons.in-cloud.io/addon: incloud-web-resources
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: incloud-web-resources
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: incloud-web-resources
+    - name: system-trivy
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trivy-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: system-trivy
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system-trivy
+          addons.in-cloud.io/addon: incloud-web-resources
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: ""
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      enabled: true
+      addons:
+        argocd:
+          enabled: true
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: ""
+---
+# Source: addonset/templates/incloud-web-resources/incloud-web-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-system-trivy
+  labels:
+    addons.in-cloud.io/values: system-trivy
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      addons:
+        trivy:
+          enabled: true
