@@ -1,4 +1,4 @@
-{{- define "addons-operator.addon" }}
+{{- if .Values.addons.addonsoperator.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -28,6 +28,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -40,11 +41,6 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addons-operator
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
         addons.in-cloud.io/addon: addons-operator
     - name: custom
       priority: 90
