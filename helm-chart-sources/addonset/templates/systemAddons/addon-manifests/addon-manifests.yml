@@ -1,7 +1,0 @@
-{{- if and .Values.addons.addonmanifests.enabled .Values.addons.system.enabled }}
-
-  {{- include "addon-manifests.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/addon-manifests/values.yml" | nindent 0 }}
-
-{{- end }}
