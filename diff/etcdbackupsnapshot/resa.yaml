@@ -1,0 +1,219 @@
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: etcd-backup-snapshot
+spec:
+  chart: "etcd-backup-snapshot"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.1.1"
+  targetCluster: in-cluster
+  targetNamespace: "example-etcd-backup-snapshot"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: etcd-backup-snapshot
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: etcd-backup-snapshot
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: etcd-backup-snapshot
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: etcd-backup-snapshot
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: etcd-backup-snapshot
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: etcd-backup-snapshot-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: etcd-backup-snapshot
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backup-snapshot-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: etcd-backup-snapshot
+spec:
+  values: |
+    secret:
+      s3:
+        region: us-east-1
+        accessKeyID: {{ .Values.etcdbackupS3AccessKey }}
+        secretAccessKey: {{ .Values.etcdbackupS3SecretAccessKey }}
+        endpoint: {{ .Values.etcdbackupS3SecretEndpoint}}
+        s3ForcePathStyle: "true"
+    app:
+      args:
+        - --use-etcd-wrapper=false
+        - --schedule=0 */4 * * *  
+        - --delta-snapshot-period=1h
+        - --storage-provider=S3
+        - --store-container={{ .Values.etcdbackupAppArgsStorecontainer }}
+        - --store-prefix=etcd-{{ .Values.cluster.name }}
+        - --garbage-collection-period=30m
+        - --max-backups=6
+        - --garbage-collection-policy=LimitBased
+        - --compression-policy=gzip
+        - --compress-snapshots=true
+        - --etcd-snapshot-timeout=8m
+        - --etcd-defrag-timeout=8m
+        - --etcd-connection-timeout=30s
+        - --delta-snapshot-memory-limit=204857600
+        - --endpoints=https://$(NODE_IP):2379
+        - --server-port=18080
+        - --cacert=/etc/etcd-pki/ca.crt
+        - --cert=/etc/etcd-pki/healthcheck-client.crt
+        - --key=/etc/etcd-pki/healthcheck-client.key
+        - --max-parallel-chunk-uploads=1
+        - --min-chunk-size=16777212
+        - --defragmentation-schedule=10 0 */3 * *
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/control-plane: ""
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backup-snapshot-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: etcd-backup-snapshot
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    etcdbackupS3SecretEndpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
+    app:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/etcd-backup-snapshot/etcd-backup-snapshot.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: etcd-backup-snapshot-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: etcd-backup-snapshot
+spec:
+  values: ""
