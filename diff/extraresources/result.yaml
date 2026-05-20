@@ -191,6 +191,136 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
+  name: extra-resources-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "false"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: client-ca
+            namespace: example-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: extra-resources
+    - name: client
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "false"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "client"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: client-ca
+            namespace: example-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+      selector:
+        name: client
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: client
+          addons.in-cloud.io/addon: extra-resources
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: client-ca
+            namespace: example-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+      selector:
+        name: system
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: extra-resources
+    - name: system-migrated
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: client-ca
+            namespace: example-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+        - source:
+            apiVersion: clusterclaim.in-cloud.io/v1alpha1
+            kind: ClusterClaim
+            name: cluster
+            namespace: example-system
+          keep: false
+          jsonPath: $.metadata.uid
+          operator: Exists
+      selector:
+        name: system-migrated
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system-migrated
+          addons.in-cloud.io/addon: extra-resources
+---
+# Source: addonset/templates/extra-resources/extra-resources.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
   name: extra-resources
 spec:
   rules:
@@ -383,136 +513,6 @@ spec:
         priority: 57
         matchLabels:
           addons.in-cloud.io/values: cluster-network-policies
-          addons.in-cloud.io/addon: extra-resources
----
-# Source: addonset/templates/extra-resources/extra-resources.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: extra-resources-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "false"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: extra-resources
-    - name: client
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "false"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "client"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-      selector:
-        name: client
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: client
-          addons.in-cloud.io/addon: extra-resources
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-      selector:
-        name: system
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: extra-resources
-    - name: system-migrated
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-        - source:
-            apiVersion: clusterclaim.in-cloud.io/v1alpha1
-            kind: ClusterClaim
-            name: cluster
-            namespace: example-system
-          keep: false
-          jsonPath: $.metadata.uid
-          operator: Exists
-      selector:
-        name: system-migrated
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system-migrated
           addons.in-cloud.io/addon: extra-resources
 ---
 # Source: addonset/templates/extra-resources/extra-resources.yml
