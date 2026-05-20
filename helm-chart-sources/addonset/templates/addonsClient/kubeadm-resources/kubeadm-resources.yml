@@ -1,4 +1,4 @@
-{{ if .Values.clientClusterEnabled }}
+{{ if and .Values.clientClusterEnabled .Values.addons.kubeadmresources.enabled }}
 
 {{- include "kubeadm-resources.addon" . }}
 
