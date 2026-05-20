@@ -46,7 +46,7 @@ spec:
         protocol: UDP
       rules:
         dns:
-        - matchPattern: '*'
+        - matchPattern: '{{ .Values.istioGwDomain }}' # Dex/Gateway endpoint
   description: Allows egress from argocd-server to CoreDNS on 53 for DNS resolution.
 
 

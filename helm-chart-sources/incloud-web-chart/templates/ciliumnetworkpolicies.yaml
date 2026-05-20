@@ -67,7 +67,7 @@ spec:
         protocol: UDP
       rules:
         dns:
-        - matchPattern: "*"
+        - matchPattern: "{{ .Values.istioGwDomain }}" # Dex/Gateway endpoint
   description: |
     Allows egress from incloud-web-chart-oauth2-proxy to coredns on 53. Ingress remains
     open in this policy.
