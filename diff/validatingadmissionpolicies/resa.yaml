@@ -1,0 +1,172 @@
+---
+# Source: addonset/templates/validating-admission-policies/addon-client.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: validating-admission-policies-client
+spec:
+  targetCluster: client
+  
+  chart: "validating-admission-policies"
+  repoURL: "example.com"
+  version: "0.1.0"
+  pluginName: helm-with-values
+  targetNamespace: "example-system"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: []
+  initDependencies: []
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: validating-admission-policies
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: validating-admission-policies
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: validating-admission-policies
+---
+# Source: addonset/templates/validating-admission-policies/addon.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: validating-admission-policies
+spec:
+  targetCluster: in-cluster
+  
+  chart: "validating-admission-policies"
+  repoURL: "example.com"
+  version: "0.1.0"
+  pluginName: helm-with-values
+  targetNamespace: "example-system"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: []
+  initDependencies: []
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: validating-admission-policies
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: validating-admission-policies
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: validating-admission-policies
+---
+# Source: addonset/templates/validating-admission-policies/phase-client.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: validating-admission-policies-client
+spec:
+  rules:
+    - name: client
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "client"
+          keep: false
+      selector:
+        name: client
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: client
+          addons.in-cloud.io/addon: validating-admission-policies
+---
+# Source: addonset/templates/validating-admission-policies/phase.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: validating-admission-policies
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: validating-admission-policies
+---
+# Source: addonset/templates/validating-admission-policies/values.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: validating-admission-policies-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: validating-admission-policies
+spec:
+  values: ""
+---
+# Source: addonset/templates/validating-admission-policies/values.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: validating-admission-policies-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: validating-admission-policies
+spec:
+  values: ""

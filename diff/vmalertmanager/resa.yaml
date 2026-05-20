@@ -1,0 +1,647 @@
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: vm-alertmanager
+spec:
+  chart: "victoria-metrics-k8s-stack"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.52.0-4"
+  targetCluster: in-cluster
+  targetNamespace: "example-alertmanager"
+  variables:
+    telegramToken: "123456789:AAExampleTokenHere"
+    telegramChatId: "-1001234567890"
+    signaliloAlertmanagerToken: ""
+    dependency: "True"
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: telegramToken
+          jsonPath: .data.telegramToken
+        - as: telegramChatId
+          jsonPath: .data.telegramChatId
+        - as: alertmanagerSignaliloToken
+          jsonPath: .data.alertmanagerSignaliloToken
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  initDependencies:
+    - name: vm-operator 
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: vm-alertmanager
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: vm-alertmanager
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-alertmanager
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-alertmanager
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: vm-alertmanager
+    - name: signalilo
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: signalilo
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: signalilo
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: signalilo
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: signalilo
+          addons.in-cloud.io/addon: vm-alertmanager
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-gw
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
+          addons.in-cloud.io/addon: vm-alertmanager
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-alertmanager-client
+spec:
+  rules:
+    - name: cert-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: cert-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: vm-alertmanager
+    - name: signalilo
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: signalilo
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: signalilo
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: signalilo
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: signalilo
+          addons.in-cloud.io/addon: vm-alertmanager
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: istio-gw
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
+          addons.in-cloud.io/addon: vm-alertmanager
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        ingress:
+          enabled: false
+        monzoTemplate:
+          enabled: false
+        spec:
+          replicaCount: 2
+          routePrefix: /alertmanager
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalertmanager
+          templates:
+            - key: telegram_alerts.tmpl
+              name: vm-alertmanager-alertmanager-alert-templates
+          serviceSpec:
+            metadata:
+              name: vmalertmanager
+              labels:
+                monitoring.in-cloud.io/service: vm-alertmanager
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+          selectAllByDefault: false
+          priorityClassName: system-cluster-critical
+          configSelector: {}
+          configNamespaceSelector: {}
+          configSecret: vmalertmanager-config
+          resources:
+            requests:
+              cpu: '100m'
+              memory: 128Mi
+            limits:
+              cpu: '500m'
+              memory: 512Mi
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: '1'
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+
+    monitoring:
+      enabled: true
+
+    alertmanagerConfig:
+      enabled: true
+      config:
+        global:
+          resolve_timeout: 5m
+
+        route:
+          receiver: blackhole
+          group_by: ["cluster_full_name", "alertname", "severity"]
+          group_wait: 10s
+          group_interval: 30s
+          repeat_interval: 3h
+
+          routes:
+            blackhole:
+              matchers:
+                - alertname="Watchdog"
+              receiver: blackhole
+            telegram:
+              matchers:
+                - severity="critical"
+              receiver: telegram-critical
+              continue: true
+
+        receivers:
+          blackhole: {}
+          telegram-critical:
+            type: telegram_configs
+            configs:
+              criticalAlertGroup:
+                bot_token: "{{ .Values.telegramToken }}"
+                chat_id: {{ .Values.telegramChatId }}
+                parse_mode: 'HTML'
+                send_resolved: true
+                message: '{{`{{ template "tg.message" . }}`}}'
+
+        inhibit_rules:
+          # Более критичный алерт InCloudCapiClusterNotAlive глушит каскадные алерты
+          - source_matchers:
+              - alertname="InCloudCapiClusterNotAlive"
+            target_matchers:
+              - alertname=~"ArgoCdClusterConnectionError|InCloudCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentTooManyScrapePoolWithoutTargets|VMagentLogsErrorsHigh"
+            equal:
+              - cluster_full_name
+
+          # Более критичный алерт глушит аналогичный предупредительный
+          - source_matchers:
+              - alertname="ArgoCdClusterConnectionError"
+            target_matchers:
+              - alertname=~"ArgoCdAppUnhealthy|ArgoCdAppOutOfSync|ArgoCdAppSyncFailed"
+            equal:
+              - cluster_full_name
+
+          # Более критичный алерт глушит аналогичный предупредительный
+          - source_matchers:
+              - alertname="CoreDNSErrorsHighCritical"
+            target_matchers:
+              - alertname="CoreDNSErrorsHigh"
+            equal:
+              - cluster_full_name
+
+          # Более критичный алерт глушит аналогичный предупредительный
+          - source_matchers:
+              - alertname="ExtremelyHighIndividualControlPlaneCPU"
+            target_matchers:
+              - alertname=~"HighIndividualControlPlaneCPU|HighOverallControlPlaneCPU"
+            equal:
+              - cluster_full_name
+
+          # Более критичный алерт глушит аналогичный предупредительный
+          - source_matchers:
+              - alertname="InCloudCapiClusterNotReadyTooLong"
+            target_matchers:
+              - alertname="InCloudCapiClusterNotReady"
+            equal:
+              - cluster_full_name
+
+          # Более критичный алерт глушит аналогичный предупредительный
+          - source_matchers:
+              - alertname="VMAgentTooManyScrapePoolWithoutTargets"
+            target_matchers:
+              - alertname="VMAgentScrapePoolHasNoTargets"
+            equal:
+              - cluster_full_name
+
+          # Пока работает info алерт InCloudCapiClusterMuted (С момента 
+          # создания клатсера прошло менее 10 минут или клатсер в процессе удаления)
+          # Глушатся все алерты кроме InCloudCapiClusterDeletionRequestedTooLong, на 
+          # случай, если процесс удаления длится более 15 минут
+          - source_matchers:
+              - alertname="InCloudCapiClusterMuted"
+            target_matchers:
+              - alertname!="InCloudCapiClusterDeletionRequestedTooLong"
+            equal:
+              - cluster_full_name
+
+          # Алерт InCloudCapiInfraClusterSuspended/InCloudCapiClientClusterSuspended 
+          # нам говорит о том, что кластер заблокирован и не обслуживается. 
+          # На время блокировки все алерты приостановлены
+          - source_matchers:
+              - alertname=~"InCloudCapiInfraClusterSuspended|InCloudCapiClientClusterSuspended"
+            target_matchers:
+              - alertname!=""
+            equal:
+              - cluster_full_name
+
+          # Алерт InCloudCapiClusterIsPaused нам говорит о том, что кластер стоит на паузе
+          #  и его состояние не изменяется средствами операторов. 
+          # На время паузы алерты готовности кластера приостановлены,
+          # в случае проблем с кластером, есть алерты alive
+          - source_matchers:
+              - alertname="InCloudCapiClusterIsPaused"
+            target_matchers:
+              - alertname=~"InCloudCapiClusterNotReady|InCloudCapiClusterNotReadyTooLong"
+            equal:
+              - cluster_full_name
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: true
+      defaultRules:
+        create: false
+      defaultDashboards:
+        enabled: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: false
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vm-alertmanager"
+      alertmanager:
+        spec:
+          serviceSpec:
+            spec:
+              ports:
+                - name: http
+                  port: 9093
+                  protocol: TCP
+                  targetPort: 9093
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+          containers:
+            - name: alertmanager
+              volumeMounts:
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
+            - name: rbac-proxy
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=https://127.0.0.1:9093
+                - --upstream-ca-file=/app/config/alertmanager/web/tls/ca.crt
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+                - name: alertmanager-tls
+                  mountPath: /app/config/alertmanager/web/tls
+                  readOnly: true
+          volumes:
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vm-alertmanager-monitoring-svc-tls
+            - name: alertmanager-tls
+              secret:
+                defaultMode: 420
+                secretName: alertmanager
+          webConfig:
+            tls_server_config:
+              cert_file: "/app/config/alertmanager/web/tls/tls.crt"
+              key_file: "/app/config/alertmanager/web/tls/tls.key"
+
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+    tls:
+      alertmanager:
+        enabled: true
+        issuer:
+          kind: ClusterIssuer
+          name: selfsigned-cluster-issuer
+        certificate:
+          name: alertmanager
+          secretName: alertmanager
+          commonName: alertmanager
+          dnsNames:
+            - "vmalertmanager-vm-alertmanager"
+            - "vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager"
+            - "vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc"
+            - "*.vmalertmanager-vm-alertmanager"
+            - "*.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager"
+            - "*.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc"
+          ipAddresses:
+            - 127.0.0.1
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    monitoring:
+      enabled: true
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-signalilo
+  labels:
+    addons.in-cloud.io/values: signalilo
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    alertmanagerConfig:
+      config:
+        route:
+          routes:
+            signalilo:
+              matchers:
+                - severity="critical"
+              receiver: signalilo-critical
+              continue: true
+
+        receivers:
+          signalilo-critical:
+            type: webhook_configs
+            configs:
+              mainSignaliloInstance:
+                url: "http://signalilo.{{ .Values.companyPrefix }}-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
+                send_resolved: true
+---
+# Source: addonset/templates/systemAddons/vm-alertmanager/vm-alertmanager.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alertmanager-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: vm-alertmanager
+spec:
+  values: |
+    istioVirtualService:
+      vmalertmanager:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+        hosts:
+          - "*"
+        path: "/alertmanager"
+        http:
+          name: vmalertmanager
+          route:
+            host: vmalertmanager.{{ .Values.companyPrefix }}-alertmanager
+            port: 9093
