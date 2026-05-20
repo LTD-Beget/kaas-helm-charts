@@ -15,8 +15,8 @@ spec:
           csiDriver: true
           clusterName: "{{ .Variables.clusterName }}"
           clusterCustomer: "{{ .Variables.customer }}"
-          extraPriority: 2000001000
-          extraPriorityClassName: system-node-critical
+          extraPriority: 0
+          extraPriorityClassName: ""
           containers:
             kubeApiserver:
               image:
