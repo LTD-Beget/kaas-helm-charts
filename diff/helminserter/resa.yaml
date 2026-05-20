@@ -1,0 +1,153 @@
+---
+# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: helm-inserter
+spec:
+  chart: "helm-inserter"
+  pluginName: helm-with-values
+  repoURL: example.com
+  version: "0.2.5"
+  targetCluster: in-cluster
+  targetNamespace: "example-argocd"
+  variables:
+    cluster_name: in-cluster
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: xcluster
+          jsonPath: .data.xcluster
+        - as: trackingID
+          jsonPath: .data.trackingID
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: systemNamespace
+          jsonPath: .data.systemNamespace
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: helm-inserter
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: helm-inserter
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: helm-inserter
+---
+# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: helm-inserter
+spec:
+  rules:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: system
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: helm-inserter
+---
+# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: ""
+---
+# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: ""
+---
+# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: helm-inserter-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: helm-inserter
+spec:
+  values: |
+    resources:
+      namespaceCustomer:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: {{ .Values.systemNamespace }}
+          labels:
+            in-cloud.io/clusterName: infra
+      appProjectCustomer:
+        apiVersion: argoproj.io/v1alpha1
+        kind: AppProject
+        metadata:
+          annotations:
+            argocd.argoproj.io/compare-options: "IgnoreExtraneous"
+            argocd.argoproj.io/tracking-id: {{ .Values.trackingID }}
+          name: {{ .Values.xcluster }}
+          namespace: {{ .Values.companyPrefix }}-argocd
+        spec:
+          clusterResourceWhitelist:
+          - group: '*'
+            kind: '*'
+          destinations:
+          - namespace: {{ .Values.systemNamespace }}
+            server: '*'
+          - namespace: '*'
+            name: {{ .Values.cluster.name }}
+          sourceRepos:
+          - '*'
+          sourceNamespaces:
+          - '*'

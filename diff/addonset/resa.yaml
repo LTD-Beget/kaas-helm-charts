@@ -1,0 +1,155 @@
+---
+# Source: addonset/templates/addonset/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: addonset
+spec:
+  chart: "addonset"
+  repoURL: "example.com"
+  version: "0.1.0"
+  pluginName: helm-with-values
+  targetCluster: in-cluster
+  targetNamespace: "example-addonset"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: clusterClaim	
+          jsonPath: .data.xcluster
+        - as: cluster.client.name
+          jsonPath: .data.clusterClientName
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: addonRevision
+          jsonPath: .data.addonRevision
+        - as: cluster.systemEnabled
+          jsonPath: .data.systemEnabled
+        - as: cluster.clusterClientEnabled
+          jsonPath: .data.clusterClientEnabled
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+        - as: companyExternalChartRegistry
+          jsonPath: .data.companyExternalChartRegistry
+        - as: companyInternalDockerRegistry
+          jsonPath: .data.companyInternalDockerRegistry
+        - as: companyExternalGitRepository
+          jsonPath: .data.companyExternalGitRepository
+        - as: companyAdminUser
+          jsonPath: .data.companyAdminUser
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addon-set
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: addon-set
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: addon-set
+---
+# Source: addonset/templates/addonset/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: addonset
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: addon-set
+---
+# Source: addonset/templates/addonset/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: |
+    addons:
+      system:
+        enabled: {{ .Values.cluster.systemEnabled }}
+    clientName: {{ .Values.cluster.client.name }}
+    clusterClaim: {{ .Values.clusterClaim }}
+    clusterName: {{ .Values.cluster.name }}
+    addonRevision: {{ .Values.addonRevision }}
+    clientClusterEnabled: {{ .Values.cluster.clusterClientEnabled }}
+    companyPrefix: {{ .Values.companyPrefix }}
+    companyDomain: {{ .Values.companyDomain }}
+    companyExternalChartRegistry: {{ .Values.companyExternalChartRegistry }}
+    companyInternalDockerRegistry: {{ .Values.companyInternalDockerRegistry }}
+    companyExternalGitRepository: {{ .Values.companyExternalGitRepository }}
+    companyAdminUser: {{ .Values.companyAdminUser }}
+---
+# Source: addonset/templates/addonset/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: ""
+---
+# Source: addonset/templates/addonset/addonset.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addon-set-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: addon-set
+spec:
+  values: |
+    addons:
+      clientkubestatemetrics:
+        enabled: true
+      clientvmscrapeconfig:
+        enabled: true
