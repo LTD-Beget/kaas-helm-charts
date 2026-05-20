@@ -1,4 +1,4 @@
-{{- if .Values.addons.capi.enabled }}
+{{- if and .Values.addons.capi.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "capi"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
@@ -11,6 +11,6 @@ metadata:
   name: capi
 spec:
   rules:
-    {{- include "common.phase.rules.system"              $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.vm-operator"         $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"              $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}
