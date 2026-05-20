@@ -30,7 +30,7 @@
       ephemeral-storage: "2Gi"
 
     evictionHard:
-      memory.available: "750Mi"
+      memory.available: "128Mi"
     evictionPressureTransitionPeriod: 1m
 
     # Для того, что бы сделать эту часть конфигурации статичной

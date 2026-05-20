@@ -52,7 +52,7 @@ kubeletConfig:
       ephemeral-storage: "2Gi"
 
     evictionHard:
-      memory.available: "750Mi"
+      memory.available: "128Mi"
     evictionPressureTransitionPeriod: 1m
     containerLogMaxSize: "50Mi"
     containerRuntimeEndpoint: "/var/run/containerd/containerd.sock"
