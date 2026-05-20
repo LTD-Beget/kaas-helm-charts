@@ -6,9 +6,7 @@
         kind: Addon
         name: {{ .Values.addonName }}{{ .Values.suffix }}
       jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
-      operator: Equal
-      value: true
-      keep: false
+      operator: Exists
   selector:
     name: initialized-2
     priority: 15
