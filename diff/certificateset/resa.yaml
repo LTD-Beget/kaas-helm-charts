@@ -1,0 +1,115 @@
+---
+# Source: addonset/templates/certificate-set/certificate-set.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: certificate-set
+spec:
+  chart: "certificate-set"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.1.1"
+  targetCluster: in-cluster
+  targetNamespace: "example-certificate-set"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: certificate-set
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: certificate-set
+---
+# Source: addonset/templates/certificate-set/certificate-set.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+    manager:
+      args:
+      - --cluster-wide
+      image:
+        repository: prorobotech/certificate-set
+        pullPolicy: IfNotPresent
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    metrics:
+      enable: true
+      port: 8443
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/certificate-set/certificate-set.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+    manager:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+---
+# Source: addonset/templates/certificate-set/certificate-set.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: ""

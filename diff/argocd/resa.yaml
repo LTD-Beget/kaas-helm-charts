@@ -1,0 +1,1234 @@
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: argocd
+spec:
+  chart: "argo-cd"
+  repoURL: "example.com"
+  version: "9.4.15-3"
+  pluginName: helm-with-values
+  targetCluster: in-cluster
+  targetNamespace: "example-argocd"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: systemIstioGwDomain
+          jsonPath: .data.systemIstioGwDomain
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+        - as: companyAdminUser
+          jsonPath: .data.companyAdminUser
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: cilium
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: argocd
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: argocd
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: argocd
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: argocd
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: argocd
+    - name: trust-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: trust-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: trust-manager
+          addons.in-cloud.io/addon: argocd
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: argocd
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-gw
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
+          addons.in-cloud.io/addon: argocd
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: argocd
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: system-and-initialized
+        priority: 60
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: argocd
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Exists
+          # value: true
+      selector:
+        name: network-policies
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: argocd
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: argocd-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: argocd
+    - name: trust-manager
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: trust-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: trust-manager
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: trust-manager
+          addons.in-cloud.io/addon: argocd
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: argocd
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-base
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: argocd
+    - name: istio-gw
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-gw-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-gw
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: istio-gw
+          addons.in-cloud.io/addon: argocd
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: argocd
+    - name: system-and-initialized
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: system-and-initialized
+        priority: 60
+        matchLabels:
+          addons.in-cloud.io/values: system-and-initialized
+          addons.in-cloud.io/addon: argocd
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      global:
+        deploymentStrategy:
+          type: RollingUpdate
+      configs:
+        cm:
+          application.resourceTrackingMethod: annotation
+          reposerver.default.cache.expiration: 8h0m0s
+          reposerver.repo.cache.expiration: 8h0m0s
+          resource.compareoptions: |
+            ignoreAggregatedRoles: true
+          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
+            jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+          resource.customizations.ignoreDifferences.admissionregistration.k8s.io_ValidatingWebhookConfiguration: |
+            jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+          resource.customizations.ignoreDifferences.all: |
+            jqPathExpressions:
+            - '.spec.template.spec.containers[].volumeMounts[] | select(.name == "ssl-certs")'
+            - '.spec.template.spec.volumes[] | select(.name == "ssl-certs")'
+            - '.spec.template.spec.securityContext'
+            - '.spec.template.spec.containers[].securityContext'
+            - '.spec.template.spec.initContainers[].securityContext'
+            - '.spec.replicas'
+            jsonPointers:
+            - /metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
+          resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
+            jqPathExpressions:
+            - '.spec.rules[] | select(.name|test("autogen-."))'
+          resource.customizations.ignoreDifferences.kyverno.io_Policy: |
+            jqPathExpressions:
+            - '.spec.rules[] | select(.name|test("autogen-."))'
+          kustomize.buildOptions: --enable-helm
+          timeout.reconciliation: 180s  
+          timeout.reconciliation.jitter: 30s
+        params:
+          application.namespaces: '*'
+          # repo.server: 127.0.0.1:8081
+          # redis.server: 127.0.0.1:6379
+          controller.sharding.algorithm: round-robin
+          server.basehref: /argocd
+          server.rootpath: /argocd
+          server.staticassets: /shared/app
+        secret:
+          argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+        rbac:
+          policy.default: role:readonly
+          policy.csv: |
+            g, {{ .Values.companyAdminUser }}, role:admin
+      dex:
+        enabled: false
+      notifications:
+        enabled: false
+      redis:
+        image:
+          imagePullPolicy: IfNotPresent
+        replicas: 1
+        # hostNetwork: true
+        exporter:
+          enabled: true
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 10Mi
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 10Mi
+              memory: 64Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 100Mi
+            memory: 196Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 100Mi
+            memory: 128Mi
+      redisSecretInit:
+        enabled: true
+      repoServer:
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        emptyDir:
+          sizeLimit: 10Gi
+        metrics:
+          enabled: true
+        rbac:
+        - apiGroups:
+          - '*'
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        replicas: 1
+        resources:
+          limits:
+            ephemeral-storage: 10Gi
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 10Gi
+            memory: 150Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      server:
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        extraArgs:
+          # - --repo-server
+          # - 127.0.0.1:8081
+          # - --redis
+          # - 127.0.0.1:6379
+          - --kubeconfig
+          - /etc/kubernetes/admin.conf
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+        volumeMounts:
+          - mountPath: /etc/kubernetes/admin.conf
+            name: admin-conf
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            ephemeral-storage: 100Mi
+          requests:
+            cpu: 50m
+            ephemeral-storage: 100Mi
+            memory: 64Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      controller:
+        dynamicClusterDistribution: true
+        replicas: 1
+        image:
+          imagePullPolicy: IfNotPresent
+        # hostNetwork: true
+        containerSecurityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        extraArgs:
+          # - --repo-server
+          # - 127.0.0.1:8081
+          # - --redis
+          # - 127.0.0.1:6379
+          - --kubeconfig
+          - /etc/kubernetes/admin.conf
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+        volumeMounts:
+          - mountPath: /etc/kubernetes/admin.conf
+            name: admin-conf
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            ephemeral-storage: 500Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 500Mi
+            memory: 64Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+      applicationSet:
+        replicas: 0
+        image:
+          imagePullPolicy: IfNotPresent
+        allowAnyNamespace: false # if true, should be set applicationsetcontroller.allowed.scm.providers to non-empty value
+        emptyDir:
+          sizeLimit: 500Mi
+        metrics:
+          enabled: true
+        resources:
+          limits:
+            cpu: 400m
+            ephemeral-storage: 100Mi
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            ephemeral-storage: 100Mi
+            memory: 32Mi
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-redis
+                topologyKey: kubernetes.io/hostname
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: ""
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      global:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      configs:
+        cm:
+          url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
+          oidc.config: |
+            name: Dex
+            issuer: "https://{{ .Values.systemIstioGwDomain }}"
+            clientID: argocd
+            clientSecret: argo-cd-super-secret
+            requestedScopes: ["openid","profile","email","groups"]
+            insecureSkipVerify: true
+          oidc.tls.insecure.skip.verify: "true"
+        cmp:
+          create: true
+          plugins:
+            helm-with-values:
+              allowConcurrency: true
+              lockRepo: false
+              discover:
+                find:
+                  command:
+                    - bash
+                    - '-c'
+                    - |
+                      if [ -n "${ARGOCD_ENV_HELM_VALUES+set}" ] ; then
+                        find . -name 'Chart.yaml' &&
+                        find . -name 'values.yaml'
+                      fi
+              generate:
+                command:
+                  - bash
+                  - '-c'
+                  - |
+                      #!/bin/bash
+                      set -e
+
+                      if [ -z "${ARGOCD_ENV_RELEASE_NAME}" ]; then
+                          ARGOCD_ENV_RELEASE_NAME="${ARGOCD_APP_NAME#*_}"
+                      fi
+
+                      echo "${ARGOCD_ENV_HELM_VALUES}" | base64 -d > ./additionalValues.yaml
+
+                      KUSTOMIZE_ENABLED=$(yq e '.argocdPlugins.kustomize // false' ./additionalValues.yaml)
+                      VAULT_ENABLED=$(yq e '.argocdPlugins.vault // false' ./additionalValues.yaml)
+
+                      if [ "$KUSTOMIZE_ENABLED" = "true" ]; then
+                          helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml . > ./patches/base.yaml
+
+                          OUTPUT=$(kustomize build ./patches)
+                      else
+                          OUTPUT=$(helm template "${ARGOCD_ENV_RELEASE_NAME}" --include-crds -n "${ARGOCD_APP_NAMESPACE}" -f ./additionalValues.yaml .)
+                      fi
+
+                      if [ "$VAULT_ENABLED" = "true" ]; then
+                          echo "$OUTPUT" | argocd-vault-plugin generate -s {{ .Values.companyPrefix }}-argocd:avp-config -
+                      else
+                          echo "$OUTPUT"
+                      fi
+        secret:
+          argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
+          argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
+      redisSecretInit:
+        enabled: false
+      repoServer:
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+        # dnsPolicy: "ClusterFirstWithHostNet"
+        extraContainers:
+          - name: helm-with-values
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: helm-with-values.yaml
+                name: cmp-plugin
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      controller:
+        enabled: true
+      repoServer:
+        enabled: true
+      redis:
+        enabled: true
+      server:
+        enabled: true
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-trust-manager
+  labels:
+    addons.in-cloud.io/values: trust-manager
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      repoServer:
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+          - name: {{ .Values.companyPrefix }}-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: {{ .Values.companyPrefix }}-ca.crt
+        volumeMounts:
+          - name: {{ .Values.companyPrefix }}-ca
+            mountPath: /etc/ssl/certs/{{ .Values.companyPrefix }}-ca.crt
+            subPath: {{ .Values.companyPrefix }}-ca.crt
+            readOnly: true
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      redis:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:9121
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-redis-metrics
+      repoServer:
+        extraContainers:
+          - name: helm-with-values
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "dmkolbin/argocd-with-utils:v2.14.10"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: helm-with-values.yaml
+                name: cmp-plugin
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8084
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - configMap:
+              name: argocd-cmp-cm
+            name: cmp-plugin
+          - name: {{ .Values.companyPrefix }}-ca
+            configMap:
+              name: ca
+              items:
+                - key: ca.crt
+                  path: {{ .Values.companyPrefix }}-ca.crt
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-repo-server-metrics
+      server:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8083
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-server-metrics
+      controller:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8082
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        volumes:
+          - hostPath:
+              path: /etc/kubernetes/admin.conf
+              type: FileOrCreate
+            name: admin-conf
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-application-controller-metrics
+      applicationSet:
+        extraContainers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8080
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - mountPath: /app/config/metrics/tls
+                name: rbac-proxy-tls
+                readOnly: true
+        extraVolumes:
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: argocd-applicationset-controller-metrics
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    istio:
+      virtualService:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw/default
+        hosts:
+          - "*"
+        http:
+          name: argocd
+          route:
+            host: argocd-server
+            port: 443
+      destinationRule:
+        enabled: true
+        host: argocd-server
+        trafficPolicy:
+          tls:
+            mode: SIMPLE
+            insecureSkipVerify: true
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      configs:
+        cm:
+          timeout.reconciliation: 180s
+          timeout.reconciliation.jitter: 60s
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      configs:
+        cm:
+          url: "https://{{ .Values.systemIstioGwDomainInternal }}/argocd"
+        envFrom:
+          - secretRef:
+              name: avp-config
+        resources:
+          limits:
+            cpu: 8
+            memory: 8Gi
+      extraObjects:
+        - apiVersion: v1
+          kind: Secret
+          metadata:
+            name: avp-config
+            namespace: {{ .Values.companyPrefix }}-argocd
+          type: Opaque
+          stringData:
+            AVP_TYPE: "vault"
+            AVP_AUTH_TYPE: "k8s"
+            VAULT_ADDR: "http://vault.{{ .Values.companyPrefix }}-vault.svc.cluster.local:8200"
+            AVP_K8S_ROLE: "credentials-ro"
+    istio:
+      virtualService:
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+---
+# Source: addonset/templates/argocd/argocd.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: argocd-system-and-initialized
+  labels:
+    addons.in-cloud.io/values: system-and-initialized
+    addons.in-cloud.io/addon: argocd
+spec:
+  values: |
+    argo-cd:
+      controller:
+        resources:
+          limits:
+            cpu: '4'
+            ephemeral-storage: 10Gi
+          requests:
+            cpu: 200m
+            ephemeral-storage: 500Mi
+            memory: 1Gi
+      global:
+        nodeSelector:
+          node-role.kubernetes.io/argocd: ''
+        tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/argocd
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/master
+            operator: Exists
+      redis:
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
