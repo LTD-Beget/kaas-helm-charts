@@ -1,0 +1,713 @@
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: vm-agent
+spec:
+  chart: "victoria-metrics-k8s-stack"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.52.0-4"
+  targetCluster: in-cluster
+  targetNamespace: "example-vmagent"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: customer.name
+          jsonPath: .data.customer
+        - as: system.vmInsertVIP
+          jsonPath: .data.systemVmInsertVIP
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: vm-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: vm-agent
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: vm-agent
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: vm-agent
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-agent
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: vm-agent
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: vm-agent
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: vm-agent
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-agent-client
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: vm-agent
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: vm-agent
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: vm-agent
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+              ephemeral-storage: "1Gi"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: '1'
+          extraArgs:
+            remoteWrite.tlsInsecureSkipVerify: "true"
+            promscrape.maxScrapeSize: "50331648"
+            remoteWrite.maxDiskUsagePerURL: "67108864"
+            remoteWrite.queues: "24"
+            remoteWrite.shardByURL: "true"
+            remoteWrite.shardByURLReplicas: "3"
+          replicaCount: 1
+          shardCount: 1
+          updateStrategy: RollingUpdate
+          rollingUpdate:
+            maxSurge: 10%
+            maxUnavailable: 0
+          remoteWriteSettings:
+            queues: 24
+          statefulMode: false
+          serviceScrapeSelector: {}
+          serviceScrapeNamespaceSelector: {}
+          podScrapeSelector: {}
+          podScrapeNamespaceSelector: {}
+          nodeScrapeSelector: {}
+          nodeScrapeNamespaceSelector: {}
+          staticScrapeSelector: {}
+          staticScrapeNamespaceSelector: {}
+          podMetadata: {}
+          scrapeInterval: 30s
+          minScrapeInterval: 15s
+          maxScrapeInterval: 60s
+          remoteWrite:
+            - url: https://vminsert-vmcluster-victoria-metrics-k8s-stack.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus
+              tlsConfig:
+                ca:
+                  configMap:
+                    name: ca
+                    key: ca.crt
+          externalLabels:
+            cluster_full_name: "cluster" #namespace-cluster_name
+            remotewrite_cluster: cluster #namespace-cluster_name
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmagent
+                        - key: app.kubernetes.io/instance
+                          operator: In
+                          values:
+                            - vmagent
+                    topologyKey: failure-domain.beta.kubernetes.io/region
+                  weight: 100
+          probeNamespaceSelector: {}
+          priorityClassName: system-cluster-critical
+      kubeApiServer:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: https
+                scheme: https
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                  serverName: kubernetes
+            namespaceSelector:
+              matchNames:
+                - default
+            selector:
+              matchLabels:
+                component: apiserver
+                provider: kubernetes
+            jobLabel: component
+      kubeControllerManager:
+        enabled: true
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: "localhost"
+      kubeEtcd:
+        enabled: true
+        service:
+          port: 2381
+          targetPort: 2381
+        vmScrape:
+          spec:
+            endpoints:
+              - scheme: "http"
+                port: http-metrics
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: "localhost"
+                  insecureSkipVerify: true
+      kubelet:
+        enabled: true
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    vmInsertVIP: {{ .Values.system.vmInsertVIP }}
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vmagent"
+      vmagent:
+        spec:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          podMetadata:
+            labels:
+              app: vmagent
+              incloud-metrics: "infra"
+          extraArgs:
+            remoteWrite.tlsInsecureSkipVerify: "false"
+          serviceScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: Exists
+                key: "in-cloud.io/clusterName"
+          podScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: Exists
+                key: "in-cloud.io/clusterName"
+          nodeScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: Exists
+                key: "in-cloud.io/clusterName"
+          staticScrapeNamespaceSelector:
+            matchExpressions:
+              - operator: Exists
+                key: "in-cloud.io/clusterName"
+          probeNamespaceSelector:
+            matchExpressions:
+              - operator: Exists
+                key: "incloud.io/clusterName"
+
+          inlineRelabelConfig:
+            - source_labels: [__name__]
+              regex: "apiserver_request_sli_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "etcd_request_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_watch_list_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_response_sizes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_request_body_size_bytes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "workqueue_queue_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "workqueue_work_duration_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_watch_events_sizes_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "kubernetes_feature_enabled"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "apiserver_watch_cache_read_wait_seconds_bucket"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "container_tasks_state"
+              action: drop
+
+            - source_labels: [__name__]
+              regex: "container_memory_failures_total"
+              action: drop
+
+            # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+            - action: replace
+              source_labels: [exported_cluster_full_name]
+              regex: (.+)
+              target_label: cluster_full_name
+              replacement: $1
+
+            - action: replace
+              source_labels: [exported_remotewrite_cluster]
+              regex: (.+)
+              target_label: remotewrite_cluster
+              replacement: $1
+
+            - action: replace
+              source_labels: [exported_cluster_type]
+              regex: (.+)
+              target_label: cluster_type
+              replacement: $1
+
+          remoteWrite:
+            - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /tls/cabundle/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /tls/cabundle
+              readOnly: true
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+          externalLabels:
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "infra"
+      kubeControllerManager:
+        enabled: true
+        service:
+          port: 11044
+          targetPort: 11044
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: 127.0.0.1
+      kubeScheduler:
+        enabled: true
+        service:
+          port: 11045
+          targetPort: 11045
+        vmScrape:
+          spec:
+            endpoints:
+              - port: "http-metrics"
+                scheme: "https"
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                tlsConfig:
+                  caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  serverName: 127.0.0.1
+            jobLabel: "jobLabel"
+    networkPolicies:
+      vmagent:
+        enabled: true
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      coreDns:
+        enabled: false
+      kubeDns:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      alertmanager:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      defaultRules:
+        create: false
+      grafana:
+        enabled: false
+      prometheus-node-exporter:
+        enabled: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: true
+      vmalert:
+        enabled: false
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          externalLabels:
+            toleration.{{ .Values.companyDomain }}/ignore: "true"
+          tolerations:
+            - operator: "Exists"
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          containers:
+            - name: config-reloader
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 65534
+            - name: vmagent
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+            - name: rbac-proxy
+              image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+              args:
+                - --secure-listen-address=0.0.0.0:11043
+                - --upstream=http://127.0.0.1:8429
+                - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                - --v=2
+              ports:
+                - name: https-metrics
+                  containerPort: 11043
+                  protocol: TCP
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "50m"
+              volumeMounts:
+                - name: rbac-proxy-tls
+                  mountPath: /app/config/metrics/tls
+                  readOnly: true
+          volumes:
+            - name: trusted-ca-certs
+              configMap:
+                name: ca
+            - name: rbac-proxy-tls
+              secret:
+                defaultMode: 420
+                secretName: vm-agent-monitoring-svc-tls
+          serviceSpec:
+            metadata:
+              name: vmagent
+              labels:
+                monitoring.in-cloud.io/service: vm-agent
+            spec:
+              type: ClusterIP
+              ports:
+                - name: http
+                  port: 8429
+                  protocol: TCP
+                  targetPort: 8429
+                - name: https-metrics
+                  port: 11043
+                  protocol: TCP
+                  targetPort: https-metrics
+              useAsDefault: true
+          serviceScrapeSelector:
+            matchExpressions:
+              - key: managed-by
+                operator: NotIn
+                values:
+                  - vm-operator
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          remoteWrite:
+            - url: https://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /etc/ssl/certs/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+          externalLabels:
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "system"

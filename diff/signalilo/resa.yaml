@@ -1,0 +1,130 @@
+---
+# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: signalilo
+spec:
+  chart: "signalilo"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.12.1-1"
+  targetCluster: in-cluster
+  targetNamespace: "example-signalilo"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources: 
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: signaliloUuid
+          jsonPath: .data.signaliloUuid
+        - as: icingaHostname
+          jsonPath: .data.icingaHostname
+        - as: icingaUrl
+          jsonPath: .data.icingaUrl
+        - as: icingaUsername
+          jsonPath: .data.icingaUsername
+        - as: icingaPassword
+          jsonPath: .data.icingaPassword
+        - as: alertmanagerSignaliloPort
+          jsonPath: .data.alertmanagerSignaliloPort
+        - as: alertmanagerSignaliloToken
+          jsonPath: .data.alertmanagerSignaliloToken
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: system
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: signalilo
+    - name: custom
+      priority: 90
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: signalilo
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: signalilo
+---
+# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: signalilo-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: signalilo
+spec:
+  values: |
+    signalilo:
+      fullnameOverride: "signalilo"
+      config:
+        uuid: {{ .Values.signaliloUuid }}
+        icinga_hostname: {{ .Values.icingaHostname }}
+        icinga_url: {{ .Values.icingaUrl }}
+        icinga_username: {{ .Values.icingaUsername }}
+        icinga_password: {{ .Values.icingaPassword }}
+        alertmanager_port: {{ .Values.alertmanagerSignaliloPort }}
+        alertmanager_bearer_token: {{ .Values.alertmanagerSignaliloToken }}
+      extraEnvVars:
+        - name: SIGNALILO_LOG_LEVEL
+          value: "2"
+        - name: SIGNALILO_ICINGA_INSECURE_TLS
+          value: "true"
+        - name: SIGNALILO_ICINGA_DEBUG
+          value: "false"
+        - name: SIGNALILO_ALERTMANAGER_PLUGINOUTPUT_ANNOTATIONS
+          value: "message\nsummary\ndescription"
+        - name: SIGNALILO_ALERTMANAGER_PLUGINOUTPUT_BY_STATES
+          value: "true"
+        - name: SIGNALILO_ICINGA_SERVICE_TEMPLATE
+          value: "signalilo-passive-service"
+        - name: SIGNALILO_ICINGA_KEEP_FOR
+          value: "2h"
+        - name: SIGNALILO_ICINGA_GC_INTERVAL
+          value: "15m"
+        - name: "SIGNALILO_ICINGA_DISPLAY_NAME_AS_SERVICE_NAME"
+          value: "true"
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: signalilo-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: signalilo
+spec:
+  values: ""
