@@ -1,16 +1,17 @@
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: trust-manager
+  name: istiod
 spec:
-  chart: "trust-manager"
+  chart: "istiod"
   pluginName: helm-with-values
   repoURL: "example.com"
-  version: "0.16.0-2"
+  version: "1.26.0-2"
+  releaseName: istiod
   targetCluster: in-cluster
-  targetNamespace: "example-trust-manager"
+  targetNamespace: "example-istio"
   variables:
     cluster_name: in-cluster
     dependency: "True"
@@ -22,12 +23,14 @@ spec:
         name: parameters-infra
         namespace: example-system
       extract:
-        - as: cluster.name
-          jsonPath: .data.clusterName
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+        - as: controlPlaneAvailableReplicas
+          jsonPath: .data.controlPlaneAvailableReplicas
+        - as: controlPlaneDesiredReplicas
+          jsonPath: .data.controlPlaneDesiredReplicas
   initDependencies:
     - name: addons-operator
       criteria:
@@ -41,7 +44,7 @@ spec:
           operator: Equal
           value: true
           keep: true
-    - name: cert-manager
+    - name: istio-base
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
@@ -50,6 +53,11 @@ spec:
   backend:
     finalizer: true
     type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
     namespace: "example-argocd"
     project: "default"
     syncPolicy:
@@ -67,99 +75,23 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: trust-manager
+        addons.in-cloud.io/addon: istiod
     - name: custom
       priority: 90
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: trust-manager
+        addons.in-cloud.io/addon: istiod
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: trust-manager
+        addons.in-cloud.io/addon: istiod
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: trust-manager
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: trust-manager
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: trust-manager
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: trust-manager
----
-# Source: addonset/templates/trust-manager/trust-manager.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: trust-manager-client
+  name: istiod-client
 spec:
   rules:
     - name: infra
@@ -177,7 +109,7 @@ spec:
         priority: 10
         matchLabels:
           addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: trust-manager
+          addons.in-cloud.io/addon: istiod
     - name: vm-operator
       criteria:
         - source:
@@ -210,69 +142,181 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: trust-manager
-    - name: system
+          addons.in-cloud.io/addon: istiod
+    - name: multi-control-plane
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
             name: parameters-client
             namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
+          jsonPath: $.data.controlPlaneAvailableReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.controlPlaneDesiredReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
       selector:
-        name: system
-        priority: 50
+        name: multi-control-plane
+        priority: 30
         matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: trust-manager
+          addons.in-cloud.io/values: multi-control-plane
+          addons.in-cloud.io/addon: istiod
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: istiod
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: istiod
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istiod
+    - name: multi-control-plane
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.controlPlaneAvailableReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.controlPlaneDesiredReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+      selector:
+        name: multi-control-plane
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: multi-control-plane
+          addons.in-cloud.io/addon: istiod
+---
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: trust-manager-default
+  name: istiod-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: trust-manager
+    addons.in-cloud.io/addon: istiod
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
-    trust-manager:
-      app:
-        trust:
-          namespace: {{ .Values.companyPrefix }}-cert-manager
-      resources:
-        requests:
-          cpu: 50m
-          memory: 128Mi
+    istiod:
+      base:
+        validationCABundle: ""
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      pilot:
+        autoscaleMin: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      global:
+        priorityClassName: system-cluster-critical
+        istioNamespace: {{ .Values.companyPrefix }}-istio
+        proxy:
+          tracer: zipkin
+        defaultPodDisruptionBudget:
+          enabled: false
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: trust-manager-immutable
+  name: istiod-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: trust-manager
+    addons.in-cloud.io/addon: istiod
 spec:
   values: ""
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: trust-manager-infra
+  name: istiod-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: trust-manager
+    addons.in-cloud.io/addon: istiod
 spec:
   values: |
-    trust-manager:
+    {{- $a := .Values.controlPlaneDesiredReplicas -}}
+    {{- $b := .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := 1 -}}
+    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
+    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
+    istiod:
+      replicaCount: {{ $replicas }}
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -280,51 +324,20 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
-      app:
-        trust:
-          namespace: {{ .Values.companyPrefix }}-system
-    bundle:
-      enabled: true
-      name: "ca"
-      sources:
-        - secret:
-            name: selfsigned-infra-cluster-ca
-            key: tls.crt
-        - secret:
-            name: {{ .Values.cluster.name }}-ca-oidc
-            key: ca.crt
-      target:
-        namespaceSelector:
-          matchLabels:
-            in-cloud.io/clusterName: infra
+      global:
+        defaultPodDisruptionBudget:
+          enabled: false
     networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: trust-manager-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: trust-manager
-spec:
-  values: |
-    trust-manager:
-      app:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/trust-manager/trust-manager.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: trust-manager-vm-operator
+  name: istiod-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: trust-manager
+    addons.in-cloud.io/addon: istiod
 spec:
   values: |
     argocdPlugins:
@@ -336,22 +349,45 @@ spec:
         issuer:
           name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/istiod/istiod.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: trust-manager-system
+  name: istiod-client
   labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: trust-manager
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istiod
 spec:
   values: |
-    bundle:
-      sources:
-        - secret:
-            name: selfsigned-infra-cluster-ca
-            key: tls.crt
-      target:
-        namespaceSelector:
-          matchLabels:
-            in-cloud.io/caBundle: "approved"
+    istiod:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/istiod/istiod.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-multi-control-plane
+  labels:
+    addons.in-cloud.io/values: multi-control-plane
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      pilot:
+        autoscaleMin: 2
+      podAnnotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: istiod
+                  app.kubernetes.io/instance: istiod
+              topologyKey: kubernetes.io/hostname
+      global:
+        defaultPodDisruptionBudget:
+          enabled: true

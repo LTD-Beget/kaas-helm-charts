@@ -84,7 +84,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: istio-base
+  name: istio-base-client
 spec:
   rules:
     - name: infra
@@ -92,7 +92,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-infra
+            name: parameters-client
             namespace: example-system
           jsonPath: $.data.environment
           operator: Equal
@@ -108,7 +108,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: istio-base-client
+  name: istio-base
 spec:
   rules:
     - name: infra
@@ -116,7 +116,7 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-client
+            name: parameters-infra
             namespace: example-system
           jsonPath: $.data.environment
           operator: Equal
