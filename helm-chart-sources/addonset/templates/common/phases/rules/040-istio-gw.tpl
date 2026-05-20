@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.istio-gw" }}
+{{- define "common.phase.rules.istio-gw" -}}
 - name: istio-gw
   criteria:
     - source:

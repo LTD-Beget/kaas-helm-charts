@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.system" }}
+{{- define "common.phase.rules.system" -}}
 - name: system
   criteria:
     - source:

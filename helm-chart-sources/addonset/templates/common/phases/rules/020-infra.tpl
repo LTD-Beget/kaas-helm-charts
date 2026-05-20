@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.infra" }}
+{{- define "common.phase.rules.infra" -}}
 - name: infra
   criteria:
     - source:

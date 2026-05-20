@@ -1,0 +1,17 @@
+argo-cd:
+  repoServer:
+    volumes:
+      - configMap:
+          name: argocd-cmp-cm
+        name: cmp-plugin
+      - name: {{ .Values.companyPrefix }}-ca
+        configMap:
+          name: ca
+          items:
+            - key: ca.crt
+              path: {{ .Values.companyPrefix }}-ca.crt
+    volumeMounts:
+      - name: {{ .Values.companyPrefix }}-ca
+        mountPath: /etc/ssl/certs/{{ .Values.companyPrefix }}-ca.crt
+        subPath: {{ .Values.companyPrefix }}-ca.crt
+        readOnly: true

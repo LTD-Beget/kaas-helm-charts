@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.vm-operator" }}
+{{- define "common.phase.rules.vm-operator" -}}
 - name: vm-operator
   criteria:
     - source:

@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.trust-manager" }}
+{{- define "common.phase.rules.trust-manager" -}}
 - name: trust-manager
   criteria:
     - source:

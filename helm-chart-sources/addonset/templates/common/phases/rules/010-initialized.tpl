@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.initialized" }}
+{{- define "common.phase.rules.initialized" -}}
 - name: initialized
   criteria:
     - source:

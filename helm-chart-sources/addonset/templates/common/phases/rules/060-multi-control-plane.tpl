@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.multi-control-plane" }}
+{{- define "common.phase.rules.multi-control-plane" -}}
 - name: multi-control-plane
   criteria:
     - source:

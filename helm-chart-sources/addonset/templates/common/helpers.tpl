@@ -10,3 +10,7 @@ metadata:
 spec:
   values: |
 {{- end }}
+
+{{- define "common.trimEmptyLines" -}}
+{{- regexReplaceAll "\n[[:blank:]]+\n" . "\n\n" -}}
+{{- end -}}

@@ -11,10 +11,12 @@ metadata:
   name: argocd
 spec:
   rules:
-    {{- include "common.phase.rules.initialized"         $context | nindent 4 }}
-    {{- include "common.phase.rules.infra"               $context | nindent 4 }}
-    {{- include "common.phase.rules.vm-operator"         $context | nindent 4 }}
-    {{- include "common.phase.rules.multi-control-plane" $context | nindent 4 }}
-    {{- include "common.phase.rules.network-policies"    $context | nindent 4 }}
-    {{- include "common.phase.rules.system"              $context | nindent 4 }}
+    {{- include "common.phase.rules.infra"                  $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.trust-manager"          $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"            $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.istio-base"             $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.istio-gw"               $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"                 $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system-and-initialized" $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.network-policies"       $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}
