@@ -30,9 +30,9 @@ metadata:
     addons.in-cloud.io/addon: {{ $addonName }}
 spec:
   values: |
-      {{- $.Files.Get (printf "files/addons/%s/%s.yaml.gotmpl" $addonName $value.name) | nindent 4 | include "common.trimEmptyLines" }}
+      {{- $.Files.Get (printf "files/addons/%s/values/%s.yaml.gotmpl" $addonName $value.name) | nindent 4 | include "common.trimEmptyLines" }}
       {{- if $value.useCommon }}
-        {{- $.Files.Get (printf "files/common/%s.yaml.gotmpl" $value.name) | nindent 4 | include "common.trimEmptyLines" }}
+        {{- $.Files.Get (printf "files/common/values/%s.yaml.gotmpl" $value.name) | nindent 4 | include "common.trimEmptyLines" }}
       {{- end }}
     {{- end }}
   {{- end }}
