@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.signalilo" }}
+{{- define "common.phase.rules.signalilo" -}}
 - name: signalilo
   criteria:
     - source:

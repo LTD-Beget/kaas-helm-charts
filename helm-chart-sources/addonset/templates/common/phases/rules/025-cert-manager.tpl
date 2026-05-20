@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.cert-manager" }}
+{{- define "common.phase.rules.cert-manager" -}}
 - name: cert-manager
   criteria:
     - source:

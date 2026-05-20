@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.client" }}
+{{- define "common.phase.rules.client" -}}
 - name: client
   criteria:
     - source:

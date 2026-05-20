@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.istio-base" }}
+{{- define "common.phase.rules.istio-base" -}}
 - name: istio-base
   criteria:
     - source:

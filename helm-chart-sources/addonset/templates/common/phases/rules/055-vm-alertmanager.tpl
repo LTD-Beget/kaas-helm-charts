@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.vm-alertmanager" }}
+{{- define "common.phase.rules.vm-alertmanager" -}}
 - name: vm-alertmanager
   criteria:
     - source:

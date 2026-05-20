@@ -1,4 +1,4 @@
-{{- define "common.phase.rules.network-policies" }}
+{{- define "common.phase.rules.network-policies" -}}
 - name: network-policies
   criteria:
     - source:

@@ -1,10 +1,10 @@
-{{- define "common.phase.rules.system-and-initialized" }}
+{{- define "common.phase.rules.system-and-initialized" -}}
 - name: system-and-initialized
   criteria:
     - source:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters{{ .Values.parametersName }}
+        name: {{ .Values.parametersName }}
         namespace: {{ .Values.companyPrefix }}-system
       jsonPath: $.data.systemEnabled
       operator: Equal
