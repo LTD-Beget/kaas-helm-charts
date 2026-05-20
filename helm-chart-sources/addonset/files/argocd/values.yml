@@ -8,6 +8,7 @@ metadata:
     addons.in-cloud.io/addon: argocd
 spec:
   values: |
+    istioGwDomain: {{ .Values.systemIstioGwDomain }}
     argo-cd:
       global:
         deploymentStrategy:
