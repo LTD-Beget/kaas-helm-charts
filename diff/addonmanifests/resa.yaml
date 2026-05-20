@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/addon-manifests/addon-manifests.yml
+# Source: addonset/templates/addons/addon-manifests/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -39,6 +39,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -63,20 +64,20 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: addon-manifests
 ---
-# Source: addonset/templates/systemAddons/addon-manifests/addon-manifests.yml
+# Source: addonset/templates/addons/addon-manifests/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: addon-manifests-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: addon-manifests  
+    addons.in-cloud.io/addon: addon-manifests
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
     companyExternalChartRegistry: {{ .Values.companyExternalChartRegistry }}
 ---
-# Source: addonset/templates/systemAddons/addon-manifests/addon-manifests.yml
+# Source: addonset/templates/addons/addon-manifests/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -85,4 +86,4 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: addon-manifests
 spec:
-  values: ""
+  values: |
