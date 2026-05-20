@@ -1,17 +1,17 @@
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: prometheus-node-exporter
+  name: prometheus-process-exporter
 spec:
-  chart: "prometheus-node-exporter"
+  chart: "prometheus-process-exporter"
   repoURL: "example.com"
-  version: "4.49.2-1"
+  version: "0.5.0-3"
   pluginName: helm-with-values
-  releaseName: prometheus-node-exporter
+  releaseName: prometheus-process-exporter
   targetCluster: in-cluster
-  targetNamespace: "example-prometheus-node-exporter"
+  targetNamespace: "example-prometheus-process-exporter"
   variables:
     cluster_name: in-cluster
     dependency: "True"
@@ -60,134 +60,25 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: prometheus-node-exporter
+        addons.in-cloud.io/addon: prometheus-process-exporter
     - name: custom
       priority: 90
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: prometheus-node-exporter
+        addons.in-cloud.io/addon: prometheus-process-exporter
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: prometheus-node-exporter
+        addons.in-cloud.io/addon: prometheus-process-exporter
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: prometheus-node-exporter
+  name: prometheus-process-exporter-client
 spec:
   rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: prometheus-node-exporter
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: prometheus-node-exporter
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: prometheus-node-exporter
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: prometheus-node-exporter
----
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: prometheus-node-exporter-client
-spec:
-  rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: prometheus-node-exporter
     - name: infra
       criteria:
         - source:
@@ -203,9 +94,24 @@ spec:
         priority: 15
         matchLabels:
           addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: prometheus-node-exporter
+          addons.in-cloud.io/addon: prometheus-process-exporter
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -226,7 +132,7 @@ spec:
         priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: prometheus-node-exporter
+          addons.in-cloud.io/addon: prometheus-process-exporter
     - name: system
       criteria:
         - source:
@@ -242,73 +148,152 @@ spec:
         priority: 50
         matchLabels:
           addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: prometheus-node-exporter
+          addons.in-cloud.io/addon: prometheus-process-exporter
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: prometheus-process-exporter
+spec:
+  rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: prometheus-process-exporter
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: prometheus-process-exporter
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 50
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: prometheus-process-exporter
+---
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-default
+  name: prometheus-process-exporter-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
-    prometheus-node-exporter:
-      service:
-        labels:
-          {{ .Values.companyDomain }}/prometheus-job: node-exporter
-      containerSecurityContext:
-        runAsNonRoot: true
-        readOnlyRootFilesystem: true
-        allowPrivilegeEscalation: false
+    companyPrefix: {{ .Values.companyPrefix }}
+    prometheus-process-exporter:
       serviceAccount:
-        automountServiceAccountToken: true
+        name: prometheus-process-exporter
+      image:
+        repository: ncabatoff/process-exporter
+        tag: 0.8.1
+      service:
+        type: ClusterIP
+        port: 9101
+        targetPort: 9101
+        nodePort:
+        annotations:
+          prometheus.io/scrape: "true"
+      priorityClassName: system-cluster-critical
       resources:
-        requests:
-          cpu: 100m
-          memory: 128Mi
         limits:
-          cpu: 512m
-          memory: 256Mi
-      kubeRBACProxy:
-        enabled: true
-        image:
-          registry: quay.io
-          repository: brancz/kube-rbac-proxy
-          tag: v0.21.0
-        extraArgs:
-          - --v=2
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "64Mi"
-            cpu: "50m"
+          memory: 512Mi
+          cpu: 1
+        requests:
+          memory: 128Mi
+          cpu: 100m
+      hostNetwork: true
+      rbac:
+        pspEnabled: false
+      nodeSelector:
+        kubernetes.io/os: linux
+      templates:
+        config.yml: |
+          process_names:
+            - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
+              cmdline:
+              - '.+'
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-immutable
+  name: prometheus-process-exporter-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: ""
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-infra
+  name: prometheus-process-exporter-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
-    prometheus-node-exporter:
+    prometheus-process-exporter:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
@@ -317,82 +302,52 @@ spec:
           operator: "Exists"
           effect: "NoSchedule"
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-client
+  name: prometheus-process-exporter-client
   labels:
     addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
-    prometheus-node-exporter:
+    prometheus-process-exporter:
       podLabels:
         toleration.{{ .Values.companyDomain }}/ignore: "true"
       tolerations:
         - operator: "Exists"
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-cert-manager
+  name: prometheus-process-exporter-vm-operator
   labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
-    prometheus-node-exporter:
-      kubeRBACProxy:
-        extraArgs:
-          - --tls-cert-file=/app/config/metrics/tls/tls.crt
-          - --tls-private-key-file=/app/config/metrics/tls/tls.key
-          - --v=2
-        extraVolumeMounts:
-          - name: rbac-proxy-tls
-            mountPath: /app/config/metrics/tls
-            readOnly: true
-      extraVolumes:
-        - name: rbac-proxy-tls
-          secret:
-            defaultMode: 420
-            secretName: prometheus-node-exporter-svc-tls
+    argocdPlugins:
+      kustomize: true
     monitoring:
+      enabled: true
       secureService:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addonsMonitoring/prometheus-process-exporter/prometheus-process-exporter.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: prometheus-node-exporter-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: prometheus-node-exporter
-spec:
-  values: |
-    prometheus-node-exporter:
-      service:
-        labels:
-          monitoring.in-cloud.io/service: prometheus-node-exporter
-        portName: https-metrics
-    monitoring:
-      enabled: true
----
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: prometheus-node-exporter-system
+  name: prometheus-process-exporter-system
   labels:
     addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: prometheus-node-exporter
+    addons.in-cloud.io/addon: prometheus-process-exporter
 spec:
   values: |
-    prometheus-node-exporter:
+    prometheus-process-exporter:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
