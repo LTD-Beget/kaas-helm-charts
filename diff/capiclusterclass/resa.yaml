@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/capi-cluster-class/capi-cluster-class.yml
+# Source: addonset/templates/addons/capi-cluster-class/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -43,6 +43,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -67,7 +68,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: capi-cluster-class
 ---
-# Source: addonset/templates/systemAddons/capi-cluster-class/capi-cluster-class.yml
+# Source: addonset/templates/addons/capi-cluster-class/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -81,28 +82,28 @@ spec:
             kind: ConfigMap
             name: parameters-infra
             namespace: example-system
-          jsonPath: $.data.environment
+          jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "infra"
+          value: "true"
       selector:
         name: system
-        priority: 15
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: capi-cluster-class
 ---
-# Source: addonset/templates/systemAddons/capi-cluster-class/capi-cluster-class.yml
+# Source: addonset/templates/addons/capi-cluster-class/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: capi-cluster-class-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: capi-cluster-class  
+    addons.in-cloud.io/addon: capi-cluster-class
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/capi-cluster-class/capi-cluster-class.yml
+# Source: addonset/templates/addons/capi-cluster-class/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -111,9 +112,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: capi-cluster-class
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/capi-cluster-class/capi-cluster-class.yml
+# Source: addonset/templates/addons/capi-cluster-class/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
