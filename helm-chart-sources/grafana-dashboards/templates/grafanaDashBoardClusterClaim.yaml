@@ -1,0 +1,754 @@
+{{- if .Values.grafanaDashboards.clusterclaim.enabled }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-clusterclaim
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  resyncPeriod: 30s
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 26,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 600
+                  },
+                  {
+                    "color": "red",
+                    "value": 900
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 14,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "(\n  (\n    max by (namespace, name) (\n      in_cloud_capi_clusterclaim_infra_ready_timestamp{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      }\n    )\n  )\n  -\n  on(namespace, name) (\n    max by (namespace, name) (\n      in_cloud_capi_clusterclaim_created_timestamp_seconds{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      }\n    )\n  )\n) ",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "{{`{{namespace}}/{{name}}-infra`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "(\n  (\n    max by (namespace, name) (\n      in_cloud_capi_clusterclaim_client_ready_timestamp{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      }\n    )\n  )\n  -\n  on(namespace, name) (\n    max by (namespace, name) (\n      in_cloud_capi_clusterclaim_created_timestamp_seconds{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      }\n    )\n  )\n)",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "{{`{{namespace}}/{{name}}-client`}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Startup duration clusters",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 14
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(max by(namespace, name) (in_cloud_capi_clusterclaim_created_timestamp_seconds{namespace=~\"$namespace\", name=~\"$clusterclaim\"}))",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "ClusterClaims",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 4,
+            "y": 14
+          },
+          "id": 2,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(max by(namespace, name) (in_cloud_capi_clusterclaim_status_phase{namespace=~\"$namespace\", name=~\"$clusterclaim\", phase=\"Ready\"} == 1))",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Ready",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 14
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(max by(namespace, name) (in_cloud_capi_clusterclaim_status_phase{namespace=~\"$namespace\", name=~\"$clusterclaim\", phase=\"Paused\"} == 1))",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Paused",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 12,
+            "y": 14
+          },
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(\n  in_cloud_capi_clusterclaim_status_phase{\n    namespace=~\"$namespace\",\n    name=~\"$clusterclaim\",\n    phase=~\"Failed|Degraded\"\n  }\n)",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Failed / Degraded",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 10
+                  },
+                  {
+                    "color": "red",
+                    "value": 15
+                  }
+                ]
+              },
+              "unit": "m"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 16,
+            "y": 14
+          },
+          "id": 5,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "quantile(0.95, label_join(((max by (namespace, name) (in_cloud_capi_clusterclaim_infra_ready_timestamp{namespace=~\"$namespace\", name=~\"$clusterclaim\"})) - on(namespace, name) (max by (namespace, name) (in_cloud_capi_clusterclaim_created_timestamp_seconds{namespace=~\"$namespace\", name=~\"$clusterclaim\"}))) / 60, \"clusterclaim\", \"/\", \"namespace\", \"name\"))",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Infra p95 startup",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 5
+                  }
+                ]
+              },
+              "unit": "m"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 20,
+            "y": 14
+          },
+          "id": 6,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "quantile(0.95, label_join(((max by (namespace, name) (in_cloud_capi_clusterclaim_client_ready_timestamp{namespace=~\"$namespace\", name=~\"$clusterclaim\"})) - on(namespace, name) (max by (namespace, name) (in_cloud_capi_clusterclaim_created_timestamp_seconds{namespace=~\"$namespace\", name=~\"$clusterclaim\"}))) / 60, \"clusterclaim\", \"/\", \"namespace\", \"name\"))",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Client p95 startup",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeAsIso"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 10,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "created_at"
+              }
+            ]
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "max by (namespace, name, customer_login, cluster_suspend, ccm_csr_template, observe_template, replicas, phase) (\n  max by (namespace, name) (\n    in_cloud_capi_clusterclaim_created_timestamp_seconds{\n      namespace=~\"$namespace\",\n      name=~\"$clusterclaim\"\n    }\n  ) * 1000\n  * on(namespace, name)\n  group_left(customer_login, cluster_suspend, ccm_csr_template, observe_template, replicas)\n    max by (namespace, name, customer_login, cluster_suspend, ccm_csr_template, observe_template, replicas) (\n      in_cloud_capi_clusterclaim_resource_info{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      }\n    )\n  * on(namespace, name)\n  group_left(phase)\n    max by (namespace, name, phase) (\n      in_cloud_capi_clusterclaim_status_phase{\n        namespace=~\"$namespace\",\n        name=~\"$clusterclaim\"\n      } == 1\n    )\n)",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "created_at",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "ClusterClaims inventory",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value": "created_at",
+                  "cluster_suspend": "cluster_suspend",
+                  "customer_login": "customer",
+                  "name": "clusterclaim",
+                  "phase": "current_status"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "preload": false,
+      "refresh": "30s",
+      "schemaVersion": 40,
+      "tags": [
+        "clusterclaim",
+        "capi"
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "includeAll": false,
+            "label": "Datasource",
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(in_cloud_capi_clusterclaim_created_timestamp_seconds,namespace)",
+            "includeAll": true,
+            "label": "Namespace",
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values(in_cloud_capi_clusterclaim_created_timestamp_seconds,namespace)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(in_cloud_capi_clusterclaim_created_timestamp_seconds{namespace=~\"$namespace\"},name)",
+            "includeAll": true,
+            "label": "ClusterClaim",
+            "multi": true,
+            "name": "clusterclaim",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values(in_cloud_capi_clusterclaim_created_timestamp_seconds{namespace=~\"$namespace\"},name)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "ClusterClaim",
+      "uid": "clusterclaim",
+      "version": 1,
+      "weekStart": ""
+    }
+{{- end }}
