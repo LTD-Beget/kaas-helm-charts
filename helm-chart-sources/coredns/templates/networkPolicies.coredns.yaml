@@ -400,18 +400,18 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-incloud-web-chart-oauth2-proxy-53
-  namespace: {{ .Values.companyPrefix }}-coredns
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
 
   ingress:
   - fromEndpoints:
     - matchLabels:
         k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
-        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-incloud-web-chart
     toPorts:
     - ports:
       - port: "53"
