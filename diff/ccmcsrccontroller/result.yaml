@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/ccm-csrc-controller/ccm-csrc-controller.yml
+# Source: addonset/templates/addons/ccm-csrc-controller/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -22,6 +22,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -56,7 +57,23 @@ spec:
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
 ---
-# Source: addonset/templates/systemAddons/ccm-csrc-controller/ccm-csrc-controller.yml
+# Source: addonset/templates/addons/ccm-csrc-controller/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: coredns-client
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/ccm-csrc-controller/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: ccm-csrc-controller
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/ccm-csrc-controller/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -83,7 +100,7 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
 ---
-# Source: addonset/templates/systemAddons/ccm-csrc-controller/ccm-csrc-controller.yml
+# Source: addonset/templates/addons/ccm-csrc-controller/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -92,4 +109,4 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: ccm-csrc-controller
 spec:
-  values: ""
+  values: |
