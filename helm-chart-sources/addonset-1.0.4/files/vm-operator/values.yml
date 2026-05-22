@@ -1,0 +1,111 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      fullnameOverride: "vm-operator"
+      env:
+        - name: GOMAXPROCS
+          value: '1'
+        - name: VM_VMAGENTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTMANAGER_CONFIGRELOADERMEMORY
+          value: '100Mi'
+        - name: VM_VMALERTDEFAULT_CONFIGRELOADERMEMORY
+          value: '100Mi'
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 320Mi
+      admissionWebhooks:
+        enabled: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - victoria-metrics-operator
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - vmoperator-infra
+              topologyKey: failure-domain.beta.kubernetes.io/region
+            weight: 100
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    victoria-metrics-operator:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-cert-manager
+  labels:
+    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: ""

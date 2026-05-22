@@ -1,0 +1,186 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-vm-scrape-config-initialized
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: client-vm-scrape-config
+spec:
+  values: |
+    resources: {}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-vm-scrape-config
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: client-vm-scrape-config
+spec:
+  values: |
+    resources:
+      monitoringVmAgentCertificate:
+        apiVersion: cert-manager.io/v1
+        kind: Certificate
+        metadata:
+          name: monitoring-client
+          namespace: {{ .Values.companyPrefix }}-vmagent
+        spec:
+          commonName: metrics-reader
+          duration: 8760h
+          isCA: false
+          issuerRef:
+            kind: ClusterIssuer
+            name: ca-client
+          privateKey:
+            algorithm: RSA
+            size: 2048
+          renewBefore: 1460h
+          secretName: monitoring-client
+          subject:
+            organizations:
+              - {{ .Values.companyPrefix }}:metrics-reader
+          usages:
+          - client auth
+
+      # cadvisor metrics: /api/v1/nodes/$1/proxy/metrics/cadvisor
+      # Use for calculate metrics:
+      # - {{ .Values.companyPrefix }}_nodegroup_memory_used_mb
+      # - {{ .Values.companyPrefix }}_node_memory_used_mb
+      # - {{ .Values.companyPrefix }}_nodegroup_filesystem_used_mb
+      # - {{ .Values.companyPrefix }}_nodegroup_filesystem_used_percent
+      # - {{ .Values.companyPrefix }}_node_filesystem_used_mb
+      # - {{ .Values.companyPrefix }}_node_filesystem_used_percent
+      # - {{ .Values.companyPrefix }}_pod_memory_usage_mb
+      # - {{ .Values.companyPrefix }}_pod_cpu_usage_cores
+      clientClusterKubeletCadvisor:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-cadvisor
+          namespace: {{ .Values.companyPrefix }}-vmagent
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: monitoring-client
+                key: ca.crt
+            cert:
+              secret:
+                name: monitoring-client
+                key: tls.crt
+            keySecret:
+              name: monitoring-client
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: monitoring-client
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: monitoring-client
+                    key: tls.crt
+                keySecret:
+                  name: monitoring-client
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet-cadvisor
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client
+
+      # resource metrics: /api/v1/nodes/$1/proxy/metrics/resource
+      # Use for calculate metrics:
+      # - {{ .Values.companyPrefix }}_nodegroup_cpu_used_cores
+      # -{{ .Values.companyPrefix }}_node_cpu_used_cores
+      clientClusterKubeletResource:
+        apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMScrapeConfig
+        metadata:
+          name: client-cluster-kubelet-resource
+          namespace: {{ .Values.companyPrefix }}-vmagent
+        spec:
+          scheme: https
+          scrape_interval: 30s
+          scrapeTimeout: 10s
+
+          tlsConfig:
+            ca:
+              secret:
+                name: monitoring-client
+                key: ca.crt
+            cert:
+              secret:
+                name: monitoring-client
+                key: tls.crt
+            keySecret:
+              name: monitoring-client
+              key: tls.key
+
+          kubernetesSDConfigs:
+            - role: node
+              apiServer: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
+              tlsConfig:
+                ca:
+                  secret:
+                    name: monitoring-client
+                    key: ca.crt
+                cert:
+                  secret:
+                    name: monitoring-client
+                    key: tls.crt
+                keySecret:
+                  name: monitoring-client
+                  key: tls.key
+
+          relabelConfigs:
+            - targetLabel: __address__
+              replacement: "https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443"
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: __metrics_path__
+              replacement: /api/v1/nodes/$1/proxy/metrics/resource
+
+            - sourceLabels: [__meta_kubernetes_node_name]
+              targetLabel: node
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(.+)
+
+            - targetLabel: job
+              replacement: kubelet-resource
+            - targetLabel: cluster_full_name
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: remotewrite_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: client_cluster
+              replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
+            - targetLabel: cluster_type
+              replacement: client

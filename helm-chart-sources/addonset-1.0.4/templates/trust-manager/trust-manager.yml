@@ -1,0 +1,13 @@
+{{- if .Values.addons.trustmanager.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "trust-manager.addon" . }}
+
+  {{- .Files.Get "files/trust-manager/values.yml" | nindent 0 }}
+
+  {{- include "trust-manager.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "trust-manager.phase" $clientContext }}
+  {{- end }}
+{{- end }}

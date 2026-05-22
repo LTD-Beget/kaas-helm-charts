@@ -1,0 +1,40 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-k8s-proxy-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: svc-k8s-proxy  
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    config:
+      hub:
+        eventPrefix: {{ .Values.companyPrefix }}.event
+      graylog:
+        host: graylog.{{ .Values.companyPrefix }}
+    env:
+      HUB_HTTP_ADDR: "http://svc-hub.{{ .Values.companyPrefix }}-svc-hub.svc:8082"
+    image:
+      repository: {{ .Values.companyInternalDockerRegistry }}/cloud/k8s/svc-k8s-proxy
+      pullPolicy: Always
+    imagePullSecrets:
+      - name: regcred
+    service:
+      annotations:
+        lb.{{ .Values.companyDomain }}/algorithm: "round_robin"
+        lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+        lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+        lb.{{ .Values.companyDomain }}/type: "internal"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: svc-k8s-proxy-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: svc-k8s-proxy
+spec:
+  values: ""

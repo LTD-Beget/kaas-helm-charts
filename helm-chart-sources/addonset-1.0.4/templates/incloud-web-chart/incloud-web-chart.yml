@@ -1,0 +1,13 @@
+{{- if .Values.addons.incloudwebchart.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "incloud-web-chart.addon" . }}
+
+  {{- .Files.Get "files/incloud-web-chart/values.yml" | nindent 0 }}
+
+  {{- include "incloud-web-chart.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "incloud-web-chart.phase" $clientContext }}
+  {{- end }}
+{{- end }}

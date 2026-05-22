@@ -1,0 +1,13 @@
+{{- if .Values.addons.cilium.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "cilium.addon" . }}
+
+  {{- .Files.Get "files/cilium/values.yml" | nindent 0 }}
+
+  {{- include "cilium.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "cilium.phase" $clientContext }}
+  {{- end }}
+{{- end }}

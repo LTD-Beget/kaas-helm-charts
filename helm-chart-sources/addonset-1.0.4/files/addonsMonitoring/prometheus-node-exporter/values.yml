@@ -1,0 +1,171 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      service:
+        labels:
+          {{ .Values.companyDomain }}/prometheus-job: node-exporter
+      containerSecurityContext:
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      serviceAccount:
+        automountServiceAccountToken: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 512m
+          memory: 256Mi
+      kubeRBACProxy:
+        enabled: true
+        image:
+          registry: quay.io
+          repository: brancz/kube-rbac-proxy
+          tag: v0.21.0
+        extraArgs:
+          - --v=2
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+        extraVolumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+      extraVolumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-node-exporter-svc-tls
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      service:
+        labels:
+          monitoring.in-cloud.io/service: prometheus-node-exporter
+        portName: https-metrics
+    monitoring:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/default"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          operator: "Exists"
+          effect: "NoSchedule"

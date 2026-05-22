@@ -1,0 +1,13 @@
+{{- if .Values.addons.vmoperator.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "vm-operator.addon" . }}
+
+  {{- .Files.Get "files/vm-operator/values.yml" | nindent 0 }}
+
+  {{- include "vm-operator.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "vm-operator.phase" $clientContext }}
+  {{- end }}
+{{- end }}

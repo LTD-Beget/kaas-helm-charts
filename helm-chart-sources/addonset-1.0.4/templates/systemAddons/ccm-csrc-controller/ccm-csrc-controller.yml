@@ -1,0 +1,7 @@
+{{- if and .Values.addons.ccmcsrccontroller.enabled .Values.addons.system.enabled }}
+  
+  {{- include "ccm-csrc-controller.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/ccm-csrc-controller/values.yml" | nindent 0 }}
+
+{{- end }}

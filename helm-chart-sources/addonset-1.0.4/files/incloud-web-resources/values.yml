@@ -1,0 +1,52 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      enabled: true
+      addons:
+        argocd:
+          enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-resources-system-trivy
+  labels:
+    addons.in-cloud.io/values: system-trivy
+    addons.in-cloud.io/addon: incloud-web-resources
+spec:
+  values: |
+    incloud-web-resources:
+      addons:
+        trivy:
+          enabled: true

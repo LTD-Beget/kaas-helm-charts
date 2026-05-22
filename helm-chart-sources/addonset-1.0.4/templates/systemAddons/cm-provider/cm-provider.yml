@@ -1,0 +1,9 @@
+{{- if and .Values.addons.cmprovider.enabled .Values.addons.system.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+  
+  {{- include "cm-provider.addon" . }}
+
+  {{- .Files.Get "files/systemAddons/cm-provider/values.yml" | replace (printf "%s .Values.companyPrefix %s" "{{" "}}") .Values.companyPrefix | nindent 0 }}
+
+  {{- include "cm-provider.phase" . }}
+{{- end }}

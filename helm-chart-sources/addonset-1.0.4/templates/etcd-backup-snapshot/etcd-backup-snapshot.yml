@@ -1,0 +1,13 @@
+{{- if .Values.addons.etcdbackupsnapshot.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "etcd-backup-snapshot.addon" . }}
+
+  {{- .Files.Get "files/etcd-backup-snapshot/values.yml" | nindent 0 }}
+
+  {{- include "etcd-backup-snapshot.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "etcd-backup-snapshot.phase" $clientContext }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,142 @@
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    prometheus-process-exporter:
+      serviceAccount:
+        name: prometheus-process-exporter
+      image:
+        repository: ncabatoff/process-exporter
+        tag: 0.8.1
+      service:
+        type: ClusterIP
+        port: 9101
+        targetPort: 9101
+        nodePort:
+        annotations:
+          prometheus.io/scrape: "true"
+      priorityClassName: system-cluster-critical
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: 1
+        requests:
+          memory: 128Mi
+          cpu: 100m
+      hostNetwork: true
+      rbac:
+        pspEnabled: false
+      nodeSelector:
+        kubernetes.io/os: linux
+      templates:
+        config.yml: |
+          process_names:
+            - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
+              cmdline:
+              - '.+'
+          
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: ""
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-process-exporter-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: prometheus-process-exporter
+spec:
+  values: |
+    prometheus-process-exporter:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/argocd"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/default"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/crossplane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-stream"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/vm-data"
+          operator: "Exists"
+          effect: "NoSchedule"
