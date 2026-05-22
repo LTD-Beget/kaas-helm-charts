@@ -1,0 +1,38 @@
+cert-manager:
+  installCRDs: true
+  global:
+    priorityClassName: system-cluster-critical
+  cainjector:
+    containerSecurityContext:
+      runAsNonRoot: true
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  containerSecurityContext:
+    runAsNonRoot: true
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  startupapicheck:
+    enabled: false
+    containerSecurityContext:
+      runAsNonRoot: true
+  webhook:
+    containerSecurityContext:
+      runAsNonRoot: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+

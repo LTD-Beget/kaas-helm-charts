@@ -1,0 +1,15 @@
+argocdPlugins:
+  kustomize: true
+monitoring:
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+issuers:
+  selfsignedClusterIssuer:
+    kind: ClusterIssuer
+    name: selfsigned-cluster-issuer
+    spec:
+      ca:
+        secretName: selfsigned-infra-cluster-ca
+
