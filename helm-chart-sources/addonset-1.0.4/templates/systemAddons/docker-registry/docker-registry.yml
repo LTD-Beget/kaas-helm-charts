@@ -1,9 +1,0 @@
-{{- if and .Values.addons.dockerregistry.enabled .Values.addons.system.enabled }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-  
-  {{- include "docker-registry.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/docker-registry/values.yml" | nindent 0 }}
-
-  {{- include "docker-registry.phase" . }}
-{{- end }}

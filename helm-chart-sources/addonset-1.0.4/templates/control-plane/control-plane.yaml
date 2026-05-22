@@ -1,5 +1,0 @@
-{{- if .Values.addons.controlplane.enabled }}
-  {{- .Files.Get "files/control-plane/values.yml" | nindent 0 }}
-
-  {{- include "control-plane.phase" . }}
-{{- end }}

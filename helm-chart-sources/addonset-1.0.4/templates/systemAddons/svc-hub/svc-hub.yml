@@ -1,7 +1,0 @@
-{{- if and .Values.addons.svchub.enabled .Values.addons.system.enabled }}
-
-  {{- include "svc-hub.addon" . }}
-
-  {{- .Files.Get "files/systemAddons/svc-hub/values.yml" | nindent 0 }}
-
-{{- end }}

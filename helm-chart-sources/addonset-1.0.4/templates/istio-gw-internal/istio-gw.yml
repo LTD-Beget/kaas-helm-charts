@@ -1,9 +1,0 @@
-{{- if and .Values.addons.istiogw.enabled .Values.addons.system.enabled }}
-
-  {{- include "istio-gw-internal.addon" . }}
-
-  {{- .Files.Get "files/istio-gw-internal/values.yml" | nindent 0 }}
-
-  {{- include "istio-gw-internal.phase" . }}
-
-{{- end }}
