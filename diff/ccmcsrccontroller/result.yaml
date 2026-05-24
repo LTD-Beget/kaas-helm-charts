@@ -57,22 +57,6 @@ spec:
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
 ---
-# Source: addonset/templates/addons/ccm-csrc-controller/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: coredns-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/ccm-csrc-controller/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: ccm-csrc-controller
-spec:
-  rules:
----
 # Source: addonset/templates/addons/ccm-csrc-controller/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
