@@ -1,4 +1,3 @@
-companyPrefix: {{ .Values.companyPrefix }}
 cert-manager:
   clusterResourceNamespace: {{ .Values.companyPrefix }}-system
   cainjector:
@@ -32,6 +31,3 @@ cert-manager:
       - key: "node-role.kubernetes.io/master"
         operator: "Exists"
         effect: "NoSchedule"
-networkPolicies:
-  enabled: true
-
