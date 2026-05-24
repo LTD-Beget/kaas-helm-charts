@@ -133,8 +133,9 @@ vmagent:
                 {{ $labels.cluster_full_name }}: Vmagent has many scrape pools without targets
 
                 Cluster: {{ $labels.cluster_full_name }}
+                Scrape job: {{ $labels.scrape_job }}
             expr: |
-              sum by(cluster_full_name)(
+              (
                 sum by(cluster_full_name, cluster_type, scrape_job) (
                   vm_promscrape_scrape_pool_targets{
                     status="down"
