@@ -394,4 +394,32 @@ spec:
       - port: '53'
         protocol: UDP
   description: Allows ingress from incloud-ui to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-coredns-from-incloud-web-chart-oauth2-proxy-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-incloud-web-chart
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+
+  description: |
+    Allows ingress to CoreDNS from oauth2-proxy on 53 for DNS resolution.
+
 {{- end }}
