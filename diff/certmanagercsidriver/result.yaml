@@ -62,7 +62,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cert-manager-csi-driver
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: cert-manager-csi-driver
@@ -76,7 +76,7 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: coredns-client
+  name: cert-manager-csi-driver-client
 spec:
   rules:
     - name: vm-operator
@@ -114,38 +114,6 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: cert-manager-csi-driver
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: cert-manager-csi-driver
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 70
-        matchLabels:
-          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: cert-manager-csi-driver
 ---
 # Source: addonset/templates/addons/cert-manager-csi-driver/phase.infra.yaml.gotmpl
@@ -155,42 +123,6 @@ metadata:
   name: cert-manager-csi-driver
 spec:
   rules:
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: cert-manager-csi-driver
     - name: infra
       criteria:
         - source:
@@ -206,6 +138,42 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: cert-manager-csi-driver
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: cert-manager-csi-driver
     - name: system
       criteria:
@@ -280,9 +248,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager-csi-driver
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
     cert-manager-csi-driver:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
@@ -291,6 +256,21 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+---
+# Source: addonset/templates/addons/cert-manager-csi-driver/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-csi-driver-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: cert-manager-csi-driver
+spec:
+  values: |
+
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
 ---
 # Source: addonset/templates/addons/cert-manager-csi-driver/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -334,7 +314,11 @@ metadata:
 spec:
   values: |
     argocdPlugins:
+
       kustomize: true
+
+      just: test
+
     monitoring:
       enabled: true
       secureService:
