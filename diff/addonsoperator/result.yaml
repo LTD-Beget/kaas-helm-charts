@@ -258,7 +258,7 @@ metadata:
     addons.in-cloud.io/addon: addons-operator
 spec:
   values: |
-    
+
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
