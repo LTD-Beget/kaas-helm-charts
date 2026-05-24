@@ -1,7 +1,6 @@
 companyPrefix: example
 companyDomain: example.com
 companyExternalChartRegistry: example.com
-companyInternalDockerRegistry: example.com
 companyExternalGitRepository: example.com
 companyAdminUser: adm@example.com
 
@@ -67,7 +66,7 @@ addons:
   kubestatemetrics:
     enabled: true
   konnectivityagent:
-    enabled: false
+    enabled: true
   metricsserver:
     enabled: true
   prometheusprocessexporter:
