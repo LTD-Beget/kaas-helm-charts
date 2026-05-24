@@ -40,8 +40,6 @@ spec:
           jsonPath: .data.companyDomain
         - as: companyExternalChartRegistry
           jsonPath: .data.companyExternalChartRegistry
-        - as: companyInternalDockerRegistry
-          jsonPath: .data.companyInternalDockerRegistry
         - as: companyExternalGitRepository
           jsonPath: .data.companyExternalGitRepository
         - as: companyAdminUser
