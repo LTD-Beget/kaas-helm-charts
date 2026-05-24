@@ -49,10 +49,10 @@ spec:
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
-      companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
       companyAdminUser: {{ .Values.extraArgs.companyAdminUser }}
     {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+      companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyWikiAlertingUrl: {{ .Values.extraArgs.companyWikiAlertingUrl }}
       dexStaticPasswordsAdmin: {{ .Values.extraArgs.dexStaticPasswordsAdmin }}
       dockerRegistryS3AccessKey: {{ .Values.extraArgs.dockerRegistryS3AccessKey }}

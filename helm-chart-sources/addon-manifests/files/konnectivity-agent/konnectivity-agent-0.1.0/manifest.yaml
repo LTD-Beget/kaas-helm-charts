@@ -8,7 +8,7 @@ spec:
       chart: "konnectivity-agent"
       pluginName: helm-with-values
       repoURL: "{{ .Values.companyExternalChartRegistry }}"
-      version: "0.1.0"
+      version: "0.1.1"
       releaseName: konnectivity-agent
       targetCluster: {{ "{{ .Values.spec.variables.cluster }}" }}
       targetNamespace: "{{ .Values.companyPrefix }}-konnectivity-agent"
