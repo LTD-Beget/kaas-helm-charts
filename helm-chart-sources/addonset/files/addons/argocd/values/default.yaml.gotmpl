@@ -1,3 +1,4 @@
+istioGwDomain: {{ .Values.systemIstioGwDomain }}
 argo-cd:
   global:
     deploymentStrategy:
@@ -61,24 +62,24 @@ argo-cd:
       enabled: true
       resources:
         limits:
-          cpu: 200m
-          ephemeral-storage: 10Mi
-          memory: 128Mi
-        requests:
-          cpu: 100m
+          cpu: 50m
           ephemeral-storage: 10Mi
           memory: 64Mi
+        requests:
+          cpu: 10m
+          ephemeral-storage: 10Mi
+          memory: 32Mi
     metrics:
       enabled: true
     resources:
       limits:
-        cpu: 200m
-        ephemeral-storage: 100Mi
-        memory: 196Mi
-      requests:
         cpu: 100m
         ephemeral-storage: 100Mi
-        memory: 128Mi
+        memory: 192Mi
+      requests:
+        cpu: 50m
+        ephemeral-storage: 100Mi
+        memory: 64Mi
   redisSecretInit:
     enabled: true
   repoServer:
