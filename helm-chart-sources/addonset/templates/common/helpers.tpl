@@ -12,5 +12,5 @@ spec:
 {{- end }}
 
 {{- define "common.trimEmptyLines" -}}
-{{- regexReplaceAll "\n[[:blank:]]+\n" . "\n\n" -}}
+{{- regexReplaceAll "(?m)^[[:blank:]]+$" . "" -}}
 {{- end -}}
