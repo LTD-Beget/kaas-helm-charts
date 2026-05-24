@@ -8,7 +8,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: coredns-client
+  name: cilium-client
 spec:
   rules:
     {{- include "common.phase.rules.vm-operator"         $context | nindent 4 | include "common.trimEmptyLines" }}
