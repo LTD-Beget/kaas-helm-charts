@@ -52,7 +52,6 @@ spec:
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
-      companyInternalDockerRegistry: {{ .Values.extraArgs.companyInternalDockerRegistry }}
       companyExternalGitRepository: {{ .Values.extraArgs.companyExternalGitRepository }}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}

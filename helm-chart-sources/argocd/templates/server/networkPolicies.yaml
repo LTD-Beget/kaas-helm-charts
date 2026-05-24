@@ -46,7 +46,7 @@ spec:
         protocol: UDP
       rules:
         dns:
-        - matchPattern: '*'
+        - matchPattern: '{{ .Values.istioGwDomain }}' # Dex/Gateway endpoint
   description: Allows egress from argocd-server to CoreDNS on 53 for DNS resolution.
 
 
@@ -140,4 +140,27 @@ spec:
       - port: '8080'
         protocol: TCP
   description: Allows ingress from istio-gw to argocd-server.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-dex-443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+
+  egress:
+  - toFQDNs:
+    - matchName: {{ .Values.istioGwDomain }} # Dex/Gateway endpoint
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+
+  description: |
+    Allows egress from argocd-server to Dex/Gateway endpoint on 443.
 {{- end }}

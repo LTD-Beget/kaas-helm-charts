@@ -311,6 +311,14 @@ spec:
                         path: [spec, infra, paused]
                         nilIsZero: true
 
+                  - name: infra_ready_timestamp
+                    help: "ClusterClaim InfraReady condition last transition timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, conditions, "[type=InfraCPReady]", lastTransitionTime]
+                        nilIsZero: true
+
                 # client
                   - name: client_cluster_info
                     help: "Client cluster inventory info."
@@ -372,6 +380,14 @@ spec:
                       type: Gauge
                       gauge:
                         path: [spec, client, paused]
+                        nilIsZero: true
+
+                  - name: client_ready_timestamp
+                    help: "ClusterClaim ClientReady condition last transition timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, conditions, "[type=ClientCPReady]", lastTransitionTime]
                         nilIsZero: true
 
               - groupVersionKind:
