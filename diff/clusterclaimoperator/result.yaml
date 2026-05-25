@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/cluster-claim-operator/cluster-claim-operator.yml
+# Source: addonset/templates/addons/cluster-claim-operator/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -33,6 +33,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -57,14 +58,30 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: cluster-claim-operator
 ---
-# Source: addonset/templates/systemAddons/cluster-claim-operator/cluster-claim-operator.yml
+# Source: addonset/templates/addons/cluster-claim-operator/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: cluster-claim-operator-client
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/cluster-claim-operator/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: cluster-claim-operator
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/cluster-claim-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cluster-claim-operator-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: cluster-claim-operator  
+    addons.in-cloud.io/addon: cluster-claim-operator
 spec:
   values: |
     manager:
@@ -83,7 +100,7 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
 ---
-# Source: addonset/templates/systemAddons/cluster-claim-operator/cluster-claim-operator.yml
+# Source: addonset/templates/addons/cluster-claim-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -92,4 +109,4 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: cluster-claim-operator
 spec:
-  values: ""
+  values: |

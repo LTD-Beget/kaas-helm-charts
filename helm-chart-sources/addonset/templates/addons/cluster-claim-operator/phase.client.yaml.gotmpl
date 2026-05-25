@@ -1,0 +1,14 @@
+{{- if and .Values.addons.clusterclaimoperator.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "cluster-claim-operator"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: cluster-claim-operator-client
+spec:
+  rules:
+{{- end }}
