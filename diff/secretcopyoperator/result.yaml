@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/secret-copy-operator/secret-copy-operator.yml
+# Source: addonset/templates/addons/secret-copy-operator/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -21,6 +21,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -45,7 +46,55 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: secret-copy-operator
 ---
-# Source: addonset/templates/systemAddons/secret-copy-operator/secret-copy-operator.yml
+# Source: addonset/templates/addons/secret-copy-operator/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: secret-copy-operator-client
+spec:
+  rules:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: secret-copy-operator
+---
+# Source: addonset/templates/addons/secret-copy-operator/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: secret-copy-operator
+spec:
+  rules:
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: secret-copy-operator
+---
+# Source: addonset/templates/addons/secret-copy-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -70,7 +119,7 @@ spec:
         - --health-backoff-initial=30s
         - --health-backoff-max=3m
 ---
-# Source: addonset/templates/systemAddons/secret-copy-operator/secret-copy-operator.yml
+# Source: addonset/templates/addons/secret-copy-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -79,9 +128,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: secret-copy-operator
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/secret-copy-operator/secret-copy-operator.yml
+# Source: addonset/templates/addons/secret-copy-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:

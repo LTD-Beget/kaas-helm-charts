@@ -1,0 +1,15 @@
+manager:
+  image:
+    repository: prorobotech/secret-copy-operator
+    pullPolicy: IfNotPresent
+  tolerations:
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+  args:
+    - --leader-elect
+    - --max-concurrent-reconciles=10
+    - --health-backoff-initial=30s
+    - --health-backoff-max=3m
+
