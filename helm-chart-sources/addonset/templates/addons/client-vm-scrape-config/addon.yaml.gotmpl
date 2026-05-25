@@ -1,16 +1,16 @@
+{{- if and .Values.addons.clientvmscrapeconfig.enabled .Values.clientClusterEnabled }}
 ---
-# Source: addonset/templates/addons/client-vm-scrape-config/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
   name: client-vm-scrape-config
 spec:
   chart: "helm-inserter"
-  repoURL: "example.com"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.2.5"
   pluginName: helm-with-values
   targetCluster: in-cluster
-  targetNamespace: "example-vmagent"
+  targetNamespace: "{{ .Values.companyPrefix }}-vmagent"
   variables:
     cluster_name: in-cluster
     dependency: "True"
@@ -20,7 +20,7 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-client
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: cluster.name
           jsonPath: .data.clusterName
@@ -43,11 +43,13 @@ spec:
           operator: Equal
           value: true
           keep: true
+{{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
           value: true
+{{- end }}
     - name: extra-resources-client
       criteria:
         - jsonPath: $.status.deployed
@@ -69,7 +71,7 @@ spec:
   backend:
     finalizer: true
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -93,74 +95,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: client-vm-scrape-config
----
-# Source: addonset/templates/addons/client-vm-scrape-config/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: client-vm-scrape-config-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: client-vm-scrape-config
----
-# Source: addonset/templates/addons/client-vm-scrape-config/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: client-vm-scrape-config
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: client-vm-scrape-config
----
-# Source: addonset/templates/addons/client-vm-scrape-config/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-vm-scrape-config-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: client-vm-scrape-config
-spec:
-  values: |
----
-# Source: addonset/templates/addons/client-vm-scrape-config/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-vm-scrape-config-initialized
-  labels:
-    addons.in-cloud.io/values: initialized
-    addons.in-cloud.io/addon: client-vm-scrape-config
-spec:
-  values: |
-    resources: {}
+{{- end }}

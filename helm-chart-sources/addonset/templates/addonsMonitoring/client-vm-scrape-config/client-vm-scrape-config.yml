@@ -1,4 +1,4 @@
-{{- if and .Values.addons.clientvmscrapeconfig.enabled .Values.clientClusterEnabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "client-vm-scrape-config.addon" . }}
