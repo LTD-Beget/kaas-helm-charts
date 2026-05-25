@@ -1,0 +1,15 @@
+{{- if and .Values.addons.helminserter.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "helm-inserter"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: helm-inserter-client
+spec:
+  rules:
+    {{- include "common.phase.rules.system"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
