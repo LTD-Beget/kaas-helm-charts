@@ -103,7 +103,7 @@ spec:
             name: addonset
             namespace: {{ .Values.companyPrefix }}-argocd
           jsonPath: $.spec.syncPolicy.automated
-          operator: NotExists
+          operator: Exists
           keep: false
       selector:
         name: disable-webhook
