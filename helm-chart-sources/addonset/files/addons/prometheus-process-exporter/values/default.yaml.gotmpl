@@ -1,0 +1,35 @@
+companyPrefix: {{ .Values.companyPrefix }}
+prometheus-process-exporter:
+  serviceAccount:
+    name: prometheus-process-exporter
+  image:
+    repository: ncabatoff/process-exporter
+    tag: 0.8.1
+  service:
+    type: ClusterIP
+    port: 9101
+    targetPort: 9101
+    nodePort:
+    annotations:
+      prometheus.io/scrape: "true"
+  priorityClassName: system-cluster-critical
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 1
+    requests:
+      memory: 128Mi
+      cpu: 100m
+  hostNetwork: true
+  rbac:
+    pspEnabled: false
+  nodeSelector:
+    kubernetes.io/os: linux
+  templates:
+    config.yml: |
+      process_names:
+        - name: {{ "\"{{ \"{{\" }}.Comm{{ \"}}\" }}\""}}
+          cmdline:
+          - '.+'
+      
+
