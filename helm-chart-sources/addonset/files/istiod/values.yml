@@ -49,11 +49,17 @@ metadata:
     addons.in-cloud.io/addon: istiod
 spec:
   values: |
-    {{- $a := .Values.controlPlaneDesiredReplicas -}}
-    {{- $b := .Values.controlPlaneAvailableReplicas -}}
-    {{- $replicas := 1 -}}
-    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
-    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
+    {{- $desired := int .Values.controlPlaneDesiredReplicas -}}
+    {{- $available := int .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := $desired -}}
+
+    {{- if lt $available $replicas -}}
+      {{- $replicas = $available -}}
+    {{- end -}}
+
+    {{- if lt $replicas 1 -}}
+      {{- $replicas = 1 -}}
+    {{- end }}
     istiod:
       replicaCount: {{ $replicas }}
       tolerations:
@@ -127,6 +133,3 @@ spec:
                   app.kubernetes.io/name: istiod
                   app.kubernetes.io/instance: istiod
               topologyKey: kubernetes.io/hostname
-      global:
-        defaultPodDisruptionBudget:
-          enabled: true
