@@ -1,0 +1,6 @@
+istiod:
+  podLabels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  tolerations:
+    - operator: "Exists"
+

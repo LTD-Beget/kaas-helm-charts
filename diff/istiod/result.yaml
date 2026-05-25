@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -63,6 +63,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -87,7 +88,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istiod
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -106,7 +107,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istiod
@@ -142,12 +143,20 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 20
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: istiod
     - name: multi-control-plane
       criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
         - source:
             apiVersion: v1
             kind: ConfigMap
@@ -168,12 +177,12 @@ spec:
           keep: false
       selector:
         name: multi-control-plane
-        priority: 30
+        priority: 60
         matchLabels:
           addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: istiod
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -192,7 +201,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istiod
@@ -228,12 +237,20 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 20
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: istiod
     - name: multi-control-plane
       criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
         - source:
             apiVersion: v1
             kind: ConfigMap
@@ -254,12 +271,28 @@ spec:
           keep: false
       selector:
         name: multi-control-plane
-        priority: 30
+        priority: 60
         matchLabels:
           addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: istiod
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    istiod:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -289,7 +322,7 @@ spec:
         defaultPodDisruptionBudget:
           enabled: false
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -298,9 +331,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: istiod
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -310,11 +343,17 @@ metadata:
     addons.in-cloud.io/addon: istiod
 spec:
   values: |
-    {{- $a := .Values.controlPlaneDesiredReplicas -}}
-    {{- $b := .Values.controlPlaneAvailableReplicas -}}
-    {{- $replicas := 1 -}}
-    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
-    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
+    {{- $desired := int .Values.controlPlaneDesiredReplicas -}}
+    {{- $available := int .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := $desired -}}
+
+    {{- if lt $available $replicas -}}
+      {{- $replicas = $available -}}
+    {{- end -}}
+
+    {{- if lt $replicas 1 -}}
+      {{- $replicas = 1 -}}
+    {{- end }}
     istiod:
       replicaCount: {{ $replicas }}
       tolerations:
@@ -330,42 +369,7 @@ spec:
     networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/istiod/istiod.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istiod-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istiod
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/istiod/istiod.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istiod-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: istiod
-spec:
-  values: |
-    istiod:
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/istiod/istiod.yml
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -388,6 +392,22 @@ spec:
                   app.kubernetes.io/name: istiod
                   app.kubernetes.io/instance: istiod
               topologyKey: kubernetes.io/hostname
-      global:
-        defaultPodDisruptionBudget:
-          enabled: true
+---
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
