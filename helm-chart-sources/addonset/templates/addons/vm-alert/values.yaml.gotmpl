@@ -1,0 +1,47 @@
+{{- if .Values.addons.vmalert.enabled }}
+  {{- $addonName := "vm-alert" -}}
+
+  {{- /*
+  Each item:
+    name      - AddonValue suffix and file name
+    enabled   - render this AddonValue
+    file      - append addon-specific values file files/addons/<addon>/values/<name>.yaml.gotmpl
+    template  - append addon-specific generated values <addon>.values.<name>
+    common    - append common values file files/common/values/<name>.yaml.gotmpl
+  */ -}}
+  {{- range $value := list
+    (dict "name" "cert-manager"     "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "default"          "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "immutable"        "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "istio-gw"         "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "vm-alertmanager"  "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "vm-operator"      "enabled" true  "file"  true  "template"  false "common"  false )
+  }}
+    {{- if $value.enabled }}
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: {{ $addonName }}-{{ $value.name }}
+  labels:
+    addons.in-cloud.io/values: {{ $value.name }}
+    addons.in-cloud.io/addon: {{ $addonName }}
+spec:
+  values: |
+      {{- /* addon-specific values file */ -}}
+      {{- if $value.file }}
+        {{- $.Files.Get (printf "files/addons/%s/values/%s.yaml.gotmpl" $addonName $value.name) | nindent 4 | include "common.trimEmptyLines" -}}
+      {{- end -}}
+
+      {{- /* optional addon-specific template-generated values */ -}}
+      {{- if $value.template }}
+        {{- include (printf "%s.values.%s" $addonName $value.name) $ | nindent 4 | include "common.trimEmptyLines" -}}
+      {{- end -}}
+
+      {{- /* optional common values file */ -}}
+      {{- if $value.common }}
+        {{- $.Files.Get (printf "files/common/values/%s.yaml.gotmpl" $value.name) | nindent 4 | include "common.trimEmptyLines" -}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

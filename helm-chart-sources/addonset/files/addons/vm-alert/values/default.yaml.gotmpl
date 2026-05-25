@@ -1,0 +1,64 @@
+victoria-metrics-k8s-stack:
+  fullnameOverride: "vm-alert"
+  vmalert:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - vmalert
+      serviceSpec:
+        metadata:
+          name: vmalert
+          labels:
+            monitoring.in-cloud.io/service: vm-alert
+        spec:
+          ports:
+            - name: http
+              port: 8080
+              protocol: TCP
+              targetPort: 8080
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      extraArgs:
+        external.url: "https://{{ .Values.systemIstioGwDomain }}"
+      extraEnvs:
+        - name: GOMAXPROCS
+          value: "4"
+      evaluationInterval: 60s
+      selectAllByDefault: false
+      ruleNamespaceSelector: {}
+      ruleSelector:
+        matchLabels:
+          monitoring.in-cloud.io/vmrules: infra
+      resources:
+        limits:
+          cpu: '1'
+          memory: 1Gi
+        requests:
+          cpu: '100m'
+          memory: 128Mi
+      replicaCount: 2
+      updateStrategy: RollingUpdate
+      rollingUpdate:
+        maxSurge: 10%
+        maxUnavailable: 0
+      remoteWrite:
+        url: "http://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+      remoteRead:
+        url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+      datasource:
+        url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+
