@@ -1,0 +1,159 @@
+vmInsertVIP: {{ .Values.system.vmInsertVIP }}
+victoria-metrics-k8s-stack:
+  fullnameOverride: "vmagent"
+  vmagent:
+    spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      podMetadata:
+        labels:
+          app: vmagent
+          incloud-metrics: "infra"
+      extraArgs:
+        remoteWrite.tlsInsecureSkipVerify: "false"
+      serviceScrapeNamespaceSelector:
+        matchExpressions:
+          - operator: Exists
+            key: "in-cloud.io/clusterName"
+      podScrapeNamespaceSelector:
+        matchExpressions:
+          - operator: Exists
+            key: "in-cloud.io/clusterName"
+      nodeScrapeNamespaceSelector:
+        matchExpressions:
+          - operator: Exists
+            key: "in-cloud.io/clusterName"
+      staticScrapeNamespaceSelector:
+        matchExpressions:
+          - operator: Exists
+            key: "in-cloud.io/clusterName"
+      probeNamespaceSelector:
+        matchExpressions:
+          - operator: Exists
+            key: "incloud.io/clusterName"
+
+      inlineRelabelConfig:
+        - source_labels: [__name__]
+          regex: "apiserver_request_sli_duration_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "etcd_request_duration_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "apiserver_watch_list_duration_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "apiserver_response_sizes_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "apiserver_request_body_size_bytes_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "workqueue_queue_duration_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "workqueue_work_duration_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "apiserver_watch_events_sizes_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "kubernetes_feature_enabled"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "apiserver_watch_cache_read_wait_seconds_bucket"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "container_tasks_state"
+          action: drop
+
+        - source_labels: [__name__]
+          regex: "container_memory_failures_total"
+          action: drop
+
+        # Восстанавливает оригинальные лейблы, если они были собраны с внешнего кластера
+        - action: replace
+          source_labels: [exported_cluster_full_name]
+          regex: (.+)
+          target_label: cluster_full_name
+          replacement: $1
+
+        - action: replace
+          source_labels: [exported_remotewrite_cluster]
+          regex: (.+)
+          target_label: remotewrite_cluster
+          replacement: $1
+
+        - action: replace
+          source_labels: [exported_cluster_type]
+          regex: (.+)
+          target_label: cluster_type
+          replacement: $1
+
+      remoteWrite:
+        - url: https://{{ .Values.system.vmInsertVIP }}:8480/insert/0/prometheus
+          tlsConfig:
+            caFile: /tls/cabundle/ca.crt
+      volumeMounts:
+        - name: trusted-ca-certs
+          mountPath: /tls/cabundle
+          readOnly: true
+        - name: trusted-ca-certs
+          mountPath: /etc/ssl/certs
+          readOnly: true
+      volumes:
+        - name: trusted-ca-certs
+          configMap:
+            name: ca
+      externalLabels:
+        cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+        remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+        cluster_type: "infra"
+  kubeControllerManager:
+    enabled: true
+    service:
+      port: 11044
+      targetPort: 11044
+    vmScrape:
+      spec:
+        endpoints:
+          - port: "http-metrics"
+            scheme: "https"
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              serverName: 127.0.0.1
+  kubeScheduler:
+    enabled: true
+    service:
+      port: 11045
+      targetPort: 11045
+    vmScrape:
+      spec:
+        endpoints:
+          - port: "http-metrics"
+            scheme: "https"
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tlsConfig:
+              caFile: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              serverName: 127.0.0.1
+        jobLabel: "jobLabel"
+networkPolicies:
+  vmagent:
+    enabled: true
+
