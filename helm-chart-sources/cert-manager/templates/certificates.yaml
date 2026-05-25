@@ -1,4 +1,4 @@
-{{- $clusterResourceNamespace := dig "cert-manager" "clusterResourceNamespace" "" $.Values }}
+{{- $clusterResourceNamespace := dig "clusterResourceNamespace" "" (index .Values "cert-manager") }}
 {{- range $_, $cert := .Values.certificates }}
 ---
 apiVersion: cert-manager.io/v1
