@@ -1,5 +1,5 @@
+{{- if and .Values.clientClusterEnabled .Values.addons.kubeadmresources.enabled }}
 ---
-# Source: addonset/templates/addons/kubeadm-resources/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -7,20 +7,20 @@ metadata:
 spec:
   chart: "kubeadm-resources-client-cp"
   pluginName: helm-with-values
-  repoURL: "example.com"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.1"
   releaseName: kubeadm-resources
-  targetCluster: client
-  targetNamespace: "example-kubeadm-resources"
+  targetCluster: {{ .Values.clientName }}
+  targetNamespace: "{{ .Values.companyPrefix }}-kubeadm-resources"
   variables:
-    cluster_name: client
+    cluster_name: {{ .Values.clientName }}
   valuesSources:
     - name: parameters-client
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-client
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: clientServiceCidr
           jsonPath: .data.clientServiceCidr
@@ -42,8 +42,8 @@ spec:
       sourceRef:
         apiVersion: v1
         kind: Secret
-        name: client-ca
-        namespace: example-system
+        name: {{ .Values.clientName }}-ca
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: cluster.kubeCaCrtBase64
           jsonPath: .data["tls.crt"]
@@ -60,15 +60,17 @@ spec:
           operator: Equal
           value: true
           keep: true
+{{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
           value: true
+{{- end }}
   backend:
     finalizer: true
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -92,46 +94,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: kubeadm-resources
----
-# Source: addonset/templates/addons/kubeadm-resources/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: kubeadm-resources-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/kubeadm-resources/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: kubeadm-resources
-spec:
-  rules:
----
-# Source: addonset/templates/addons/kubeadm-resources/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: kubeadm-resources-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: kubeadm-resources
-spec:
-  values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    clusterInfo:
-      clusterApiUrl: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-      clusterName: "{{ .Values.cluster.name }}"
-      kubeCaCrtBase64: "{{ .Values.cluster.kubeCaCrtBase64 }}"
-    kubeadmConfig:
-      namespace: kube-system
-      clusterConfiguration:
-        clusterName: "{{ .Values.cluster.name }}"
-        controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
-        networking:
-          serviceSubnet: "{{ .Values.clientServiceCidr }}"
-          dnsDomain: "{{ .Values.cluster.domain }}"
-        kubernetesVersion: "{{ .Values.cluster.version }}"
-    rbac:
-      authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"
+{{- end }}
