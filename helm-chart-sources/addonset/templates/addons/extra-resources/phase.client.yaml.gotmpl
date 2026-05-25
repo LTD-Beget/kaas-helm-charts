@@ -1,0 +1,20 @@
+{{- if .Values.addons.extraresources.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "extra-resources"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: extra-resources-client
+spec:
+  rules:
+    {{- include "common.phase.rules.infra"                     $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.client"                    $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"                    $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system-migrated"           $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.network-policies-argocd"   $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.cluster-network-policies"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
