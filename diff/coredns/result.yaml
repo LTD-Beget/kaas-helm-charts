@@ -74,7 +74,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: coredns
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: coredns
@@ -560,7 +560,7 @@ spec:
           secret:
             defaultMode: 420
             secretName: coredns-metrics-svc-tls
-    
+
     monitoring:
       enabled: true
       secureService:
@@ -598,7 +598,7 @@ metadata:
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
-    
+
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
