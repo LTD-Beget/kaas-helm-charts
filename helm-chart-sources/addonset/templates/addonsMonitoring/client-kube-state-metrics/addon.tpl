@@ -1,4 +1,4 @@
-{{- define "clientkubestatemetrics.addon" }}
+{{- define "client-kube-state-metrics.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon

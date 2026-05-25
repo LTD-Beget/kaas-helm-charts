@@ -1,4 +1,4 @@
-{{- define "clientvmscrapeconfig.phase" }}
+{{- define "client-vm-scrape-config.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
