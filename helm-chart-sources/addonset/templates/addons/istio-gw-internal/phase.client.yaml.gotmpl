@@ -1,0 +1,17 @@
+{{- if _CONDITION_ }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "istio-gw-internal"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: istio-gw-internal-client
+spec:
+  rules:
+    {{- include "common.phase.rules.infra"        $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"  $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"       $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
