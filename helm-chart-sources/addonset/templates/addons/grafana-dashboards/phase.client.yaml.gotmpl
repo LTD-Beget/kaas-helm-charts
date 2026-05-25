@@ -1,0 +1,14 @@
+{{- if .Values.addons.grafanadashboards.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "grafana-dashboards"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: grafana-dashboards-client
+spec:
+  rules:
+{{- end }}
