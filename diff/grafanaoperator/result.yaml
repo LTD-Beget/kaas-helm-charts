@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -22,6 +22,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
         selfHeal: true
       managedNamespaceMetadata:
         labels:
@@ -48,7 +49,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: grafana-operator
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -61,10 +62,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -89,12 +88,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: grafana-operator
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -107,10 +106,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -135,12 +132,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: grafana-operator
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -168,7 +165,7 @@ spec:
           cpu: 500m
           memory: 750Mi
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -177,9 +174,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: grafana-operator
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/grafana-operator/grafana-operator.yml
+# Source: addonset/templates/addons/grafana-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
