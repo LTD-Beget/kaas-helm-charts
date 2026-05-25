@@ -1,0 +1,9 @@
+{{- range $name, $vc := .Values.vaultConfigs }}
+---
+apiVersion: vault.in-cloud.io/v1alpha1
+kind: VaultConfig
+metadata:
+  name: {{ $vc.name | default $name }}
+spec:
+  {{- toYaml $vc.spec | nindent 2 }}
+{{- end }}

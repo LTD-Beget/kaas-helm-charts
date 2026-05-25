@@ -144,6 +144,29 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-egress-istio-gateway-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows egress from istio gateway to vault server on 8200.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-ingress-world-to-istio-gateway-80-443-15021-11043
   namespace: {{ .Release.Namespace }}
 spec:

@@ -1,0 +1,17 @@
+{{- if .Values.istioVirtualService.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: vault
+  namespace: {{ $.Release.Namespace }}
+spec:
+  hosts:
+    - vault-active.{{ $.Release.Namespace }}.svc
+  location: MESH_EXTERNAL
+  ports:
+  - name: http
+    number: {{ .Values.vault.server.service.port }}
+    protocol: HTTP
+  resolution: DNS
+{{- end }}

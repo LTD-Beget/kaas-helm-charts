@@ -1,5 +1,4 @@
 {{- $prepare := .Values.prepareJob -}}
-
 {{- if $prepare.enabled }}
 ---
 apiVersion: v1
@@ -10,7 +9,130 @@ metadata:
 data:
   prepare-vault.sh: |
     #!/bin/sh
+    set -eu
 
-    # TODO: initialiaze
-    # TODO: auto-unseal
+    VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"
+    export VAULT_ADDR
+
+    # ------------------------------------------------------------------ #
+    # Wait for vault to be initialized and unsealed
+    # ------------------------------------------------------------------ #
+    echo "Waiting for vault to be initialized and unsealed..."
+    i=0
+    while [ $i -lt 120 ]; do
+      STATUS=$(vault status -format=json 2>/dev/null || true)
+      INITIALIZED=$(echo "$STATUS" | grep '"initialized"' | grep -c 'true' || true)
+      SEALED=$(echo "$STATUS" | grep '"sealed"' | grep -c 'true' || true)
+      if [ "$INITIALIZED" = "1" ] && [ "$SEALED" = "0" ]; then
+        echo "Vault is initialized and unsealed."
+        break
+      fi
+      echo "Vault not ready yet (attempt $i/120), retrying..."
+      sleep 10
+      i=$((i+1))
+    done
+    if [ "$INITIALIZED" != "1" ] || [ "$SEALED" != "0" ]; then
+      echo "ERROR: Vault did not become ready in time."
+      exit 1
+    fi
+
+    # ------------------------------------------------------------------ #
+    # Authenticate with root token
+    # ------------------------------------------------------------------ #
+    echo "Authenticating with root token..."
+    vault login "$ROOT_TOKEN" > /dev/null
+
+    {{- if .Values.prepareJob.kubernetesAuth.enabled }}
+    # ------------------------------------------------------------------ #
+    # Kubernetes auth — enable and configure
+    # ------------------------------------------------------------------ #
+    echo "Configuring kubernetes auth at path: ${CLUSTER_NAME}..."
+    vault auth enable -path="${CLUSTER_NAME}" kubernetes 2>/dev/null || \
+      echo "  kubernetes auth at ${CLUSTER_NAME} already enabled, skipping."
+
+    vault write "auth/${CLUSTER_NAME}/config" \
+      kubernetes_host="https://kubernetes.default.svc" \
+      kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
+    {{- end }}
+
+    {{- if .Values.prepareJob.vaultOperator.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: vault-operator-admin
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-operator-admin policy..."
+    vault policy write vault-operator-admin - <<'EOF'
+    # Health check
+    path "sys/health" {
+      capabilities = ["read", "sudo"]
+    }
+
+    # ACL policies
+    path "sys/policies/acl" {
+      capabilities = ["list"]
+    }
+    path "sys/policies/acl/*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+    }
+
+    # Auth methods
+    path "auth/*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+    }
+    path "sys/auth/*" {
+      capabilities = ["create", "update", "delete", "sudo"]
+    }
+    path "sys/auth" {
+      capabilities = ["read"]
+    }
+
+    # KV secrets
+    path "secret/*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+    }
+
+    # Secrets engines
+    path "sys/mounts/*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+    }
+    path "sys/mounts" {
+      capabilities = ["read"]
+    }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: vault-operator
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-operator role..."
+    vault write "auth/${CLUSTER_NAME}/role/vault-operator" \
+      bound_service_account_names="${VAULT_OPERATOR_SA}" \
+      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}" \
+      token_policies=vault-operator-admin \
+      token_ttl=1h \
+      token_max_ttl=24h
+    {{- end }}
+
+    {{- if .Values.prepareJob.monitoring.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: metrics-reader (for authenticated monitoring agents)
+    # ------------------------------------------------------------------ #
+    echo "Writing metrics-reader policy..."
+    vault policy write metrics-reader - <<'EOF'
+    path "sys/metrics" {
+      capabilities = ["read"]
+    }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: metrics-reader
+    # ------------------------------------------------------------------ #
+    echo "Writing metrics-reader role..."
+    vault write "auth/${CLUSTER_NAME}/role/metrics-reader" \
+      bound_service_account_names="${MONITORING_SA}" \
+      bound_service_account_namespaces="${MONITORING_NAMESPACE}" \
+      token_policies=metrics-reader \
+      token_ttl=1h \
+      token_max_ttl=4h
+    {{- end }}
+
+    echo "Vault configuration complete."
 {{- end }}

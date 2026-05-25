@@ -1,0 +1,9 @@
+vaultConfigs:
+  default:
+    spec:
+      address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
+      tls:
+        caBundleRef:
+          name: vault-tls-server
+          namespace: {{ .Values.companyPrefix }}-vault
+        serverName: vault.{{ .Values.companyPrefix }}-vault.svc

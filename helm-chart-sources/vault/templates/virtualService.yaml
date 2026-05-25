@@ -1,0 +1,32 @@
+{{- $vs := .Values.istioVirtualService }}
+{{- if $vs.enabled }}
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vault
+  namespace: {{ $.Release.Namespace }}
+spec:
+  gateways:
+    {{ toYaml $vs.gateways | nindent 4 }}
+  hosts:
+    {{ toYaml $vs.hosts | nindent 4 }}
+  http:
+    - name: ui
+      match:
+        - uri:
+            exact: /ui
+        - uri:
+            prefix: "/ui/"
+        - uri:
+            prefix: "/v1/sys/"
+        - uri:
+            prefix: "/v1/auth/"
+        - uri:
+            prefix: "/v1/secret/"
+      route:
+        - destination:
+            host: vault-active.{{ $.Release.Namespace }}.svc
+            port:
+              number: {{ .Values.vault.server.service.port }}
+{{- end }}

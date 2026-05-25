@@ -19,8 +19,22 @@ argo-cd:
       stringData:
         AVP_TYPE: "vault"
         AVP_AUTH_TYPE: "k8s"
-        VAULT_ADDR: "http://vault.{{ .Values.companyPrefix }}-vault.svc.cluster.local:8200"
-        AVP_K8S_ROLE: "credentials-ro"
+        AVP_K8S_ROLE: "{{ .Values.clusterName }}-ro"
+        AVP_K8S_MOUNT_PATH: "auth/{{ .Values.clusterName }}"
+        VAULT_ADDR: "https://{{ .Values.systemIstioGwDomain }}"
+        VAULT_SKIP_VERIFY: "true" # TODO: use CA
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: argocd-repo-server-avp
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: system:auth-delegator
+      subjects:
+        - kind: ServiceAccount
+          name: argocd-repo-server
+          namespace: {{ .Values.companyPrefix }}-argocd
 istio:
   virtualService:
     gateways:

@@ -1,0 +1,20 @@
+{{- if .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    monitoring.in-cloud.io/service: vault
+spec:
+  ports:
+    - name: https-metrics
+      port: 11043
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    component: server
+{{- end }}

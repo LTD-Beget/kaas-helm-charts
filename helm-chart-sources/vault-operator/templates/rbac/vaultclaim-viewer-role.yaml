@@ -1,0 +1,23 @@
+{{- if .Values.rbacHelpers.enable }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "vault-operator.labels" . | nindent 4 }}
+  name: {{ include "vault-operator.resourceName" (dict "suffix" "vaultclaim-viewer-role" "context" $) }}
+rules:
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultclaims
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultclaims/status
+    verbs:
+      - get
+{{- end }}

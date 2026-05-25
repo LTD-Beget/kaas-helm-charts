@@ -69,7 +69,17 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-11T12:44:16.774003+05:00"
+      created: "2026-06-09T21:18:12.773633+05:00"
+      description: A Helm chart for Kubernetes
+      digest: 85999ed4cba2b3cb3f3a83593c69eea647eda23e47e58651e1ed97b8b88f9f04
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.8.tgz
+      version: 1.0.8
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-06-08T14:02:48.600811+05:00"
       description: A Helm chart for Kubernetes
       digest: 92f2e8389affaafab4d46b61cb11944495009035322c6858b0307de34f3ec5a8
       name: addonset
@@ -1877,6 +1887,36 @@ entries:
   vault:
     - apiVersion: v2
       appVersion: 1.20.1
+      created: "2026-06-09T21:18:12.775391+05:00"
+      dependencies:
+        - name: vault
+          repository: https://helm.releases.hashicorp.com
+          version: 0.30.1
+      description: Official HashiCorp Vault Chart
+      digest: 53416a6f490ebdb15f5e56b9589272c6f8c055d12c722cc2f55c9e369e6c5005
+      home: https://www.vaultproject.io
+      icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
+      keywords:
+        - vault
+        - security
+        - encryption
+        - secrets
+        - management
+        - automation
+        - infrastructure
+      kubeVersion: '>= 1.20.0-0'
+      name: vault
+      sources:
+        - https://github.com/hashicorp/vault
+        - https://github.com/hashicorp/vault-helm
+        - https://github.com/hashicorp/vault-k8s
+        - https://github.com/hashicorp/vault-csi-provider
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-3.tgz
+      version: 0.30.1-3
+    - apiVersion: v2
+      appVersion: 1.20.1
       created: "2026-06-05T01:29:52.570181+05:00"
       dependencies:
         - name: vault
@@ -2194,4 +2234,15 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.1.tgz
       version: 0.1.1
+  vault-operator:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-06-09T21:18:12.775757+05:00"
+      description: A Helm chart to distribute the project vault-operator
+      digest: 8dc17fbaf79185f3224bd114d47a40e9ddf6af43c87e1810cb0910e1be9e423b
+      name: vault-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.0.tgz
+      version: 0.1.0
 generated: "2026-06-02T12:49:04.360593+05:00"

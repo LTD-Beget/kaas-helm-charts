@@ -1,0 +1,27 @@
+{{- if .Values.metrics.enable }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "vault-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ include "vault-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+  dnsNames:
+    - {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+    - {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}
+    - {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.monitoring.secureService.issuer.kind }}
+    name: {{ .Values.monitoring.secureService.issuer.name }}
+{{- end }}

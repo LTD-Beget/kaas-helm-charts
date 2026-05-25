@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./base.yaml
+
+patches:
+  - path: ./statefulset.vault.yaml
+    target:
+      kind: StatefulSet
+      name: vault

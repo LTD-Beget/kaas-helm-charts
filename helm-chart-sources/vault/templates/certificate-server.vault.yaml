@@ -27,6 +27,12 @@ spec:
     - {{ . | quote }}
     {{- end }}
   {{- end }}
+  {{- with $srvCert.ipAddresses }}
+  ipAddresses:
+    {{- range . }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
   privateKey:
     algorithm: {{ $srvPK.algorithm }}
     size: {{ $srvPK.size }}
