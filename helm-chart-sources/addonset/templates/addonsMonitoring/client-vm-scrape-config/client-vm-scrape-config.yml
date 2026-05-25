@@ -1,9 +1,9 @@
 {{- if and .Values.addons.clientvmscrapeconfig.enabled .Values.clientClusterEnabled }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
-  {{- include "clientvmscrapeconfig.addon" . }}
+  {{- include "client-vm-scrape-config.addon" . }}
 
-  {{- .Files.Get "files/addonsMonitoring/clientvmscrapeconfig/values.yml" | nindent 0 }}
+  {{- .Files.Get "files/addonsMonitoring/client-vm-scrape-config/values.yml" | nindent 0 }}
 
-  {{- include "clientvmscrapeconfig.phase" . }}
+  {{- include "client-vm-scrape-config.phase" . }}
 {{- end }}
