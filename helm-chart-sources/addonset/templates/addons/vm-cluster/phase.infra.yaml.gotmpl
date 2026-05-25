@@ -1,0 +1,15 @@
+{{- if .Values.addons.vmcluster.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "vm-cluster"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-cluster
+spec:
+  rules:
+    {{- include "common.phase.rules.cert-manager"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
