@@ -1,5 +1,5 @@
+{{- if .Values.addons.konnectivityagent.enabled }}
 ---
-# Source: addonset/templates/addons/konnectivity-agent/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -7,20 +7,20 @@ metadata:
 spec:
   chart: "konnectivity-agent"
   pluginName: helm-with-values
-  repoURL: "example.com"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.0"
   releaseName: konnectivity-agent
-  targetCluster: client
-  targetNamespace: "example-konnectivity-agent"
+  targetCluster: {{ .Values.clientName }}
+  targetNamespace: "{{ .Values.companyPrefix }}-konnectivity-agent"
   variables:
-    cluster_name: client
+    cluster_name: {{ .Values.clientName }}
   valuesSources:
     - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-client
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
@@ -39,18 +39,20 @@ spec:
           operator: Equal
           value: true
           keep: true
+{{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
           value: true
+{{- end }}
   valuesSources:
     - name: parameters-client
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-client
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: cluster.host
           jsonPath: .data.clusterHost
@@ -59,7 +61,7 @@ spec:
   backend:
     finalizer: true
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -88,63 +90,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: konnectivity-agent
----
-# Source: addonset/templates/addons/konnectivity-agent/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: konnectivity-agent-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/konnectivity-agent/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: konnectivity-agent
-spec:
-  rules:
----
-# Source: addonset/templates/addons/konnectivity-agent/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: konnectivity-agent-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: konnectivity-agent
-spec:
-  values: |
-    tolerations:
-      - operator: "Exists"
-    labels:
-      toleration.{{ .Values.companyDomain }}/ignore: "true"
-    podLabels:
-      toleration.{{ .Values.companyDomain }}/ignore: "true"
----
-# Source: addonset/templates/addons/konnectivity-agent/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: konnectivity-agent-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: konnectivity-agent
-spec:
-  values: |
----
-# Source: addonset/templates/addons/konnectivity-agent/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: konnectivity-agent-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: konnectivity-agent
-spec:
-  values: |
-    hostNetwork: true
-    agent:
-      extraArgs:
-        proxy-server-host: {{ .Values.cluster.host }}
-        proxy-server-port: 8132
+{{- end }}

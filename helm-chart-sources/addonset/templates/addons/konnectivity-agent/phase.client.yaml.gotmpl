@@ -1,0 +1,14 @@
+{{- if .Values.addons.konnectivityagent.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "konnectivity-agent"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: konnectivity-agent-client
+spec:
+  rules:
+{{- end }}
