@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+# Source: addonset/templates/addons/signalilo/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -47,6 +47,7 @@ spec:
       automated:
         prune: true
         selfHeal: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -71,7 +72,23 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: signalilo
 ---
-# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+# Source: addonset/templates/addons/signalilo/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: signalilo-client
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/signalilo/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: signalilo
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/signalilo/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -118,7 +135,7 @@ spec:
           operator: "Exists"
           effect: "NoSchedule"
 ---
-# Source: addonset/templates/systemAddons/signalilo/signalilo.yml
+# Source: addonset/templates/addons/signalilo/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -127,4 +144,4 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: signalilo
 spec:
-  values: ""
+  values: |
