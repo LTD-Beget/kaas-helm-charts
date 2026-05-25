@@ -1,4 +1,4 @@
-{{- define "clientkubestatemetrics.phase" }}
+{{- define "client-kube-state-metrics.phase" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
