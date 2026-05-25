@@ -16,6 +16,7 @@
     (dict "name" "infra"               "enabled"  true  "file"  true  "template"  false "common"  false )
     (dict "name" "system"              "enabled"  true  "file"  true  "template"  false "common"  false )
     (dict "name" "network-policies"    "enabled"  true  "file"  true  "template"  false "common"  true )
+    (dict "name" "disable-webhook"     "enabled"  true  "file"  true  "template"  false "common"  false )
   }}
     {{- if $value.enabled }}
 ---
