@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/svc-k8s-proxy/svc-k8s-proxy.yml
+# Source: addonset/templates/addons/svc-k8s-proxy/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -36,6 +36,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -60,14 +61,30 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: svc-k8s-proxy
 ---
-# Source: addonset/templates/systemAddons/svc-k8s-proxy/svc-k8s-proxy.yml
+# Source: addonset/templates/addons/svc-k8s-proxy/phase.client.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: svc-k8s-proxy-client
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/svc-k8s-proxy/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: svc-k8s-proxy
+spec:
+  rules:
+---
+# Source: addonset/templates/addons/svc-k8s-proxy/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: svc-k8s-proxy-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: svc-k8s-proxy  
+    addons.in-cloud.io/addon: svc-k8s-proxy
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
@@ -90,7 +107,7 @@ spec:
         lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
         lb.{{ .Values.companyDomain }}/type: "internal"
 ---
-# Source: addonset/templates/systemAddons/svc-k8s-proxy/svc-k8s-proxy.yml
+# Source: addonset/templates/addons/svc-k8s-proxy/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -99,4 +116,4 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: svc-k8s-proxy
 spec:
-  values: ""
+  values: |
