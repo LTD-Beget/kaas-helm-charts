@@ -1,0 +1,14 @@
+{{- if _CONDITION_ }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "validating-admission-policies"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: validating-admission-policies-client
+spec:
+  rules:
+{{- end }}
