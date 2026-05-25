@@ -1,0 +1,13 @@
+victoria-metrics-operator:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+networkPolicies:
+  enabled: true
+monitoring:
+  enabled: true
+

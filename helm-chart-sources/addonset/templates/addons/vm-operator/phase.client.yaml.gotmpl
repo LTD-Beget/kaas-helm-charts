@@ -1,0 +1,16 @@
+{{- if .Values.addons.vmoperator.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "vm-operator"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vm-operator-client
+spec:
+  rules:
+    {{- include "common.phase.rules.infra"         $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.cert-manager"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
