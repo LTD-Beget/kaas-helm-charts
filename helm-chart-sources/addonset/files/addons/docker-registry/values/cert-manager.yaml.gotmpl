@@ -1,0 +1,10 @@
+internalTLS:
+  certSource: certmanager
+  certmanager:
+    existingIssuer:
+      kind: ClusterIssuer
+      name: selfsigned-cluster-issuer
+default:
+  metrics:
+    secureEndpoint: true
+
