@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -35,6 +35,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -72,7 +73,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: prometheus-node-exporter
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -85,10 +86,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -98,7 +97,7 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: prometheus-node-exporter
@@ -114,12 +113,25 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: prometheus-node-exporter
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -137,7 +149,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: prometheus-node-exporter
@@ -146,19 +158,19 @@ spec:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-infra
+            name: parameters-client
             namespace: example-system
           jsonPath: $.data.systemEnabled
           operator: Equal
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: prometheus-node-exporter
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -171,10 +183,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -184,7 +194,7 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: prometheus-node-exporter
@@ -200,12 +210,25 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: prometheus-node-exporter
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -223,7 +246,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: prometheus-node-exporter
@@ -239,12 +262,59 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: prometheus-node-exporter
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+        extraVolumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+      extraVolumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-node-exporter-svc-tls
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -287,7 +357,7 @@ spec:
             memory: "64Mi"
             cpu: "50m"
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -296,9 +366,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: prometheus-node-exporter
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -317,72 +387,7 @@ spec:
           operator: "Exists"
           effect: "NoSchedule"
 ---
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: prometheus-node-exporter-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: prometheus-node-exporter
-spec:
-  values: |
-    prometheus-node-exporter:
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: prometheus-node-exporter-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: prometheus-node-exporter
-spec:
-  values: |
-    prometheus-node-exporter:
-      kubeRBACProxy:
-        extraArgs:
-          - --tls-cert-file=/app/config/metrics/tls/tls.crt
-          - --tls-private-key-file=/app/config/metrics/tls/tls.key
-          - --v=2
-        extraVolumeMounts:
-          - name: rbac-proxy-tls
-            mountPath: /app/config/metrics/tls
-            readOnly: true
-      extraVolumes:
-        - name: rbac-proxy-tls
-          secret:
-            defaultMode: 420
-            secretName: prometheus-node-exporter-svc-tls
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: prometheus-node-exporter-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: prometheus-node-exporter
-spec:
-  values: |
-    prometheus-node-exporter:
-      service:
-        labels:
-          monitoring.in-cloud.io/service: prometheus-node-exporter
-        portName: https-metrics
-    monitoring:
-      enabled: true
----
-# Source: addonset/templates/addonsMonitoring/prometheus-node-exporter/prometheus-node-exporter.yml
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -412,3 +417,21 @@ spec:
         - key: "node-role.kubernetes.io/vm-data"
           operator: "Exists"
           effect: "NoSchedule"
+---
+# Source: addonset/templates/addons/prometheus-node-exporter/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: prometheus-node-exporter-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: prometheus-node-exporter
+spec:
+  values: |
+    prometheus-node-exporter:
+      service:
+        labels:
+          monitoring.in-cloud.io/service: prometheus-node-exporter
+        portName: https-metrics
+    monitoring:
+      enabled: true
