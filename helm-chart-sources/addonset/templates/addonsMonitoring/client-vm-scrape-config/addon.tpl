@@ -1,4 +1,4 @@
-{{- define "clientvmscrapeconfig.addon" }}
+{{- define "client-vm-scrape-config.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
