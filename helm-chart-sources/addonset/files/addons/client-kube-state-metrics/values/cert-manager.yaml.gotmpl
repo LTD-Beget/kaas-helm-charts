@@ -1,0 +1,30 @@
+kube-state-metrics:
+  volumes:
+    - name: kubeconfig
+      secret:
+       secretName: client-kube-state-metrics-kubeconfig
+    - name: kubeconfig-certs
+      secret:
+       secretName: monitoring-client
+    - name: rbac-proxy-tls
+      secret:
+        defaultMode: 420
+        secretName: client-kube-state-metrics-svc-tls
+
+  kubeRBACProxy:
+    extraArgs:
+      - --tls-cert-file=/app/config/metrics/tls/tls.crt
+      - --tls-private-key-file=/app/config/metrics/tls/tls.key
+      - --v=2
+
+    volumeMounts:
+      - name: rbac-proxy-tls
+        mountPath: /app/config/metrics/tls
+        readOnly: true
+
+monitoring:
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+
