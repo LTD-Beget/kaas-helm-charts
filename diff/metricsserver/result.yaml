@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -35,6 +35,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -72,7 +73,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: metrics-server
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -85,10 +86,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -99,7 +98,7 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: vm-operator
+            name: vm-operator-client
           jsonPath: $.status.deployed
           operator: Equal
           value: true
@@ -113,7 +112,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: metrics-server
@@ -129,12 +128,12 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: metrics-server
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -147,10 +146,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -175,7 +172,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: metrics-server
@@ -191,12 +188,28 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: metrics-server
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: metrics-server-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: metrics-server
+spec:
+  values: |
+    metrics-server:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/metrics-server/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -216,7 +229,7 @@ spec:
           cpu: 250m
           memory: 256Mi
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -225,9 +238,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: metrics-server
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -248,23 +261,7 @@ spec:
     networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: metrics-server-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: metrics-server
-spec:
-  values: |
-    metrics-server:
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/addonsMonitoring/metrics-server/metrics-server.yml
+# Source: addonset/templates/addons/metrics-server/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
