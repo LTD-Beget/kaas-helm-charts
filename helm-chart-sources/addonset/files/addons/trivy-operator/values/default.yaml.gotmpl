@@ -1,0 +1,17 @@
+trivy-operator:
+  trivy:
+    storageClassEnabled: false
+    severity: HIGH,CRITICAL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64M
+      limits:
+        cpu: 750m
+        memory: 750M
+    server:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+
