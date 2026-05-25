@@ -1,0 +1,15 @@
+{{- if .Values.addons.etcdbackupsnapshot.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "etcd-backup-snapshot"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: etcd-backup-snapshot
+spec:
+  rules:
+    {{- include "common.phase.rules.infra"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
