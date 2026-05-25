@@ -1,0 +1,14 @@
+{{- if and .Values.addons.workergroupclaimoperator.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "worker-group-claim-operator"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: worker-group-claim-operator-client
+spec:
+  rules:
+{{- end }}
