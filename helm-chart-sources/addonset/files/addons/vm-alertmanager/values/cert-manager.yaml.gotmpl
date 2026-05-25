@@ -1,0 +1,87 @@
+victoria-metrics-k8s-stack:
+  fullnameOverride: "vm-alertmanager"
+  alertmanager:
+    spec:
+      serviceSpec:
+        spec:
+          ports:
+            - name: http
+              port: 9093
+              protocol: TCP
+              targetPort: 9093
+            - name: https-metrics
+              port: 11043
+              protocol: TCP
+              targetPort: https-metrics
+      containers:
+        - name: alertmanager
+          volumeMounts:
+            - name: alertmanager-tls
+              mountPath: /app/config/alertmanager/web/tls
+              readOnly: true
+        - name: rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+          args:
+            - --secure-listen-address=0.0.0.0:11043
+            - --upstream=https://127.0.0.1:9093
+            - --upstream-ca-file=/app/config/alertmanager/web/tls/ca.crt
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: 11043
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          volumeMounts:
+            - name: rbac-proxy-tls
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+            - name: alertmanager-tls
+              mountPath: /app/config/alertmanager/web/tls
+              readOnly: true
+      volumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: vm-alertmanager-monitoring-svc-tls
+        - name: alertmanager-tls
+          secret:
+            defaultMode: 420
+            secretName: alertmanager
+      webConfig:
+        tls_server_config:
+          cert_file: "/app/config/alertmanager/web/tls/tls.crt"
+          key_file: "/app/config/alertmanager/web/tls/tls.key"
+
+monitoring:
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+tls:
+  alertmanager:
+    enabled: true
+    issuer:
+      kind: ClusterIssuer
+      name: selfsigned-cluster-issuer
+    certificate:
+      name: alertmanager
+      secretName: alertmanager
+      commonName: alertmanager
+      dnsNames:
+        - "vmalertmanager-vm-alertmanager"
+        - "vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager"
+        - "vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc"
+        - "*.vmalertmanager-vm-alertmanager"
+        - "*.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager"
+        - "*.vmalertmanager-vm-alertmanager.{{ .Values.companyPrefix }}-alertmanager.svc"
+      ipAddresses:
+        - 127.0.0.1
+

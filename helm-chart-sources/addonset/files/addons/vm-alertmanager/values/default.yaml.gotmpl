@@ -1,0 +1,178 @@
+victoria-metrics-k8s-stack:
+  alertmanager:
+    ingress:
+      enabled: false
+    monzoTemplate:
+      enabled: false
+    spec:
+      replicaCount: 2
+      routePrefix: /alertmanager
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - vmalertmanager
+      templates:
+        - key: telegram_alerts.tmpl
+          name: vm-alertmanager-alertmanager-alert-templates
+      serviceSpec:
+        metadata:
+          name: vmalertmanager
+          labels:
+            monitoring.in-cloud.io/service: vm-alertmanager
+        spec:
+          ports:
+            - name: http
+              port: 9093
+              protocol: TCP
+              targetPort: 9093
+      selectAllByDefault: false
+      priorityClassName: system-cluster-critical
+      configSelector: {}
+      configNamespaceSelector: {}
+      configSecret: vmalertmanager-config
+      resources:
+        requests:
+          cpu: '100m'
+          memory: 128Mi
+        limits:
+          cpu: '500m'
+          memory: 512Mi
+      extraEnvs:
+        - name: GOMAXPROCS
+          value: '1'
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+monitoring:
+  enabled: true
+
+alertmanagerConfig:
+  enabled: true
+  config:
+    global:
+      resolve_timeout: 5m
+
+    route:
+      receiver: blackhole
+      group_by: ["cluster_full_name", "alertname", "severity"]
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 3h
+
+      routes:
+        blackhole:
+          matchers:
+            - alertname="Watchdog"
+          receiver: blackhole
+        telegram:
+          matchers:
+            - severity="critical"
+          receiver: telegram-critical
+          continue: true
+
+    receivers:
+      blackhole: {}
+      telegram-critical:
+        type: telegram_configs
+        configs:
+          criticalAlertGroup:
+            bot_token: "{{ .Values.telegramToken }}"
+            chat_id: {{ .Values.telegramChatId }}
+            parse_mode: 'HTML'
+            send_resolved: true
+            message: '{{`{{ template "tg.message" . }}`}}'
+
+    inhibit_rules:
+      # Более критичный алерт InCloudCapiClusterNotAlive глушит каскадные алерты
+      - source_matchers:
+          - alertname="InCloudCapiClusterNotAlive"
+        target_matchers:
+          - alertname=~"ArgoCdClusterConnectionError|InCloudCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentTooManyScrapePoolWithoutTargets|VMagentLogsErrorsHigh"
+        equal:
+          - cluster_full_name
+
+      # Более критичный алерт глушит аналогичный предупредительный
+      - source_matchers:
+          - alertname="ArgoCdClusterConnectionError"
+        target_matchers:
+          - alertname=~"ArgoCdAppUnhealthy|ArgoCdAppOutOfSync|ArgoCdAppSyncFailed"
+        equal:
+          - cluster_full_name
+
+      # Более критичный алерт глушит аналогичный предупредительный
+      - source_matchers:
+          - alertname="CoreDNSErrorsHighCritical"
+        target_matchers:
+          - alertname="CoreDNSErrorsHigh"
+        equal:
+          - cluster_full_name
+
+      # Более критичный алерт глушит аналогичный предупредительный
+      - source_matchers:
+          - alertname="ExtremelyHighIndividualControlPlaneCPU"
+        target_matchers:
+          - alertname=~"HighIndividualControlPlaneCPU|HighOverallControlPlaneCPU"
+        equal:
+          - cluster_full_name
+
+      # Более критичный алерт глушит аналогичный предупредительный
+      - source_matchers:
+          - alertname="InCloudCapiClusterNotReadyTooLong"
+        target_matchers:
+          - alertname="InCloudCapiClusterNotReady"
+        equal:
+          - cluster_full_name
+
+      # Более критичный алерт глушит аналогичный предупредительный
+      - source_matchers:
+          - alertname="VMAgentTooManyScrapePoolWithoutTargets"
+        target_matchers:
+          - alertname="VMAgentScrapePoolHasNoTargets"
+        equal:
+          - cluster_full_name
+
+      # Пока работает info алерт InCloudCapiClusterMuted (С момента 
+      # создания клатсера прошло менее 15 минут или клатсер в процессе удаления)
+      # Глушатся все алерты кроме InCloudCapiClusterDeletionRequestedTooLong, на 
+      # случай, если процесс удаления длится более 15 минут
+      - source_matchers:
+          - alertname="InCloudCapiClusterMuted"
+        target_matchers:
+          - alertname!="InCloudCapiClusterDeletionRequestedTooLong"
+        equal:
+          - cluster_full_name
+
+      # Алерт InCloudCapiInfraClusterSuspended/InCloudCapiClientClusterSuspended 
+      # нам говорит о том, что кластер заблокирован и не обслуживается. 
+      # На время блокировки все алерты приостановлены
+      - source_matchers:
+          - alertname=~"InCloudCapiInfraClusterSuspended|InCloudCapiClientClusterSuspended"
+        target_matchers:
+          - alertname!=""
+        equal:
+          - cluster_full_name
+
+      # Алерт InCloudCapiClusterIsPaused нам говорит о том, что кластер стоит на паузе
+      #  и его состояние не изменяется средствами операторов. 
+      # На время паузы алерты готовности кластера приостановлены,
+      # в случае проблем с кластером, есть алерты alive
+      - source_matchers:
+          - alertname="InCloudCapiClusterIsPaused"
+        target_matchers:
+          - alertname=~"InCloudCapiClusterNotReady|InCloudCapiClusterNotReadyTooLong"
+        equal:
+          - cluster_full_name
+
