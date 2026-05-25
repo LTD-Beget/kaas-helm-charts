@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -55,6 +55,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -79,7 +80,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: trust-manager
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -98,7 +99,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: trust-manager
@@ -134,7 +135,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: trust-manager
@@ -150,12 +151,12 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: trust-manager
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -174,7 +175,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: trust-manager
@@ -210,7 +211,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: trust-manager
@@ -226,12 +227,29 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: trust-manager
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    trust-manager:
+      app:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -251,7 +269,7 @@ spec:
           cpu: 50m
           memory: 128Mi
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -260,9 +278,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: trust-manager
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -300,43 +318,7 @@ spec:
     networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/trust-manager/trust-manager.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: trust-manager-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: trust-manager
-spec:
-  values: |
-    trust-manager:
-      app:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/trust-manager/trust-manager.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: trust-manager-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: trust-manager
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/trust-manager/trust-manager.yml
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -355,3 +337,22 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/caBundle: "approved"
+---
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer

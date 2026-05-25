@@ -1,0 +1,28 @@
+trust-manager:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+  app:
+    trust:
+      namespace: {{ .Values.companyPrefix }}-system
+bundle:
+  enabled: true
+  name: "ca"
+  sources:
+    - secret:
+        name: selfsigned-infra-cluster-ca
+        key: tls.crt
+    - secret:
+        name: {{ .Values.cluster.name }}-ca-oidc
+        key: ca.crt
+  target:
+    namespaceSelector:
+      matchLabels:
+        in-cloud.io/clusterName: infra
+networkPolicies:
+  enabled: true
+
