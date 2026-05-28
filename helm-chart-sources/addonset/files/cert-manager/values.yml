@@ -151,7 +151,6 @@ spec:
       selfsignedIssuer:
         kind: Issuer
         name: selfsigned-issuer
-        namespace: {{ .Values.companyPrefix }}-system
         spec:
           selfSigned: {}
       selfsigned:
@@ -162,7 +161,6 @@ spec:
     certificates:
       mainCA:
         name: selfsigned-infra-cluster-ca
-        namespace: {{ .Values.companyPrefix }}-system
         spec:
           issuerRef:
             group: cert-manager.io
