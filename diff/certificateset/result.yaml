@@ -175,7 +175,6 @@ metadata:
     addons.in-cloud.io/addon: certificate-set
 spec:
   values: |
-
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true

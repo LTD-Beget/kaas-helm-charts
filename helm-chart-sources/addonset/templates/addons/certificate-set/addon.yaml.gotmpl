@@ -49,6 +49,16 @@ spec:
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
+  valuesSources:
+    - extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+      name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: beget-system
   valuesSelectors:
     - name: default
       priority: 0
