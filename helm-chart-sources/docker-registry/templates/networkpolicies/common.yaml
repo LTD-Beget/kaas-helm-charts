@@ -1,0 +1,53 @@
+{{- if .Values.networkPolicies.enabled }}
+{{- $fullname := include "docker-registry.fullname" . }}
+---
+# Common selector: applies to all docker-registry-cache pods (by app.kubernetes.io/name).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-docker-registry-cache-to-coredns-s3-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: {{ $fullname }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: s3.ru1.storage.{{ .Values.companyPrefix }}.cloud
+  description: Allows egress from all docker-registry-cache pods to CoreDNS on 53 for
+    S3 backend name resolution.
+
+---
+# Common selector: applies to all docker-registry-cache pods (by app.kubernetes.io/name).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-docker-registry-cache-to-s3-storage-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: {{ $fullname }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: s3.ru1.storage.{{ .Values.companyPrefix }}.cloud
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: Allows egress from all docker-registry-cache pods to the S3 backend
+    storage on 443.
+{{- end }}
