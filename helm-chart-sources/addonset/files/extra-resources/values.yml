@@ -351,3 +351,195 @@ spec:
   values: |
     resources:
       certificate: null
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-customer-network-policies
+  labels:
+    addons.in-cloud.io/values: customer-network-policies
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      customerCsrcToExternal6443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-to-external-6443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-infra
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "6443"
+                protocol: TCP
+      customerCcmToExternal6443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-to-external-6443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-infra
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "6443"
+                protocol: TCP
+      customerCsrcToCoredns53:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-to-coredns-53
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-infra
+          egress:
+          - toEndpoints:
+            - matchLabels:
+                k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+                k8s:io.cilium.k8s.policy.serviceaccount: coredns
+            toPorts:
+            - ports:
+              - port: "53"
+                protocol: UDP
+              - port: "53"
+                protocol: TCP
+      customerCcmToCoredns53:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-to-coredns-53
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-infra
+          egress:
+          - toEndpoints:
+            - matchLabels:
+                k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+                k8s:io.cilium.k8s.policy.serviceaccount: coredns
+            toPorts:
+            - ports:
+              - port: "53"
+                protocol: UDP
+              - port: "53"
+                protocol: TCP
+      customerCcmToWorldGrpc50051:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-to-world-grpc-50051
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-infra
+          egress:
+          - toCIDRSet:
+            - cidr: 192.168.9.6/32
+            toPorts:
+            - ports:
+              - port: "50051"
+                protocol: TCP
+      customerCsrcToWorldGrpc50051:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-to-world-grpc-50051
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-infra
+          egress:
+          - toCIDRSet:
+            - cidr: 192.168.9.6/32
+            toPorts:
+            - ports:
+              - port: "50051"
+                protocol: TCP
+      customerCsrcClientToExternal26443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-client-to-external-26443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-client
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "26443"
+                protocol: TCP
+      customerCsrcClientToExternal6443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-client-to-external-6443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-client
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "6443"
+                protocol: TCP
+      customerCcmClientToExternal26443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-client-to-external-26443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-client
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "26443"
+                protocol: TCP
+      customerCcmClientToExternal6443:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-client-to-external-6443
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-client
+          egress:
+          - toEntities:
+            - world
+            - kube-apiserver
+            - remote-node
+            toPorts:
+            - ports:
+              - port: "6443"
+                protocol: TCP
