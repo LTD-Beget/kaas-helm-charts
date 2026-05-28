@@ -248,42 +248,12 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: addons-operator-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: addons-operator
-spec:
-  values: |
----
-# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: addons-operator-system
-  labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: addons-operator
-spec:
-  values: |
-    managerClaim:
-      enable: true
-    manager:
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
----
-# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
   name: addons-operator-network-policies
   labels:
     addons.in-cloud.io/values: network-policies
     addons.in-cloud.io/addon: addons-operator
 spec:
   values: |
-
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
