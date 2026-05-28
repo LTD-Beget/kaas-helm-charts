@@ -508,7 +508,7 @@ spec:
 ---
 # Customer CCM/CSRC workloads run cluster-wide, hence a CiliumClusterwideNetworkPolicy.
 apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
+kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-customer-csrc-53
 spec:
@@ -530,7 +530,7 @@ spec:
 
 ---
 apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
+kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-customer-ccm-53
 spec:
