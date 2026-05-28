@@ -14,6 +14,7 @@ spec:
   egress:
   - toEntities:
     - host
+    - remote-node
     toPorts:
     - ports:
       - port: '2379'
