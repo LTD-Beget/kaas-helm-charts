@@ -1,0 +1,613 @@
+{{- if .Values.networkPolicies.systemEnabled }}
+{{- $vmagentSA := printf "vmagent-%s" (include "victoria-metrics-k8s-stack.fullname" .) }}
+{{- $ns := .Release.Namespace }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-trivy-operator-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: trivy-operator
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-trivy-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to trivy-operator on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vmselect-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vmselect
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to vmselect on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-dex-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: dex
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-dex
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to dex on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vmalert-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmalert-vm-alert
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmalert
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to vmalert on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-docker-registry-cache-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-europe-docker-pkg-dev
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-europe-docker-pkg-dev
+    on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vminsert-8480
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vminsert
+    toPorts:
+    - ports:
+      - port: '8480'
+        protocol: TCP
+  description: Allows egress from vmagent to vminsert on 8480 for the write path.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-registry-ghcr-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-ghcr-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-ghcr-io on 11043
+    for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-registry-1-docker-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-1-docker-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-registry-1-docker-io
+    on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-registry-gcr-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-gcr-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-gcr-io on 11043
+    for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-addons-operator-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: addons-operator-addon-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-addons-operator
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to addons-operator on 8443 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-alertmanager-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmalertmanager-vm-alertmanager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-alertmanager
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to alertmanager on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vmstorage-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vmstorage
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to vmstorage on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-registry-{{ .Values.companyPrefix }}-ru-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-{{ .Values.companyPrefix }}-ru
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to the registry-{{ .Values.companyPrefix }}-ru
+    cache on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-mirror-gcr-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-mirror-gcr-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-mirror-gcr-io on
+    11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vminsert-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vminsert
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to vminsert on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-registry-k8s-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-k8s-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-registry-k8s-io
+    on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-grafana-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-grafana
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to grafana on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-capi-kubeadm-bootstrap-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi-kubeadm-bootstrap
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-capi
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to capi-kubeadm-bootstrap on 8443 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-capi-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-capi
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to capi-controller-manager on 8443 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-public-ecr-aws-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-public-ecr-aws
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-public-ecr-aws on
+    11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-grafana-operator-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: grafana-operator
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-grafana-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to grafana-operator on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-xpkg-crossplane-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-xpkg-crossplane-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-xpkg-crossplane-io
+    on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-cm-provider-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ .Values.companyPrefix }}-cm-provider-provider-{{ .Values.companyPrefix }}-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cm-provider
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to cm-provider controller-manager on 8443
+    for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-secret-copy-operator-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: secret-copy-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-system
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to secret-copy-operator on 8443 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-docker-registry-quay-io-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-quay-io
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to docker-registry-cache-quay-io on 11043
+    for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-capi-kcp-8443
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi-kcp
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-capi
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows egress from vmagent to capi-kcp-controller-manager on 8443 for
+    metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-istio-gw-internal-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to istio-gw-internal on 11043 for metrics collection.
+{{- end }}

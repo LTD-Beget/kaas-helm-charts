@@ -14,8 +14,7 @@ victoria-metrics-k8s-stack:
 networkPolicies:
   vmagent:
     enabled: false
-  vmalert:
-    enabled: false
+  systemEnabled: false
 
 monitoring:
   enabled: false
