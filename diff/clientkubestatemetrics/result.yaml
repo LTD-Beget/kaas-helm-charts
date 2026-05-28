@@ -69,7 +69,6 @@ spec:
       automated:
         prune: true
         selfHeal: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -84,9 +83,14 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: client-kube-state-metrics
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: client-kube-state-metrics
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: client-kube-state-metrics
 ---
 # Source: addonset/templates/addons/client-kube-state-metrics/phase.client.yaml.gotmpl
@@ -96,27 +100,6 @@ metadata:
   name: client-kube-state-metrics-client
 spec:
   rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 25
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: client-kube-state-metrics
     - name: vm-operator
       criteria:
         - source:
@@ -152,22 +135,6 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: client-kube-state-metrics
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: client-kube-state-metrics
 ---
 # Source: addonset/templates/addons/client-kube-state-metrics/phase.infra.yaml.gotmpl
@@ -177,63 +144,6 @@ metadata:
   name: client-kube-state-metrics
 spec:
   rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 25
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: client-kube-state-metrics
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: client-kube-state-metrics
     - name: infra
       criteria:
         - source:
@@ -250,46 +160,81 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: client-kube-state-metrics
----
-# Source: addonset/templates/addons/client-kube-state-metrics/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-kube-state-metrics-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: client-kube-state-metrics
-spec:
-  values: |
-    kube-state-metrics:
-      volumes:
-        - name: kubeconfig
-          secret:
-           secretName: client-kube-state-metrics-kubeconfig
-        - name: kubeconfig-certs
-          secret:
-           secretName: monitoring-client
-        - name: rbac-proxy-tls
-          secret:
-            defaultMode: 420
-            secretName: client-kube-state-metrics-svc-tls
-
-      kubeRBACProxy:
-        extraArgs:
-          - --tls-cert-file=/app/config/metrics/tls/tls.crt
-          - --tls-private-key-file=/app/config/metrics/tls/tls.key
-          - --v=2
-
-        volumeMounts:
-          - name: rbac-proxy-tls
-            mountPath: /app/config/metrics/tls
-            readOnly: true
-
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: client-kube-state-metrics
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: client-kube-state-metrics
 ---
 # Source: addonset/templates/addons/client-kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -428,7 +373,6 @@ metadata:
     addons.in-cloud.io/addon: client-kube-state-metrics
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
     kube-state-metrics:
       enabled: true
       tolerations:
@@ -438,6 +382,18 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+---
+# Source: addonset/templates/addons/client-kube-state-metrics/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-kube-state-metrics-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: client-kube-state-metrics
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       clientKubeStateMetrics:
         enabled: true
@@ -452,8 +408,36 @@ metadata:
     addons.in-cloud.io/addon: client-kube-state-metrics
 spec:
   values: |
+    kube-state-metrics:
+      volumes:
+        - name: kubeconfig
+          secret:
+           secretName: client-kube-state-metrics-kubeconfig
+        - name: kubeconfig-certs
+          secret:
+           secretName: monitoring-client
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: client-kube-state-metrics-svc-tls
+
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+
+        volumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
       serviceScrapeConfig:
         relabelConfigs:
           - targetLabel: cluster_full_name

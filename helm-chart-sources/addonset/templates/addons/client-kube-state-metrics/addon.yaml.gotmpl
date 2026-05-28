@@ -71,7 +71,6 @@ spec:
       automated:
         prune: true
         selfHeal: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -86,8 +85,13 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: client-kube-state-metrics
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: client-kube-state-metrics
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: client-kube-state-metrics
 {{- end }}
