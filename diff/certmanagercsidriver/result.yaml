@@ -306,7 +306,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager-csi-driver
 spec:
   values: |
-
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
@@ -353,10 +352,7 @@ metadata:
 spec:
   values: |
     argocdPlugins:
-
       kustomize: true
-
-      just: test
 
     monitoring:
       enabled: true
