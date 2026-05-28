@@ -1,0 +1,69 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow ingress from the world to `svc-k8s-proxy`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-svc-k8s-proxy-from-world-50051
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '50051'
+        protocol: TCP
+  description: Allows ingress from the world to svc-k8s-proxy on 50051.
+
+---
+# Allow `svc-k8s-proxy` to resolve DNS via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-k8s-proxy-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+  description: Allows egress from svc-k8s-proxy to CoreDNS on 53 for DNS resolution.
+
+---
+# Allow `svc-k8s-proxy` to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-k8s-proxy-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from svc-k8s-proxy to the Kubernetes API server on 6443
+    for control-plane interactions.
+{{- end }}
