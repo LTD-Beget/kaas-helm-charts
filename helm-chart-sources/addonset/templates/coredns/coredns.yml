@@ -1,0 +1,13 @@
+{{- if .Values.addons.coredns.enabled }}
+  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
+
+  {{- include "coredns.addon" . }}
+
+  {{- .Files.Get "files/coredns/values.yml" | nindent 0 }}
+
+  {{- include "coredns.phase" . }}
+
+  {{- if eq .Values.environment "infra" }}
+    {{- include "coredns.phase" $clientContext }}
+  {{- end }}
+{{- end }}
