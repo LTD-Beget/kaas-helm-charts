@@ -1,5 +1,10 @@
 env: dev
 
+companyPrefix: example
+
+networkPolicies:
+  enabled: false
+
 hub:
   image:
     repository: registry.example.ru/golang/svc-hub

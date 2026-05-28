@@ -1,0 +1,73 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow `svc-hub` to resolve Consul/RabbitMQ names via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-hub-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: consul.{{ .Values.companyPrefix }}
+        - matchName: amqp.rabbit-hub.service.consul
+  description: Allows egress from svc-hub to CoreDNS on 53 for Consul/RabbitMQ name
+    resolution.
+
+---
+# Allow `svc-hub` to reach the Consul service.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-hub-to-consul-8500
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: consul.{{ .Values.companyPrefix }}
+    toPorts:
+    - ports:
+      - port: '8500'
+        protocol: TCP
+  description: Allows egress from svc-hub to the Consul service on 8500.
+
+---
+# Allow `svc-hub` to reach the RabbitMQ hub.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-hub-to-rabbit-hub-5672
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: amqp.rabbit-hub.service.consul
+    toPorts:
+    - ports:
+      - port: '5672'
+        protocol: TCP
+  description: Allows egress from svc-hub to the RabbitMQ hub on 5672.
+{{- end }}
