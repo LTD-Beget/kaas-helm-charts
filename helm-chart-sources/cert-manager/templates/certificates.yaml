@@ -1,3 +1,4 @@
+{{- $clusterResourceNamespace := dig "clusterResourceNamespace" "" (index .Values "cert-manager") }}
 {{- range $_, $cert := .Values.certificates }}
 ---
 apiVersion: cert-manager.io/v1
@@ -6,6 +7,8 @@ metadata:
   name: {{ $cert.name }}
 {{- if $cert.namespace }}
   namespace: {{ $cert.namespace }}
+{{- else if $clusterResourceNamespace }}
+  namespace: {{ $clusterResourceNamespace }}
 {{- else }}
   namespace: {{ $.Release.Namespace }}
 {{- end }}
