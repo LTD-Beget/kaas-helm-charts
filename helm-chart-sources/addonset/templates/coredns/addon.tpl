@@ -1,4 +1,4 @@
-{{- if .Values.addons.coredns.enabled }}
+{{- define "coredns.addon" }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -59,7 +59,6 @@ spec:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
