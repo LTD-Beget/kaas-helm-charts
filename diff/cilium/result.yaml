@@ -356,7 +356,6 @@ metadata:
     addons.in-cloud.io/addon: cilium
 spec:
   values: |
-
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
