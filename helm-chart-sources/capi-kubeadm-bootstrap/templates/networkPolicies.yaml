@@ -1,0 +1,69 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow vmagent to scrape `capi-kubeadm-bootstrap` controller-manager metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-capi-kubeadm-bootstrap-from-vmagent-8443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi-kubeadm-bootstrap
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress from vmagent to capi-kubeadm-bootstrap-controller-manager
+    on 8443 for metrics collection.
+
+---
+# Allow `capi-kubeadm-bootstrap` controller-manager to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-kubeadm-bootstrap-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi-kubeadm-bootstrap
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from capi-kubeadm-bootstrap-controller-manager to the
+    Kubernetes API server on 6443 for control-plane interactions.
+
+---
+# Allow remote nodes to reach the `capi-kubeadm-bootstrap` controller-manager webhook.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-capi-kubeadm-bootstrap-from-remote-node-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi-kubeadm-bootstrap
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - remote-node
+    toPorts:
+    - ports:
+      - port: '9443'
+        protocol: TCP
+  description: Allows ingress from remote nodes to capi-kubeadm-bootstrap-controller-manager
+    on 9443.
+{{- end }}
