@@ -1,6 +1,11 @@
 trivy-operator: {}
 # some values for metallb
 
+companyPrefix: example
+
+networkPolicies:
+  enabled: false
+
 monitoring:
   enabled: false
   type: VictoriaMetrics
