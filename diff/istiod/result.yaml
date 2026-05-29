@@ -78,7 +78,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istiod
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: istiod
@@ -95,22 +95,6 @@ metadata:
   name: istiod-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: istiod
     - name: vm-operator
       criteria:
         - source:
@@ -146,40 +130,6 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: istiod
-    - name: multi-control-plane
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.controlPlaneAvailableReplicas
-          operator: GreaterThan
-          value: 1
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.controlPlaneDesiredReplicas
-          operator: GreaterThan
-          value: 1
-          keep: false
-      selector:
-        name: multi-control-plane
-        priority: 60
-        matchLabels:
-          addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: istiod
 ---
 # Source: addonset/templates/addons/istiod/phase.infra.yaml.gotmpl
@@ -240,6 +190,45 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istiod
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: istiod
     - name: multi-control-plane
       criteria:
@@ -366,8 +355,6 @@ spec:
       global:
         defaultPodDisruptionBudget:
           enabled: false
-    networkPolicies:
-      enabled: true
 ---
 # Source: addonset/templates/addons/istiod/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -405,9 +392,24 @@ spec:
   values: |
     argocdPlugins:
       kustomize: true
+
     monitoring:
       enabled: true
       secureService:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addons/istiod/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istiod-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: istiod
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
