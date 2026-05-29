@@ -1,0 +1,283 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow vault server to talk to the Kubernetes API server (kubernetes service_registration).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from vault server to the Kubernetes API server on 6443
+    for control-plane interactions and kubernetes service_registration.
+
+---
+# Allow vault server to reach etcd on control-plane nodes (storage backend).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-to-etcd-2379
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: '2379'
+        protocol: TCP
+  description: |
+    Allows egress from vault server to etcd on 2379 (host network of control-plane nodes)
+    for the etcd storage backend.
+
+---
+# Allow vmagent to scrape vault metrics via the kube-rbac-proxy sidecar.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmagent-to-vault-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows ingress from vmagent to the vault kube-rbac-proxy sidecar on 11043
+    for telemetry/metrics collection.
+
+---
+# Allow configured sources to reach vault server on 8200.
+# vault-operator is always included; additional sources via networkPolicies.additionalIngressSources.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault-operator
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows ingress to vault server on 8200 from vault-operator
+    {{- range .Values.networkPolicies.additionalIngressSources }} and {{ .serviceAccount }} ({{ .namespace }}){{ end }}.
+
+{{- if .Values.prepareJob.enabled }}
+---
+# Allow vault-prepare job ingress to vault server on 8200.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vault-prepare-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ .Release.Name }}-prepare
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows ingress from vault-prepare job to vault server on 8200
+    for initial configuration (auth methods, policies, roles).
+{{- end }}
+
+---
+# Allow istio gateway to reach vault server on 8200.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-istio-gateway-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows ingress from istio gateway to vault server on 8200.
+
+---
+# Allow vault server HA cluster peer-to-peer communication (port 8201).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-vault-cluster-peer-8201
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '8201'
+        protocol: TCP
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '8201'
+        protocol: TCP
+  description: |
+    Allows vault server pods to communicate with each other on 8201
+    for HA cluster replication and leader election.
+
+---
+# Allow vault-agent-injector to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-agent-injector-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault-agent-injector
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from vault-agent-injector to the Kubernetes API server on 6443
+    for watching pods and mutating webhook operations.
+
+---
+# Allow the Kubernetes API server to call the vault-agent-injector mutating webhook.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-kube-apiserver-to-vault-agent-injector-8080
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault-agent-injector
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - kube-apiserver
+    - remote-node
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: |
+    Allows ingress from the Kubernetes API server to vault-agent-injector on 8080
+    for the mutating webhook calls.
+
+{{- if .Values.prepareJob.enabled }}
+---
+# Allow vault-prepare job to reach vault server on 8200.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-prepare-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ .Release.Name }}-prepare
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows egress from vault-prepare job to vault server on 8200
+    for initial configuration (auth methods, policies, roles).
+
+{{- end }}
+
+---
+# Allow vault-agent-injector to reach vault server to retrieve secrets.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-agent-injector-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault-agent-injector
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows egress from vault-agent-injector to vault server on 8200
+    to retrieve secrets for sidecar injection.
+{{- end }}
