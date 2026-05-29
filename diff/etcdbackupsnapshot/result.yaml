@@ -77,7 +77,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: etcd-backup-snapshot
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: etcd-backup-snapshot
