@@ -3,7 +3,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: extra-resources
+  name: extra-resources-client
 spec:
   chart: "helm-inserter"
   pluginName: helm-with-values
@@ -19,7 +19,7 @@ spec:
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
-        name: parameters-infra
+        name: parameters-client
         namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: argocdServerAdminPassword
