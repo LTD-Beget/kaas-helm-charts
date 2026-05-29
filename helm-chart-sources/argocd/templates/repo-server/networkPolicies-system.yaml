@@ -1,0 +1,21 @@
+{{- if .Values.networkPolicies.systemEnabled }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-repo-server-to-system-fqdns-443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  - toFQDNs:
+    - matchName: gitlab.{{ .Values.companyPrefix }}.ru
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+  description: Allows egress for argocd-repo-server to specific external FQDNs 443 for external repositories.
+{{- end }}
