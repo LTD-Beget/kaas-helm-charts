@@ -1,4 +1,4 @@
-{{- if .Values.addons.grafanadashboards.enabled }}
+{{- if and .Values.addons.grafanadashboards.enabled .Values.addons.system.enabled }}
   {{- $addonName := "grafana-dashboards" -}}
 
   {{- /*
@@ -11,7 +11,7 @@
   */ -}}
   {{- range $value := list
     (dict "name" "default"    "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "immutable"  "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "immutable"  "enabled" true  "file"  false "template"  false "common"  false )
   }}
     {{- if $value.enabled }}
 ---
