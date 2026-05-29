@@ -8,9 +8,6 @@ metadata:
     addons.in-cloud.io/addon: docker-registry
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
     default:
       metrics:
         port: 11043

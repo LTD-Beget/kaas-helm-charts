@@ -8,9 +8,6 @@ metadata:
     addons.in-cloud.io/addon: secret-copy-operator
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
     manager:
       image:
         repository: prorobotech/secret-copy-operator
