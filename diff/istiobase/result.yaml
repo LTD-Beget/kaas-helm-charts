@@ -71,7 +71,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-base
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: istio-base
@@ -80,54 +80,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-base
----
-# Source: addonset/templates/addons/istio-base/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: istio-base-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: istio-base
----
-# Source: addonset/templates/addons/istio-base/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: istio-base
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: istio-base
 ---
 # Source: addonset/templates/addons/istio-base/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -152,16 +104,3 @@ metadata:
     addons.in-cloud.io/addon: istio-base
 spec:
   values: |
----
-# Source: addonset/templates/addons/istio-base/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-base-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: istio-base
-spec:
-  values: |
-    global:
-      istioNamespace: {{ .Values.companyPrefix }}-istio
