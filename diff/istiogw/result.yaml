@@ -1,4 +1,102 @@
 ---
+# Source: addonset/templates/addons/istio-gw-internal/addon.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: istio-gw-internal
+spec:
+  chart: "gateway"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "1.26.0-3"
+  targetCluster: in-cluster
+  targetNamespace: "example-istio-gw-internal"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: clusterHost
+          jsonPath: .data.clusterHost
+        - as: systemIstioGwDomainInternal
+          jsonPath: .data.systemIstioGwDomainInternal
+        - as: systemIstioGwVipInternal
+          jsonPath: .data.systemIstioGwVipInternal
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+    - name: istiod
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+      - /webhooks/0/failurePolicy
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: infra
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: istio-gw-internal
+    - name: custom
+      priority: 95
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: istio-gw-internal
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: istio-gw-internal
+---
 # Source: addonset/templates/addons/istio-gw/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -97,102 +195,120 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-gw
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
+kind: AddonPhase
 metadata:
   name: istio-gw-internal
 spec:
-  chart: "gateway"
-  pluginName: helm-with-values
-  repoURL: "example.com"
-  version: "1.26.0-3"
-  targetCluster: in-cluster
-  targetNamespace: "example-istio-gw-internal"
-  variables:
-    cluster_name: in-cluster
-    dependency: "True"
-  valuesSources:
-    - name: parameters-infra
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters-infra
-        namespace: example-system
-      extract:
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: clusterHost
-          jsonPath: .data.clusterHost
-        - as: systemIstioGwDomainInternal
-          jsonPath: .data.systemIstioGwDomainInternal
-        - as: systemIstioGwVipInternal
-          jsonPath: .data.systemIstioGwVipInternal
-        - as: companyPrefix
-          jsonPath: .data.companyPrefix
-        - as: companyDomain
-          jsonPath: .data.companyDomain
-  initDependencies:
-    - name: addons-operator
+  rules:
+    - name: infra
       criteria:
-        - jsonPath: $.status.deployed
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
           operator: Equal
-          value: true
-          keep: true
-    - name: addonset
+          value: "infra"
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: istio-gw-internal
+    - name: vm-operator
       criteria:
-        - jsonPath: $.status.deployed
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
           operator: Equal
-          value: true
-          keep: true
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.deployed
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
           operator: Equal
           value: true
           keep: false
-    - name: istiod
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw-internal
+    - name: network-policies
       criteria:
-        - jsonPath: $.status.deployed
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
           operator: Equal
           value: true
           keep: false
-  backend:
-    finalizer: true
-    type: "argocd"
-    ignoreDifferences:
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-      jsonPointers:
-      - /webhooks/0/failurePolicy
-    namespace: "example-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: default
-      priority: 0
-      matchLabels:
-        addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: istio-gw-internal
-    - name: custom
-      priority: 90
-      matchLabels:
-        addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: istio-gw-internal
-    - name: immutable
-      priority: 99
-      matchLabels:
-        addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: istio-gw-internal
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: istio-gw-internal
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: istio-gw-internal
 ---
 # Source: addonset/templates/addons/istio-gw/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -353,81 +469,170 @@ spec:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: istio-gw
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
+kind: AddonValue
 metadata:
-  name: istio-gw-internal
+  name: istio-gw-internal-default
+  labels:
+    addons.in-cloud.io/values: default
+    addons.in-cloud.io/addon: istio-gw-internal
 spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: istio-gw-internal
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: istio-gw-internal
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: istio-gw-internal
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    gateway:
+      priorityClassName: system-cluster-critical
+      service:
+        type: NodePort
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-infra
+  labels:
+    addons.in-cloud.io/values: infra
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+    gateway:
+      labels:
+        monitoring.in-cloud.io/service: istio-gw-internal
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.{{ .Values.companyDomain }}/type: "external"
+          lb.{{ .Values.companyDomain }}/algorithm: "round_robin" # or "least_conns"
+          lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+          lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+        ports:
+          - name: status-port
+            port: 15021
+            protocol: TCP
+            targetPort: 15021
+            nodePort: 33021
+          - name: http2
+            port: 80
+            protocol: TCP
+            targetPort: 80
+            nodePort: 33080
+          - name: https
+            port: 443
+            protocol: TCP
+            targetPort: 443
+            nodePort: 33443
+          - name: https-metrics
+            port: 11043
+            protocol: TCP
+            targetPort: 11043
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    tls:
+      enabled: true
+      certificate:
+        name: {{ .Values.cluster.name }}-gateway
+        secretName: {{ .Values.cluster.name }}-gateway
+        commonName: infra-gateway
+        dnsNames:
+          - "*"
+        ipAddresses:
+          - 127.0.0.1
+      issuer:
+        kind: ClusterIssuer
+        name: selfsigned-cluster-issuer
+    extraGateway:
+      enabled: true
+      name: default
+      servers:
+        - hosts: ["*"]
+          port:
+            protocol: HTTPS
+          tls:
+            mode: SIMPLE
+            credentialName: {{ .Values.cluster.name }}-gateway
+        - hosts: ["*"]
+          port:
+            protocol: HTTP 
+    telemetry:
+      enabled: true
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+    gateway:
+      service:
+        type: LoadBalancer
+        annotations:
+          lb.{{ .Values.companyDomain }}/type: "internal"
+          lb.{{ .Values.companyDomain }}/algorithm: "round_robin" # or "least_conns"
+          lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+          lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+    tls:
+      certificate:
+        dnsNames:
+          - {{ .Values.systemIstioGwDomainInternal }}
+        ipAddresses:
+          - 127.0.0.1
+          - {{ .Values.systemIstioGwVipInternal }}
+          - {{ .Values.clusterHost }}
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
 ---
 # Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
@@ -610,158 +815,3 @@ spec:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    gateway:
-      priorityClassName: system-cluster-critical
-      service:
-        type: NodePort
-      resources:
-        requests:
-          cpu: 100m
-          memory: 128Mi
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: ""
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: |
-    gateway:
-      labels:
-        monitoring.in-cloud.io/service: istio-gw-internal
-      service:
-        type: LoadBalancer
-        annotations:
-          lb.{{ .Values.companyDomain }}/type: "external"
-          lb.{{ .Values.companyDomain }}/algorithm: "round_robin" # or "least_conns"
-          lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
-          lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
-        ports:
-          - name: status-port
-            port: 15021
-            protocol: TCP
-            targetPort: 15021
-            nodePort: 33021
-          - name: http2
-            port: 80
-            protocol: TCP
-            targetPort: 80
-            nodePort: 33080
-          - name: https
-            port: 443
-            protocol: TCP
-            targetPort: 443
-            nodePort: 33443
-          - name: https-metrics
-            port: 11043
-            protocol: TCP
-            targetPort: 11043
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
-    tls:
-      enabled: true
-      certificate:
-        name: {{ .Values.cluster.name }}-gateway
-        secretName: {{ .Values.cluster.name }}-gateway
-        commonName: infra-gateway
-        dnsNames:
-          - "*"
-        ipAddresses:
-          - 127.0.0.1
-      issuer:
-        kind: ClusterIssuer
-        name: selfsigned-cluster-issuer
-    extraGateway:
-      enabled: true
-      name: default
-      servers:
-        - hosts: ["*"]
-          port:
-            protocol: HTTPS
-          tls:
-            mode: SIMPLE
-            credentialName: {{ .Values.cluster.name }}-gateway
-        - hosts: ["*"]
-          port:
-            protocol: HTTP 
-    telemetry:
-      enabled: true
-    networkPolicies:
-      enabled: false
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-system
-  labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: |
-    gateway:
-      service:
-        type: LoadBalancer
-        annotations:
-          lb.{{ .Values.companyDomain }}/type: "internal"
-          lb.{{ .Values.companyDomain }}/algorithm: "round_robin" # or "least_conns"
-          lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
-          lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
-    tls:
-      certificate:
-        dnsNames:
-          - {{ .Values.systemIstioGwDomainInternal }}
-        ipAddresses:
-          - 127.0.0.1
-          - {{ .Values.systemIstioGwVipInternal }}
-          - {{ .Values.clusterHost }}
