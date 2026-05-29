@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: ccm-csrc-controller
 spec:
   values: |
+    networkPolicies:
+      enabled: true
     controllerManager:
       manager:
         image:

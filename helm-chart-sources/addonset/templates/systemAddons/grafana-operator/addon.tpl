@@ -8,7 +8,7 @@ spec:
   chart: "grafana-operator"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "5.18.0-1"
+  version: "5.18.0-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-grafana-operator"
   variables:

@@ -8,6 +8,9 @@ metadata:
     addons.in-cloud.io/addon: svc-hub  
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     hub:
       image:
         repository: {{ .Values.companyInternalDockerRegistry }}/golang/svc-hub

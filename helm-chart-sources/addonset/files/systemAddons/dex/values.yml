@@ -8,6 +8,9 @@ metadata:
     addons.in-cloud.io/addon: dex
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     dex:
       resources:
         requests:

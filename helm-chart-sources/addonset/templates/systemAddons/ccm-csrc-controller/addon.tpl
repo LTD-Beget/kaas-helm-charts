@@ -8,7 +8,7 @@ spec:
   chart: ccm-csr-controller
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "0.1.2"
   targetCluster: in-cluster
   releaseName: system
   targetNamespace: "{{ .Values.companyPrefix }}-ccm-csrc-controller"
