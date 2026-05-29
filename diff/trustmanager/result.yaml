@@ -70,7 +70,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: trust-manager
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: trust-manager
@@ -87,22 +87,6 @@ metadata:
   name: trust-manager-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: trust-manager
     - name: vm-operator
       criteria:
         - source:
@@ -138,22 +122,6 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: trust-manager
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 70
-        matchLabels:
-          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: trust-manager
 ---
 # Source: addonset/templates/addons/trust-manager/phase.infra.yaml.gotmpl
@@ -214,6 +182,45 @@ spec:
         priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: trust-manager
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: trust-manager
     - name: system
       criteria:
@@ -315,6 +322,38 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/clusterName: infra
+---
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: trust-manager-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: trust-manager
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
 ---
@@ -337,22 +376,3 @@ spec:
         namespaceSelector:
           matchLabels:
             in-cloud.io/caBundle: "approved"
----
-# Source: addonset/templates/addons/trust-manager/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: trust-manager-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: trust-manager
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
