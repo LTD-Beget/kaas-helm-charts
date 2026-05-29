@@ -79,7 +79,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: konnectivity-agent
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: konnectivity-agent
@@ -88,22 +88,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: konnectivity-agent
----
-# Source: addonset/templates/addons/konnectivity-agent/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: konnectivity-agent-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/konnectivity-agent/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: konnectivity-agent
-spec:
-  rules:
 ---
 # Source: addonset/templates/addons/konnectivity-agent/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
