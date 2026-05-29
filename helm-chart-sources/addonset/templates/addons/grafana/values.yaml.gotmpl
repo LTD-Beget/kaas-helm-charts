@@ -12,9 +12,9 @@
   {{- range $value := list
     (dict "name" "cert-manager"  "enabled" true  "file"  true  "template"  false "common"  false )
     (dict "name" "default"       "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "immutable"     "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "immutable"     "enabled" true  "file"  false "template"  false "common"  false )
     (dict "name" "istio-gw"      "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "vm-operator"   "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "vm-operator"   "enabled" true  "file"  false "template"  false "common"  true  )
   }}
     {{- if $value.enabled }}
 ---
