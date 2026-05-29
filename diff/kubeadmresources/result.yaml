@@ -82,40 +82,29 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: client
-      priority: 10
+    - name: default
+      priority: 0
       matchLabels:
-        addons.in-cloud.io/values: client
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: kubeadm-resources
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: kubeadm-resources
----
-# Source: addonset/templates/addons/kubeadm-resources/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: kubeadm-resources-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/kubeadm-resources/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: kubeadm-resources
-spec:
-  rules:
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: kubeadm-resources
 ---
 # Source: addonset/templates/addons/kubeadm-resources/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: kubeadm-resources-client
+  name: kubeadm-resources-default
   labels:
-    addons.in-cloud.io/values: client
+    addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: kubeadm-resources
 spec:
   values: |
