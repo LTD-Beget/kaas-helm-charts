@@ -57,7 +57,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: svc-hub
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: svc-hub
@@ -66,22 +66,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: svc-hub
----
-# Source: addonset/templates/addons/svc-hub/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: svc-hub-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/svc-hub/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: svc-hub
-spec:
-  rules:
 ---
 # Source: addonset/templates/addons/svc-hub/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
