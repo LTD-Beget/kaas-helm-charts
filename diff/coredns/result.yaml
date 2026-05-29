@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addons/coredns/addon.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -59,7 +59,6 @@ spec:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -74,7 +73,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: coredns
     - name: custom
-      priority: 95
+      priority: 90
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: coredns
@@ -84,140 +83,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: coredns
 ---
-# Source: addonset/templates/addons/coredns/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: coredns-client
-spec:
-  rules:
-    - name: initialized
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: coredns-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: coredns
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: coredns
-    - name: multi-control-plane
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.controlPlaneAvailableReplicas
-          operator: GreaterThan
-          value: 1
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.controlPlaneDesiredReplicas
-          operator: GreaterThan
-          value: 1
-          keep: false
-      selector:
-        name: multi-control-plane
-        priority: 60
-        matchLabels:
-          addons.in-cloud.io/values: multi-control-plane
-          addons.in-cloud.io/addon: coredns
-    - name: network-policies
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cilium-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cilium-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: AddonPhase
-            name: extra-resources
-          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
-          operator: Equal
-          value: true
-      selector:
-        name: network-policies
-        priority: 65
-        matchLabels:
-          addons.in-cloud.io/values: network-policies
-          addons.in-cloud.io/addon: coredns
----
-# Source: addonset/templates/addons/coredns/phase.infra.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -234,6 +100,13 @@ spec:
           operator: Equal
           value: true
           keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: initialized
         priority: 10
@@ -252,7 +125,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 20
+        priority: 15
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: coredns
@@ -288,9 +161,25 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 45
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: coredns
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 40
+        matchLabels:
+          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: coredns
     - name: multi-control-plane
       criteria:
@@ -322,7 +211,7 @@ spec:
           keep: false
       selector:
         name: multi-control-plane
-        priority: 60
+        priority: 30
         matchLabels:
           addons.in-cloud.io/values: multi-control-plane
           addons.in-cloud.io/addon: coredns
@@ -361,28 +250,184 @@ spec:
           value: true
       selector:
         name: network-policies
-        priority: 65
+        priority: 35
         matchLabels:
           addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: coredns
+---
+# Source: addonset/templates/coredns/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: coredns-client
+spec:
+  rules:
+    - name: initialized
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: coredns-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: initialized
+        priority: 10
+        matchLabels:
+          addons.in-cloud.io/values: initialized
+          addons.in-cloud.io/addon: coredns
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: coredns
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: coredns
     - name: system
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-infra
+            name: parameters-client
             namespace: example-system
           jsonPath: $.data.systemEnabled
           operator: Equal
           value: "true"
       selector:
         name: system
-        priority: 70
+        priority: 40
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: coredns
+    - name: multi-control-plane
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.controlPlaneAvailableReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.controlPlaneDesiredReplicas
+          operator: GreaterThan
+          value: 1
+          keep: false
+      selector:
+        name: multi-control-plane
+        priority: 30
+        matchLabels:
+          addons.in-cloud.io/values: multi-control-plane
+          addons.in-cloud.io/addon: coredns
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-client
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 35
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: coredns
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -401,6 +446,8 @@ spec:
         limits:
           cpu: 200m
           memory: 256Mi
+        requests:
+          cpu: 100m
       rollingUpdate:
         maxUnavailable: 35%
         maxSurge: 1
@@ -414,23 +461,85 @@ spec:
         create: true
         name: coredns
       affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                  - coredns
-                - key: app.kubernetes.io/instance
-                  operator: In
-                  values:
-                  - coredns
-              topologyKey: kubernetes.io/hostname
-            weight: 100
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: coredns
+                app.kubernetes.io/instance: coredns
+            topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - coredns
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - coredns
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified 
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . 8.8.8.8
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -439,37 +548,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: coredns
 spec:
-  values: |
+  values: ""
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: coredns-initialized
-  labels:
-    addons.in-cloud.io/values: initialized
-    addons.in-cloud.io/addon: coredns
-spec:
-  values: |
-    {{/*
-    replicaCount = min(controlPlaneDesiredReplicas, controlPlaneAvailableReplicas), but not less than 1.
-    */}}
-    {{- $desired := int .Values.controlPlaneDesiredReplicas -}}
-    {{- $available := int .Values.controlPlaneAvailableReplicas -}}
-    {{- $replicas := $desired -}}
-
-    {{- if lt $available $replicas -}}
-      {{- $replicas = $available -}}
-    {{- end -}}
-
-    {{- if lt $replicas 1 -}}
-      {{- $replicas = 1 -}}
-    {{- end }}
-
-    coredns:
-      replicaCount: {{ $replicas }}
----
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -479,21 +560,11 @@ metadata:
     addons.in-cloud.io/addon: coredns
 spec:
   values: |
-    {{/*
-    replicaCount = min(controlPlaneDesiredReplicas, controlPlaneAvailableReplicas), but not less than 1.
-    */}}
-    {{- $desired := int .Values.controlPlaneDesiredReplicas -}}
-    {{- $available := int .Values.controlPlaneAvailableReplicas -}}
-    {{- $replicas := $desired -}}
-
-    {{- if lt $available $replicas -}}
-      {{- $replicas = $available -}}
-    {{- end -}}
-
-    {{- if lt $replicas 1 -}}
-      {{- $replicas = 1 -}}
-    {{- end }}
-
+    {{- $a := .Values.controlPlaneDesiredReplicas -}}
+    {{- $b := .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := 1 -}}
+    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
+    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
     coredns:
       replicaCount: {{ $replicas }}
       tolerations:
@@ -503,8 +574,26 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+    monitoring:
+      secureService:
+        issuer:
+          name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -520,7 +609,25 @@ spec:
       tolerations:
         - operator: "Exists"
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-initialized
+  labels:
+    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    {{- $a := .Values.controlPlaneDesiredReplicas -}}
+    {{- $b := .Values.controlPlaneAvailableReplicas -}}
+    {{- $replicas := 1 -}}
+    {{- if and (gt $a $b) (gt $b 1) }}{{ $replicas = $b }}{{ end -}}
+    {{- if and (gt $b $a) (gt $a 1) }}{{ $replicas = $a }}{{ end -}}
+    coredns:
+      replicaCount: {{ $replicas }}
+---
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -560,15 +667,80 @@ spec:
           secret:
             defaultMode: 420
             secretName: coredns-metrics-svc-tls
-
     monitoring:
       enabled: true
       secureService:
         enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
+# Source: addonset/templates/coredns/coredns.yml
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: coredns-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: coredns
+spec:
+  values: |
+    coredns:
+      servers:
+        - zones:
+            - zone: cluster.local.
+          port: 53
+          plugins:
+            - name: kubernetes
+              parameters: cluster.local in-addr.arpa ip6.arpa
+              configBlock: |-
+                pods verified
+                fallthrough in-addr.arpa ip6.arpa
+                ttl 30
+            - name: transfer
+              configBlock: |-
+                to *
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+        - zones:
+            - zone: .
+          port: 53
+          plugins:
+            - name: loop
+            - name: reload
+            - name: errors
+            - name: ready
+            - name: loadbalance
+              parameter: round_robin
+            - name: forward
+              parameters: . /etc/resolv.conf
+              configBlock: |-
+                force_tcp
+            - name: cache
+              parameters: 30
+            - name: prometheus
+              parameters: 0.0.0.0:9153
+            - name: log
+              configBlock: |-
+                class all
+            - name: health
+              configBlock: |-
+                lameduck 5s
+---
+# Source: addonset/templates/coredns/coredns.yml
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -587,29 +759,3 @@ spec:
                   app.kubernetes.io/name: coredns
                   app.kubernetes.io/instance: coredns
               topologyKey: kubernetes.io/hostname
----
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: coredns-network-policies
-  labels:
-    addons.in-cloud.io/values: network-policies
-    addons.in-cloud.io/addon: coredns
-spec:
-  values: |
-
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
----
-# Source: addonset/templates/addons/coredns/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: coredns-system
-  labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: coredns
-spec:
-  values: |
