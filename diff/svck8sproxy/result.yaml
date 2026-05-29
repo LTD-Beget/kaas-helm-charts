@@ -51,7 +51,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: svc-k8s-proxy
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: svc-k8s-proxy
@@ -60,22 +60,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: svc-k8s-proxy
----
-# Source: addonset/templates/addons/svc-k8s-proxy/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: svc-k8s-proxy-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/svc-k8s-proxy/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: svc-k8s-proxy
-spec:
-  rules:
 ---
 # Source: addonset/templates/addons/svc-k8s-proxy/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
