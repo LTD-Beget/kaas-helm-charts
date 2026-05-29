@@ -48,7 +48,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cluster-claim-operator
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: cluster-claim-operator
@@ -57,22 +57,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: cluster-claim-operator
----
-# Source: addonset/templates/addons/cluster-claim-operator/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: cluster-claim-operator-client
-spec:
-  rules:
----
-# Source: addonset/templates/addons/cluster-claim-operator/phase.infra.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: cluster-claim-operator
-spec:
-  rules:
 ---
 # Source: addonset/templates/addons/cluster-claim-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
