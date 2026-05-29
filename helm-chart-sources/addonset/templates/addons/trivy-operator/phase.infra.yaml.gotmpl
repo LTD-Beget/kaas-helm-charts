@@ -1,4 +1,4 @@
-{{- if .Values.addons.trivyoperator.enabled }}
+{{- if and .Values.addons.trivyoperator.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "trivy-operator"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
@@ -11,7 +11,6 @@ metadata:
   name: trivy-operator
 spec:
   rules:
-    {{- include "common.phase.rules.cert-manager"  $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.system"        $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.vm-operator"   $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.addons.trivyoperator.enabled }}
+{{- if and .Values.addons.trivyoperator.enabled .Values.addons.system.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -36,7 +36,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: trivy-operator
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: trivy-operator
