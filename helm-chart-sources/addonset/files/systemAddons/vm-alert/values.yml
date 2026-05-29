@@ -8,6 +8,10 @@ metadata:
     addons.in-cloud.io/addon: vm-alert
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      vmalert:
+        enabled: true
     victoria-metrics-k8s-stack:
       fullnameOverride: "vm-alert"
       vmalert:
