@@ -13,6 +13,18 @@ spec:
   targetNamespace: "{{ .Values.companyPrefix }}-trivy-operator"
   variables:
     cluster_name: in-cluster
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
   backend:
     finalizer: true
     type: "argocd"
