@@ -10,12 +10,13 @@
     common    - append common values file files/common/values/<name>.yaml.gotmpl
   */ -}}
   {{- range $value := list
-    (dict "name" "client"       "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "default"      "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "immutable"    "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "infra"        "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "system"       "enabled" true  "file"  true  "template"  false "common"  false )
-    (dict "name" "vm-operator"  "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "client"           "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "default"          "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "immutable"        "enabled" true  "file"  false "template"  false "common"  false )
+    (dict "name" "infra"            "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "system"           "enabled" true  "file"  true  "template"  false "common"  false )
+    (dict "name" "network-policies" "enabled" true  "file"  false "template"  false "common"  true  )
+    (dict "name" "vm-operator"      "enabled" true  "file"  true  "template"  false "common"  true  )
   }}
     {{- if $value.enabled }}
 ---
