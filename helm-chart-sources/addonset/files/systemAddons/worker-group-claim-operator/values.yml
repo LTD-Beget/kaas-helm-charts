@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: worker-group-claim-operator
 spec:
   values: |
+    networkPolicies:
+      enabled: true
     companyPrefix: {{ .Values.companyPrefix }}
     manager:
       image:

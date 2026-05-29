@@ -106,6 +106,8 @@ spec:
       enabled: true
     networkPolicies:
       enabled: false
+      internal:
+        enabled: true
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

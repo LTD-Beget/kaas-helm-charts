@@ -8,7 +8,7 @@ spec:
   chart: "capi-kubeadm-bootstrap"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "1.2.0"
+  version: "1.2.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-capi"
   variables:

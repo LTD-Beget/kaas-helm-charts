@@ -8,7 +8,7 @@ spec:
   chart: "trivy-operator"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.29.0-1"
+  version: "0.29.0-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-trivy-operator"
   variables:

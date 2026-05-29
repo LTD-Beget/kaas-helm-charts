@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "worker-group-claim-operator"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "0.1.2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-worker-group-claim-operator"
   backend:

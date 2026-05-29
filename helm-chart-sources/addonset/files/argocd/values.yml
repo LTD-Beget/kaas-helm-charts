@@ -389,6 +389,7 @@ spec:
         enabled: true
       server:
         enabled: true
+      systemEnabled: {{ .Values.systemEnabled }}
 
 ---
 apiVersion: addons.in-cloud.io/v1alpha1

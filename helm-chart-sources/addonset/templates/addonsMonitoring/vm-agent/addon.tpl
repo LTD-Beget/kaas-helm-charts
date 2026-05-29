@@ -8,7 +8,7 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.52.0-4"
+  version: "0.52.0-5"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmagent"
   variables:
@@ -30,6 +30,8 @@ spec:
           jsonPath: .data.systemVmInsertVIP
         - as: companyPrefix
           jsonPath: .data.companyPrefix
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
         - as: companyDomain
           jsonPath: .data.companyDomain
   initDependencies:

@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: svc-k8s-proxy  
 spec:
   values: |
+    networkPolicies:
+      enabled: true
     companyPrefix: {{ .Values.companyPrefix }}
     config:
       hub:
