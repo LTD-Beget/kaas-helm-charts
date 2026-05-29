@@ -1,4 +1,4 @@
-{{- if .Values.addons.grafanaoperator.enabled }}
+{{- if and .Values.addons.grafanaoperator.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "grafana-operator"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
