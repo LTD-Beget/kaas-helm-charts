@@ -105,3 +105,17 @@ spec:
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
+
+---
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-disable-webhook
+  labels:
+    addons.in-cloud.io/values: disable-webhook
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    webhook:
+      enable: false
