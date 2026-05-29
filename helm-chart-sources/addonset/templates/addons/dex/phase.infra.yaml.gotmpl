@@ -1,4 +1,4 @@
-{{- if .Values.addons.dex.enabled }}
+{{- if and .Values.addons.dex.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "dex"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
@@ -11,7 +11,7 @@ metadata:
   name: dex
 spec:
   rules:
-    {{- include "common.phase.rules.system"       $context | nindent 4 | include "common.trimEmptyLines" }}
-    {{- include "common.phase.rules.vm-operator"  $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.istio-base"   $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"  $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"       $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}

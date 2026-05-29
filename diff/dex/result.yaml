@@ -68,7 +68,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: dex
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: dex
@@ -78,97 +78,6 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: dex
 ---
-# Source: addonset/templates/addons/dex/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: dex-client
-spec:
-  rules:
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 70
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: dex
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: dex
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: dex-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-      selector:
-        name: istio-base
-        priority: 35
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: dex
----
 # Source: addonset/templates/addons/dex/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
@@ -176,58 +85,6 @@ metadata:
   name: dex
 spec:
   rules:
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 70
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: dex
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 45
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: dex
     - name: istio-base
       criteria:
         - source:
@@ -258,6 +115,58 @@ spec:
         priority: 35
         matchLabels:
           addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: dex
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: dex
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: dex
 ---
 # Source: addonset/templates/addons/dex/values.yaml.gotmpl
@@ -329,3 +238,103 @@ spec:
   values: |
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addons/dex/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: dex-system
+  labels:
+    addons.in-cloud.io/values: system
+    addons.in-cloud.io/addon: dex
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+    dex:
+      config:
+        issuer: {{ printf "https://%s" .Values.systemIstioGwDomain }}
+        storage:
+          type: kubernetes
+          config: { inCluster: true }
+        web:
+          https: 0.0.0.0:5554
+          tlsCert: /etc/dex/tls/tls.crt
+          tlsKey:  /etc/dex/tls/tls.key
+        enablePasswordDB: true
+        staticPasswords:
+          - email: {{ .Values.companyAdminUser }}
+            username: admin
+            userID: 00000000-0000-0000-0000-000000000001
+            hash: {{ .Values.dexStaticPasswordsAdmin }}
+        staticClients:
+          - id: grafana
+            name: Grafana
+            secret: super-secret-grafana
+            redirectURIs:
+              - /grafana/login/generic_oauth
+              - {{ printf "https://%s/grafana/login/generic_oauth" .Values.systemIstioGwDomainInternal }}
+          - id: kubernetes
+            name: incloud-web-chart-oauth2-proxy
+            secret: incloud-web-chart-super-secret
+            redirectURIs:
+              - {{ printf "https://%s/oauth2/callback" .Values.systemIstioGwDomainInternal }}
+              - "https://localhost/oauth2/callback"
+          - id: argocd
+            name: argocd
+            secret: argo-cd-super-secret
+            redirectURIs:
+              - {{ printf "https://%s/argocd/auth/callback" .Values.systemIstioGwDomainInternal }}
+              - "https://localhost/argocd/auth/callback"
+          - id: apiserver
+            name: apiserver
+            redirectURIs:
+              - http://localhost:8000
+              - http://127.0.0.1:8000
+            secret: {{ .Values.dexStaticPasswordsAdmin }}
+      https:
+        enabled: true
+      volumeMounts:
+        - name: tls
+          mountPath: /etc/dex/tls
+          readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ .Values.clusterName }}-dex-tls
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+    tls:
+      enabled: true
+      issuer:
+        name: oidc-ca
+        secretName: selfsigned-infra-cluster-ca
+      certificate:
+        name: {{ .Values.clusterName }}-dex-tls
+        secretName: {{ .Values.clusterName }}-dex-tls
+        commonName: dex
+        ipAddresses:
+          - "127.0.0.1"
+        dnsNames:
+          - dex.{{ .Values.companyPrefix }}-dex.svc
+          - dex.{{ .Values.companyPrefix }}-dex.svc.cluster.local
+    rbac:
+      enabled: true
+      clusterRoleBinding:
+        subjects:
+          kind: User
+          name: "{{ .Values.companyAdminUser }}"
+    monitoring:
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
