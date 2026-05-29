@@ -1,0 +1,24 @@
+{{- if .Values.networkPolicies.systemEnabled }}
+---
+# Allow the internal Istio gateway to reach istiod.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-istiod-from-istio-gw-internal-15012
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: istiod
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '15012'
+        protocol: TCP
+  description: Allows ingress from istio-gw-internal to istiod on 15012.
+{{- end }}
