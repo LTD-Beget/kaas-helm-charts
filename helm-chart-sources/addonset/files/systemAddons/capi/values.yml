@@ -19,9 +19,6 @@ metadata:
     addons.in-cloud.io/addon: capi
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
     monitoring:
       vmServiceScrape:
         enabled: true
@@ -47,6 +44,9 @@ metadata:
     addons.in-cloud.io/addon: capi
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     certificates:
       useExternalIssuer: true
       externalIssuer:
