@@ -404,4 +404,25 @@ spec:
       - port: '8401'
         protocol: TCP
   description: Allows egress from vmselect to vmstorage on 8401 for the read path.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmselect-from-world-8401-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+      k8s:app.kubernetes.io/name: vmselect
+  ingress:
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "8401"
+        protocol: TCP
+      - port: '11043'
+        protocol: TCP 
 {{- end }}
