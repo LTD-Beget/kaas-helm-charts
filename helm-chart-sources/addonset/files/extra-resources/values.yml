@@ -371,7 +371,7 @@ spec:
         spec:
           endpointSelector:
             matchLabels:
-              k8s:app.kubernetes.io/name: ccm-infra
+              k8s:app.kubernetes.io/name: csrc-infra
           egress:
           - toEntities:
             - world
@@ -389,7 +389,7 @@ spec:
         spec:
           endpointSelector:
             matchLabels:
-              k8s:app.kubernetes.io/name: csrc-infra
+              k8s:app.kubernetes.io/name: ccm-infra
           egress:
           - toEntities:
             - world
