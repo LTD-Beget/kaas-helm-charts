@@ -56,7 +56,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: helm-inserter
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: helm-inserter
@@ -65,30 +65,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: helm-inserter
----
-# Source: addonset/templates/addons/helm-inserter/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: helm-inserter-client
-spec:
-  rules:
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 70
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: helm-inserter
 ---
 # Source: addonset/templates/addons/helm-inserter/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
