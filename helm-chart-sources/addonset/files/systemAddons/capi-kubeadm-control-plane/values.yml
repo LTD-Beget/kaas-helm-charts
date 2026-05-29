@@ -19,6 +19,9 @@ metadata:
     addons.in-cloud.io/addon: capi-kubeadm-control-plane
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     monitoring:
       vmServiceScrape:
         enabled: true
