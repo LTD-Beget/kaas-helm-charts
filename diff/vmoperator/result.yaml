@@ -67,7 +67,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-operator
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: vm-operator
@@ -84,22 +84,6 @@ metadata:
   name: vm-operator-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: vm-operator
     - name: cert-manager
       criteria:
         - source:
@@ -180,6 +164,7 @@ spec:
     argocdPlugins:
       kustomize: true
     monitoring:
+      enabled: true
       secureService:
         enabled: true
         issuer:
@@ -278,7 +263,17 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+---
+# Source: addonset/templates/addons/vm-operator/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-operator-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: vm-operator
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
-      enabled: true
-    monitoring:
       enabled: true
