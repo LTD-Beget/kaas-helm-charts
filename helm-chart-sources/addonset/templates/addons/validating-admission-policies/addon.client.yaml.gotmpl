@@ -3,9 +3,9 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: validating-admission-policies
+  name: validating-admission-policies-client
 spec:
-  targetCluster: in-cluster
+  targetCluster: {{ .Values.clientName }}
   chart: "validating-admission-policies"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.0"

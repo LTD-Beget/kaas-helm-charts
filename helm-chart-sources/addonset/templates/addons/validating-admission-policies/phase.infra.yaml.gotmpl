@@ -1,4 +1,4 @@
-{{- if _CONDITION_ }}
+{{- if .Values.addons.validatingadmissionpolicies.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "validating-admission-policies"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
@@ -11,4 +11,5 @@ metadata:
   name: validating-admission-policies
 spec:
   rules:
+    {{- include "common.phase.rules.infra"  $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}
