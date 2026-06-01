@@ -46,7 +46,6 @@ spec:
       automated:
         prune: true
         selfHeal: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -61,7 +60,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-cluster
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: vm-cluster
@@ -70,35 +69,6 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: vm-cluster
----
-# Source: addonset/templates/addons/vm-cluster/phase.client.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: vm-cluster-client
-spec:
-  rules:
-    - name: cert-manager
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: cert-manager
-        priority: 25
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: vm-cluster
 ---
 # Source: addonset/templates/addons/vm-cluster/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1

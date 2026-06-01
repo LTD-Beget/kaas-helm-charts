@@ -1,4 +1,4 @@
-{{- if .Values.addons.vmcluster.enabled }}
+{{- if and .Values.addons.vmcluster.enabled .Values.addons.system.enabled }}
   {{- $addonName := "vm-cluster" -}}
 
   {{- /*

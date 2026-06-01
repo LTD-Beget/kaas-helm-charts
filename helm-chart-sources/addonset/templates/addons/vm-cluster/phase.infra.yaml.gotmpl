@@ -1,4 +1,4 @@
-{{- if .Values.addons.vmcluster.enabled }}
+{{- if and .Values.addons.vmcluster.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "vm-cluster"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}
