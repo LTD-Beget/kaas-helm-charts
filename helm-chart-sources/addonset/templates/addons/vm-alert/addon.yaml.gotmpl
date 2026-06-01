@@ -1,4 +1,4 @@
-{{- if .Values.addons.vmalert.enabled }}
+{{- if and .Values.addons.vmalert.enabled .Values.addons.system.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
@@ -50,7 +50,6 @@ spec:
       automated:
         prune: true
         selfHeal: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -65,7 +64,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-alert
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: vm-alert
