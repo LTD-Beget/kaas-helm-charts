@@ -1,4 +1,4 @@
-{{- if .Values.addons.vmalertmanager.enabled }}
+{{- if and .Values.addons.vmalertmanager.enabled .Values.addons.system.enabled }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "vm-alertmanager"          -}}
   {{- $_        := set $context.Values "suffix"         ""                 -}}

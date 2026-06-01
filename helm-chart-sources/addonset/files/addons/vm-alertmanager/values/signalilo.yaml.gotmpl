@@ -15,4 +15,3 @@ alertmanagerConfig:
           mainSignaliloInstance:
             url: "http://signalilo.{{ .Values.companyPrefix }}-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
             send_resolved: true
-
