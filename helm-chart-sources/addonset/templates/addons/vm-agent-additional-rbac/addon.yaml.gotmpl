@@ -3,7 +3,7 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac
+  name: vm-agent-additional-rbac
 spec:
   chart: "helm-inserter"
   pluginName: helm-with-values
@@ -53,7 +53,6 @@ spec:
       automated:
         prune: true
         selfHeal: true
-        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -66,15 +65,15 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
 {{- end }}
