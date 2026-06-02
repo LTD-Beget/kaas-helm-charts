@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -48,6 +48,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -62,13 +63,8 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cert-manager
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: cert-manager
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: cert-manager
@@ -78,43 +74,20 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: cert-manager
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: cert-manager-client
 spec:
   rules:
-    - name: initialized
+    - name: vm-operator
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: initialized
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: initialized
-          addons.in-cloud.io/addon: cert-manager
-    - name: initialized-2
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
           operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
@@ -123,30 +96,6 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-      selector:
-        name: initialized-2
-        priority: 13
-        matchLabels:
-          addons.in-cloud.io/values: initialized-2
-          addons.in-cloud.io/addon: cert-manager
-    # - name: infra
-    #   criteria:
-    #     - source:
-    #         apiVersion: v1
-    #         kind: ConfigMap
-    #         name: parameters-client
-    #         namespace: example-system
-    #       jsonPath: $.data.environment
-    #       operator: Equal
-    #       value: "infra"
-    #   selector:
-    #     name: infra
-    #     priority: 15
-    #     matchLabels:
-    #       addons.in-cloud.io/values: infra
-    #       addons.in-cloud.io/addon: cert-manager
-    - name: vm-operator
-      criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -164,34 +113,34 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 20
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: cert-manager
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: cert-manager
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: cert-manager
 spec:
   rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: cert-manager
     - name: initialized
       criteria:
         - source:
@@ -202,13 +151,6 @@ spec:
           operator: Equal
           value: true
           keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
       selector:
         name: initialized
         priority: 10
@@ -223,6 +165,20 @@ spec:
             name: cert-manager
           jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized')]
           operator: Exists
+      selector:
+        name: initialized-2
+        priority: 15
+        matchLabels:
+          addons.in-cloud.io/values: initialized-2
+          addons.in-cloud.io/addon: cert-manager
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -230,30 +186,6 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-      selector:
-        name: initialized-2
-        priority: 13
-        matchLabels:
-          addons.in-cloud.io/values: initialized-2
-          addons.in-cloud.io/addon: cert-manager
-    # - name: infra
-    #   criteria:
-    #     - source:
-    #         apiVersion: v1
-    #         kind: ConfigMap
-    #         name: parameters-infra
-    #         namespace: example-system
-    #       jsonPath: $.data.environment
-    #       operator: Equal
-    #       value: "infra"
-    #   selector:
-    #     name: infra
-    #     priority: 15
-    #     matchLabels:
-    #       addons.in-cloud.io/values: infra
-    #       addons.in-cloud.io/addon: cert-manager
-    - name: vm-operator
-      criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -271,9 +203,48 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 20
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: cert-manager
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: cert-manager
     - name: system
       criteria:
@@ -287,12 +258,43 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 30
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: cert-manager
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    cert-manager:
+      cainjector:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+      startupapicheck:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+      webhook:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+        tolerations:
+          - operator: "Exists"
+---
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -340,7 +342,7 @@ spec:
             cpu: 50m
             memory: 128Mi
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -353,7 +355,7 @@ spec:
     cert-manager:
       enableCertificateOwnerRef: true
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -363,7 +365,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
-    companyPrefix: {{ .Values.companyPrefix }}
     cert-manager:
       clusterResourceNamespace: {{ .Values.companyPrefix }}-system
       cainjector:
@@ -397,41 +398,8 @@ spec:
           - key: "node-role.kubernetes.io/master"
             operator: "Exists"
             effect: "NoSchedule"
-    networkPolicies:
-      enabled: true
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: cert-manager-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: cert-manager
-spec:
-  values: |
-    cert-manager:
-      cainjector:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-        tolerations:
-          - operator: "Exists"
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
-      startupapicheck:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-        tolerations:
-          - operator: "Exists"
-      webhook:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-        tolerations:
-          - operator: "Exists"
----
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -472,7 +440,7 @@ spec:
           commonName: root-ca
           secretName: selfsigned-infra-cluster-ca
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -482,13 +450,6 @@ metadata:
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
     issuers:
       selfsignedClusterIssuer:
         kind: ClusterIssuer
@@ -497,20 +458,21 @@ spec:
           ca:
             secretName: selfsigned-infra-cluster-ca
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: cert-manager-vm-operator
+  name: cert-manager-network-policies
   labels:
-    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/values: network-policies
     addons.in-cloud.io/addon: cert-manager
 spec:
   values: |
-    monitoring:
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/cert-manager/cert-manager.yml
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -532,3 +494,23 @@ spec:
         resources:
           limits:
             cpu: 1
+---
+# Source: addonset/templates/addons/cert-manager/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cert-manager-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: cert-manager
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
