@@ -1,0 +1,16 @@
+gateway:
+  service:
+    type: LoadBalancer
+    annotations:
+      lb.{{ .Values.companyDomain }}/type: "internal"
+      lb.{{ .Values.companyDomain }}/algorithm: "round_robin" # or "least_conns"
+      lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+      lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+tls:
+  certificate:
+    dnsNames:
+      - {{ .Values.systemIstioGwDomainInternal }}
+    ipAddresses:
+      - 127.0.0.1
+      - {{ .Values.systemIstioGwVipInternal }}
+      - {{ .Values.clusterHost }}

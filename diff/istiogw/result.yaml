@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -72,6 +72,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -86,7 +87,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-gw-internal
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: istio-gw-internal
@@ -96,7 +97,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-gw-internal
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -169,6 +170,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -183,7 +185,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: istio-gw
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: istio-gw
@@ -193,7 +195,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-gw
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -212,7 +214,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istio-gw-internal
@@ -248,9 +250,48 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw-internal
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: istio-gw-internal
     - name: system
       criteria:
@@ -264,34 +305,18 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: istio-gw-internal
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: istio-gw-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: istio-gw
     - name: vm-operator
       criteria:
         - source:
@@ -324,28 +349,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: istio-gw
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: istio-gw
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -364,7 +373,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: istio-gw
@@ -400,9 +409,48 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: istio-gw
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: istio-gw
     - name: system
       criteria:
@@ -416,12 +464,12 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: istio-gw
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -441,7 +489,7 @@ spec:
           cpu: 100m
           memory: 128Mi
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -450,9 +498,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: istio-gw-internal
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -527,29 +575,8 @@ spec:
             protocol: HTTP 
     telemetry:
       enabled: true
-    networkPolicies:
-      enabled: false
 ---
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-internal-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istio-gw-internal
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/istio-gw-internal/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -576,7 +603,52 @@ spec:
           - {{ .Values.systemIstioGwVipInternal }}
           - {{ .Values.clusterHost }}
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/istio-gw-internal/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-internal-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw-internal
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
+---
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    gateway:
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -596,7 +668,7 @@ spec:
           cpu: 100m
           memory: 128Mi
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -605,9 +677,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: istio-gw
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -682,43 +754,8 @@ spec:
             protocol: HTTP 
     telemetry:
       enabled: true
-    networkPolicies:
-      enabled: true
 ---
-# Source: addonset/templates/istio-gw/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: istio-gw
-spec:
-  values: |
-    gateway:
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/istio-gw/istio-gw.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-gw-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: istio-gw
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/istio-gw/istio-gw.yml
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -744,3 +781,37 @@ spec:
           - 127.0.0.1
           - {{ .Values.systemIstioGwVip }}
           - {{ .Values.clusterHost }}
+---
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/addons/istio-gw/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: istio-gw-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: istio-gw
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
