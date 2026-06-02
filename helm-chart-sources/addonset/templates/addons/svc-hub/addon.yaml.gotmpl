@@ -1,5 +1,5 @@
+{{- if and .Values.addons.svchub.enabled .Values.addons.system.enabled }}
 ---
-# Source: addonset/templates/addons/svc-hub/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -7,10 +7,10 @@ metadata:
 spec:
   chart: "svc-hub"
   pluginName: helm-with-values
-  repoURL: "example.com"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.0"
   targetCluster: in-cluster
-  targetNamespace: "example-svc-hub"
+  targetNamespace: "{{ .Values.companyPrefix }}-svc-hub"
   variables:
     cluster_name: in-cluster
     dependency: "True"
@@ -20,7 +20,7 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
@@ -37,7 +37,7 @@ spec:
   backend: 
     finalizer: true 
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -66,43 +66,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: svc-hub
----
-# Source: addonset/templates/addons/svc-hub/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: svc-hub-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: svc-hub
-spec:
-  values: |
-    hub:
-      image:
-        repository: {{ .Values.companyInternalDockerRegistry }}/golang/svc-hub
-      config:
-        plugin:
-          rabbit:
-            host: "{{ .Values.svcHubRabbitHost }}"
-            port: 5672
-            username: "{{ .Values.svcHubRabbitUsername }}"
-            password: "{{ .Values.svcHubRabbitPassword }}"
-            virtual_host: "{{ .Values.svcHubRabbitVirtualHost }}"
-            exchange: global-events
-        sd:
-          tags: [{{ .Values.companyPrefix }}, production, k8s]
-      env:
-        CONSUL_HTTP_ADDR: consul.{{ .Values.companyPrefix }}:8500
-    imagePullSecrets:
-      - name: regcred
----
-# Source: addonset/templates/addons/svc-hub/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: svc-hub-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: svc-hub
-spec:
-  values: |
+{{- end }}
