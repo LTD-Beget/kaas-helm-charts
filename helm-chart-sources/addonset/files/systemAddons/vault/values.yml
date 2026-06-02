@@ -13,6 +13,19 @@ spec:
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
+  name: vault-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: vault
+spec:
+  values: |
+    networkPolicies:
+      enabled: true
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
   name: vault-immutable
   labels:
     addons.in-cloud.io/values: immutable

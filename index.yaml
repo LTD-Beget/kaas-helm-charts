@@ -1,1328 +1,1061 @@
 apiVersion: v1
 entries:
   addon-manifests:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.664235+05:00"
-      description: A Helm chart for Kubernetes
-      digest: f0b8cf7f0c65e8465e9db3dd058527d90944fe9a02b475131e59a4f6d2e4d21d
-      name: addon-manifests
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-manifests-0.1.0.tgz
-      version: 0.1.0
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-02T21:14:44.27657+03:00"
-      description: A Helm chart for Kubernetes
-      digest: 2baa0f020bc22e1ee75e03d0124327cb5e3db48a658b535e03af818f19e313cf
-      name: addon-manifests
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-manifests-0.1.1.tgz
-      version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.361888+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 52161cc142909cfba0e83ed3113ac867fd9bd324554d7a817677c1485001f396
+    name: addon-manifests
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-manifests-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.361555+05:00"
+    description: A Helm chart for Kubernetes
+    digest: f0b8cf7f0c65e8465e9db3dd058527d90944fe9a02b475131e59a4f6d2e4d21d
+    name: addon-manifests
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-manifests-0.1.0.tgz
+    version: 0.1.0
   addon-operator:
-    - apiVersion: v2
-      appVersion: v0.0.7-44e3970b
-      created: "2026-06-01T20:56:36.66806+05:00"
-      description: A Helm chart to distribute the project addon-operator
-      digest: 018922eedf1d8a8359ac88d454b6623cb546d4d0255547dd22098e3b1801bf17
-      icon: https://example.com/icon.png
-      name: addon-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.5.tgz
-      version: 0.1.5
-    - apiVersion: v2
-      appVersion: v0.0.7-44e3970b
-      created: "2026-06-01T20:56:36.667477+05:00"
-      description: A Helm chart to distribute the project addon-operator
-      digest: 6530dab3b8b6df895e9d71e130f37076f2357e8150d2310175cd258bdb9a50ef
-      icon: https://example.com/icon.png
-      name: addon-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.4.tgz
-      version: 0.1.4
-    - apiVersion: v2
-      appVersion: v0.0.4-bf6aa5c2
-      created: "2026-06-01T20:56:36.66674+05:00"
-      description: A Helm chart to distribute the project addon-operator
-      digest: 860225503152c8670a467cde7fca618a90289c64c7c42c089c82a6e1dad6dedc
-      icon: https://example.com/icon.png
-      name: addon-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.3.tgz
-      version: 0.1.3
-    - apiVersion: v2
-      appVersion: v0.0.3-12e5009a
-      created: "2026-06-01T20:56:36.665242+05:00"
-      description: A Helm chart to distribute the project addon-operator
-      digest: 041d298082b9348dd0497262675acb7deff4d506708af96b8019580f830165ea
-      icon: https://example.com/icon.png
-      name: addon-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.2.tgz
-      version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.0.7-44e3970b
+    created: "2026-06-02T12:49:04.364313+05:00"
+    description: A Helm chart to distribute the project addon-operator
+    digest: 6530dab3b8b6df895e9d71e130f37076f2357e8150d2310175cd258bdb9a50ef
+    icon: https://example.com/icon.png
+    name: addon-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: v0.0.4-bf6aa5c2
+    created: "2026-06-02T12:49:04.363239+05:00"
+    description: A Helm chart to distribute the project addon-operator
+    digest: 860225503152c8670a467cde7fca618a90289c64c7c42c089c82a6e1dad6dedc
+    icon: https://example.com/icon.png
+    name: addon-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: v0.0.3-12e5009a
+    created: "2026-06-02T12:49:04.362666+05:00"
+    description: A Helm chart to distribute the project addon-operator
+    digest: 041d298082b9348dd0497262675acb7deff4d506708af96b8019580f830165ea
+    icon: https://example.com/icon.png
+    name: addon-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.2.tgz
+    version: 0.1.2
   addonset:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-02T12:58:25.516443+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 1b7afd2534733614dce49036c3f431acc53cdd4f449466f382758d7de3f18067
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.7.tgz
-      version: 1.0.7
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.673179+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 5bacca2d3cd9006fb7aeb7e0428faa1f2864558e0048bb23f2a76de7b0ae5915
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.5.tgz
-      version: 1.0.5
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.671538+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 5dba209b0fd943891927d8cd9f883b2b136ed8efde8a6bfa99a854bbb0dc0c7f
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.4.tgz
-      version: 1.0.4
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.669628+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 5846fa40dff729f2a260a77c41a203a4c0efacc4a78dfb81ec9bca7853dee653
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.3.tgz
-      version: 1.0.3
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-02T21:14:44.281723+03:00"
-      description: A Helm chart for Kubernetes
-      digest: dca233446414e9a2fa2ff2a5f157931da4191cbc87240d42f08aa27438733cac
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.6.tgz
-      version: 1.0.6
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.374474+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 83ab5f7401a3ed3a3ac48dce7a258f50ab3d1170d6385e1898c0c126331fb60a
+    name: addonset
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.7.tgz
+    version: 1.0.7
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.372354+05:00"
+    description: A Helm chart for Kubernetes
+    digest: ff5514445db91625ca6c5b962808b2ca36d971cb8c9f74cdaff92d5e464cb08b
+    name: addonset
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.370319+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 5bacca2d3cd9006fb7aeb7e0428faa1f2864558e0048bb23f2a76de7b0ae5915
+    name: addonset
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.367669+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 5dba209b0fd943891927d8cd9f883b2b136ed8efde8a6bfa99a854bbb0dc0c7f
+    name: addonset
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.365754+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 5846fa40dff729f2a260a77c41a203a4c0efacc4a78dfb81ec9bca7853dee653
+    name: addonset
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.3.tgz
+    version: 1.0.3
   alert-rules:
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.680124+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 396652837b43f80e0a3447f58cd44a83e13dc3db1a2ea6e2bbd5f52f34996848
-      name: alert-rules
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.3.tgz
-      version: 0.1.3
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.678591+05:00"
-      description: A Helm chart for Kubernetes
-      digest: f09b4a1fc30a468c00077c6d0203e0db11517ea1a6fff884b44a69faf0131c12
-      name: alert-rules
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.2.tgz
-      version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.378019+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 396652837b43f80e0a3447f58cd44a83e13dc3db1a2ea6e2bbd5f52f34996848
+    name: alert-rules
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.376296+05:00"
+    description: A Helm chart for Kubernetes
+    digest: f09b4a1fc30a468c00077c6d0203e0db11517ea1a6fff884b44a69faf0131c12
+    name: alert-rules
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.2.tgz
+    version: 0.1.2
   argo-cd:
-    - annotations:
-        artifacthub.io/changes: |
-          - kind: changed
-            description: Bump dex to v2.42.1
-        artifacthub.io/signKey: |
-          fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
-          url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-      apiVersion: v2
-      appVersion: v3.3.4
-      created: "2026-06-01T20:56:36.708433+05:00"
-      dependencies:
-        - name: argo-cd
-          repository: https://argoproj.github.io/argo-helm
-          version: 9.4.15
-      description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: d540c40d6d3da97106aaafd95e4f6183de4dc3fd2bf0b48f49c5d7d597dba91e
-      home: https://github.com/argoproj/argo-helm
-      icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-      keywords:
-        - argoproj
-        - argocd
-        - gitops
-      kubeVersion: '>=1.25.0-0'
-      maintainers:
-        - name: argoproj
-          url: https://argoproj.github.io/
-      name: argo-cd
-      sources:
-        - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
-        - https://github.com/argoproj/argo-cd
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-4.tgz
-      version: 9.4.15-4
-    - annotations:
-        artifacthub.io/changes: |
-          - kind: changed
-            description: Bump dex to v2.42.1
-        artifacthub.io/signKey: |
-          fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
-          url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-      apiVersion: v2
-      appVersion: v3.3.4
-      created: "2026-06-01T20:56:36.701734+05:00"
-      dependencies:
-        - name: argo-cd
-          repository: https://argoproj.github.io/argo-helm
-          version: 9.4.15
-      description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: ca0c7016298c0e215a37df7b3d6beed3d4caac748fadff48766fe6ac17074f6e
-      home: https://github.com/argoproj/argo-helm
-      icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-      keywords:
-        - argoproj
-        - argocd
-        - gitops
-      kubeVersion: '>=1.25.0-0'
-      maintainers:
-        - name: argoproj
-          url: https://argoproj.github.io/
-      name: argo-cd
-      sources:
-        - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
-        - https://github.com/argoproj/argo-cd
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-3.tgz
-      version: 9.4.15-3
-    - annotations:
-        artifacthub.io/changes: |
-          - kind: changed
-            description: Bump dex to v2.42.1
-        artifacthub.io/signKey: |
-          fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
-          url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-      apiVersion: v2
-      appVersion: v3.3.4
-      created: "2026-06-01T20:56:36.694947+05:00"
-      dependencies:
-        - name: argo-cd
-          repository: https://argoproj.github.io/argo-helm
-          version: 9.4.15
-      description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: d24ddcf15f98ecb63762c1ccbfae1b737504f55635158219970fb91e9ac77053
-      home: https://github.com/argoproj/argo-helm
-      icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-      keywords:
-        - argoproj
-        - argocd
-        - gitops
-      kubeVersion: '>=1.25.0-0'
-      maintainers:
-        - name: argoproj
-          url: https://argoproj.github.io/
-      name: argo-cd
-      sources:
-        - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
-        - https://github.com/argoproj/argo-cd
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-2.tgz
-      version: 9.4.15-2
-    - annotations:
-        artifacthub.io/changes: |
-          - kind: changed
-            description: Bump dex to v2.42.1
-        artifacthub.io/signKey: |
-          fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
-          url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-      apiVersion: v2
-      appVersion: v3.3.4
-      created: "2026-06-01T20:56:36.688083+05:00"
-      dependencies:
-        - name: argo-cd
-          repository: https://argoproj.github.io/argo-helm
-          version: 9.4.15
-      description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: 1f9bfc69329ddd185e2c5764876c743af1afaaee2e4fee643732316f18d7b0f8
-      home: https://github.com/argoproj/argo-helm
-      icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-      keywords:
-        - argoproj
-        - argocd
-        - gitops
-      kubeVersion: '>=1.25.0-0'
-      maintainers:
-        - name: argoproj
-          url: https://argoproj.github.io/
-      name: argo-cd
-      sources:
-        - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
-        - https://github.com/argoproj/argo-cd
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-1.tgz
-      version: 9.4.15-1
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Bump dex to v2.42.1
+      artifacthub.io/signKey: |
+        fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
+        url: https://argoproj.github.io/argo-helm/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v3.3.4
+    created: "2026-06-02T12:49:04.400404+05:00"
+    dependencies:
+    - name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.15
+    description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
+      tool for Kubernetes.
+    digest: ca0c7016298c0e215a37df7b3d6beed3d4caac748fadff48766fe6ac17074f6e
+    home: https://github.com/argoproj/argo-helm
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argoproj
+    - argocd
+    - gitops
+    kubeVersion: '>=1.25.0-0'
+    maintainers:
+    - name: argoproj
+      url: https://argoproj.github.io/
+    name: argo-cd
+    sources:
+    - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+    - https://github.com/argoproj/argo-cd
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-3.tgz
+    version: 9.4.15-3
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Bump dex to v2.42.1
+      artifacthub.io/signKey: |
+        fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
+        url: https://argoproj.github.io/argo-helm/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v3.3.4
+    created: "2026-06-02T12:49:04.393924+05:00"
+    dependencies:
+    - name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.15
+    description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
+      tool for Kubernetes.
+    digest: d24ddcf15f98ecb63762c1ccbfae1b737504f55635158219970fb91e9ac77053
+    home: https://github.com/argoproj/argo-helm
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argoproj
+    - argocd
+    - gitops
+    kubeVersion: '>=1.25.0-0'
+    maintainers:
+    - name: argoproj
+      url: https://argoproj.github.io/
+    name: argo-cd
+    sources:
+    - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+    - https://github.com/argoproj/argo-cd
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-2.tgz
+    version: 9.4.15-2
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Bump dex to v2.42.1
+      artifacthub.io/signKey: |
+        fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
+        url: https://argoproj.github.io/argo-helm/pgp_keys.asc
+    apiVersion: v2
+    appVersion: v3.3.4
+    created: "2026-06-02T12:49:04.386281+05:00"
+    dependencies:
+    - name: argo-cd
+      repository: https://argoproj.github.io/argo-helm
+      version: 9.4.15
+    description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery
+      tool for Kubernetes.
+    digest: 1f9bfc69329ddd185e2c5764876c743af1afaaee2e4fee643732316f18d7b0f8
+    home: https://github.com/argoproj/argo-helm
+    icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+    keywords:
+    - argoproj
+    - argocd
+    - gitops
+    kubeVersion: '>=1.25.0-0'
+    maintainers:
+    - name: argoproj
+      url: https://argoproj.github.io/
+    name: argo-cd
+    sources:
+    - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+    - https://github.com/argoproj/argo-cd
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-1.tgz
+    version: 9.4.15-1
   bootstrap:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.709261+05:00"
-      description: Helm chart for bootstrap addonset
-      digest: da1376667ef888707aaf33b247e6228f8dd056aab895256ed7a1291aae2bd279
-      name: bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.6.tgz
-      version: 1.0.6
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.709093+05:00"
-      description: Helm chart for bootstrap addonset
-      digest: be0bbabcbab7d54d3b2fa4f645182b1a3ecc19bd5d74cd9f54e61882501ecb55
-      name: bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.5.tgz
-      version: 1.0.5
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.708931+05:00"
-      description: Helm chart for bootstrap addonset
-      digest: 981dbca7f48327a3fed4f36c486f73f07c4dffbe97581707f9be255a98222093
-      name: bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.4.tgz
-      version: 1.0.4
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.708759+05:00"
-      description: Helm chart for bootstrap addonset
-      digest: 2f760516f309dbc8d13c952971af9fe2403fa3d7f6d48259fa26317f2f15db0a
-      name: bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.3.tgz
-      version: 1.0.3
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.40129+05:00"
+    description: Helm chart for bootstrap addonset
+    digest: da1376667ef888707aaf33b247e6228f8dd056aab895256ed7a1291aae2bd279
+    name: bootstrap
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.401103+05:00"
+    description: Helm chart for bootstrap addonset
+    digest: be0bbabcbab7d54d3b2fa4f645182b1a3ecc19bd5d74cd9f54e61882501ecb55
+    name: bootstrap
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.400857+05:00"
+    description: Helm chart for bootstrap addonset
+    digest: 981dbca7f48327a3fed4f36c486f73f07c4dffbe97581707f9be255a98222093
+    name: bootstrap
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.400583+05:00"
+    description: Helm chart for bootstrap addonset
+    digest: 2f760516f309dbc8d13c952971af9fe2403fa3d7f6d48259fa26317f2f15db0a
+    name: bootstrap
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.3.tgz
+    version: 1.0.3
   capi:
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.714635+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 7119bd050d931a3ab9312b623552f6fdcd28645fbe34491e6d70e1d464aa0833
-      name: capi
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-1.2.1.tgz
-      version: 1.2.1
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.712037+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 1dee516c5d9ce3b1a2a01c3a26455103fd26cdb794569e9cefa559d89c3e30ee
-      name: capi
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-1.2.0.tgz
-      version: 1.2.0
+  - apiVersion: v2
+    appVersion: v1.12.1
+    created: "2026-06-02T12:49:04.404463+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 1dee516c5d9ce3b1a2a01c3a26455103fd26cdb794569e9cefa559d89c3e30ee
+    name: capi
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-1.2.0.tgz
+    version: 1.2.0
   capi-kubeadm-bootstrap:
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.718034+05:00"
-      description: A Helm chart for Kubernetes
-      digest: a7fddc414f1b73eed6c20f828eec824a411002c6c4e38ef8de82c6c237a6fe0e
-      name: capi-kubeadm-bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-bootstrap-1.2.1.tgz
-      version: 1.2.1
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.716631+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 961d025edb5f01fc2cb7ebc75b344b3c867f82ccbf115c3b2d8987e9518da123
-      name: capi-kubeadm-bootstrap
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-bootstrap-1.2.0.tgz
-      version: 1.2.0
+  - apiVersion: v2
+    appVersion: v1.12.1
+    created: "2026-06-02T12:49:04.40632+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 961d025edb5f01fc2cb7ebc75b344b3c867f82ccbf115c3b2d8987e9518da123
+    name: capi-kubeadm-bootstrap
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-bootstrap-1.2.0.tgz
+    version: 1.2.0
   capi-kubeadm-control-plane:
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.721551+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 2f2c70ba8febd52900189e8387a58302b5d7da1ba4296fc86262b8fb853cbd4b
-      name: capi-kubeadm-control-plane
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-control-plane-1.2.1.tgz
-      version: 1.2.1
-    - apiVersion: v2
-      appVersion: v1.12.1
-      created: "2026-06-01T20:56:36.719637+05:00"
-      description: A Helm chart for Kubernetes
-      digest: cf03661ff575e43863b7f588ffb0a534169657045aa7a1f44cc98020bcd16fcf
-      name: capi-kubeadm-control-plane
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-control-plane-1.2.0.tgz
-      version: 1.2.0
+  - apiVersion: v2
+    appVersion: v1.12.1
+    created: "2026-06-02T12:49:04.40848+05:00"
+    description: A Helm chart for Kubernetes
+    digest: cf03661ff575e43863b7f588ffb0a534169657045aa7a1f44cc98020bcd16fcf
+    name: capi-kubeadm-control-plane
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-kubeadm-control-plane-1.2.0.tgz
+    version: 1.2.0
   capi-provider-controller-manager:
-    - apiVersion: v2
-      appVersion: v2.1.6
-      created: "2026-06-01T20:56:36.723187+05:00"
-      dependencies:
-        - name: appSpec
-          repository: '@appSpec'
-          version: '*'
-      description: A Helm chart for Kubernetes
-      digest: d06ae5ee6ebade6a4a7101dd7de615c8c1361438449f3a6e5437776ff3272ce1
-      name: capi-provider-controller-manager
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-provider-controller-manager-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: v2.1.6
-      created: "2026-06-01T20:56:36.72226+05:00"
-      dependencies:
-        - name: appSpec
-          repository: '@appSpec'
-          version: '*'
-      description: A Helm chart for Kubernetes
-      digest: e98d52201f6590c121c74fec4aadd3784b2d748d28fc8f94372124bff8127767
-      name: capi-provider-controller-manager
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-provider-controller-manager-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: v2.1.6
+    created: "2026-06-02T12:49:04.409748+05:00"
+    dependencies:
+    - name: appSpec
+      repository: '@appSpec'
+      version: '*'
+    description: A Helm chart for Kubernetes
+    digest: e98d52201f6590c121c74fec4aadd3784b2d748d28fc8f94372124bff8127767
+    name: capi-provider-controller-manager
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/capi-provider-controller-manager-0.1.0.tgz
+    version: 0.1.0
   ccm-csr-controller:
-    - apiVersion: v2
-      appVersion: v0.1.1
-      created: "2026-06-01T20:56:36.723929+05:00"
-      description: A Helm chart for Kubernetes
-      digest: e6b4d27cfaf9a339f8d2d442abbda2a0fc597cde54f596dba9f8bdb81cecc051
-      name: ccm-csr-controller
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/ccm-csr-controller-0.1.2.tgz
-      version: 0.1.2
-    - apiVersion: v2
-      appVersion: v0.1.1
-      created: "2026-06-01T20:56:36.723587+05:00"
-      description: A Helm chart for Kubernetes
-      digest: b717c75b6ee19b64f98e129892c34318c478daeee806b9f1f9046252bc3f9271
-      name: ccm-csr-controller
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/ccm-csr-controller-0.1.1.tgz
-      version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.1.1
+    created: "2026-06-02T12:49:04.410036+05:00"
+    description: A Helm chart for Kubernetes
+    digest: b717c75b6ee19b64f98e129892c34318c478daeee806b9f1f9046252bc3f9271
+    name: ccm-csr-controller
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/ccm-csr-controller-0.1.1.tgz
+    version: 0.1.1
   cert-manager:
-    - annotations:
-        artifacthub.io/category: security
-        artifacthub.io/license: Apache-2.0
-      apiVersion: v2
-      appVersion: v1.17.1
-      created: "2026-06-01T20:56:36.73073+05:00"
-      dependencies:
-        - name: cert-manager
-          repository: https://charts.jetstack.io
-          version: v1.17.1
-      description: A Helm chart for cert-manager
-      digest: 80f2d1715145bed805a601ceccaf26a395cc5076220ac6f82a2c4ff2421b31aa
-      home: https://cert-manager.io
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - cert-manager
-        - kube-lego
-        - letsencrypt
-        - tls
-      maintainers:
-        - email: cert-manager-maintainers@googlegroups.com
-          name: cert-manager-maintainers
-          url: https://cert-manager.io
-      name: cert-manager
-      sources:
-        - https://github.com/cert-manager/cert-manager
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1-2.tgz
-      version: v1.17.1-2
-    - annotations:
-        artifacthub.io/category: security
-        artifacthub.io/license: Apache-2.0
-      apiVersion: v2
-      appVersion: v1.17.1
-      created: "2026-06-01T20:56:36.727728+05:00"
-      dependencies:
-        - name: cert-manager
-          repository: https://charts.jetstack.io
-          version: v1.17.1
-      description: A Helm chart for cert-manager
-      digest: dffa123e56a1c76952a8a07e3250380573bcfe30b5c4364ca28141130663c5e3
-      home: https://cert-manager.io
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - cert-manager
-        - kube-lego
-        - letsencrypt
-        - tls
-      maintainers:
-        - email: cert-manager-maintainers@googlegroups.com
-          name: cert-manager-maintainers
-          url: https://cert-manager.io
-      name: cert-manager
-      sources:
-        - https://github.com/cert-manager/cert-manager
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1-1.tgz
-      version: v1.17.1-1
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: v1.17.1
+    created: "2026-06-02T12:49:04.417832+05:00"
+    dependencies:
+    - name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.17.1
+    description: A Helm chart for cert-manager
+    digest: 80f2d1715145bed805a601ceccaf26a395cc5076220ac6f82a2c4ff2421b31aa
+    home: https://cert-manager.io
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - kube-lego
+    - letsencrypt
+    - tls
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager
+    sources:
+    - https://github.com/cert-manager/cert-manager
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1-2.tgz
+    version: v1.17.1-2
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: v1.17.1
+    created: "2026-06-02T12:49:04.414332+05:00"
+    dependencies:
+    - name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.17.1
+    description: A Helm chart for cert-manager
+    digest: dffa123e56a1c76952a8a07e3250380573bcfe30b5c4364ca28141130663c5e3
+    home: https://cert-manager.io
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - kube-lego
+    - letsencrypt
+    - tls
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager
+    sources:
+    - https://github.com/cert-manager/cert-manager
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-v1.17.1-1.tgz
+    version: v1.17.1-1
   cert-manager-csi-driver:
-    - annotations:
-        artifacthub.io/alternativeName: csi-driver
-        artifacthub.io/category: security
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/recommendations: |
-          - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager-csi-driver-spiffe
-          - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
-          - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
-      apiVersion: v2
-      appVersion: 0.10.4
-      created: "2026-06-01T20:56:36.724943+05:00"
-      dependencies:
-        - name: cert-manager-csi-driver
-          repository: https://charts.jetstack.io
-          version: 0.10.4
-      description: cert-manager csi-driver enables issuing secretless X.509 certificates for pods using cert-manager
-      digest: da6ff7663089eb30fda58c9fd8379c8e8fc5ba7ac0a5d44e0ebb55acf59d84ba
-      home: https://cert-manager.io/docs/usage/csi-driver
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - cert-manager
-        - csi
-        - tls
-      maintainers:
-        - email: cert-manager-maintainers@googlegroups.com
-          name: cert-manager-maintainers
-          url: https://cert-manager.io
-      name: cert-manager-csi-driver
-      sources:
-        - https://github.com/cert-manager/csi-driver
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-csi-driver-0.10.4-2.tgz
-      version: 0.10.4-2
-    - annotations:
-        artifacthub.io/alternativeName: csi-driver
-        artifacthub.io/category: security
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/recommendations: |
-          - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager-csi-driver-spiffe
-          - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
-          - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
-      apiVersion: v2
-      appVersion: 0.10.4
-      created: "2026-06-01T20:56:36.724432+05:00"
-      dependencies:
-        - name: cert-manager-csi-driver
-          repository: https://charts.jetstack.io
-          version: 0.10.4
-      description: cert-manager csi-driver enables issuing secretless X.509 certificates for pods using cert-manager
-      digest: aa922d1b6851d7b35e6c282b0dfc66361f1a99c307b0475122473c899be9bd4e
-      home: https://cert-manager.io/docs/usage/csi-driver
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - cert-manager
-        - csi
-        - tls
-      maintainers:
-        - email: cert-manager-maintainers@googlegroups.com
-          name: cert-manager-maintainers
-          url: https://cert-manager.io
-      name: cert-manager-csi-driver
-      sources:
-        - https://github.com/cert-manager/csi-driver
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-csi-driver-0.10.4-1.tgz
-      version: 0.10.4-1
+  - annotations:
+      artifacthub.io/alternativeName: csi-driver
+      artifacthub.io/category: security
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager-csi-driver-spiffe
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+        - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
+    apiVersion: v2
+    appVersion: 0.10.4
+    created: "2026-06-02T12:49:04.411056+05:00"
+    dependencies:
+    - name: cert-manager-csi-driver
+      repository: https://charts.jetstack.io
+      version: 0.10.4
+    description: cert-manager csi-driver enables issuing secretless X.509 certificates
+      for pods using cert-manager
+    digest: da6ff7663089eb30fda58c9fd8379c8e8fc5ba7ac0a5d44e0ebb55acf59d84ba
+    home: https://cert-manager.io/docs/usage/csi-driver
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - csi
+    - tls
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager-csi-driver
+    sources:
+    - https://github.com/cert-manager/csi-driver
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-csi-driver-0.10.4-2.tgz
+    version: 0.10.4-2
+  - annotations:
+      artifacthub.io/alternativeName: csi-driver
+      artifacthub.io/category: security
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager-csi-driver-spiffe
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+        - url: https://artifacthub.io/packages/helm/cert-manager/trust-manager
+    apiVersion: v2
+    appVersion: 0.10.4
+    created: "2026-06-02T12:49:04.410521+05:00"
+    dependencies:
+    - name: cert-manager-csi-driver
+      repository: https://charts.jetstack.io
+      version: 0.10.4
+    description: cert-manager csi-driver enables issuing secretless X.509 certificates
+      for pods using cert-manager
+    digest: aa922d1b6851d7b35e6c282b0dfc66361f1a99c307b0475122473c899be9bd4e
+    home: https://cert-manager.io/docs/usage/csi-driver
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - csi
+    - tls
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager-csi-driver
+    sources:
+    - https://github.com/cert-manager/csi-driver
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cert-manager-csi-driver-0.10.4-1.tgz
+    version: 0.10.4-1
   certificate-set:
-    - apiVersion: v2
-      appVersion: v0.0.2-ba5ef9b4
-      created: "2026-06-01T20:56:36.731555+05:00"
-      description: A Helm chart to distribute the project certs
-      digest: d376ad82e7a333b4a8f82d62e0219590255507f95cede0d376f7f2cd24df2ce3
-      icon: https://example.com/icon.png
-      name: certificate-set
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/certificate-set-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: v0.0.1-ea14c168
-      created: "2026-06-01T20:56:36.731086+05:00"
-      description: A Helm chart to distribute the project certs
-      digest: 1834cfef3659270319152f17e6508f3932b97c5948eb5a9e1317e9f048171d81
-      icon: https://example.com/icon.png
-      name: certificate-set
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/certificate-set-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: v0.0.2-ba5ef9b4
+    created: "2026-06-02T12:49:04.418498+05:00"
+    description: A Helm chart to distribute the project certs
+    digest: d376ad82e7a333b4a8f82d62e0219590255507f95cede0d376f7f2cd24df2ce3
+    icon: https://example.com/icon.png
+    name: certificate-set
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/certificate-set-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.0.1-ea14c168
+    created: "2026-06-02T12:49:04.418176+05:00"
+    description: A Helm chart to distribute the project certs
+    digest: 1834cfef3659270319152f17e6508f3932b97c5948eb5a9e1317e9f048171d81
+    icon: https://example.com/icon.png
+    name: certificate-set
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/certificate-set-0.1.0.tgz
+    version: 0.1.0
   cilium:
-    - apiVersion: v2
-      appVersion: 1.19.4
-      created: "2026-06-01T20:56:36.750664+05:00"
-      dependencies:
-        - name: cilium
-          repository: https://helm.cilium.io
-          version: 1.19.4
-      description: eBPF-based Networking, Security, and Observability
-      digest: 6e10feff63dfbaaf1c2b2cd11538df96c8c67874abd43c18f49cb314af66501b
-      home: https://cilium.io/
-      icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
-      keywords:
-        - BPF
-        - eBPF
-        - Kubernetes
-        - Networking
-        - Security
-        - Observability
-        - Troubleshooting
-      kubeVersion: '>= 1.21.0-0'
-      name: cilium
-      sources:
-        - https://github.com/cilium/cilium
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.19.4-2.tgz
-      version: 1.19.4-2
-    - apiVersion: v2
-      appVersion: 1.18.5
-      created: "2026-06-01T20:56:36.74374+05:00"
-      dependencies:
-        - name: cilium
-          repository: https://helm.cilium.io
-          version: 1.18.5
-      description: eBPF-based Networking, Security, and Observability
-      digest: 87f9f9dc7f48ad8d67be38a1311d3ed8f2d519a0a67959e4c8633098f7c98474
-      home: https://cilium.io/
-      icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
-      keywords:
-        - BPF
-        - eBPF
-        - Kubernetes
-        - Networking
-        - Security
-        - Observability
-        - Troubleshooting
-      kubeVersion: '>= 1.21.0-0'
-      name: cilium
-      sources:
-        - https://github.com/cilium/cilium
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5-2.tgz
-      version: 1.18.5-2
-    - apiVersion: v2
-      appVersion: 1.18.5
-      created: "2026-06-01T20:56:36.737629+05:00"
-      dependencies:
-        - name: cilium
-          repository: https://helm.cilium.io
-          version: 1.18.5
-      description: eBPF-based Networking, Security, and Observability
-      digest: 8287e983f1b2e539a459acab84a7f222a292399311b9e151706a0eb7ff38272d
-      home: https://cilium.io/
-      icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
-      keywords:
-        - BPF
-        - eBPF
-        - Kubernetes
-        - Networking
-        - Security
-        - Observability
-        - Troubleshooting
-      kubeVersion: '>= 1.21.0-0'
-      name: cilium
-      sources:
-        - https://github.com/cilium/cilium
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5-1.tgz
-      version: 1.18.5-1
+  - apiVersion: v2
+    appVersion: 1.19.4
+    created: "2026-06-02T12:49:04.437841+05:00"
+    dependencies:
+    - name: cilium
+      repository: https://helm.cilium.io
+      version: 1.19.4
+    description: eBPF-based Networking, Security, and Observability
+    digest: 6e10feff63dfbaaf1c2b2cd11538df96c8c67874abd43c18f49cb314af66501b
+    home: https://cilium.io/
+    icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
+    keywords:
+    - BPF
+    - eBPF
+    - Kubernetes
+    - Networking
+    - Security
+    - Observability
+    - Troubleshooting
+    kubeVersion: '>= 1.21.0-0'
+    name: cilium
+    sources:
+    - https://github.com/cilium/cilium
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.19.4-2.tgz
+    version: 1.19.4-2
+  - apiVersion: v2
+    appVersion: 1.18.5
+    created: "2026-06-02T12:49:04.431241+05:00"
+    dependencies:
+    - name: cilium
+      repository: https://helm.cilium.io
+      version: 1.18.5
+    description: eBPF-based Networking, Security, and Observability
+    digest: 87f9f9dc7f48ad8d67be38a1311d3ed8f2d519a0a67959e4c8633098f7c98474
+    home: https://cilium.io/
+    icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
+    keywords:
+    - BPF
+    - eBPF
+    - Kubernetes
+    - Networking
+    - Security
+    - Observability
+    - Troubleshooting
+    kubeVersion: '>= 1.21.0-0'
+    name: cilium
+    sources:
+    - https://github.com/cilium/cilium
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5-2.tgz
+    version: 1.18.5-2
+  - apiVersion: v2
+    appVersion: 1.18.5
+    created: "2026-06-02T12:49:04.424698+05:00"
+    dependencies:
+    - name: cilium
+      repository: https://helm.cilium.io
+      version: 1.18.5
+    description: eBPF-based Networking, Security, and Observability
+    digest: 8287e983f1b2e539a459acab84a7f222a292399311b9e151706a0eb7ff38272d
+    home: https://cilium.io/
+    icon: https://cdn.jsdelivr.net/gh/cilium/cilium@main/Documentation/images/logo-solo.svg
+    keywords:
+    - BPF
+    - eBPF
+    - Kubernetes
+    - Networking
+    - Security
+    - Observability
+    - Troubleshooting
+    kubeVersion: '>= 1.21.0-0'
+    name: cilium
+    sources:
+    - https://github.com/cilium/cilium
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cilium-1.18.5-1.tgz
+    version: 1.18.5-1
   cluster-claim-manifests:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.751452+05:00"
-      description: A Helm chart for Kubernetes
-      digest: aa85fc73425376dac158af401dcde1def3e40753351917159b6bdad7ddb753f4
-      name: cluster-claim-manifests
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.751087+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 5a1331937f9a826de52a9221e706cd5a94e7bc8a8cda68d55dfe4c010fdb45b5
-      name: cluster-claim-manifests
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.438469+05:00"
+    description: A Helm chart for Kubernetes
+    digest: aa85fc73425376dac158af401dcde1def3e40753351917159b6bdad7ddb753f4
+    name: cluster-claim-manifests
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.438174+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 5a1331937f9a826de52a9221e706cd5a94e7bc8a8cda68d55dfe4c010fdb45b5
+    name: cluster-claim-manifests
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.0.tgz
+    version: 0.1.0
   cluster-claim-operator:
-    - apiVersion: v2
-      appVersion: v0.0.2-ab7b930f
-      created: "2026-06-01T20:56:36.752293+05:00"
-      description: A Helm chart to distribute the project cluster-claim-operator
-      digest: 28c6c98ee4d9333d759972619d4481a9f21e27f8398374a3a37a2ce197b7fe4d
-      icon: https://example.com/icon.png
-      name: cluster-claim-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: v0.0.2-ab7b930f
-      created: "2026-06-01T20:56:36.751819+05:00"
-      description: A Helm chart to distribute the project cluster-claim-operator
-      digest: c5bea4e228be47c14a4f79eeff96e101af455a6fb001e9de436fb1beec742573
-      icon: https://example.com/icon.png
-      name: cluster-claim-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: v0.0.2-ab7b930f
+    created: "2026-06-02T12:49:04.438802+05:00"
+    description: A Helm chart to distribute the project cluster-claim-operator
+    digest: c5bea4e228be47c14a4f79eeff96e101af455a6fb001e9de436fb1beec742573
+    icon: https://example.com/icon.png
+    name: cluster-claim-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.0.tgz
+    version: 0.1.0
   control-plane:
-    - apiVersion: v2
-      appVersion: v0.1.0
-      created: "2026-06-01T20:56:36.757269+05:00"
-      dependencies:
-        - name: appSpec
-          repository: file://charts/appspec
-          version: 0.1.5
-      description: A Helm chart for Kubernetes
-      digest: d304f46ff017845d0d322a67adcb4613bfb546eeaa05acafeaf7f32b439461f6
-      name: control-plane
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.8.tgz
-      version: 0.1.8
-    - apiVersion: v2
-      appVersion: v0.1.0
-      created: "2026-06-01T20:56:36.755098+05:00"
-      dependencies:
-        - name: appSpec
-          repository: file://charts/appspec
-          version: 0.1.5
-      description: A Helm chart for Kubernetes
-      digest: 46bdd755dd9d9fce7670b6dee938cc1a006810c53e1b9ee3430973b26cfdf090
-      name: control-plane
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.7.tgz
-      version: 0.1.7
-  coredns:
-    - apiVersion: v2
-      appVersion: 1.11.1
-      created: "2026-06-01T20:56:36.759982+05:00"
-      dependencies:
-        - name: coredns
-          repository: https://coredns.github.io/helm
-          version: 1.28.0
-      description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: 73238f8d04c7335012a96f2a697dc9089124a85b57664b0b3643d232a3ed453f
-      home: https://coredns.io
-      icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
-      keywords:
-        - coredns
-        - dns
-        - kubedns
-      maintainers:
-        - name: mrueg
-        - name: haad
-        - name: hagaibarel
-        - name: shubham-cmyk
-      name: coredns
-      sources:
-        - https://github.com/coredns/coredns
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-3.tgz
-      version: 1.28.0-3
-    - apiVersion: v2
-      appVersion: 1.11.1
-      created: "2026-06-01T20:56:36.759133+05:00"
-      dependencies:
-        - name: coredns
-          repository: https://coredns.github.io/helm
-          version: 1.28.0
-      description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: bbd49fb9ecb8359b0ac3f08dbe6985514cb72d5289ec3aa426e150989bddd2ad
-      home: https://coredns.io
-      icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
-      keywords:
-        - coredns
-        - dns
-        - kubedns
-      maintainers:
-        - name: mrueg
-        - name: haad
-        - name: hagaibarel
-        - name: shubham-cmyk
-      name: coredns
-      sources:
-        - https://github.com/coredns/coredns
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-2.tgz
-      version: 1.28.0-2
-    - apiVersion: v2
-      appVersion: 1.28.0
-      created: "2026-06-01T20:56:36.757919+05:00"
-      dependencies:
-        - name: coredns
-          repository: https://coredns.github.io/helm
-          version: 1.28.0
-      description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: 89f2d5c814e116f910107fbf8e062123ff1e4ef035752ec4974a0267080bd45f
-      home: https://coredns.io
-      icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
-      keywords:
-        - coredns
-        - dns
-        - kubedns
-      maintainers:
-        - name: mrueg
-        - name: haad
-        - name: hagaibarel
-        - name: shubham-cmyk
-      name: coredns
-      sources:
-        - https://github.com/coredns/coredns
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-1.tgz
-      version: 1.28.0-1
-  dex:
-    - apiVersion: v2
-      appVersion: 2.42.0
-      created: "2026-06-01T20:56:36.761468+05:00"
-      dependencies:
-        - name: dex
-          repository: https://charts.dexidp.io
-          version: 0.23.0
-      description: OpenID Connect (OIDC) identity and OAuth 2.0 provider with pluggable connectors.
-      digest: 27f69f2518e85d4b5f92ae9f0df96e38afd2a06be74631e3a1f305ab3144c72a
-      home: https://dexidp.io/
-      icon: https://dexidp.io/favicons/favicon.png
-      keywords:
-        - oidc
-        - oauth
-        - identity-provider
-        - saml
-      kubeVersion: '>=1.14.0-0'
-      name: dex
-      sources:
-        - https://github.com/dexidp/dex
-        - https://github.com/dexidp/helm-charts/tree/master/charts/dex
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/dex-0.23.0-2.tgz
-      version: 0.23.0-2
-    - apiVersion: v2
-      appVersion: 2.42.0
-      created: "2026-06-01T20:56:36.760742+05:00"
-      dependencies:
-        - name: dex
-          repository: https://charts.dexidp.io
-          version: 0.23.0
-      description: OpenID Connect (OIDC) identity and OAuth 2.0 provider with pluggable connectors.
-      digest: 3db4b2b391e1aa14c7fbb174be244ff2fa0eb60f7e8c6ec7d8b19ac750eafab2
-      home: https://dexidp.io/
-      icon: https://dexidp.io/favicons/favicon.png
-      keywords:
-        - oidc
-        - oauth
-        - identity-provider
-        - saml
-      kubeVersion: '>=1.14.0-0'
-      name: dex
-      sources:
-        - https://github.com/dexidp/dex
-        - https://github.com/dexidp/helm-charts/tree/master/charts/dex
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/dex-0.23.0-1.tgz
-      version: 0.23.0-1
-  docker-registry:
-    - apiVersion: v1
-      appVersion: 3.0.0
-      created: "2026-06-01T20:56:36.763108+05:00"
-      description: A Helm chart for Docker Registry
-      digest: 1f34bf5aaae3840a4364c491e7da1ce30808dd2cc9b9a101f66f24a5f4dd073e
-      home: https://hub.docker.com/_/registry/
-      icon: https://helm.twun.io/docker-registry.png
-      maintainers:
-        - email: devin@canterberry.cc
-          name: Devin Canterberry
-          url: https://canterberry.cc/
-      name: docker-registry
-      sources:
-        - https://github.com/docker/distribution-library-image
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/docker-registry-3.0.1.tgz
-      version: 3.0.1
-    - apiVersion: v1
-      appVersion: 3.0.0
-      created: "2026-06-01T20:56:36.762335+05:00"
-      description: A Helm chart for Docker Registry
-      digest: b0ad7f5165ad4329a92a93eb5864a66a9d861d14f4a01b66b62ebbc0fab8a6df
-      home: https://hub.docker.com/_/registry/
-      icon: https://helm.twun.io/docker-registry.png
-      maintainers:
-        - email: devin@canterberry.cc
-          name: Devin Canterberry
-          url: https://canterberry.cc/
-      name: docker-registry
-      sources:
-        - https://github.com/docker/distribution-library-image
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/docker-registry-3.0.0.tgz
-      version: 3.0.0
-  etcd-backup-snapshot:
-    - apiVersion: v2
-      appVersion: 0.36.3
-      created: "2026-06-01T20:56:36.764027+05:00"
-      description: Helm chart for the etcd-backup-snapshot
-      digest: 40b689d7301449e1b256ef44610646213fc150c781aad6311a8e1717e0fde46c
-      name: etcd-backup-snapshot
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/etcd-backup-snapshot-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: 0.36.3
-      created: "2026-06-01T20:56:36.763563+05:00"
-      description: Helm chart for the etcd-backup-snapshot
-      digest: 50130e51cb6a917ac266a15171c2399fb219a0bd16907ed410d1d7ed33347ec7
-      name: etcd-backup-snapshot
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/etcd-backup-snapshot-0.1.0.tgz
-      version: 0.1.0
-  gateway:
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.766563+05:00"
-      dependencies:
-        - name: gateway
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for deploying Istio gateways
-      digest: 83c50467d738c04f1bc3cea313a751e4f04daf94933f132f604aaf84f038f9ad
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - gateways
-      name: gateway
-      sources:
-        - https://github.com/istio/istio
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-4.tgz
-      version: 1.26.0-4
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.765999+05:00"
-      dependencies:
-        - name: gateway
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for deploying Istio gateways
-      digest: 41977718a50d13da5ce5f4981c798bb2076494c42ddb40114a869ec5a329df9e
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - gateways
-      name: gateway
-      sources:
-        - https://github.com/istio/istio
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-3.tgz
-      version: 1.26.0-3
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.765408+05:00"
-      dependencies:
-        - name: gateway
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for deploying Istio gateways
-      digest: b9b61e2984f7183902bb14f81b74bee40982eae53c623d59d81b3ef5c9c3a2e3
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - gateways
-      name: gateway
-      sources:
-        - https://github.com/istio/istio
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-2.tgz
-      version: 1.26.0-2
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.764782+05:00"
-      dependencies:
-        - name: gateway
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for deploying Istio gateways
-      digest: 18655e90a330f41a164d2929c2c7a86ddfa67f6002c65ac608d48a1193722613
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - gateways
-      name: gateway
-      sources:
-        - https://github.com/istio/istio
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-1.tgz
-      version: 1.26.0-1
-  grafana:
-    - apiVersion: v2
-      appVersion: 11.3.0
-      created: "2026-06-01T20:56:36.767264+05:00"
-      description: Helm chart for the Grafana
-      digest: f0e968f7707cd375c40a377294400814390dfcd7490be6e442fabf95f803b41d
-      name: grafana
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.2.tgz
-      version: 0.1.2
-    - apiVersion: v2
-      appVersion: 11.3.0
-      created: "2026-06-01T20:56:36.767017+05:00"
-      description: Helm chart for the Grafana
-      digest: 03111f509062b090867335ad6b365decd64aaa83bd9a0de53c9ebcfe04f83752
-      name: grafana
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: 11.3.0
-      created: "2026-06-01T20:56:36.766746+05:00"
-      description: Helm chart for the Grafana
-      digest: 296ca553eb1f1eb42625ecbf44368b89dff6aaba4be29099c06dcc14ac443baf
-      name: grafana
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.0.tgz
-      version: 0.1.0
-  grafana-dashboards:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.769882+05:00"
-      description: Helm chart for the Grafana Dashboards
-      digest: 21bafd1e292d546775635986471bd6d9d0c56e1dfd49a5385b1af70cbf8b39cf
-      name: grafana-dashboards
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-dashboards-0.1.1.tgz
-      version: 0.1.1
-  grafana-operator:
-    - apiVersion: v2
-      appVersion: 5.18.0
-      created: "2026-06-01T20:56:36.774078+05:00"
-      dependencies:
-        - name: grafana-operator
-          repository: https://grafana.github.io/helm-charts
-          version: 5.18.0
-      description: Helm chart for the Grafana Operator
-      digest: 8ba512f8569fa55139e4e8e8e7a1c6eff7de710d68de6d436ab6bd47c8dcb550
-      name: grafana-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-operator-5.18.0-2.tgz
-      version: 5.18.0-2
-    - apiVersion: v2
-      appVersion: 5.18.0
-      created: "2026-06-01T20:56:36.771905+05:00"
-      dependencies:
-        - name: grafana-operator
-          repository: https://grafana.github.io/helm-charts
-          version: 5.18.0
-      description: Helm chart for the Grafana Operator
-      digest: ade9322af9e49a0c6f6d236e42017016ef52380ff0382eeca5d62d695a5caf26
-      name: grafana-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-operator-5.18.0-1.tgz
-      version: 5.18.0-1
-  helm-inserter:
-    - apiVersion: v1
-      appVersion: 0.2.3
-      created: "2026-06-01T20:56:36.774321+05:00"
-      deprecated: true
-      description: Add raw kuberntes resources to helm chart
-      digest: 4d6d050275472f370095eb1c27459de2570e462c0c4cfaea90d368867898a6a9
-      home: https://github.com/helm/charts/blob/master/incubator/raw
-      name: helm-inserter
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/helm-inserter-0.2.5.tgz
-      version: 0.2.5
-  in-cloud-capi-template:
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.777789+05:00"
-      description: Helm chart for in-cloud CAPI ClusterClass infrastructure
-      digest: 57bbd99c3889297a51f56811525beb8ba712ab29c1c01baa680ebcde05ee6a04
-      name: in-cloud-capi-template
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/in-cloud-capi-template-0.1.6.tgz
-      version: 0.1.6
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.775928+05:00"
-      description: Helm chart for in-cloud CAPI ClusterClass infrastructure
-      digest: 435b7de0d562d5e9262f09f457aece128a2c779093e5bec512853462d915af26
-      name: in-cloud-capi-template
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/in-cloud-capi-template-0.1.5.tgz
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-06-02T12:49:04.443444+05:00"
+    dependencies:
+    - name: appSpec
+      repository: file://charts/appspec
       version: 0.1.5
+    description: A Helm chart for Kubernetes
+    digest: d304f46ff017845d0d322a67adcb4613bfb546eeaa05acafeaf7f32b439461f6
+    name: control-plane
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-06-02T12:49:04.440957+05:00"
+    dependencies:
+    - name: appSpec
+      repository: file://charts/appspec
+      version: 0.1.5
+    description: A Helm chart for Kubernetes
+    digest: 46bdd755dd9d9fce7670b6dee938cc1a006810c53e1b9ee3430973b26cfdf090
+    name: control-plane
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.7.tgz
+    version: 0.1.7
+  coredns:
+  - apiVersion: v2
+    appVersion: 1.11.1
+    created: "2026-06-02T12:49:04.445059+05:00"
+    dependencies:
+    - name: coredns
+      repository: https://coredns.github.io/helm
+      version: 1.28.0
+    description: CoreDNS is a DNS server that chains plugins and provides Kubernetes
+      DNS Services
+    digest: bbd49fb9ecb8359b0ac3f08dbe6985514cb72d5289ec3aa426e150989bddd2ad
+    home: https://coredns.io
+    icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
+    keywords:
+    - coredns
+    - dns
+    - kubedns
+    maintainers:
+    - name: mrueg
+    - name: haad
+    - name: hagaibarel
+    - name: shubham-cmyk
+    name: coredns
+    sources:
+    - https://github.com/coredns/coredns
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-2.tgz
+    version: 1.28.0-2
+  - apiVersion: v2
+    appVersion: 1.28.0
+    created: "2026-06-02T12:49:04.444229+05:00"
+    dependencies:
+    - name: coredns
+      repository: https://coredns.github.io/helm
+      version: 1.28.0
+    description: CoreDNS is a DNS server that chains plugins and provides Kubernetes
+      DNS Services
+    digest: 89f2d5c814e116f910107fbf8e062123ff1e4ef035752ec4974a0267080bd45f
+    home: https://coredns.io
+    icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
+    keywords:
+    - coredns
+    - dns
+    - kubedns
+    maintainers:
+    - name: mrueg
+    - name: haad
+    - name: hagaibarel
+    - name: shubham-cmyk
+    name: coredns
+    sources:
+    - https://github.com/coredns/coredns
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-1.tgz
+    version: 1.28.0-1
+  dex:
+  - apiVersion: v2
+    appVersion: 2.42.0
+    created: "2026-06-02T12:49:04.445863+05:00"
+    dependencies:
+    - name: dex
+      repository: https://charts.dexidp.io
+      version: 0.23.0
+    description: OpenID Connect (OIDC) identity and OAuth 2.0 provider with pluggable
+      connectors.
+    digest: 3db4b2b391e1aa14c7fbb174be244ff2fa0eb60f7e8c6ec7d8b19ac750eafab2
+    home: https://dexidp.io/
+    icon: https://dexidp.io/favicons/favicon.png
+    keywords:
+    - oidc
+    - oauth
+    - identity-provider
+    - saml
+    kubeVersion: '>=1.14.0-0'
+    name: dex
+    sources:
+    - https://github.com/dexidp/dex
+    - https://github.com/dexidp/helm-charts/tree/master/charts/dex
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/dex-0.23.0-1.tgz
+    version: 0.23.0-1
+  docker-registry:
+  - apiVersion: v1
+    appVersion: 3.0.0
+    created: "2026-06-02T12:49:04.446697+05:00"
+    description: A Helm chart for Docker Registry
+    digest: b0ad7f5165ad4329a92a93eb5864a66a9d861d14f4a01b66b62ebbc0fab8a6df
+    home: https://hub.docker.com/_/registry/
+    icon: https://helm.twun.io/docker-registry.png
+    maintainers:
+    - email: devin@canterberry.cc
+      name: Devin Canterberry
+      url: https://canterberry.cc/
+    name: docker-registry
+    sources:
+    - https://github.com/docker/distribution-library-image
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/docker-registry-3.0.0.tgz
+    version: 3.0.0
+  etcd-backup-snapshot:
+  - apiVersion: v2
+    appVersion: 0.36.3
+    created: "2026-06-02T12:49:04.447451+05:00"
+    description: Helm chart for the etcd-backup-snapshot
+    digest: 40b689d7301449e1b256ef44610646213fc150c781aad6311a8e1717e0fde46c
+    name: etcd-backup-snapshot
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/etcd-backup-snapshot-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.36.3
+    created: "2026-06-02T12:49:04.447018+05:00"
+    description: Helm chart for the etcd-backup-snapshot
+    digest: 50130e51cb6a917ac266a15171c2399fb219a0bd16907ed410d1d7ed33347ec7
+    name: etcd-backup-snapshot
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/etcd-backup-snapshot-0.1.0.tgz
+    version: 0.1.0
+  gateway:
+  - apiVersion: v2
+    appVersion: 1.26.0
+    created: "2026-06-02T12:49:04.449214+05:00"
+    dependencies:
+    - name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.26.0
+    description: Helm chart for deploying Istio gateways
+    digest: 41977718a50d13da5ce5f4981c798bb2076494c42ddb40114a869ec5a329df9e
+    icon: https://istio.io/latest/favicons/android-192x192.png
+    keywords:
+    - istio
+    - gateways
+    name: gateway
+    sources:
+    - https://github.com/istio/istio
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-3.tgz
+    version: 1.26.0-3
+  - apiVersion: v2
+    appVersion: 1.26.0
+    created: "2026-06-02T12:49:04.448729+05:00"
+    dependencies:
+    - name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.26.0
+    description: Helm chart for deploying Istio gateways
+    digest: b9b61e2984f7183902bb14f81b74bee40982eae53c623d59d81b3ef5c9c3a2e3
+    icon: https://istio.io/latest/favicons/android-192x192.png
+    keywords:
+    - istio
+    - gateways
+    name: gateway
+    sources:
+    - https://github.com/istio/istio
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-2.tgz
+    version: 1.26.0-2
+  - apiVersion: v2
+    appVersion: 1.26.0
+    created: "2026-06-02T12:49:04.448062+05:00"
+    dependencies:
+    - name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.26.0
+    description: Helm chart for deploying Istio gateways
+    digest: 18655e90a330f41a164d2929c2c7a86ddfa67f6002c65ac608d48a1193722613
+    icon: https://istio.io/latest/favicons/android-192x192.png
+    keywords:
+    - istio
+    - gateways
+    name: gateway
+    sources:
+    - https://github.com/istio/istio
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-1.tgz
+    version: 1.26.0-1
+  grafana:
+  - apiVersion: v2
+    appVersion: 11.3.0
+    created: "2026-06-02T12:49:04.449783+05:00"
+    description: Helm chart for the Grafana
+    digest: 03111f509062b090867335ad6b365decd64aaa83bd9a0de53c9ebcfe04f83752
+    name: grafana
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 11.3.0
+    created: "2026-06-02T12:49:04.449511+05:00"
+    description: Helm chart for the Grafana
+    digest: 296ca553eb1f1eb42625ecbf44368b89dff6aaba4be29099c06dcc14ac443baf
+    name: grafana
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.0.tgz
+    version: 0.1.0
+  grafana-dashboards:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.453068+05:00"
+    description: Helm chart for the Grafana Dashboards
+    digest: 21bafd1e292d546775635986471bd6d9d0c56e1dfd49a5385b1af70cbf8b39cf
+    name: grafana-dashboards
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-dashboards-0.1.1.tgz
+    version: 0.1.1
+  grafana-operator:
+  - apiVersion: v2
+    appVersion: 5.18.0
+    created: "2026-06-02T12:49:04.455213+05:00"
+    dependencies:
+    - name: grafana-operator
+      repository: https://grafana.github.io/helm-charts
+      version: 5.18.0
+    description: Helm chart for the Grafana Operator
+    digest: ade9322af9e49a0c6f6d236e42017016ef52380ff0382eeca5d62d695a5caf26
+    name: grafana-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-operator-5.18.0-1.tgz
+    version: 5.18.0-1
+  helm-inserter:
+  - apiVersion: v1
+    appVersion: 0.2.3
+    created: "2026-06-02T12:49:04.455432+05:00"
+    deprecated: true
+    description: Add raw kuberntes resources to helm chart
+    digest: 4d6d050275472f370095eb1c27459de2570e462c0c4cfaea90d368867898a6a9
+    home: https://github.com/helm/charts/blob/master/incubator/raw
+    name: helm-inserter
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/helm-inserter-0.2.5.tgz
+    version: 0.2.5
+  in-cloud-capi-template:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.459262+05:00"
+    description: Helm chart for in-cloud CAPI ClusterClass infrastructure
+    digest: 57bbd99c3889297a51f56811525beb8ba712ab29c1c01baa680ebcde05ee6a04
+    name: in-cloud-capi-template
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/in-cloud-capi-template-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.457328+05:00"
+    description: Helm chart for in-cloud CAPI ClusterClass infrastructure
+    digest: 435b7de0d562d5e9262f09f457aece128a2c779093e5bec512853462d915af26
+    name: in-cloud-capi-template
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/in-cloud-capi-template-0.1.5.tgz
+    version: 0.1.5
   incloud-web-chart:
-    - apiVersion: v2
-      appVersion: 1.3.0
-      created: "2026-06-01T20:56:36.806937+05:00"
-      dependencies:
-        - name: incloud-web-chart
-          repository: oci://registry-1.docker.io/prorobotech
-          version: 1.3.0-9b1cdc4
-      description: Chart for configuring Kubernetes Web UI InCloud
-      digest: 90ed67483c3cd6ea271824f7e2a61f196522ba8ce60a61e8c879f9f089e986fa
-      keywords:
-        - incloud
-        - openapi-ui
-        - bff
-        - web
-        - kubernetes
-        - helm
-      kubeVersion: '>=1.22.0-0'
-      name: incloud-web-chart
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-chart-1.3.0-5.tgz
-      version: 1.3.0-5
-    - apiVersion: v2
-      appVersion: 1.3.0
-      created: "2026-06-01T20:56:36.797363+05:00"
-      dependencies:
-        - name: incloud-web-chart
-          repository: oci://registry-1.docker.io/prorobotech
-          version: 1.3.0-9b1cdc4
-      description: Chart for configuring Kubernetes Web UI InCloud
-      digest: 2ab37906900625b9ec45a3af13b0890900b6c01c24cbce177580e68847c4975a
-      keywords:
-        - incloud
-        - openapi-ui
-        - bff
-        - web
-        - kubernetes
-        - helm
-      kubeVersion: '>=1.22.0-0'
-      name: incloud-web-chart
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-chart-1.3.0-4.tgz
-      version: 1.3.0-4
-    - apiVersion: v2
-      appVersion: 1.3.0
-      created: "2026-06-01T20:56:36.787487+05:00"
-      dependencies:
-        - name: incloud-web-chart
-          repository: oci://registry-1.docker.io/prorobotech
-          version: 1.3.0-9b1cdc4
-      description: Chart for configuring Kubernetes Web UI InCloud
-      digest: cd68d05b5398b5c348da9323b9109a92e611c334eb473d8ad7f5a33efc2a11d9
-      keywords:
-        - incloud
-        - openapi-ui
-        - bff
-        - web
-        - kubernetes
-        - helm
-      kubeVersion: '>=1.22.0-0'
-      name: incloud-web-chart
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-chart-1.3.0-3.tgz
-      version: 1.3.0-3
+  - apiVersion: v2
+    appVersion: 1.3.0
+    created: "2026-06-02T12:49:04.478328+05:00"
+    dependencies:
+    - name: incloud-web-chart
+      repository: oci://registry-1.docker.io/prorobotech
+      version: 1.3.0-9b1cdc4
+    description: Chart for configuring Kubernetes Web UI InCloud
+    digest: 2ab37906900625b9ec45a3af13b0890900b6c01c24cbce177580e68847c4975a
+    keywords:
+    - incloud
+    - openapi-ui
+    - bff
+    - web
+    - kubernetes
+    - helm
+    kubeVersion: '>=1.22.0-0'
+    name: incloud-web-chart
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-chart-1.3.0-4.tgz
+    version: 1.3.0-4
+  - apiVersion: v2
+    appVersion: 1.3.0
+    created: "2026-06-02T12:49:04.469202+05:00"
+    dependencies:
+    - name: incloud-web-chart
+      repository: oci://registry-1.docker.io/prorobotech
+      version: 1.3.0-9b1cdc4
+    description: Chart for configuring Kubernetes Web UI InCloud
+    digest: cd68d05b5398b5c348da9323b9109a92e611c334eb473d8ad7f5a33efc2a11d9
+    keywords:
+    - incloud
+    - openapi-ui
+    - bff
+    - web
+    - kubernetes
+    - helm
+    kubeVersion: '>=1.22.0-0'
+    name: incloud-web-chart
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-chart-1.3.0-3.tgz
+    version: 1.3.0-3
   incloud-web-resources:
-    - apiVersion: v2
-      appVersion: 1.2.0
-      created: "2026-06-01T20:56:36.809197+05:00"
-      dependencies:
-        - name: incloud-web-resources
-          repository: oci://registry-1.docker.io/prorobotech
-          version: 1.2.0-rc1-cloud-348
-      description: Chart for configuring Kubernetes Web UI InCloud
-      digest: 965c42128faa6ae7a096218ca2f25672fe32031cc5a706cee8e8f5fc2f336fd5
-      keywords:
-        - incloud
-        - openapi-ui
-        - bff
-        - web
-        - kubernetes
-        - helm
-      kubeVersion: '>=1.22.0-0'
-      name: incloud-web-resources
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-resources-1.2.0-1.tgz
-      version: 1.2.0-1
+  - apiVersion: v2
+    appVersion: 1.2.0
+    created: "2026-06-02T12:49:04.480772+05:00"
+    dependencies:
+    - name: incloud-web-resources
+      repository: oci://registry-1.docker.io/prorobotech
+      version: 1.2.0-rc1-cloud-348
+    description: Chart for configuring Kubernetes Web UI InCloud
+    digest: 965c42128faa6ae7a096218ca2f25672fe32031cc5a706cee8e8f5fc2f336fd5
+    keywords:
+    - incloud
+    - openapi-ui
+    - bff
+    - web
+    - kubernetes
+    - helm
+    kubeVersion: '>=1.22.0-0'
+    name: incloud-web-resources
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/incloud-web-resources-1.2.0-1.tgz
+    version: 1.2.0-1
   istiod:
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.812662+05:00"
-      dependencies:
-        - name: istiod
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for istio control plane
-      digest: 29c67ab31311888178af9e7a5dee7977967b41af32fb9da0a12d3b293dd1ab68
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - istiod
-        - istio-discovery
-      name: istiod
-      sources:
-        - https://github.com/istio/istio
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/istiod-1.26.0-3.tgz
-      version: 1.26.0-3
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.8115+05:00"
-      dependencies:
-        - name: istiod
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for istio control plane
-      digest: ec57eeb885372c3baac6a1cfc2d08727fc0c62e9291343a244a793a561753b5f
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - istiod
-        - istio-discovery
-      name: istiod
-      sources:
-        - https://github.com/istio/istio
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/istiod-1.26.0-2.tgz
-      version: 1.26.0-2
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-01T20:56:36.810506+05:00"
-      dependencies:
-        - name: istiod
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for istio control plane
-      digest: e3f3255af04031a3621db671fac825dcbc3fe613370e0200ecdfe8908f5b16c0
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - istiod
-        - istio-discovery
-      name: istiod
-      sources:
-        - https://github.com/istio/istio
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/istiod-1.26.0-1.tgz
-      version: 1.26.0-1
+  - apiVersion: v2
+    appVersion: 1.26.0
+    created: "2026-06-02T12:49:04.483355+05:00"
+    dependencies:
+    - name: istiod
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.26.0
+    description: Helm chart for istio control plane
+    digest: ec57eeb885372c3baac6a1cfc2d08727fc0c62e9291343a244a793a561753b5f
+    icon: https://istio.io/latest/favicons/android-192x192.png
+    keywords:
+    - istio
+    - istiod
+    - istio-discovery
+    name: istiod
+    sources:
+    - https://github.com/istio/istio
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/istiod-1.26.0-2.tgz
+    version: 1.26.0-2
+  - apiVersion: v2
+    appVersion: 1.26.0
+    created: "2026-06-02T12:49:04.482111+05:00"
+    dependencies:
+    - name: istiod
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.26.0
+    description: Helm chart for istio control plane
+    digest: e3f3255af04031a3621db671fac825dcbc3fe613370e0200ecdfe8908f5b16c0
+    icon: https://istio.io/latest/favicons/android-192x192.png
+    keywords:
+    - istio
+    - istiod
+    - istio-discovery
+    name: istiod
+    sources:
+    - https://github.com/istio/istio
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/istiod-1.26.0-1.tgz
+    version: 1.26.0-1
   konnectivity-agent:
-    - apiVersion: v2
-      appVersion: 0.31.0
-      created: "2026-06-01T20:56:36.813338+05:00"
-      description: Konnectivity proxy-agent as a DaemonSet
-      digest: 4a30ad4c73e9a6e74f589cb7a40724aa0068f142b9777ca1b067116d96cc751e
-      name: konnectivity-agent
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-agent-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: 0.31.0
-      created: "2026-06-01T20:56:36.813016+05:00"
-      description: Konnectivity proxy-agent as a DaemonSet
-      digest: add95a7fba8de2f831583856398a559b93e6eb8616890a3ca6627a077771247b
-      name: konnectivity-agent
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-agent-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: 0.31.0
+    created: "2026-06-02T12:49:04.484003+05:00"
+    description: Konnectivity proxy-agent as a DaemonSet
+    digest: 4a30ad4c73e9a6e74f589cb7a40724aa0068f142b9777ca1b067116d96cc751e
+    name: konnectivity-agent
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-agent-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.31.0
+    created: "2026-06-02T12:49:04.483695+05:00"
+    description: Konnectivity proxy-agent as a DaemonSet
+    digest: add95a7fba8de2f831583856398a559b93e6eb8616890a3ca6627a077771247b
+    name: konnectivity-agent
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-agent-0.1.0.tgz
+    version: 0.1.0
   konnectivity-server:
-    - apiVersion: v2
-      appVersion: 0.31.0
-      created: "2026-06-01T20:56:36.813749+05:00"
-      description: Konnectivity proxy-server as a DaemonSet
-      digest: 3c40674cce8ff0c0454da89c049fb940030432d7caff0960cf7bd34c73e9117a
-      name: konnectivity-server
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-server-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: 0.31.0
+    created: "2026-06-02T12:49:04.484381+05:00"
+    description: Konnectivity proxy-server as a DaemonSet
+    digest: 3c40674cce8ff0c0454da89c049fb940030432d7caff0960cf7bd34c73e9117a
+    name: konnectivity-server
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/konnectivity-server-0.1.0.tgz
+    version: 0.1.0
   kube-state-metrics:
-    - apiVersion: v2
-      appVersion: v2.16.0
-      created: "2026-06-01T20:56:36.814725+05:00"
-      dependencies:
-        - condition: kube-state-metrics.enabled
-          name: kube-state-metrics
-          repository: https://prometheus-community.github.io/helm-charts
-          version: 6.1.0
-      description: Install kube-state-metrics to generate and expose cluster-level metrics
-      digest: 83ac9d0f487049703bf991c2f51a2a42f3246b6afcdba65702f1e05037cdc038
-      home: https://github.com/kubernetes/kube-state-metrics/
-      keywords:
-        - metric
-        - monitoring
-        - prometheus
-        - kubernetes
+  - apiVersion: v2
+    appVersion: v2.16.0
+    created: "2026-06-02T12:49:04.486274+05:00"
+    dependencies:
+    - condition: kube-state-metrics.enabled
       name: kube-state-metrics
-      sources:
-        - https://github.com/kubernetes/kube-state-metrics/
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-4.tgz
-      version: 6.1.0-4
-    - apiVersion: v2
-      appVersion: v2.16.0
-      created: "2026-06-02T00:00:45.294588+05:00"
-      dependencies:
-        - condition: kube-state-metrics.enabled
-          name: kube-state-metrics
-          repository: https://prometheus-community.github.io/helm-charts
-          version: 6.1.0
-      description: Install kube-state-metrics to generate and expose cluster-level metrics
-      digest: 6b30d1e55d9bc94153f24274604e758173dba2fb20aff071dd0e50af712ae064
-      home: https://github.com/kubernetes/kube-state-metrics/
-      keywords:
-        - metric
-        - monitoring
-        - prometheus
-        - kubernetes
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 6.1.0
+    description: Install kube-state-metrics to generate and expose cluster-level metrics
+    digest: 47d74eb934a2d43df114d2a5cf802689b5374fbc8a2bca7f8c266a41c72ddf5e
+    home: https://github.com/kubernetes/kube-state-metrics/
+    keywords:
+    - metric
+    - monitoring
+    - prometheus
+    - kubernetes
+    name: kube-state-metrics
+    sources:
+    - https://github.com/kubernetes/kube-state-metrics/
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-5.tgz
+    version: 6.1.0-5
+  - apiVersion: v2
+    appVersion: v2.16.0
+    created: "2026-06-02T12:49:04.48533+05:00"
+    dependencies:
+    - condition: kube-state-metrics.enabled
       name: kube-state-metrics
       sources:
         - https://github.com/kubernetes/kube-state-metrics/
@@ -1331,644 +1064,527 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-5.tgz
       version: 6.1.0-5
   kubeadm-resources-client-cp:
-    - apiVersion: v2
-      created: "2026-06-01T20:56:36.816131+05:00"
-      description: Deploys kubeadm-resources-client-cp
-      digest: c0f520c13d82b5ebb12a1b7ce9d9b65b55f0fab305c674a9833b8934913e7894
-      name: kubeadm-resources-client-cp
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kubeadm-resources-client-cp-0.1.1.tgz
-      version: 0.1.1
+  - apiVersion: v2
+    created: "2026-06-02T12:49:04.486835+05:00"
+    description: Deploys kubeadm-resources-client-cp
+    digest: c0f520c13d82b5ebb12a1b7ce9d9b65b55f0fab305c674a9833b8934913e7894
+    name: kubeadm-resources-client-cp
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kubeadm-resources-client-cp-0.1.1.tgz
+    version: 0.1.1
   metrics-server:
-    - apiVersion: v2
-      appVersion: 0.8.0
-      created: "2026-06-01T20:56:36.817481+05:00"
-      dependencies:
-        - name: metrics-server
-          repository: https://kubernetes-sigs.github.io/metrics-server/
-          version: 3.13.0
-      description: Metrics Server is a scalable, efficient source of container resource metrics for Kubernetes built-in autoscaling pipelines.
-      digest: cad6b01bda18e27e46ea921e043dee43f3adc73356ad4aeecee8c871726d8173
-      home: https://github.com/kubernetes-sigs/metrics-server
-      icon: https://avatars.githubusercontent.com/u/36015203?s=400&v=4
-      keywords:
-        - kubernetes
-        - metrics-server
-        - metrics
-      name: metrics-server
-      sources:
-        - https://github.com/kubernetes-sigs/metrics-server
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/metrics-server-3.13.0-3.tgz
-      version: 3.13.0-3
-    - apiVersion: v2
-      appVersion: 0.8.0
-      created: "2026-06-01T20:56:36.816749+05:00"
-      dependencies:
-        - name: metrics-server
-          repository: https://kubernetes-sigs.github.io/metrics-server/
-          version: 3.13.0
-      description: Metrics Server is a scalable, efficient source of container resource metrics for Kubernetes built-in autoscaling pipelines.
-      digest: 2b244016fab10fd0d391ad9c8e58680acd2dbe0a2326735834ce9fe0d37f4faa
-      home: https://github.com/kubernetes-sigs/metrics-server
-      icon: https://avatars.githubusercontent.com/u/36015203?s=400&v=4
-      keywords:
-        - kubernetes
-        - metrics-server
-        - metrics
-      name: metrics-server
-      sources:
-        - https://github.com/kubernetes-sigs/metrics-server
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/metrics-server-3.13.0-2.tgz
-      version: 3.13.0-2
+  - apiVersion: v2
+    appVersion: 0.8.0
+    created: "2026-06-02T12:49:04.488283+05:00"
+    dependencies:
+    - name: metrics-server
+      repository: https://kubernetes-sigs.github.io/metrics-server/
+      version: 3.13.0
+    description: Metrics Server is a scalable, efficient source of container resource
+      metrics for Kubernetes built-in autoscaling pipelines.
+    digest: cad6b01bda18e27e46ea921e043dee43f3adc73356ad4aeecee8c871726d8173
+    home: https://github.com/kubernetes-sigs/metrics-server
+    icon: https://avatars.githubusercontent.com/u/36015203?s=400&v=4
+    keywords:
+    - kubernetes
+    - metrics-server
+    - metrics
+    name: metrics-server
+    sources:
+    - https://github.com/kubernetes-sigs/metrics-server
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/metrics-server-3.13.0-3.tgz
+    version: 3.13.0-3
+  - apiVersion: v2
+    appVersion: 0.8.0
+    created: "2026-06-02T12:49:04.487607+05:00"
+    dependencies:
+    - name: metrics-server
+      repository: https://kubernetes-sigs.github.io/metrics-server/
+      version: 3.13.0
+    description: Metrics Server is a scalable, efficient source of container resource
+      metrics for Kubernetes built-in autoscaling pipelines.
+    digest: 2b244016fab10fd0d391ad9c8e58680acd2dbe0a2326735834ce9fe0d37f4faa
+    home: https://github.com/kubernetes-sigs/metrics-server
+    icon: https://avatars.githubusercontent.com/u/36015203?s=400&v=4
+    keywords:
+    - kubernetes
+    - metrics-server
+    - metrics
+    name: metrics-server
+    sources:
+    - https://github.com/kubernetes-sigs/metrics-server
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/metrics-server-3.13.0-2.tgz
+    version: 3.13.0-2
   prometheus:
-    - apiVersion: v2
-      appVersion: 27.10.0
-      created: "2026-06-01T20:56:36.821304+05:00"
-      dependencies:
-        - name: prometheus
-          repository: https://prometheus-community.github.io/helm-charts
-          version: 27.10.0
-      description: Prometheus is a monitoring system and time series database.
-      digest: b57287197579c296cd66752555d1a6f06f679085815fc35d3a03d1fc558aa123
-      home: https://prometheus.io/
-      icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
-      kubeVersion: '>=1.19.0-0'
-      name: prometheus
-      sources:
-        - https://github.com/prometheus/alertmanager
-        - https://github.com/prometheus/prometheus
-        - https://github.com/prometheus/pushgateway
-        - https://github.com/prometheus/node_exporter
-        - https://github.com/kubernetes/kube-state-metrics
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-27.10.0-2.tgz
-      version: 27.10.0-2
+  - apiVersion: v2
+    appVersion: 27.10.0
+    created: "2026-06-02T12:49:04.49217+05:00"
+    dependencies:
+    - name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 27.10.0
+    description: Prometheus is a monitoring system and time series database.
+    digest: b57287197579c296cd66752555d1a6f06f679085815fc35d3a03d1fc558aa123
+    home: https://prometheus.io/
+    icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+    kubeVersion: '>=1.19.0-0'
+    name: prometheus
+    sources:
+    - https://github.com/prometheus/alertmanager
+    - https://github.com/prometheus/prometheus
+    - https://github.com/prometheus/pushgateway
+    - https://github.com/prometheus/node_exporter
+    - https://github.com/kubernetes/kube-state-metrics
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-27.10.0-2.tgz
+    version: 27.10.0-2
   prometheus-node-exporter:
-    - apiVersion: v2
-      appVersion: 1.10.2
-      created: "2026-06-01T20:56:36.82199+05:00"
-      dependencies:
-        - name: prometheus-node-exporter
-          repository: https://prometheus-community.github.io/helm-charts
-          version: 4.49.2
-      description: A Helm chart for prometheus node-exporter
-      digest: e7b1971adc0c9cf86e6ce82102c0141e5c1d473d5aaca2fd630f13c65b2b7b7b
-      home: https://github.com/prometheus/node_exporter/
-      keywords:
-        - node-exporter
-        - prometheus
-        - exporter
-      name: prometheus-node-exporter
-      sources:
-        - https://github.com/prometheus/node_exporter/
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-node-exporter-4.49.2-1.tgz
-      version: 4.49.2-1
+  - apiVersion: v2
+    appVersion: 1.10.2
+    created: "2026-06-02T12:49:04.492942+05:00"
+    dependencies:
+    - name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.49.2
+    description: A Helm chart for prometheus node-exporter
+    digest: e7b1971adc0c9cf86e6ce82102c0141e5c1d473d5aaca2fd630f13c65b2b7b7b
+    home: https://github.com/prometheus/node_exporter/
+    keywords:
+    - node-exporter
+    - prometheus
+    - exporter
+    name: prometheus-node-exporter
+    sources:
+    - https://github.com/prometheus/node_exporter/
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-node-exporter-4.49.2-1.tgz
+    version: 4.49.2-1
   prometheus-process-exporter:
-    - apiVersion: v2
-      appVersion: 0.8.1
-      created: "2026-06-01T20:56:36.822416+05:00"
-      dependencies:
-        - name: prometheus-process-exporter
-          repository: https://mumoshu.github.io/prometheus-process-exporter
-          version: 0.5.0
-      description: Install prometheus-process-exporter to generate and expose process metrics
-      digest: 723d85f1795628f1371bff4766ce05ec5eac87f8bd91f12f13f01f5ad0c12447
-      name: prometheus-process-exporter
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-process-exporter-0.5.0-3.tgz
-      version: 0.5.0-3
+  - apiVersion: v2
+    appVersion: 0.8.1
+    created: "2026-06-02T12:49:04.493387+05:00"
+    dependencies:
+    - name: prometheus-process-exporter
+      repository: https://mumoshu.github.io/prometheus-process-exporter
+      version: 0.5.0
+    description: Install prometheus-process-exporter to generate and expose process
+      metrics
+    digest: 723d85f1795628f1371bff4766ce05ec5eac87f8bd91f12f13f01f5ad0c12447
+    name: prometheus-process-exporter
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/prometheus-process-exporter-0.5.0-3.tgz
+    version: 0.5.0-3
   secret-copy-operator:
-    - apiVersion: v2
-      appVersion: v0.0.3-64328be5
-      created: "2026-06-01T20:56:36.823197+05:00"
-      description: A Helm chart to distribute the project secret-copy-operator
-      digest: 86b5402c3f23d0c1ac326f0e92f80f6026d2a66f04f57082926bf8c834f0b2d1
-      icon: https://example.com/icon.png
-      name: secret-copy-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.2.tgz
-      version: 0.1.2
-    - apiVersion: v2
-      appVersion: v0.0.3-64328be5
-      created: "2026-06-01T20:56:36.822949+05:00"
-      description: A Helm chart to distribute the project secret-copy-operator
-      digest: 3d764a878b6378e24260789115cc1ead94653f85ecaf12b5ca233c6326063edb
-      icon: https://example.com/icon.png
-      name: secret-copy-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: v0.0.2-5b78fb7c
-      created: "2026-06-01T20:56:36.822694+05:00"
-      description: A Helm chart to distribute the project secret-copy-operator
-      digest: 13d1a9ad99f2c27334ceef2e35c0af4d98c86bcc179bad32b237d7a9feb3a9bd
-      icon: https://example.com/icon.png
-      name: secret-copy-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: v0.0.3-64328be5
+    created: "2026-06-02T12:49:04.493929+05:00"
+    description: A Helm chart to distribute the project secret-copy-operator
+    digest: 3d764a878b6378e24260789115cc1ead94653f85ecaf12b5ca233c6326063edb
+    icon: https://example.com/icon.png
+    name: secret-copy-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.0.2-5b78fb7c
+    created: "2026-06-02T12:49:04.493682+05:00"
+    description: A Helm chart to distribute the project secret-copy-operator
+    digest: 13d1a9ad99f2c27334ceef2e35c0af4d98c86bcc179bad32b237d7a9feb3a9bd
+    icon: https://example.com/icon.png
+    name: secret-copy-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.0.tgz
+    version: 0.1.0
   signalilo:
-    - apiVersion: v1
-      appVersion: v0.14.0
-      created: "2026-06-01T20:56:36.824072+05:00"
-      description: Alertmanager to Icinga2 bridge
-      digest: 3c8d86ccf1f804b1a721a5e8be62e2c76de777a334dc71fb08b5c9708730ac90
-      home: https://git.vshn.net/vshn/signalilo
-      keywords:
-        - prometheus
-        - alertmanager
-        - webhook
-        - icinga2
-      maintainers:
-        - email: info@appuio.ch
-          name: APPUiO Team
-      name: signalilo
-      sources:
-        - https://git.vshn.net/vshn/signalilo
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/signalilo-0.12.1-2.tgz
-      version: 0.12.1-2
-    - apiVersion: v1
-      appVersion: v0.14.0
-      created: "2026-06-01T20:56:36.823608+05:00"
-      description: Alertmanager to Icinga2 bridge
-      digest: 7f2606db350f51eff33d9908189a1a331f840c4933d0cfb4f34d864503cf6577
-      home: https://git.vshn.net/vshn/signalilo
-      keywords:
-        - prometheus
-        - alertmanager
-        - webhook
-        - icinga2
-      maintainers:
-        - email: info@appuio.ch
-          name: APPUiO Team
-      name: signalilo
-      sources:
-        - https://git.vshn.net/vshn/signalilo
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/signalilo-0.12.1-1.tgz
-      version: 0.12.1-1
+  - apiVersion: v1
+    appVersion: v0.14.0
+    created: "2026-06-02T12:49:04.494273+05:00"
+    description: Alertmanager to Icinga2 bridge
+    digest: 7f2606db350f51eff33d9908189a1a331f840c4933d0cfb4f34d864503cf6577
+    home: https://git.vshn.net/vshn/signalilo
+    keywords:
+    - prometheus
+    - alertmanager
+    - webhook
+    - icinga2
+    maintainers:
+    - email: info@appuio.ch
+      name: APPUiO Team
+    name: signalilo
+    sources:
+    - https://git.vshn.net/vshn/signalilo
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/signalilo-0.12.1-1.tgz
+    version: 0.12.1-1
   svc-hub:
-    - apiVersion: v2
-      appVersion: latest
-      created: "2026-06-01T20:56:36.824537+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 680f6df2fad74cc991cb11629df0bb33274a1d03d7306e47c7addf901419cec9
-      name: svc-hub
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-hub-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: latest
-      created: "2026-06-01T20:56:36.824324+05:00"
-      description: A Helm chart for Kubernetes
-      digest: d7efdbffb09682581c4f737f110db032443b6c1a5aea5550a7513ae28f7307cc
-      name: svc-hub
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-hub-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-06-02T12:49:04.49452+05:00"
+    description: A Helm chart for Kubernetes
+    digest: d7efdbffb09682581c4f737f110db032443b6c1a5aea5550a7513ae28f7307cc
+    name: svc-hub
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-hub-0.1.0.tgz
+    version: 0.1.0
   svc-k8s-proxy:
-    - apiVersion: v2
-      appVersion: v1.1.7
-      created: "2026-06-01T20:56:36.825115+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 42801e88e7deaa9dcb47a829427b45f78132ea57a2ce79ded4ddfda00b52684c
-      name: svc-k8s-proxy
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-k8s-proxy-0.1.1.tgz
-      version: 0.1.1
-    - apiVersion: v2
-      appVersion: v1.1.7
-      created: "2026-06-01T20:56:36.824836+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 4fca9591ffce09981a3a6ea3f24ac478b94138ddaa40c37f43615b54feb1315f
-      name: svc-k8s-proxy
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-k8s-proxy-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: v1.1.7
+    created: "2026-06-02T12:49:04.49479+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 4fca9591ffce09981a3a6ea3f24ac478b94138ddaa40c37f43615b54feb1315f
+    name: svc-k8s-proxy
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/svc-k8s-proxy-0.1.0.tgz
+    version: 0.1.0
   trivy-operator:
-    - apiVersion: v2
-      appVersion: 0.27.0
-      created: "2026-06-01T20:56:36.82834+05:00"
-      dependencies:
-        - name: trivy-operator
-          repository: https://aquasecurity.github.io/helm-charts/
-          version: 0.29.0
-      description: Keeps security report resources updated
-      digest: f56b9082f38f5ba8cf7e2b969c8e704e008e34bee86a86f7c636993e533c0e3e
-      keywords:
-        - aquasecurity
-        - trivyoperator
-        - trivy
-      name: trivy-operator
-      sources:
-        - https://github.com/aquasecurity/trivy-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trivy-operator-0.29.0-2.tgz
-      version: 0.29.0-2
-    - apiVersion: v2
-      appVersion: 0.27.0
-      created: "2026-06-01T20:56:36.826767+05:00"
-      dependencies:
-        - name: trivy-operator
-          repository: https://aquasecurity.github.io/helm-charts/
-          version: 0.29.0
-      description: Keeps security report resources updated
-      digest: cfaa441043e14756c2cc58d622fe0fffca2cdad68863afaacd71b5d551771261
-      keywords:
-        - aquasecurity
-        - trivyoperator
-        - trivy
-      name: trivy-operator
-      sources:
-        - https://github.com/aquasecurity/trivy-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trivy-operator-0.29.0-1.tgz
-      version: 0.29.0-1
+  - apiVersion: v2
+    appVersion: 0.27.0
+    created: "2026-06-02T12:49:04.49662+05:00"
+    dependencies:
+    - name: trivy-operator
+      repository: https://aquasecurity.github.io/helm-charts/
+      version: 0.29.0
+    description: Keeps security report resources updated
+    digest: cfaa441043e14756c2cc58d622fe0fffca2cdad68863afaacd71b5d551771261
+    keywords:
+    - aquasecurity
+    - trivyoperator
+    - trivy
+    name: trivy-operator
+    sources:
+    - https://github.com/aquasecurity/trivy-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trivy-operator-0.29.0-1.tgz
+    version: 0.29.0-1
   trust-manager:
-    - apiVersion: v2
-      appVersion: 0.16.0
-      created: "2026-06-01T20:56:36.829594+05:00"
-      dependencies:
-        - name: trust-manager
-          repository: https://charts.jetstack.io
-          version: 0.16.0
-      description: trust-manager is the easiest way to manage TLS trust bundles in Kubernetes and OpenShift clusters
-      digest: 4cb5d6dee9828eb0b4ee6e28bd4c43e687f1d68d189b4996d2623fa7214ad4ef
-      home: https://cert-manager.io/docs/trust/trust-manager
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - trust-manager
-        - cert-manager
-        - tls
-        - trust bundle
-        - trust anchor
-      name: trust-manager
-      sources:
-        - https://github.com/cert-manager/trust-manager
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trust-manager-0.16.0-2.tgz
-      version: 0.16.0-2
-    - apiVersion: v2
-      appVersion: 0.16.0
-      created: "2026-06-01T20:56:36.828971+05:00"
-      dependencies:
-        - name: trust-manager
-          repository: https://charts.jetstack.io
-          version: 0.16.0
-      description: trust-manager is the easiest way to manage TLS trust bundles in Kubernetes and OpenShift clusters
-      digest: 4e0ec4e74afc64dad5b49b81782ed2a8a01f4c340225fdcec552e049f0ae2e85
-      home: https://cert-manager.io/docs/trust/trust-manager
-      icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
-      keywords:
-        - trust-manager
-        - cert-manager
-        - tls
-        - trust bundle
-        - trust anchor
-      name: trust-manager
-      sources:
-        - https://github.com/cert-manager/trust-manager
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trust-manager-0.16.0-1.tgz
-      version: 0.16.0-1
+  - apiVersion: v2
+    appVersion: 0.16.0
+    created: "2026-06-02T12:49:04.498284+05:00"
+    dependencies:
+    - name: trust-manager
+      repository: https://charts.jetstack.io
+      version: 0.16.0
+    description: trust-manager is the easiest way to manage TLS trust bundles in Kubernetes
+      and OpenShift clusters
+    digest: 4cb5d6dee9828eb0b4ee6e28bd4c43e687f1d68d189b4996d2623fa7214ad4ef
+    home: https://cert-manager.io/docs/trust/trust-manager
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - trust-manager
+    - cert-manager
+    - tls
+    - trust bundle
+    - trust anchor
+    name: trust-manager
+    sources:
+    - https://github.com/cert-manager/trust-manager
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trust-manager-0.16.0-2.tgz
+    version: 0.16.0-2
+  - apiVersion: v2
+    appVersion: 0.16.0
+    created: "2026-06-02T12:49:04.497488+05:00"
+    dependencies:
+    - name: trust-manager
+      repository: https://charts.jetstack.io
+      version: 0.16.0
+    description: trust-manager is the easiest way to manage TLS trust bundles in Kubernetes
+      and OpenShift clusters
+    digest: 4e0ec4e74afc64dad5b49b81782ed2a8a01f4c340225fdcec552e049f0ae2e85
+    home: https://cert-manager.io/docs/trust/trust-manager
+    icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
+    keywords:
+    - trust-manager
+    - cert-manager
+    - tls
+    - trust bundle
+    - trust anchor
+    name: trust-manager
+    sources:
+    - https://github.com/cert-manager/trust-manager
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/trust-manager-0.16.0-1.tgz
+    version: 0.16.0-1
   validating-admission-policies:
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-06-01T20:56:36.829817+05:00"
-      description: A Helm chart for Kubernetes
-      digest: fb1a72d2730c1e62535807badf51b06fbaf0481a01d973999a4ce936337d83ad
-      name: validating-admission-policies
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/validating-admission-policies-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-06-02T12:49:04.49848+05:00"
+    description: A Helm chart for Kubernetes
+    digest: fb1a72d2730c1e62535807badf51b06fbaf0481a01d973999a4ce936337d83ad
+    name: validating-admission-policies
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/validating-admission-policies-0.1.0.tgz
+    version: 0.1.0
   vault:
-    - apiVersion: v2
-      appVersion: 1.20.1
-      created: "2026-06-02T12:58:25.673205+05:00"
-      dependencies:
-        - name: vault
-          repository: https://helm.releases.hashicorp.com
-          version: 0.30.1
-      description: Official HashiCorp Vault Chart
-      digest: bc7a457f01748a995c1a5c7a68fa7e10c4d5baa58fc80e415ff06d7038be3a47
-      home: https://www.vaultproject.io
-      icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
-      keywords:
-        - vault
-        - security
-        - encryption
-        - secrets
-        - management
-        - automation
-        - infrastructure
-      kubeVersion: '>= 1.20.0-0'
-      name: vault
-      sources:
-        - https://github.com/hashicorp/vault
-        - https://github.com/hashicorp/vault-helm
-        - https://github.com/hashicorp/vault-k8s
-        - https://github.com/hashicorp/vault-csi-provider
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-2.tgz
-      version: 0.30.1-2
-    - apiVersion: v2
-      appVersion: 1.20.1
-      created: "2026-06-01T20:56:36.831606+05:00"
-      dependencies:
-        - name: vault
-          repository: https://helm.releases.hashicorp.com
-          version: 0.30.1
-      description: Official HashiCorp Vault Chart
-      digest: 29ccd19e9b9e0b75b7b19a0c31a5e4af0eb078ec60543d31c6858566af6c51b1
-      home: https://www.vaultproject.io
-      icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
-      keywords:
-        - vault
-        - security
-        - encryption
-        - secrets
-        - management
-        - automation
-        - infrastructure
-      kubeVersion: '>= 1.20.0-0'
-      name: vault
-      sources:
-        - https://github.com/hashicorp/vault
-        - https://github.com/hashicorp/vault-helm
-        - https://github.com/hashicorp/vault-k8s
-        - https://github.com/hashicorp/vault-csi-provider
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-1.tgz
-      version: 0.30.1-1
+  - apiVersion: v2
+    appVersion: 1.20.1
+    created: "2026-06-02T12:49:04.502008+05:00"
+    dependencies:
+    - name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: 0.30.1
+    description: Official HashiCorp Vault Chart
+    digest: 91183a292ea1b8b2e41ad37d97d0fa2fb23dc0baffea2a506d75ad86f2a0bc9c
+    home: https://www.vaultproject.io
+    icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
+    keywords:
+    - vault
+    - security
+    - encryption
+    - secrets
+    - management
+    - automation
+    - infrastructure
+    kubeVersion: '>= 1.20.0-0'
+    name: vault
+    sources:
+    - https://github.com/hashicorp/vault
+    - https://github.com/hashicorp/vault-helm
+    - https://github.com/hashicorp/vault-k8s
+    - https://github.com/hashicorp/vault-csi-provider
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-2.tgz
+    version: 0.30.1-2
+  - apiVersion: v2
+    appVersion: 1.20.1
+    created: "2026-06-02T12:49:04.50028+05:00"
+    dependencies:
+    - name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: 0.30.1
+    description: Official HashiCorp Vault Chart
+    digest: 29ccd19e9b9e0b75b7b19a0c31a5e4af0eb078ec60543d31c6858566af6c51b1
+    home: https://www.vaultproject.io
+    icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
+    keywords:
+    - vault
+    - security
+    - encryption
+    - secrets
+    - management
+    - automation
+    - infrastructure
+    kubeVersion: '>= 1.20.0-0'
+    name: vault
+    sources:
+    - https://github.com/hashicorp/vault
+    - https://github.com/hashicorp/vault-helm
+    - https://github.com/hashicorp/vault-k8s
+    - https://github.com/hashicorp/vault-csi-provider
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-1.tgz
+    version: 0.30.1-1
   vault-secrets:
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.833306+05:00"
-      description: A Helm chart for Kubernetes
-      digest: 727587b6aec64508743c0444b624d693528dde4e6b62900c59b55676afeeae54
-      name: vault-secrets
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secrets-0.1.0.tgz
-      version: 0.1.0
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-02T12:49:04.50225+05:00"
+    description: A Helm chart for Kubernetes
+    digest: 727587b6aec64508743c0444b624d693528dde4e6b62900c59b55676afeeae54
+    name: vault-secrets
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secrets-0.1.0.tgz
+    version: 0.1.0
   victoria-metrics-k8s-stack:
-    - annotations:
-        artifacthub.io/category: monitoring-logging
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/links: |
-          - name: Sources
-            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
-          - name: Charts repo
-            url: https://victoriametrics.github.io/helm-charts/
-          - name: Docs
-            url: https://docs.victoriametrics.com/victoriametrics/
-          - name: Changelog
-            url: https://docs.victoriametrics.com/changelog
-        artifacthub.io/operator: "true"
-      apiVersion: v2
-      appVersion: v1.119.0
-      created: "2026-06-01T20:56:36.873825+05:00"
-      dependencies:
-        - name: victoria-metrics-k8s-stack
-          repository: https://victoriametrics.github.io/helm-charts/
-          version: 0.52.0
-      description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: 618ed73ea9f807a8778deee147cedb97a8c8c952206ec6225bf6ee9124c419d5
-      home: https://github.com/VictoriaMetrics/helm-charts
-      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
-      keywords:
-        - victoriametrics
-        - operator
-        - monitoring
-        - kubernetes
-        - observability
-        - tsdb
-        - metrics
-        - metricsql
-        - timeseries
-      kubeVersion: '>=1.25.0-0'
-      name: victoria-metrics-k8s-stack
-      sources:
-        - https://github.com/VictoriaMetrics/helm-charts
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-5.tgz
-      version: 0.52.0-5
-    - annotations:
-        artifacthub.io/category: monitoring-logging
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/links: |
-          - name: Sources
-            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
-          - name: Charts repo
-            url: https://victoriametrics.github.io/helm-charts/
-          - name: Docs
-            url: https://docs.victoriametrics.com/victoriametrics/
-          - name: Changelog
-            url: https://docs.victoriametrics.com/changelog
-        artifacthub.io/operator: "true"
-      apiVersion: v2
-      appVersion: v1.119.0
-      created: "2026-06-01T20:56:36.860017+05:00"
-      dependencies:
-        - name: victoria-metrics-k8s-stack
-          repository: https://victoriametrics.github.io/helm-charts/
-          version: 0.52.0
-      description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: 5bf03c6b2de60c1ed96ac88a6ce3e8ef51c1b46ca180a5b5c76fa224f6235adc
-      home: https://github.com/VictoriaMetrics/helm-charts
-      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
-      keywords:
-        - victoriametrics
-        - operator
-        - monitoring
-        - kubernetes
-        - observability
-        - tsdb
-        - metrics
-        - metricsql
-        - timeseries
-      kubeVersion: '>=1.25.0-0'
-      name: victoria-metrics-k8s-stack
-      sources:
-        - https://github.com/VictoriaMetrics/helm-charts
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-4.tgz
-      version: 0.52.0-4
-    - annotations:
-        artifacthub.io/category: monitoring-logging
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/links: |
-          - name: Sources
-            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
-          - name: Charts repo
-            url: https://victoriametrics.github.io/helm-charts/
-          - name: Docs
-            url: https://docs.victoriametrics.com/victoriametrics/
-          - name: Changelog
-            url: https://docs.victoriametrics.com/changelog
-        artifacthub.io/operator: "true"
-      apiVersion: v2
-      appVersion: v1.119.0
-      created: "2026-06-01T20:56:36.8469+05:00"
-      dependencies:
-        - name: victoria-metrics-k8s-stack
-          repository: https://victoriametrics.github.io/helm-charts/
-          version: 0.52.0
-      description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: 12dcefda42a20a0162269440df3794afae927d4c267e5604ce24276bebd3d41f
-      home: https://github.com/VictoriaMetrics/helm-charts
-      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
-      keywords:
-        - victoriametrics
-        - operator
-        - monitoring
-        - kubernetes
-        - observability
-        - tsdb
-        - metrics
-        - metricsql
-        - timeseries
-      kubeVersion: '>=1.25.0-0'
-      name: victoria-metrics-k8s-stack
-      sources:
-        - https://github.com/VictoriaMetrics/helm-charts
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-3.tgz
-      version: 0.52.0-3
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Sources
+          url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+        - name: Charts repo
+          url: https://victoriametrics.github.io/helm-charts/
+        - name: Docs
+          url: https://docs.victoriametrics.com/victoriametrics/
+        - name: Changelog
+          url: https://docs.victoriametrics.com/changelog
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v1.119.0
+    created: "2026-06-02T12:49:04.528987+05:00"
+    dependencies:
+    - name: victoria-metrics-k8s-stack
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.52.0
+    description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics
+      Operator, Grafana dashboards, ServiceScrapes and VMRules
+    digest: 5bf03c6b2de60c1ed96ac88a6ce3e8ef51c1b46ca180a5b5c76fa224f6235adc
+    home: https://github.com/VictoriaMetrics/helm-charts
+    icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+    keywords:
+    - victoriametrics
+    - operator
+    - monitoring
+    - kubernetes
+    - observability
+    - tsdb
+    - metrics
+    - metricsql
+    - timeseries
+    kubeVersion: '>=1.25.0-0'
+    name: victoria-metrics-k8s-stack
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-4.tgz
+    version: 0.52.0-4
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Sources
+          url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+        - name: Charts repo
+          url: https://victoriametrics.github.io/helm-charts/
+        - name: Docs
+          url: https://docs.victoriametrics.com/victoriametrics/
+        - name: Changelog
+          url: https://docs.victoriametrics.com/changelog
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v1.119.0
+    created: "2026-06-02T12:49:04.515775+05:00"
+    dependencies:
+    - name: victoria-metrics-k8s-stack
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.52.0
+    description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics
+      Operator, Grafana dashboards, ServiceScrapes and VMRules
+    digest: 12dcefda42a20a0162269440df3794afae927d4c267e5604ce24276bebd3d41f
+    home: https://github.com/VictoriaMetrics/helm-charts
+    icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+    keywords:
+    - victoriametrics
+    - operator
+    - monitoring
+    - kubernetes
+    - observability
+    - tsdb
+    - metrics
+    - metricsql
+    - timeseries
+    kubeVersion: '>=1.25.0-0'
+    name: victoria-metrics-k8s-stack
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-3.tgz
+    version: 0.52.0-3
   victoria-metrics-operator:
-    - annotations:
-        artifacthub.io/category: monitoring-logging
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/links: |
-          - name: Sources
-            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-operator
-          - name: Charts repo
-            url: https://victoriametrics.github.io/helm-charts/
-          - name: Docs
-            url: https://docs.victoriametrics.com/operator/
-          - name: Changelog
-            url: https://docs.victoriametrics.com/operator/changelog/
-        artifacthub.io/operator: "true"
-      apiVersion: v2
-      appVersion: v0.60.0
-      created: "2026-06-01T20:56:36.893434+05:00"
-      dependencies:
-        - name: victoria-metrics-operator
-          repository: https://victoriametrics.github.io/helm-charts/
-          version: 0.52.0
-      description: VictoriaMetrics Operator
-      digest: 1bb3445c7c7f99edc992b3f49083535d62e2305c47204faa9a340b229298a3a0
-      home: https://github.com/VictoriaMetrics/operator
-      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
-      keywords:
-        - victoriametrics
-        - operator
-        - monitoring
-        - kubernetes
-        - observability
-        - tsdb
-        - metrics
-        - metricsql
-        - timeseries
-      kubeVersion: '>=1.25.0-0'
-      name: victoria-metrics-operator
-      sources:
-        - https://github.com/VictoriaMetrics/helm-charts
-        - https://github.com/VictoriaMetrics/operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-3.tgz
-      version: 0.52.0-3
-    - annotations:
-        artifacthub.io/category: monitoring-logging
-        artifacthub.io/license: Apache-2.0
-        artifacthub.io/links: |
-          - name: Sources
-            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-operator
-          - name: Charts repo
-            url: https://victoriametrics.github.io/helm-charts/
-          - name: Docs
-            url: https://docs.victoriametrics.com/operator/
-          - name: Changelog
-            url: https://docs.victoriametrics.com/operator/changelog/
-        artifacthub.io/operator: "true"
-      apiVersion: v2
-      appVersion: v0.60.0
-      created: "2026-06-01T20:56:36.883713+05:00"
-      dependencies:
-        - name: victoria-metrics-operator
-          repository: https://victoriametrics.github.io/helm-charts/
-          version: 0.52.0
-      description: VictoriaMetrics Operator
-      digest: b4aaa3906c3fb0851d93c47380b047316238f0e640af2f4fc8a2e2ec8f003777
-      home: https://github.com/VictoriaMetrics/operator
-      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
-      keywords:
-        - victoriametrics
-        - operator
-        - monitoring
-        - kubernetes
-        - observability
-        - tsdb
-        - metrics
-        - metricsql
-        - timeseries
-      kubeVersion: '>=1.25.0-0'
-      name: victoria-metrics-operator
-      sources:
-        - https://github.com/VictoriaMetrics/helm-charts
-        - https://github.com/VictoriaMetrics/operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-2.tgz
-      version: 0.52.0-2
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Sources
+          url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-operator
+        - name: Charts repo
+          url: https://victoriametrics.github.io/helm-charts/
+        - name: Docs
+          url: https://docs.victoriametrics.com/operator/
+        - name: Changelog
+          url: https://docs.victoriametrics.com/operator/changelog/
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v0.60.0
+    created: "2026-06-02T12:49:04.548662+05:00"
+    dependencies:
+    - name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.52.0
+    description: VictoriaMetrics Operator
+    digest: 1bb3445c7c7f99edc992b3f49083535d62e2305c47204faa9a340b229298a3a0
+    home: https://github.com/VictoriaMetrics/operator
+    icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+    keywords:
+    - victoriametrics
+    - operator
+    - monitoring
+    - kubernetes
+    - observability
+    - tsdb
+    - metrics
+    - metricsql
+    - timeseries
+    kubeVersion: '>=1.25.0-0'
+    name: victoria-metrics-operator
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts
+    - https://github.com/VictoriaMetrics/operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-3.tgz
+    version: 0.52.0-3
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Sources
+          url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-operator
+        - name: Charts repo
+          url: https://victoriametrics.github.io/helm-charts/
+        - name: Docs
+          url: https://docs.victoriametrics.com/operator/
+        - name: Changelog
+          url: https://docs.victoriametrics.com/operator/changelog/
+      artifacthub.io/operator: "true"
+    apiVersion: v2
+    appVersion: v0.60.0
+    created: "2026-06-02T12:49:04.53817+05:00"
+    dependencies:
+    - name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.52.0
+    description: VictoriaMetrics Operator
+    digest: b4aaa3906c3fb0851d93c47380b047316238f0e640af2f4fc8a2e2ec8f003777
+    home: https://github.com/VictoriaMetrics/operator
+    icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+    keywords:
+    - victoriametrics
+    - operator
+    - monitoring
+    - kubernetes
+    - observability
+    - tsdb
+    - metrics
+    - metricsql
+    - timeseries
+    kubeVersion: '>=1.25.0-0'
+    name: victoria-metrics-operator
+    sources:
+    - https://github.com/VictoriaMetrics/helm-charts
+    - https://github.com/VictoriaMetrics/operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-2.tgz
+    version: 0.52.0-2
   worker-group-claim-operator:
-    - apiVersion: v2
-      appVersion: v0.0.2-dec3570e
-      created: "2026-06-01T20:56:36.894355+05:00"
-      description: A Helm chart to distribute the project worker-group-claim-operator
-      digest: 5ca47fbf3b05d469a285d208dbd1783bb2f5998f3470c21f9e155bf1a3b4cd8c
-      icon: https://example.com/icon.png
-      name: worker-group-claim-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.2.tgz
-      version: 0.1.2
-    - apiVersion: v2
-      appVersion: v0.0.2-dec3570e
-      created: "2026-06-01T20:56:36.89395+05:00"
-      description: A Helm chart to distribute the project worker-group-claim-operator
-      digest: 460468acaf0274b95d56de4b21efd3d4b5fc1f62db846708f36a837c4814a5b8
-      icon: https://example.com/icon.png
-      name: worker-group-claim-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.1.tgz
-      version: 0.1.1
-generated: "2026-06-01T20:56:36.663526+05:00"
+  - apiVersion: v2
+    appVersion: v0.0.2-dec3570e
+    created: "2026-06-02T12:49:04.549116+05:00"
+    description: A Helm chart to distribute the project worker-group-claim-operator
+    digest: 460468acaf0274b95d56de4b21efd3d4b5fc1f62db846708f36a837c4814a5b8
+    icon: https://example.com/icon.png
+    name: worker-group-claim-operator
+    type: application
+    urls:
+    - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.1.tgz
+    version: 0.1.1
+generated: "2026-06-02T12:49:04.360593+05:00"

@@ -55,3 +55,8 @@ tls:
     issuer:
       name: default-client-issuer
       kind: ClusterIssuer
+
+companyPrefix: example
+
+networkPolicies:
+  enabled: false
