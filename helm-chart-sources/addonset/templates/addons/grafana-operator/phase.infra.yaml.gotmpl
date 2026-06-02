@@ -1,0 +1,15 @@
+{{- if and .Values.addons.grafanaoperator.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "grafana-operator"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: grafana-operator
+spec:
+  rules:
+    {{- include "common.phase.rules.vm-operator"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
