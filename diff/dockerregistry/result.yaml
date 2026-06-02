@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -46,6 +46,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -60,7 +61,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: docker-registry
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: docker-registry
@@ -70,7 +71,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: docker-registry
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -85,11 +86,85 @@ spec:
             name: cert-manager
           jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
           operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
       selector:
         name: cert-manager
-        priority: 10
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/addon: docker-registry
+    - name: istio-base
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: istio-base
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: docker-registry
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: istio-base
+        priority: 35
+        matchLabels:
+          addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: docker-registry
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: docker-registry
     - name: system
       criteria:
@@ -98,74 +173,23 @@ spec:
             kind: ConfigMap
             name: parameters-infra
             namespace: example-system
-          jsonPath: $.data.environment
+          jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "infra"
+          value: "true"
       selector:
         name: system
-        priority: 15
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: docker-registry
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: docker-registry
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: argocd
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: istio-base
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: docker-registry
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: docker-registry-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: docker-registry
-spec:
-  values: |
-    default:
-      metrics:
-        port: 11043
----
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: docker-registry-cert-manager
   labels:
-    addons.in-cloud.io/values: "cert-manager"
+    addons.in-cloud.io/values: cert-manager
     addons.in-cloud.io/addon: docker-registry
 spec:
   values: |
@@ -179,22 +203,21 @@ spec:
       metrics:
         secureEndpoint: true
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: docker-registry-vm-operator
+  name: docker-registry-default
   labels:
-    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: docker-registry
 spec:
   values: |
     default:
       metrics:
-        scrape:
-          enabled: true
+        port: 11043
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -203,9 +226,22 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: docker-registry
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: docker-registry-istio-base
+  labels:
+    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/addon: docker-registry
+spec:
+  values: |
+    expose:
+      enabled: true
+---
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -360,15 +396,17 @@ spec:
           proxy:
             remoteurl: https://{{ .Values.companyInternalDockerRegistry }}
 ---
-# Source: addonset/templates/systemAddons/docker-registry/docker-registry.yml
+# Source: addonset/templates/addons/docker-registry/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: docker-registry-istio-base
+  name: docker-registry-vm-operator
   labels:
-    addons.in-cloud.io/values: istio-base
+    addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: docker-registry
 spec:
   values: |
-    expose:
-      enabled: true
+    default:
+      metrics:
+        scrape:
+          enabled: true
