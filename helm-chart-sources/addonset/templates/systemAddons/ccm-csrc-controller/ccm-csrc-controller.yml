@@ -1,4 +1,4 @@
-{{- if and .Values.addons.ccmcsrccontroller.enabled .Values.addons.system.enabled }}
+{{- if false }}
   
   {{- include "ccm-csrc-controller.addon" . }}
 

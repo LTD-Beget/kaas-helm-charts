@@ -1,5 +1,5 @@
+{{- if and .Values.addons.ccmcsrccontroller.enabled .Values.addons.system.enabled }}
 ---
-# Source: addonset/templates/addons/ccm-csrc-controller/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -7,17 +7,17 @@ metadata:
 spec:
   chart: ccm-csr-controller
   pluginName: helm-with-values
-  repoURL: "example.com"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.1"
   targetCluster: in-cluster
   releaseName: system
-  targetNamespace: "example-ccm-csrc-controller"
+  targetNamespace: "{{ .Values.companyPrefix }}-ccm-csrc-controller"
   variables:
     cluster_name: in-cluster
   backend:
     finalizer: true
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -52,45 +52,8 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
----
-# Source: addonset/templates/addons/ccm-csrc-controller/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: ccm-csrc-controller-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: ccm-csrc-controller
-spec:
-  values: |
-    controllerManager:
-      manager:
-        image:
-          repository: {{ .Values.companyInternalDockerRegistry }}/k8s-charts-public/charts/ccm-csr-controller
-        resources:
-          limits:
-            cpu: 6 # In trottling case need delete limits.cpu
-            memory: 2048Mi
-          requests:
-            cpu: 500m
-            memory: 512Mi
-      tolerations:
-      - effect: NoSchedule
-        operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/control-plane
----
-# Source: addonset/templates/addons/ccm-csrc-controller/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: ccm-csrc-controller-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: ccm-csrc-controller
-spec:
-  values: |
+{{- end }}
