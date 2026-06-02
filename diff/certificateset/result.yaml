@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/certificate-set/certificate-set.yml
+# Source: addonset/templates/addons/certificate-set/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -41,6 +41,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -55,12 +56,80 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: certificate-set
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: certificate-set
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: certificate-set
 ---
-# Source: addonset/templates/certificate-set/certificate-set.yml
+# Source: addonset/templates/addons/certificate-set/phase.infra.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: certificate-set
+spec:
+  rules:
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: certificate-set
+    - name: system
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+      selector:
+        name: system
+        priority: 70
+        matchLabels:
+          addons.in-cloud.io/values: system
+          addons.in-cloud.io/addon: certificate-set
+---
+# Source: addonset/templates/addons/certificate-set/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -84,10 +153,33 @@ spec:
     metrics:
       enable: true
       port: 8443
+---
+# Source: addonset/templates/addons/certificate-set/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/certificate-set/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: certificate-set-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: certificate-set
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
 ---
-# Source: addonset/templates/certificate-set/certificate-set.yml
+# Source: addonset/templates/addons/certificate-set/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -102,14 +194,3 @@ spec:
         limits:
           cpu: 500m
           memory: 512Mi
----
-# Source: addonset/templates/certificate-set/certificate-set.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: certificate-set-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: certificate-set
-spec:
-  values: ""
