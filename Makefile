@@ -39,7 +39,8 @@ lint: check-helm
 
 create-packages: check-tools
 	@mkdir -p "$(PACKAGES_DIR)"
-	@for d in $(CHART_DIRS); do \
+	@printf '' > "$(PACKAGES_DIR)/.newly_built"; \
+	for d in $(CHART_DIRS); do \
 		chart="$${d%/}"; \
 		name=$$($(YQ) -r '.name' "$$chart/Chart.yaml"); \
 		version=$$($(YQ) -r '.version' "$$chart/Chart.yaml"); \
@@ -50,16 +51,19 @@ create-packages: check-tools
 		fi; \
 		echo "pack  $$chart -> $$pkg"; \
 		$(HELM) package "$$chart" --destination "$(PACKAGES_DIR)" >/dev/null; \
+		echo "$${name}/$${version}" >> "$(PACKAGES_DIR)/.newly_built"; \
 	done
 
 index: check-tools
 	@mkdir -p "$(PACKAGES_DIR)"
 	@known_names=$$(mktemp); \
-	old_index=$$(mktemp); \
-	trap 'rm -f "$$known_names" "$$old_index" "$(PACKAGES_DIR)/index.yaml"' EXIT; \
+	tmpdir=$$(mktemp -d); \
+	newly_built="$(PACKAGES_DIR)/.newly_built"; \
+	trap 'rm -f "$$known_names" "$$newly_built"; rm -rf "$$tmpdir"' EXIT; \
 	for d in $(CHART_DIRS); do \
 		$(YQ) -r '.name' "$${d%/}/Chart.yaml"; \
 	done | sort -u > "$$known_names"; \
+	purged="$$tmpdir/purged"; : > "$$purged"; \
 	for pkg in "$(PACKAGES_DIR)"/*.tgz; do \
 		[ -f "$$pkg" ] || continue; \
 		base=$$(basename "$$pkg" .tgz); \
@@ -69,19 +73,42 @@ index: check-tools
 		done < "$$known_names"; \
 		if [ "$$matched" -eq 0 ]; then \
 			echo "purge $$pkg"; \
+			echo "$$base.tgz" >> "$$purged"; \
 			rm -f "$$pkg"; \
 		fi; \
 	done; \
-	if [ -s "$(INDEX_FILE)" ]; then \
-		cp "$(INDEX_FILE)" "$$old_index"; \
+	if [ ! -s "$(INDEX_FILE)" ]; then \
+		$(HELM) repo index "$(PACKAGES_DIR)" --url "$(REPO_PACKAGES_URL)"; \
+		mv "$(PACKAGES_DIR)/index.yaml" "$(INDEX_FILE)"; \
+		echo "index $(INDEX_FILE) created"; \
+		exit 0; \
 	fi; \
-	$(HELM) repo index "$(PACKAGES_DIR)" --url "$(REPO_PACKAGES_URL)"; \
-	cp "$(PACKAGES_DIR)/index.yaml" "$(INDEX_FILE)"; \
-	if [ -s "$$old_index" ]; then \
-		$(YQ) -r -s '.[0].entries as $$old | .[1].entries | to_entries[] | .value[] | . as $$e | ($$old[.name] // [] | map(select(.version == $$e.version and .digest == $$e.digest)) | .[0].created) as $$oc | select($$oc != null and $$oc != $$e.created) | "\($$e.created)tmp\($$oc)"' "$$old_index" "$(PACKAGES_DIR)/index.yaml" \
-		| while IFS=$$'\t' read -r new_date old_date; do \
-			sed -i "s|$$new_date|$$old_date|" "$(INDEX_FILE)"; \
-		done; \
+	if [ ! -s "$$purged" ] && [ ! -s "$$newly_built" ]; then \
+		echo "index $(INDEX_FILE) up-to-date"; \
+		exit 0; \
 	fi; \
-	rm -f "$(PACKAGES_DIR)/index.yaml"; \
-	echo "index $(INDEX_FILE) updated"
+	work="$$tmpdir/work.yaml"; \
+	cp "$(INDEX_FILE)" "$$work"; \
+	if [ -s "$$purged" ]; then \
+		while read -r fname; do \
+			[ -n "$$fname" ] || continue; \
+			FNAME="$$fname" $(YQ) -i 'del(.entries[][] | select((.urls[0] | split("/") | .[-1]) == env(FNAME)))' "$$work"; \
+		done < "$$purged"; \
+		$(YQ) -i 'del(.entries[] | select(length == 0))' "$$work"; \
+	fi; \
+	if [ -s "$$newly_built" ]; then \
+		new_pkg_dir="$$tmpdir/new_pkgs"; mkdir -p "$$new_pkg_dir"; \
+		while IFS=/ read -r nb_name nb_ver; do \
+			[ -n "$$nb_name" ] || continue; \
+			NB_NAME="$$nb_name" NB_VER="$$nb_ver" $(YQ) -i 'del(.entries[env(NB_NAME)][] | select(.version == env(NB_VER)))' "$$work"; \
+			ln -s "$$(pwd)/$(PACKAGES_DIR)/$${nb_name}-$${nb_ver}.tgz" "$$new_pkg_dir/$${nb_name}-$${nb_ver}.tgz"; \
+		done < "$$newly_built"; \
+		$(HELM) repo index "$$new_pkg_dir" --url "$(REPO_PACKAGES_URL)"; \
+		$(YQ) -i '.entries = (.entries *+ load("'"$$new_pkg_dir/index.yaml"'").entries)' "$$work"; \
+	fi; \
+	if diff -q "$$work" "$(INDEX_FILE)" > /dev/null 2>&1; then \
+		echo "index $(INDEX_FILE) up-to-date"; \
+	else \
+		mv "$$work" "$(INDEX_FILE)"; \
+		echo "index $(INDEX_FILE) updated"; \
+	fi
