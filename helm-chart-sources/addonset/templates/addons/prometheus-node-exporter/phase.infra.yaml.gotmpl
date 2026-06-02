@@ -1,0 +1,17 @@
+{{- if .Values.addons.prometheusnodeexporter.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "prometheus-node-exporter"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: prometheus-node-exporter
+spec:
+  rules:
+    {{- include "common.phase.rules.infra"         $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"   $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"        $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
