@@ -1,0 +1,17 @@
+alertmanagerConfig:
+  config:
+    route:
+      routes:
+        signalilo:
+          matchers:
+            - severity="critical"
+          receiver: signalilo-critical
+          continue: true
+
+    receivers:
+      signalilo-critical:
+        type: webhook_configs
+        configs:
+          mainSignaliloInstance:
+            url: "http://signalilo.{{ .Values.companyPrefix }}-signalilo.svc/webhook?token={{ .Values.alertmanagerSignaliloToken }}"
+            send_resolved: true
