@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-01T20:56:36.676908+05:00"
+      created: "2026-06-02T12:58:25.516443+05:00"
       description: A Helm chart for Kubernetes
-      digest: 7082fc63f769a5a03a906e67c8f068b3dfff575d884ceee3bd2650e6974e2f81
+      digest: 1b7afd2534733614dce49036c3f431acc53cdd4f449466f382758d7de3f18067
       name: addonset
       type: application
       urls:
@@ -1665,13 +1665,13 @@ entries:
   vault:
     - apiVersion: v2
       appVersion: 1.20.1
-      created: "2026-06-01T20:56:36.833081+05:00"
+      created: "2026-06-02T12:58:25.673205+05:00"
       dependencies:
         - name: vault
           repository: https://helm.releases.hashicorp.com
           version: 0.30.1
       description: Official HashiCorp Vault Chart
-      digest: 3a33f73fb4e1d041f68e3ce85b4e695b5a15b57d1786f06184576c0f4e5b3707
+      digest: bc7a457f01748a995c1a5c7a68fa7e10c4d5baa58fc80e415ff06d7038be3a47
       home: https://www.vaultproject.io
       icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
       keywords:
