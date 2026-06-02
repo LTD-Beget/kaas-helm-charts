@@ -1,4 +1,4 @@
-{{- if .Values.addons.dex.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
   
   {{- if .Values.addons.system.enabled }}
