@@ -56,10 +56,20 @@ spec:
           matchLabels:
             addons.in-cloud.io/values: default
             addons.in-cloud.io/addon: incloud-web-chart
-        - name: custom
+        - name: client
           priority: 90
           matchLabels:
+            addons.in-cloud.io/values: client
+            addons.in-cloud.io/addon: incloud-web-chart
+        - name: client-custom
+          priority: 93
+          matchLabels:
             addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
+            addons.in-cloud.io/addon: incloud-web-chart-client
+        - name: custom
+          priority: 95
+          matchLabels:
+            addons.in-cloud.io/values: custom
             addons.in-cloud.io/addon: incloud-web-chart-client
         - name: immutable
           priority: 99

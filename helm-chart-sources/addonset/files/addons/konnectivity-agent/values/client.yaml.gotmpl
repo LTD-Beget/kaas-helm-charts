@@ -1,0 +1,6 @@
+tolerations:
+  - operator: "Exists"
+labels:
+  toleration.{{ .Values.companyDomain }}/ignore: "true"
+podLabels:
+  toleration.{{ .Values.companyDomain }}/ignore: "true"

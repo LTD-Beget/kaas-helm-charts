@@ -1,0 +1,8 @@
+victoria-metrics-k8s-stack:
+  vmagent:
+    spec:
+      externalLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+

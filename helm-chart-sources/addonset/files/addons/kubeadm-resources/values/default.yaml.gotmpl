@@ -1,0 +1,16 @@
+companyPrefix: {{ .Values.companyPrefix }}
+clusterInfo:
+  clusterApiUrl: "https://{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+  clusterName: "{{ .Values.cluster.name }}"
+  kubeCaCrtBase64: "{{ .Values.cluster.kubeCaCrtBase64 }}"
+kubeadmConfig:
+  namespace: kube-system
+  clusterConfiguration:
+    clusterName: "{{ .Values.cluster.name }}"
+    controlPlaneEndpoint: "{{ .Values.cluster.host }}:{{ .Values.cluster.port }}"
+    networking:
+      serviceSubnet: "{{ .Values.clientServiceCidr }}"
+      dnsDomain: "{{ .Values.cluster.domain }}"
+    kubernetesVersion: "{{ .Values.cluster.version }}"
+rbac:
+  authExtraGroups: "system:bootstrappers:kubeadm:default-node-token"

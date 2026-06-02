@@ -1,0 +1,16 @@
+{{- if .Values.addons.certificateset.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "certificate-set"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: certificate-set
+spec:
+  rules:
+    {{- include "common.phase.rules.network-policies" $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"           $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}

@@ -1,0 +1,19 @@
+companyPrefix: {{ .Values.companyPrefix }}
+istiod:
+  base:
+    validationCABundle: ""
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  pilot:
+    autoscaleMin: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  global:
+    priorityClassName: system-cluster-critical
+    istioNamespace: {{ .Values.companyPrefix }}-istio
+    proxy:
+      tracer: zipkin
+    defaultPodDisruptionBudget:
+      enabled: false

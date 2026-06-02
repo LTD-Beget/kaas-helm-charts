@@ -1,0 +1,27 @@
+argo-cd:
+  configs:
+    cm:
+      url: "https://{{ .Values.systemIstioGwDomainInternal }}/argocd"
+    envFrom:
+      - secretRef:
+          name: avp-config
+    resources:
+      limits:
+        cpu: 8
+        memory: 8Gi
+  extraObjects:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: avp-config
+        namespace: {{ .Values.companyPrefix }}-argocd
+      type: Opaque
+      stringData:
+        AVP_TYPE: "vault"
+        AVP_AUTH_TYPE: "k8s"
+        VAULT_ADDR: "http://vault.{{ .Values.companyPrefix }}-vault.svc.cluster.local:8200"
+        AVP_K8S_ROLE: "credentials-ro"
+istio:
+  virtualService:
+    gateways:
+      - {{ .Values.companyPrefix }}-istio-gw-internal/default

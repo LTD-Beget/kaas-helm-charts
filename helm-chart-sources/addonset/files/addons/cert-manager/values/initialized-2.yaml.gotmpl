@@ -1,0 +1,7 @@
+issuers:
+  selfsignedClusterIssuer:
+    kind: ClusterIssuer
+    name: selfsigned-cluster-issuer
+    spec:
+      ca:
+        secretName: selfsigned-infra-cluster-ca

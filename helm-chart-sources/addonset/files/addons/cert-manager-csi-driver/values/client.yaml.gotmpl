@@ -1,0 +1,5 @@
+cert-manager-csi-driver:
+  podLabels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  tolerations:
+    - operator: "Exists"
