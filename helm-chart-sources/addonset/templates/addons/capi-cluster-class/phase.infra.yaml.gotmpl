@@ -1,0 +1,15 @@
+{{- if and .Values.addons.capiclusterclass.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "capi-cluster-class"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: capi-cluster-class
+spec:
+  rules:
+    {{- include "common.phase.rules.system"              $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
