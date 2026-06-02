@@ -1,4 +1,4 @@
-{{- if .Values.addons.certmanagercsidriver.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "cert-manager-csi-driver.addon" . }}
