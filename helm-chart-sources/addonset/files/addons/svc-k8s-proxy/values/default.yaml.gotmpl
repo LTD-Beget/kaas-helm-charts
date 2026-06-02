@@ -1,0 +1,19 @@
+companyPrefix: {{ .Values.companyPrefix }}
+config:
+  hub:
+    eventPrefix: {{ .Values.companyPrefix }}.event
+  graylog:
+    host: graylog.{{ .Values.companyPrefix }}
+env:
+  HUB_HTTP_ADDR: "http://svc-hub.{{ .Values.companyPrefix }}-svc-hub.svc:8082"
+image:
+  repository: {{ .Values.companyInternalDockerRegistry }}/cloud/k8s/svc-k8s-proxy
+  pullPolicy: Always
+imagePullSecrets:
+  - name: regcred
+service:
+  annotations:
+    lb.{{ .Values.companyDomain }}/algorithm: "round_robin"
+    lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+    lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+    lb.{{ .Values.companyDomain }}/type: "internal"
