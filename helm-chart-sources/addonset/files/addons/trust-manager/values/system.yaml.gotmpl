@@ -1,0 +1,9 @@
+bundle:
+  sources:
+    - secret:
+        name: selfsigned-infra-cluster-ca
+        key: tls.crt
+  target:
+    namespaceSelector:
+      matchLabels:
+        in-cloud.io/caBundle: "approved"

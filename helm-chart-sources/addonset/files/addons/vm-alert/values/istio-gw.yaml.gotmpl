@@ -1,0 +1,13 @@
+istioVirtualService:
+  vmalert:
+    enabled: true
+    gateways:
+      - {{ .Values.companyPrefix }}-istio-gw-internal/default
+    hosts:
+      - "*"
+    path: "/vmalert"
+    http:
+      name: vmalert
+      route:
+        host: vmalert
+        port: 8080

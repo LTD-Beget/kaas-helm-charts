@@ -1,0 +1,16 @@
+controllerManager:
+  manager:
+    image:
+      repository: {{ .Values.companyInternalDockerRegistry }}/k8s-charts-public/charts/ccm-csr-controller
+    resources:
+      limits:
+        cpu: 6 # In trottling case need delete limits.cpu
+        memory: 2048Mi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane

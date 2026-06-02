@@ -1,0 +1,9 @@
+companyPrefix: {{ .Values.companyPrefix }}
+gateway:
+  priorityClassName: system-cluster-critical
+  service:
+    type: NodePort
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi

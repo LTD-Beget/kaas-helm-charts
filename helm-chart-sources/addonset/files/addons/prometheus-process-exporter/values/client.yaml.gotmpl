@@ -1,0 +1,5 @@
+prometheus-process-exporter:
+  podLabels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  tolerations:
+    - operator: "Exists"

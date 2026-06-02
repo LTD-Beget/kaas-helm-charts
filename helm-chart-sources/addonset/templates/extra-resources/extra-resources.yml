@@ -1,4 +1,4 @@
-{{- if .Values.addons.extraresources.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "extra-resources.addon" . }}

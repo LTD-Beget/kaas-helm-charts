@@ -1,0 +1,44 @@
+kube-state-metrics:
+  volumes:
+    - name: rbac-proxy-tls
+      secret:
+        defaultMode: 420
+        secretName: kube-state-metrics-svc-tls
+
+  kubeRBACProxy:
+    extraArgs:
+      - --tls-cert-file=/app/config/metrics/tls/tls.crt
+      - --tls-private-key-file=/app/config/metrics/tls/tls.key
+      - --v=2
+
+    volumeMounts:
+      - name: rbac-proxy-tls
+        mountPath: /app/config/metrics/tls
+        readOnly: true
+
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - source_labels: [cluster_namespace, cluster_name]
+        separator: "-"
+        regex: "(.+)-(.+)"
+        target_label: cluster_full_name
+        replacement: "$1-$2"
+        action: replace
+      - source_labels: [__name__, namespace, name]
+        separator: "-"
+        regex: "^in_cloud_capi_clusterclaim_infra_.*-(.+)-(.+)$"
+        target_label: cluster_full_name
+        replacement: "$1-$2-infra"
+        action: replace
+      - source_labels: [__name__, namespace, name]
+        separator: "-"
+        regex: "^in_cloud_capi_clusterclaim_client_.*-(.+)-(.+)$"
+        target_label: cluster_full_name
+        replacement: "$1-$2-client"
+        action: replace

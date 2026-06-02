@@ -1,0 +1,45 @@
+companyPrefix: {{ .Values.companyPrefix }}
+grafanaDashboards:
+  argocd:
+    enabled: true
+  ciliumAgent:
+    enabled: true
+  clusterclaim:
+    enabled: true
+  cpu:
+    enabled: true
+  dockerRegistry:
+    enabled: true
+  goOperator:
+    enabled: true
+  processLA:
+    enabled: true
+  processExporter:
+    enabled: true
+  metallb:
+    enabled: false
+  vector:
+    enabled: false
+  vmagent:
+    enabled: true
+  vmalert:
+    enabled: true
+  vmcluster:
+    enabled: true
+  vmoperator:
+    enabled: true
+  k8s:
+    coredns:
+      enabled: true
+    etcd:
+      enabled: true
+    timex:
+      enabled: true
+    viewsGlobal:
+      enabled: true
+    viewsNamespaces:
+      enabled: true
+    viewsNodes:
+      enabled: true
+    viewsPods:
+      enabled: true

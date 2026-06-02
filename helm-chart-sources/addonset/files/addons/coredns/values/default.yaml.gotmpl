@@ -1,0 +1,37 @@
+coredns:
+  priorityClassName: system-cluster-critical
+  prometheus:
+    service:
+      enabled: true
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  rollingUpdate:
+    maxUnavailable: 35%
+    maxSurge: 1
+  securityContext:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: true
+    runAsUser: 0
+  service:
+    clusterIP: {{ .Values.clientServiceCidrCoredns }}
+  serviceAccount:
+    create: true
+    name: coredns
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - coredns
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - coredns
+          topologyKey: kubernetes.io/hostname
+        weight: 100
