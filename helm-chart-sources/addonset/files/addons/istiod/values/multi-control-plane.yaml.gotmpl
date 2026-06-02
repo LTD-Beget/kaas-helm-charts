@@ -1,0 +1,13 @@
+istiod:
+  pilot:
+    autoscaleMin: 2
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: istiod
+              app.kubernetes.io/instance: istiod
+          topologyKey: kubernetes.io/hostname
