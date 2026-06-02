@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -64,7 +64,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-alert
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: vm-alert
@@ -74,7 +74,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: vm-alert
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -87,10 +87,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -98,22 +96,27 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: vm-alert
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -131,7 +134,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: vm-alert
@@ -141,10 +144,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -163,6 +164,13 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
+            name: trust-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
             name: vm-alertmanager-client
           jsonPath: $.status.deployed
           operator: Equal
@@ -177,7 +185,7 @@ spec:
           value: "True"
       selector:
         name: vm-alertmanager
-        priority: 40
+        priority: 55
         matchLabels:
           addons.in-cloud.io/values: vm-alertmanager
           addons.in-cloud.io/addon: vm-alert
@@ -198,6 +206,14 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-alert-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
       selector:
         name: istio-gw
         priority: 40
@@ -205,7 +221,7 @@ spec:
           addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: vm-alert
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -218,10 +234,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -229,22 +243,27 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: vm-alert
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -262,7 +281,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: vm-alert
@@ -272,10 +291,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -294,6 +311,13 @@ spec:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
+            name: trust-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
             name: vm-alertmanager
           jsonPath: $.status.deployed
           operator: Equal
@@ -308,7 +332,7 @@ spec:
           value: "True"
       selector:
         name: vm-alertmanager
-        priority: 40
+        priority: 55
         matchLabels:
           addons.in-cloud.io/values: vm-alertmanager
           addons.in-cloud.io/addon: vm-alert
@@ -329,6 +353,14 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-alert
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
       selector:
         name: istio-gw
         priority: 40
@@ -336,133 +368,7 @@ spec:
           addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: vm-alert
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-alert-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: vm-alert
-spec:
-  values: |
-    victoria-metrics-k8s-stack:
-      fullnameOverride: "vm-alert"
-      vmalert:
-        spec:
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    topologyKey: kubernetes.io/hostname
-                    labelSelector:
-                      matchExpressions:
-                        - key: app.kubernetes.io/name
-                          operator: In
-                          values:
-                            - vmalert
-          serviceSpec:
-            metadata:
-              name: vmalert
-              labels:
-                monitoring.in-cloud.io/service: vm-alert
-            spec:
-              ports:
-                - name: http
-                  port: 8080
-                  protocol: TCP
-                  targetPort: 8080
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          extraArgs:
-            external.url: "https://{{ .Values.systemIstioGwDomain }}"
-          extraEnvs:
-            - name: GOMAXPROCS
-              value: "4"
-          evaluationInterval: 60s
-          selectAllByDefault: false
-          ruleNamespaceSelector: {}
-          ruleSelector:
-            matchLabels:
-              monitoring.in-cloud.io/vmrules: infra
-          resources:
-            limits:
-              cpu: '1'
-              memory: 1Gi
-            requests:
-              cpu: '100m'
-              memory: 128Mi
-          replicaCount: 2
-          updateStrategy: RollingUpdate
-          rollingUpdate:
-            maxSurge: 10%
-            maxUnavailable: 0
-          remoteWrite:
-            url: "http://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
-          remoteRead:
-            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
-          datasource:
-            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
----
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-alert-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: vm-alert
-spec:
-  values: |
-    victoria-metrics-k8s-stack:
-      alertmanager:
-        enabled: false
-      defaultRules:
-        create: false
-      prometheus-node-exporter:
-        enabled: false
-      serviceAccount:
-        create: false
-      victoria-metrics-operator:
-        enabled: false
-      vmagent:
-        enabled: false
-      vmalert:
-        enabled: true
-      vmcluster:
-        enabled: false
-      vmsingle:
-        enabled: false
-      coreDns:
-        enabled: false
-      defaultDashboards:
-        enabled: false
-      kubeDns:
-        enabled: false
-      grafana:
-        enabled: false
-      kube-state-metrics:
-        enabled: false
-      kubeApiServer:
-        enabled: false
-      kubeControllerManager:
-        enabled: false
-      kubeEtcd:
-        enabled: false
-      kubeProxy:
-        enabled: false
-      kubeScheduler:
-        enabled: false
-      kubelet:
-        enabled: false
----
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -549,20 +455,157 @@ spec:
         issuer:
           name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-alert-vm-operator
+  name: vm-alert-default
   labels:
-    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: vm-alert
 spec:
   values: |
-    monitoring:
-      enabled: true
+    victoria-metrics-k8s-stack:
+      fullnameOverride: "vm-alert"
+      vmalert:
+        spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - vmalert
+          serviceSpec:
+            metadata:
+              name: vmalert
+              labels:
+                monitoring.in-cloud.io/service: vm-alert
+            spec:
+              ports:
+                - name: http
+                  port: 8080
+                  protocol: TCP
+                  targetPort: 8080
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+          extraArgs:
+            external.url: "https://{{ .Values.systemIstioGwDomain }}"
+          extraEnvs:
+            - name: GOMAXPROCS
+              value: "4"
+          evaluationInterval: 60s
+          selectAllByDefault: false
+          ruleNamespaceSelector: {}
+          ruleSelector:
+            matchLabels:
+              monitoring.in-cloud.io/vmrules: infra
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '100m'
+              memory: 128Mi
+          replicaCount: 2
+          updateStrategy: RollingUpdate
+          rollingUpdate:
+            maxSurge: 10%
+            maxUnavailable: 0
+          remoteWrite:
+            url: "http://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus/api/v1/write"
+          remoteRead:
+            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
+          datasource:
+            url: "http://vmselect.{{ .Values.companyPrefix }}-vmcluster.svc:8481/select/0/prometheus"
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      alertmanager:
+        enabled: false
+      defaultRules:
+        create: false
+      prometheus-node-exporter:
+        enabled: false
+      serviceAccount:
+        create: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: false
+      vmalert:
+        enabled: true
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+      coreDns:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      kubeDns:
+        enabled: false
+      grafana:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      kubeApiServer:
+        enabled: false
+      kubeControllerManager:
+        enabled: false
+      kubeEtcd:
+        enabled: false
+      kubeProxy:
+        enabled: false
+      kubeScheduler:
+        enabled: false
+      kubelet:
+        enabled: false
+---
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-alert-istio-gw
+  labels:
+    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/addon: vm-alert
+spec:
+  values: |
+    istioVirtualService:
+      vmalert:
+        enabled: true
+        gateways:
+          - {{ .Values.companyPrefix }}-istio-gw-internal/default
+        hosts:
+          - "*"
+        path: "/vmalert"
+        http:
+          name: vmalert
+          route:
+            host: vmalert
+            port: 8080
+---
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -603,26 +646,15 @@ spec:
                     name: ca
                     key: ca.crt
 ---
-# Source: addonset/templates/systemAddons/vm-alert/vm-alert.yml
+# Source: addonset/templates/addons/vm-alert/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-alert-istio-gw
+  name: vm-alert-vm-operator
   labels:
-    addons.in-cloud.io/values: istio-gw
+    addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: vm-alert
 spec:
   values: |
-    istioVirtualService:
-      vmalert:
-        enabled: true
-        gateways:
-          - {{ .Values.companyPrefix }}-istio-gw-internal/default
-        hosts:
-          - "*"
-        path: "/vmalert"
-        http:
-          name: vmalert
-          route:
-            host: vmalert
-            port: 8080
+    monitoring:
+      enabled: true
