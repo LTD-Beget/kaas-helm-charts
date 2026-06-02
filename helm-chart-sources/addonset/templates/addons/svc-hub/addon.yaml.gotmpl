@@ -8,7 +8,7 @@ spec:
   chart: "svc-hub"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-svc-hub"
   variables:
@@ -34,6 +34,8 @@ spec:
           jsonPath: .data.svcHubRabbitVirtualHost
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   backend: 
     finalizer: true 
     type: "argocd"

@@ -8,7 +8,7 @@ spec:
   chart: "gateway"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.26.0-2"
+  version: "1.26.0-4"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-istio-gw"
   variables:
@@ -34,6 +34,8 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies:
     - name: addons-operator
       criteria:

@@ -28,6 +28,8 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies:
     - name: addons-operator
       criteria:
