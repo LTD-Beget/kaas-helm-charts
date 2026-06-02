@@ -1,20 +1,19 @@
 {{- if .Values.networkPolicies.systemEnabled }}
-{{- $ns := .Release.Namespace }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-public-ecr-aws-53
-  namespace: {{ $ns }}
+  name: allow-ingress-coredns-from-docker-registry-cache-53
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-public-ecr-aws
+        k8s:app.kubernetes.io/name: docker-registry-cache
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
     toPorts:
     - ports:
@@ -22,19 +21,19 @@ spec:
         protocol: UDP
       - port: '53'
         protocol: TCP
-  description: Allows ingress from docker-registry-cache-public-ecr-aws to CoreDNS on 53.
+  description: Allows ingress from docker-registry-cache to CoreDNS on 53.
 
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-vmselect-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -54,12 +53,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-trivy-operator-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -78,12 +77,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-alertmanager-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -102,12 +101,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-vmalert-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -126,12 +125,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-grafana-operator-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -150,12 +149,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-istio-gw-internal-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -174,12 +173,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-capi-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -197,229 +196,13 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-gcr-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-gcr-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-gcr-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-xpkg-crossplane-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-xpkg-crossplane-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-xpkg-crossplane-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-mirror-gcr-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-mirror-gcr-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-mirror-gcr-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-ghcr-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-ghcr-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-ghcr-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-europe-docker-pkg-dev-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-europe-docker-pkg-dev
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-europe-docker-pkg-dev to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-registry-{{ .Values.companyPrefix }}-ru-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-{{ .Values.companyPrefix }}-ru
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from the registry-{{ .Values.companyPrefix }}-ru cache to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-registry-1-docker-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-1-docker-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-registry-1-docker-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-quay-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-quay-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-quay-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-coredns-from-docker-registry-cache-registry-k8s-io-53
-  namespace: {{ $ns }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: docker-registry-cache-registry-k8s-io
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
-    toPorts:
-    - ports:
-      - port: '53'
-        protocol: UDP
-      - port: '53'
-        protocol: TCP
-  description: Allows ingress from docker-registry-cache-registry-k8s-io to CoreDNS on 53.
-
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
   name: allow-ingress-coredns-from-svc-hub-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -438,12 +221,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-grafana-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -462,12 +245,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-svc-k8s-proxy-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -486,12 +269,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-ingress-coredns-from-cm-provider-53
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -515,7 +298,7 @@ spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -537,7 +320,7 @@ spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: coredns
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEndpoints:
     - matchLabels:
@@ -549,4 +332,52 @@ spec:
       - port: '53'
         protocol: TCP
   description: Allows ingress from customer ccm-infra workloads to CoreDNS on 53.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vault-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+  description: Allows ingress from vault to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vault-prepare-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-prepare
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+  description: Allows ingress from the vault-prepare job to CoreDNS on 53 for DNS resolution.
 {{- end }}
