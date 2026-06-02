@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/control-plane/control-plane.yaml
+# Source: addonset/templates/addons/client-cp-control-plane/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -8,6 +8,19 @@ spec:
   rules:
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -25,9 +38,9 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
-          addons.in-cloud.io/values: "vm-operator"
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: client-cp-control-plane
     - name: disable
       criteria:
@@ -48,6 +61,15 @@ spec:
     - name: network-policies
       criteria:
         - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cilium
@@ -62,14 +84,237 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
       selector:
         name: network-policies
-        priority: 40
+        priority: 65
         matchLabels:
-          addons.in-cloud.io/values: "network-policies"
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: client-cp-control-plane
 ---
-# Source: addonset/templates/control-plane/control-plane.yaml
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-csi
+  labels:
+    addons.in-cloud.io/values: csi
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          csiDriver: true
+          containers:
+            kubeApiserver:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/apiserver/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/apiserver/tls.key
+                proxy-client-cert-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.crt
+                proxy-client-key-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.key
+                kubelet-client-certificate: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
+                kubelet-client-key: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
+                etcd-keyfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.key
+                etcd-certfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.crt
+              extraVolumeMounts:
+                apiserver-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver
+                apiserver-kubelet-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver-kubelet-client
+                apiserver-etcd-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/apiserver-etcd-client
+                front-proxy-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/front-proxy-client
+            kubeControllerManager:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.key
+              extraVolumeMounts:
+                controller-manager-server-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/controller-manager-server
+                controller-manager-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/controller-manager-client
+            kubeScheduler:
+              extraArgs:
+                tls-cert-file: /etc/kubernetes/pki/csi/scheduler-server/tls.crt
+                tls-private-key-file: /etc/kubernetes/pki/csi/scheduler-server/tls.key
+              extraVolumeMounts:
+                scheduler-server-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/scheduler-server
+                scheduler-client-csi:
+                  volumeMount:
+                    path: /etc/kubernetes/pki/csi/scheduler-client
+          volumes:
+            apiserver-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment,digital signature"
+            apiserver-kubelet-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver-kubelet-client
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            apiserver-etcd-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: kube-apiserver-etcd-client
+                  csi.cert-manager.io/issuer-name: etcd-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            front-proxy-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: front-proxy-client
+                  csi.cert-manager.io/issuer-name: front-proxy-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            controller-manager-server-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-controller-manager-server
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
+            controller-manager-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-controller-manager
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            scheduler-server-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-scheduler-server
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
+            scheduler-client-csi:
+              volume:
+                mode: csi
+                driver: csi.cert-manager.io
+                readOnly: true
+                volumeAttributes:
+                  csi.cert-manager.io/common-name: system:kube-scheduler
+                  csi.cert-manager.io/issuer-name: kubernetes-ca
+                  csi.cert-manager.io/issuer-kind: ClusterIssuer
+                  csi.cert-manager.io/duration: 8760h
+                  csi.cert-manager.io/renew-before: 1460h
+                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
+            controller-manager-kubeconfig:
+              volume:
+                mode: configMap
+                name: controller-manager-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/csi/controller-manager-client/tls.crt
+                        client-key: /etc/kubernetes/pki/csi/controller-manager-client/tls.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+            scheduler-kubeconfig:
+              volume:
+                mode: configMap
+                name: scheduler-kubeconfig
+                payload:
+                  format: yaml
+                  content: |
+                    apiVersion: v1
+                    kind: Config
+                    preferences: {}
+                    clusters:
+                    - name: my-cluster
+                      cluster:
+                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+                        certificate-authority: /etc/kubernetes/pki/ca.crt
+                    users:
+                    - name: my-user
+                      user:
+                        client-certificate: /etc/kubernetes/pki/csi/scheduler-client/tls.crt
+                        client-key: /etc/kubernetes/pki/csi/scheduler-client/tls.key
+                    contexts:
+                    - name: my-context
+                      context:
+                        cluster: my-cluster
+                        user: my-user
+                    current-context: my-context
+---
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -98,7 +343,7 @@ spec:
                 secure-port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
                 egress-selector-config-file: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
                 service-cluster-ip-range: "{{ .Variables.serviceCidr }}"
-                watch-cache: false
+                watch-cache: true
               extraLivenessProbe:
                 httpGet:
                   port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
@@ -136,7 +381,7 @@ spec:
               extraResources:
                 requests:
                   cpu: 100m
-                  memory: 128Mi 
+                  memory: 128Mi
             kubeScheduler:
               image:
                 tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
@@ -148,6 +393,7 @@ spec:
                 agent-namespace: {{ .Values.companyPrefix }}-konnectivity-agent
                 mode: http-connect
                 server-count: "{{ .Variables.controlPlaneReplicas }}"
+                v: 2
           service:
             enabled: true
             type: NodePort
@@ -204,7 +450,36 @@ spec:
                                 clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
                                 clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
 ---
-# Source: addonset/templates/control-plane/control-plane.yaml
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-disable
+  labels:
+    addons.in-cloud.io/values: disable
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      applications:
+        controlPlane:
+          enabled: false
+---
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: client-cp-control-plane-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: client-cp-control-plane
+spec:
+  values: |
+    appSpec:
+      networkPolicies:
+        enabled: true
+---
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -509,228 +784,11 @@ spec:
                         user: my-user
                     current-context: my-context
 ---
-# Source: addonset/templates/control-plane/control-plane.yaml
+# Source: addonset/templates/addons/client-cp-control-plane/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: client-cp-control-plane-csi
-  labels:
-    addons.in-cloud.io/values: csi
-    addons.in-cloud.io/addon: client-cp-control-plane
-spec:
-  values: |
-    appSpec:
-      applications:
-        controlPlane:
-          csiDriver: true
-          containers:
-            kubeApiserver:
-              extraArgs:
-                tls-cert-file: /etc/kubernetes/pki/csi/apiserver/tls.crt
-                tls-private-key-file: /etc/kubernetes/pki/csi/apiserver/tls.key
-                proxy-client-cert-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.crt
-                proxy-client-key-file: /etc/kubernetes/pki/csi/front-proxy-client/tls.key
-                kubelet-client-certificate: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
-                kubelet-client-key: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key
-                etcd-keyfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.key
-                etcd-certfile: /etc/kubernetes/pki/csi/apiserver-etcd-client/tls.crt
-              extraVolumeMounts:
-                apiserver-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/apiserver
-                apiserver-kubelet-client-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/apiserver-kubelet-client
-                apiserver-etcd-client-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/apiserver-etcd-client
-                front-proxy-client-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/front-proxy-client
-            kubeControllerManager:
-              extraArgs:
-                tls-cert-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.crt
-                tls-private-key-file: /etc/kubernetes/pki/csi/controller-manager-server/tls.key
-              extraVolumeMounts:
-                controller-manager-server-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/controller-manager-server
-                controller-manager-client-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/controller-manager-client
-            kubeScheduler:
-              extraArgs:
-                tls-cert-file: /etc/kubernetes/pki/csi/scheduler-server/tls.crt
-                tls-private-key-file: /etc/kubernetes/pki/csi/scheduler-server/tls.key
-              extraVolumeMounts:
-                scheduler-server-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/scheduler-server
-                scheduler-client-csi:
-                  volumeMount:
-                    path: /etc/kubernetes/pki/csi/scheduler-client
-          volumes:
-            apiserver-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: kube-apiserver
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
-                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
-                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment,digital signature"
-            apiserver-kubelet-client-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: kube-apiserver-kubelet-client
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
-            apiserver-etcd-client-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: kube-apiserver-etcd-client
-                  csi.cert-manager.io/issuer-name: etcd-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
-            front-proxy-client-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: front-proxy-client
-                  csi.cert-manager.io/issuer-name: front-proxy-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
-            controller-manager-server-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: system:kube-controller-manager-server
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
-                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-controller-manager.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
-                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
-            controller-manager-client-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: system:kube-controller-manager
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
-            scheduler-server-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: system:kube-scheduler-server
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
-                  csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-scheduler.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
-                  csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment"
-            scheduler-client-csi:
-              volume:
-                mode: csi
-                driver: csi.cert-manager.io
-                readOnly: true
-                volumeAttributes:
-                  csi.cert-manager.io/common-name: system:kube-scheduler
-                  csi.cert-manager.io/issuer-name: kubernetes-ca
-                  csi.cert-manager.io/issuer-kind: ClusterIssuer
-                  csi.cert-manager.io/duration: 8760h
-                  csi.cert-manager.io/renew-before: 1460h
-                  csi.cert-manager.io/key-usages: "client auth,data encipherment,key encipherment"
-            controller-manager-kubeconfig:
-              volume:
-                mode: configMap
-                name: controller-manager-kubeconfig
-                payload:
-                  format: yaml
-                  content: |
-                    apiVersion: v1
-                    kind: Config
-                    preferences: {}
-                    clusters:
-                    - name: my-cluster
-                      cluster:
-                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
-                        certificate-authority: /etc/kubernetes/pki/ca.crt
-                    users:
-                    - name: my-user
-                      user:
-                        client-certificate: /etc/kubernetes/pki/csi/controller-manager-client/tls.crt
-                        client-key: /etc/kubernetes/pki/csi/controller-manager-client/tls.key
-                    contexts:
-                    - name: my-context
-                      context:
-                        cluster: my-cluster
-                        user: my-user
-                    current-context: my-context
-            scheduler-kubeconfig:
-              volume:
-                mode: configMap
-                name: scheduler-kubeconfig
-                payload:
-                  format: yaml
-                  content: |
-                    apiVersion: v1
-                    kind: Config
-                    preferences: {}
-                    clusters:
-                    - name: my-cluster
-                      cluster:
-                        server: https://127.0.0.1:{{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
-                        certificate-authority: /etc/kubernetes/pki/ca.crt
-                    users:
-                    - name: my-user
-                      user:
-                        client-certificate: /etc/kubernetes/pki/csi/scheduler-client/tls.crt
-                        client-key: /etc/kubernetes/pki/csi/scheduler-client/tls.key
-                    contexts:
-                    - name: my-context
-                      context:
-                        cluster: my-cluster
-                        user: my-user
-                    current-context: my-context
----
-# Source: addonset/templates/control-plane/control-plane.yaml
-## depends_on {{ .Variables.argocdApplicationControlPlaneValuesAppSpecApplicationsControlPlaneMonitoringEnabled }}
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-cp-control-plane-monitoring
+  name: client-cp-control-plane-vm-operator
   labels:
     addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: client-cp-control-plane
@@ -742,32 +800,3 @@ spec:
           monitoring:
             enabled: true
             type: VictoriaMetrics
----
-# Source: addonset/templates/control-plane/control-plane.yaml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-cp-control-plane-disable
-  labels:
-    addons.in-cloud.io/values: disable
-    addons.in-cloud.io/addon: client-cp-control-plane
-spec:
-  values: |
-    appSpec:
-      applications:
-        controlPlane:
-          enabled: false
----
-# Source: addonset/templates/control-plane/control-plane.yaml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: client-cp-control-plane-network-policies
-  labels:
-    addons.in-cloud.io/values: network-policies
-    addons.in-cloud.io/addon: client-cp-control-plane
-spec:
-  values: |
-    appSpec:
-      networkPolicies:
-        enabled: true
