@@ -1,9 +1,9 @@
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+# Source: addonset/templates/addons/vm-agent-additional-rbac/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac
+  name: vm-agent-additional-rbac
 spec:
   chart: "helm-inserter"
   pluginName: helm-with-values
@@ -63,47 +63,23 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+        addons.in-cloud.io/addon: vm-agent-additional-rbac
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+# Source: addonset/templates/addons/vm-agent-additional-rbac/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
----
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: helm-inserter-vm-agent-additional-rbac
+  name: vm-agent-additional-rbac
 spec:
   rules:
     - name: infra
@@ -118,65 +94,41 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+          addons.in-cloud.io/addon: vm-agent-additional-rbac
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: helm-inserter-vm-agent-additional-rbac-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
----
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+# Source: addonset/templates/addons/vm-agent-additional-rbac/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac-default
+  name: vm-agent-additional-rbac-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+    addons.in-cloud.io/addon: vm-agent-additional-rbac
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+# Source: addonset/templates/addons/vm-agent-additional-rbac/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac-immutable
+  name: vm-agent-additional-rbac-immutable
   labels:
     addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+    addons.in-cloud.io/addon: vm-agent-additional-rbac
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent-additional-rbac/vm-agent-additional-rbac.yml
+# Source: addonset/templates/addons/vm-agent-additional-rbac/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: helm-inserter-vm-agent-additional-rbac-infra
+  name: vm-agent-additional-rbac-infra
   labels:
     addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: helm-inserter-vm-agent-additional-rbac
+    addons.in-cloud.io/addon: vm-agent-additional-rbac
 spec:
   values: |
     resources:
