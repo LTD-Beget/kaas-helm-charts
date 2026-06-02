@@ -1,0 +1,72 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow vmagent to scrape `secret-copy-operator` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-secret-copy-operator-from-vmagent-8443
+  namespace: {{ include "chart.namespaceName" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: secret-copy-operator-controller-manager
+      k8s:io.kubernetes.pod.namespace: {{ include "chart.namespaceName" . }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress from vmagent to secret-copy-operator on 8443 for metrics
+    collection.
+
+---
+# Allow `secret-copy-operator` to talk to the local Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-secret-copy-operator-to-kube-apiserver-6443
+  namespace: {{ include "chart.namespaceName" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: secret-copy-operator-controller-manager
+      k8s:io.kubernetes.pod.namespace: {{ include "chart.namespaceName" . }}
+  egress:
+  - toEntities:
+    - world
+    - remote-node
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from secret-copy-operator to the Kubernetes API server
+    on 6443 for control-plane interactions.
+
+---
+# Allow `secret-copy-operator` to reach workload cluster API servers.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-secret-copy-operator-to-workload-apiserver-6443
+  namespace: {{ include "chart.namespaceName" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: secret-copy-operator-controller-manager
+      k8s:io.kubernetes.pod.namespace: {{ include "chart.namespaceName" . }}
+  egress:
+  - toEntities:
+    - world
+    - remote-node
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from secret-copy-operator to workload cluster API servers
+    on 6443.
+{{- end }}
