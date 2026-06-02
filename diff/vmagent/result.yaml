@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -59,6 +59,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -73,7 +74,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: vm-agent
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: vm-agent
@@ -83,39 +84,21 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: vm-agent
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: vm-agent-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: vm-agent
     - name: vm-operator
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -140,28 +123,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: vm-agent
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 50
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: vm-agent
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -180,7 +147,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: vm-agent
@@ -190,10 +157,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -218,7 +183,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: vm-agent
@@ -234,12 +199,30 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 50
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: vm-agent
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      vmagent:
+        spec:
+          externalLabels:
+            toleration.{{ .Values.companyDomain }}/ignore: "true"
+          tolerations:
+            - operator: "Exists"
+---
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -372,7 +355,45 @@ spec:
       kubelet:
         enabled: true
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: vm-agent-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: vm-agent
+spec:
+  values: |
+    victoria-metrics-k8s-stack:
+      coreDns:
+        enabled: false
+      kubeDns:
+        enabled: false
+      kube-state-metrics:
+        enabled: false
+      alertmanager:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+      defaultRules:
+        create: false
+      grafana:
+        enabled: false
+      prometheus-node-exporter:
+        enabled: false
+      victoria-metrics-operator:
+        enabled: false
+      vmagent:
+        enabled: true
+      vmalert:
+        enabled: false
+      vmcluster:
+        enabled: false
+      vmsingle:
+        enabled: false
+---
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -541,63 +562,33 @@ spec:
       vmagent:
         enabled: true
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: vm-agent-immutable
+  name: vm-agent-system
   labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: vm-agent
-spec:
-  values: |
-    victoria-metrics-k8s-stack:
-      coreDns:
-        enabled: false
-      kubeDns:
-        enabled: false
-      kube-state-metrics:
-        enabled: false
-      alertmanager:
-        enabled: false
-      defaultDashboards:
-        enabled: false
-      defaultRules:
-        create: false
-      grafana:
-        enabled: false
-      prometheus-node-exporter:
-        enabled: false
-      victoria-metrics-operator:
-        enabled: false
-      vmagent:
-        enabled: true
-      vmalert:
-        enabled: false
-      vmcluster:
-        enabled: false
-      vmsingle:
-        enabled: false
----
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-agent-client
-  labels:
-    addons.in-cloud.io/values: client
+    addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: vm-agent
 spec:
   values: |
     victoria-metrics-k8s-stack:
       vmagent:
         spec:
+          remoteWrite:
+            - url: https://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus
+              tlsConfig:
+                caFile: /etc/ssl/certs/ca.crt
+          volumeMounts:
+            - name: trusted-ca-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
           externalLabels:
-            toleration.{{ .Values.companyDomain }}/ignore: "true"
-          tolerations:
-            - operator: "Exists"
+            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
+            cluster_type: "system"
 ---
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
+# Source: addonset/templates/addons/vm-agent/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -679,35 +670,10 @@ spec:
                 operator: NotIn
                 values:
                   - vm-operator
+
     monitoring:
       enabled: true
       secureService:
         enabled: true
         issuer:
           name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/addonsMonitoring/vm-agent/vm-agent.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: vm-agent-system
-  labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: vm-agent
-spec:
-  values: |
-    victoria-metrics-k8s-stack:
-      vmagent:
-        spec:
-          remoteWrite:
-            - url: https://vminsert.{{ .Values.companyPrefix }}-vmcluster.svc:8480/insert/0/prometheus
-              tlsConfig:
-                caFile: /etc/ssl/certs/ca.crt
-          volumeMounts:
-            - name: trusted-ca-certs
-              mountPath: /etc/ssl/certs
-              readOnly: true
-          externalLabels:
-            cluster_full_name: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
-            remotewrite_cluster: {{ .Values.customer.name }}-{{ .Values.cluster.name }}
-            cluster_type: "system"
