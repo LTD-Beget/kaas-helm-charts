@@ -1,0 +1,15 @@
+{{- if and .Values.addons.ccmcsrccontroller.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "ccm-csrc-controller" -}}
+  {{- $_        := set $context.Values "suffix"         ""                    -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra"    -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: ccm-csrc-controller
+spec:
+  rules:
+    {{- include "common.phase.rules.network-policies"    $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}
