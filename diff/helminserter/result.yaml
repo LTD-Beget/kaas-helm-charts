@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+# Source: addonset/templates/addons/helm-inserter/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -41,6 +41,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -55,7 +56,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: helm-inserter
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: helm-inserter
@@ -65,7 +66,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: helm-inserter
 ---
-# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+# Source: addonset/templates/addons/helm-inserter/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -79,17 +80,17 @@ spec:
             kind: ConfigMap
             name: parameters-infra
             namespace: example-system
-          jsonPath: $.data.environment
+          jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "infra"
+          value: "true"
       selector:
         name: system
-        priority: 15
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: helm-inserter
 ---
-# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+# Source: addonset/templates/addons/helm-inserter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -98,9 +99,9 @@ metadata:
     addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: helm-inserter
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+# Source: addonset/templates/addons/helm-inserter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -109,9 +110,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: helm-inserter
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/helm-inserter/helm-inserter.yml
+# Source: addonset/templates/addons/helm-inserter/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
