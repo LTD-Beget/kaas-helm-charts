@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -27,6 +27,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -41,7 +42,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: capi-kubeadm-bootstrap
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: capi-kubeadm-bootstrap
@@ -51,13 +52,49 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: capi-kubeadm-bootstrap
 ---
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: capi-kubeadm-bootstrap
 spec:
   rules:
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: capi-kubeadm-bootstrap
     - name: system
       criteria:
         - source:
@@ -65,43 +102,39 @@ spec:
             kind: ConfigMap
             name: parameters-infra
             namespace: example-system
-          jsonPath: $.data.environment
+          jsonPath: $.data.systemEnabled
           operator: Equal
-          value: "infra"
+          value: "true"
       selector:
         name: system
-        priority: 15
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: capi-kubeadm-bootstrap
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.conditions[?(@.type=='Ready')].status
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: capi-kubeadm-bootstrap
 ---
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: capi-kubeadm-bootstrap-default
   labels:
     addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: capi-kubeadm-bootstrap  
+    addons.in-cloud.io/addon: capi-kubeadm-bootstrap
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: capi-kubeadm-bootstrap-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: capi-kubeadm-bootstrap
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -115,18 +148,7 @@ spec:
       vmServiceScrape:
         enabled: true
 ---
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: capi-kubeadm-bootstrap-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: capi-kubeadm-bootstrap
-spec:
-  values: ""
----
-# Source: addonset/templates/systemAddons/capi-kubeadm-bootstrap/capi-kubeadm-bootstrap.yml
+# Source: addonset/templates/addons/capi-kubeadm-bootstrap/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
