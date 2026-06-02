@@ -1,5 +1,5 @@
+{{- if and .Values.addons.clusterclaimoperator.enabled .Values.addons.system.enabled }}
 ---
-# Source: addonset/templates/addons/cluster-claim-operator/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -7,10 +7,10 @@ metadata:
 spec:
   chart: "cluster-claim-operator"
   pluginName: helm-with-values
-  repoURL: example.com
+  repoURL: {{ .Values.companyExternalChartRegistry }}
   version: "0.1.0"
   targetCluster: in-cluster
-  targetNamespace: "example-cluster-claim-operator"
+  targetNamespace: "{{ .Values.companyPrefix }}-cluster-claim-operator"
   variables:
     cluster_name: in-cluster
   valuesSources:
@@ -19,7 +19,7 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
@@ -28,7 +28,7 @@ spec:
   backend:
     finalizer: true
     type: "argocd"
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -57,40 +57,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: cluster-claim-operator
----
-# Source: addonset/templates/addons/cluster-claim-operator/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: cluster-claim-operator-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: cluster-claim-operator
-spec:
-  values: |
-    manager:
-      image:
-        repository: prorobotech/cluster-claim-operator
-      env:
-      - name: ENABLE_WEBHOOKS
-        value: false
-      args:
-        - --leader-elect
-        - --remote-namespace={{ .Values.companyPrefix }}-system
-        - --enable-webhook=false
-      tolerations:
-      - effect: NoExecute
-        operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/control-plane
----
-# Source: addonset/templates/addons/cluster-claim-operator/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: cluster-claim-operator-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: cluster-claim-operator
-spec:
-  values: |
+{{- end }}
