@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -70,6 +70,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -84,7 +85,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: incloud-web-chart
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: incloud-web-chart
@@ -94,106 +95,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: incloud-web-chart
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: incloud-web-chart-client
-spec:
-  rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 10
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: incloud-web-chart
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
-          operator: Exists
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
-          addons.in-cloud.io/addon: incloud-web-chart
-    - name: istio-base
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: istio-base-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: istio-base
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: istio-base
-          addons.in-cloud.io/addon: incloud-web-chart
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
-        priority: 40
-        matchLabels:
-          addons.in-cloud.io/values: system
-          addons.in-cloud.io/addon: incloud-web-chart
----
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -212,7 +114,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 10
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: incloud-web-chart
@@ -248,7 +150,7 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: incloud-web-chart
@@ -269,11 +171,58 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: incloud-web-chart
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
       selector:
         name: istio-base
-        priority: 40
+        priority: 35
         matchLabels:
           addons.in-cloud.io/values: istio-base
+          addons.in-cloud.io/addon: incloud-web-chart
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
+      selector:
+        name: network-policies
+        priority: 65
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: incloud-web-chart
     - name: system
       criteria:
@@ -287,12 +236,29 @@ spec:
           value: "true"
       selector:
         name: system
-        priority: 40
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: incloud-web-chart
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    incloud-web-chart:
+      tolerations:
+        - operator: "Exists"
+      oauth2-proxy:
+        tolerations:
+          - operator: "Exists"
+---
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -303,11 +269,23 @@ metadata:
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
+    istioGwDomain: {{ .Values.systemIstioGwDomain }}
     incloud-web-chart:
       podDisruptionBudget:
         minAvailable: 0
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-immutable
+  labels:
+    addons.in-cloud.io/values: immutable
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+---
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -377,57 +355,8 @@ spec:
           effect: "NoSchedule"
       podDisruptionBudget:
         minAvailable: 0
-    networkPolicies:
-      enabled: true
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: incloud-web-chart-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: incloud-web-chart
-spec:
-  values: ""
----
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: incloud-web-chart-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: incloud-web-chart
-spec:
-  values: |
-    incloud-web-chart:
-      tolerations:
-        - operator: "Exists"
-      oauth2-proxy:
-        tolerations:
-          - operator: "Exists"
----
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: incloud-web-chart-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: incloud-web-chart
-spec:
-  values: |
-    argocdPlugins:
-      kustomize: true
-    monitoring:
-      enabled: true
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -449,7 +378,7 @@ spec:
             host: incloud-web-chart-oauth2-proxy
             port: 4080
 ---
-# Source: addonset/templates/incloud-web-chart/incloud-web-chart.yml
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -478,3 +407,37 @@ spec:
       virtualService:
         gateways:
           - {{ .Values.companyPrefix }}-istio-gw-internal/default
+---
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-network-policies
+  labels:
+    addons.in-cloud.io/values: network-policies
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
+---
+# Source: addonset/templates/addons/incloud-web-chart/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: incloud-web-chart-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: incloud-web-chart
+spec:
+  values: |
+    argocdPlugins:
+      kustomize: true
+
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
