@@ -17,4 +17,5 @@ spec:
     {{- include "extra-resources.phase.rules.system-migrated"           $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "extra-resources.phase.rules.network-policies-argocd"   $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "extra-resources.phase.rules.cluster-network-policies"  $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "extra-resources.phase.rules.customer-network-policies" $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}
