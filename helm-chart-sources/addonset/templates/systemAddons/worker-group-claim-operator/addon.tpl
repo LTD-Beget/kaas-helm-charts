@@ -7,9 +7,21 @@ metadata:
 spec:
   chart: "worker-group-claim-operator"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "0.1.2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-worker-group-claim-operator"
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
   backend:
     finalizer: true
     type: "argocd"

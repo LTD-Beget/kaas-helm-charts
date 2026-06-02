@@ -105,6 +105,7 @@ spec:
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
+      systemEnabled: {{ .Values.systemEnabled }}
 
 ---
 # Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl

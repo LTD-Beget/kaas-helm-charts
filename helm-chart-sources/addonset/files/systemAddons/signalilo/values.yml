@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: signalilo
 spec:
   values: |
+    networkPolicies:
+      enabled: true
     signalilo:
       fullnameOverride: "signalilo"
       config:

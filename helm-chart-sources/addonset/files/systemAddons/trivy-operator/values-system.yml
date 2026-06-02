@@ -8,6 +8,9 @@ metadata:
     addons.in-cloud.io/addon: trivy-operator
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     trivy-operator:
       trivyOperator:
         scanJobNodeSelector:

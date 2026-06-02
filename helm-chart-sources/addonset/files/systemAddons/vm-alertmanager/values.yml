@@ -8,6 +8,10 @@ metadata:
     addons.in-cloud.io/addon: vm-alertmanager
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      alertmanager:
+        enabled: true
     victoria-metrics-k8s-stack:
       alertmanager:
         ingress:

@@ -8,6 +8,9 @@ metadata:
     addons.in-cloud.io/addon: grafana
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     grafana:
       name: grafana
       labels:

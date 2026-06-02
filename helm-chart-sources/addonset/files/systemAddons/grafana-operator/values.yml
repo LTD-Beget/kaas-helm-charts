@@ -8,6 +8,9 @@ metadata:
     addons.in-cloud.io/addon: grafana-operator
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     grafana-operator:
       namespaceScope: false
       priorityClassName: system-cluster-critical

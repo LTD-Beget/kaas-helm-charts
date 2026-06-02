@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "addon-operator"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.4"
+  version: "0.1.5"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addons-operator"
   valuesSources:
@@ -20,6 +20,8 @@ spec:
       extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   backend:
     finalizer: true
     type: "argocd"

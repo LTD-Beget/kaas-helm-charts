@@ -44,6 +44,9 @@ metadata:
     addons.in-cloud.io/addon: capi-kubeadm-control-plane
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     fullnameOverride: "capi-kcp"
     certificates:
       useExternalIssuer: true

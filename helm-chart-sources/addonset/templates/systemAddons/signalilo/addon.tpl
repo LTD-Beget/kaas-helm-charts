@@ -8,7 +8,7 @@ spec:
   chart: "signalilo"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.12.1-1"
+  version: "0.12.1-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-signalilo"
   variables:

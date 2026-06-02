@@ -8,6 +8,8 @@ metadata:
     addons.in-cloud.io/addon: cluster-claim-operator  
 spec:
   values: |
+    networkPolicies:
+      enabled: true
     manager:
       image:
         repository: prorobotech/cluster-claim-operator

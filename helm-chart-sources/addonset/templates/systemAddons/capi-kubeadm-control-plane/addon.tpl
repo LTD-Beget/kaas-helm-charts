@@ -8,11 +8,23 @@ spec:
   chart: "capi-kubeadm-control-plane"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "1.2.0"
+  version: "1.2.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-capi"
   variables:
     cluster_name: in-cluster
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
   initDependencies: 
     - name: cert-manager
       criteria:
