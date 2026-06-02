@@ -1,0 +1,31 @@
+kube-state-metrics:
+  prometheusScrape: false
+  metricLabelsAllowlist:
+    - nodes=[node-group.{{ .Values.companyDomain }}/name]
+  customLabels:
+    in-cloud.io/clusterName: ""
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  kubeRBACProxy:
+    enabled: true
+    image:
+      # registry: quay.io
+      # repository: brancz/kube-rbac-proxy
+      tag: v0.21.0
+
+    extraArgs:
+      - --v=2
+
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "10m"
+      limits:
+        memory: "64Mi"
+        cpu: "50m"

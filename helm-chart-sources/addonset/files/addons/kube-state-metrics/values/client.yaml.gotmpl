@@ -1,0 +1,7 @@
+kube-state-metrics:
+  labels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  podLabels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  tolerations:
+    - operator: "Exists"

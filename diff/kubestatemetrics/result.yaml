@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -63,7 +63,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: kube-state-metrics
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: kube-state-metrics
@@ -73,39 +73,21 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: kube-state-metrics
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: kube-state-metrics-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-      selector:
-        name: infra
-        priority: 15
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: kube-state-metrics
     - name: cert-manager
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -115,12 +97,25 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: kube-state-metrics
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -138,12 +133,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: kube-state-metrics
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -162,7 +157,7 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: kube-state-metrics
@@ -172,10 +167,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -185,12 +178,25 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
           addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: kube-state-metrics
     - name: vm-operator
       criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -208,11 +214,11 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
           addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: kube-state-metrics
-    - name: capi
+    - name: system
       criteria:
         - source:
             apiVersion: v1
@@ -223,13 +229,59 @@ spec:
           operator: Equal
           value: "true"
       selector:
-        name: capi
-        priority: 35
+        name: system
+        priority: 70
         matchLabels:
-          addons.in-cloud.io/values: capi
+          addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: kube-state-metrics
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      volumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: kube-state-metrics-svc-tls
+
+      kubeRBACProxy:
+        extraArgs:
+          - --tls-cert-file=/app/config/metrics/tls/tls.crt
+          - --tls-private-key-file=/app/config/metrics/tls/tls.key
+          - --v=2
+
+        volumeMounts:
+          - name: rbac-proxy-tls
+            mountPath: /app/config/metrics/tls
+            readOnly: true
+---
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: kube-state-metrics-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: kube-state-metrics
+spec:
+  values: |
+    kube-state-metrics:
+      labels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+---
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -271,7 +323,7 @@ spec:
             memory: "64Mi"
             cpu: "50m"
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -280,9 +332,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: kube-state-metrics
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -305,59 +357,7 @@ spec:
       kubeStateMetrics:
         enabled: true
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: kube-state-metrics-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: kube-state-metrics
-spec:
-  values: |
-    kube-state-metrics:
-      labels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      tolerations:
-        - operator: "Exists"
----
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: kube-state-metrics-cert-manager
-  labels:
-    addons.in-cloud.io/values: cert-manager
-    addons.in-cloud.io/addon: kube-state-metrics
-spec:
-  values: |
-    kube-state-metrics:
-      volumes:
-        - name: rbac-proxy-tls
-          secret:
-            defaultMode: 420
-            secretName: kube-state-metrics-svc-tls
-
-      kubeRBACProxy:
-        extraArgs:
-          - --tls-cert-file=/app/config/metrics/tls/tls.crt
-          - --tls-private-key-file=/app/config/metrics/tls/tls.key
-          - --v=2
-
-        volumeMounts:
-          - name: rbac-proxy-tls
-            mountPath: /app/config/metrics/tls
-            readOnly: true
-
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
----
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -369,6 +369,10 @@ spec:
   values: |
     monitoring:
       enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
       serviceScrapeConfig:
         metricRelabelConfigs:
           - source_labels: [cluster_namespace, cluster_name]
@@ -390,14 +394,13 @@ spec:
             replacement: "$1-$2-client"
             action: replace
 ---
-# Source: addonset/templates/addonsMonitoring/kube-state-metrics/kube-state-metrics.yml
-# TODO: Describe AddonPhase for CAPI
+# Source: addonset/templates/addons/kube-state-metrics/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: kube-state-metrics-capi
+  name: kube-state-metrics-system
   labels:
-    addons.in-cloud.io/values: capi
+    addons.in-cloud.io/values: system
     addons.in-cloud.io/addon: kube-state-metrics
 spec:
   values: |
@@ -541,6 +544,14 @@ spec:
                         path: [spec, infra, paused]
                         nilIsZero: true
 
+                  - name: infra_ready_timestamp
+                    help: "ClusterClaim InfraReady condition last transition timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, conditions, "[type=InfraCPReady]", lastTransitionTime]
+                        nilIsZero: true
+
                 # client
                   - name: client_cluster_info
                     help: "Client cluster inventory info."
@@ -602,6 +613,14 @@ spec:
                       type: Gauge
                       gauge:
                         path: [spec, client, paused]
+                        nilIsZero: true
+
+                  - name: client_ready_timestamp
+                    help: "ClusterClaim ClientReady condition last transition timestamp."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, conditions, "[type=ClientCPReady]", lastTransitionTime]
                         nilIsZero: true
 
               - groupVersionKind:
