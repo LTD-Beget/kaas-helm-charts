@@ -1,4 +1,4 @@
-{{- if .Values.addons.trustmanager.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "trust-manager.addon" . }}

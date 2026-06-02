@@ -1,0 +1,9 @@
+companyPrefix: {{ .Values.companyPrefix }}
+trust-manager:
+  app:
+    trust:
+      namespace: {{ .Values.companyPrefix }}-cert-manager
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
