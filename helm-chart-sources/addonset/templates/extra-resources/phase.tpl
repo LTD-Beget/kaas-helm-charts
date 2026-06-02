@@ -128,6 +128,39 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system-migrated
           addons.in-cloud.io/addon: extra-resources
+    - name: customer-network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters{{ if eq .Values.environment "client" }}-client{{else}}-infra{{ end }}
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "true"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: customer-network-policies
+        priority: 58
+        matchLabels:
+          addons.in-cloud.io/values: customer-network-policies
+          addons.in-cloud.io/addon: extra-resources
 
     {{- if eq .Values.environment "infra" }}
     - name: network-policies-argocd
