@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addonsMonitoring/clientvmscrapeconfig/clientvmscrapeconfig.yml
+# Source: addonset/templates/addons/client-vm-scrape-config/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -74,6 +74,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -82,18 +83,23 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
-    - name: initialized
+    - name: default
       priority: 0
       matchLabels:
-        addons.in-cloud.io/values: initialized
+        addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: client-vm-scrape-config
     - name: custom
-      priority: 90
+      priority: 95
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: client-vm-scrape-config
+    - name: immutable
+      priority: 99
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: client-vm-scrape-config
 ---
-# Source: addonset/templates/addonsMonitoring/clientvmscrapeconfig/clientvmscrapeconfig.yml
+# Source: addonset/templates/addons/client-vm-scrape-config/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -112,28 +118,28 @@ spec:
           value: "infra"
       selector:
         name: infra
-        priority: 15
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
           addons.in-cloud.io/addon: client-vm-scrape-config
 ---
-# Source: addonset/templates/addonsMonitoring/clientvmscrapeconfig/clientvmscrapeconfig.yml
+# Source: addonset/templates/addons/client-vm-scrape-config/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: client-vm-scrape-config-initialized
+  name: client-vm-scrape-config-default
   labels:
-    addons.in-cloud.io/values: initialized
+    addons.in-cloud.io/values: default
     addons.in-cloud.io/addon: client-vm-scrape-config
 spec:
   values: |
     resources: {}
 ---
-# Source: addonset/templates/addonsMonitoring/clientvmscrapeconfig/clientvmscrapeconfig.yml
+# Source: addonset/templates/addons/client-vm-scrape-config/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: client-vm-scrape-config
+  name: client-vm-scrape-config-infra
   labels:
     addons.in-cloud.io/values: infra
     addons.in-cloud.io/addon: client-vm-scrape-config
