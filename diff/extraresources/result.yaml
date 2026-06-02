@@ -1,99 +1,5 @@
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: Addon
-metadata:
-  name: extra-resources
-spec:
-  chart: "helm-inserter"
-  pluginName: helm-with-values
-  repoURL: "example.com"
-  version: "0.2.5"
-  targetCluster: in-cluster
-  targetNamespace: "example-extra-resources"
-  variables:
-    cluster_name: in-cluster
-    dependency: "True"
-  valuesSources:
-    - name: parameters
-      sourceRef:
-        apiVersion: v1
-        kind: ConfigMap
-        name: parameters-infra
-        namespace: example-system
-      extract:
-        - as: argocdServerAdminPassword
-          jsonPath: .data.argocdServerAdminPassword
-        - as: cluster.host
-          jsonPath: .data.clusterHost
-        - as: cluster.name
-          jsonPath: .data.clusterName
-        - as: cluster.port
-          jsonPath: .data.clusterPort
-        - as: dataCreationTimestamp
-          jsonPath: .metadata.creationTimestamp
-        - as: environment
-          jsonPath: .data.environment
-        - as: etcdbackupAppArgsStorecontainer
-          jsonPath: .data.etcdbackupAppArgsStorecontainer
-        - as: etcdbackupS3AccessKey
-          jsonPath: .data.etcdbackupS3AccessKey
-        - as: etcdbackupS3SecretAccessKey
-          jsonPath: .data.etcdbackupS3SecretAccessKey
-        - as: etcdbackupS3SecretEndpoint
-          jsonPath: .data.etcdbackupS3SecretEndpoint
-        - as: systemIstioGwDomain
-          jsonPath: .data.systemIstioGwDomain
-        - as: istioGwVip
-          jsonPath: .data.systemIstioGwVip
-        - as: xcluster
-          jsonPath: .data.xcluster
-        - as: companyPrefix
-          jsonPath: .data.companyPrefix
-        - as: companyDomain
-          jsonPath: .data.companyDomain
-  initDependencies:
-    - name: addons-operator
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: true
-    - name: addonset
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: true
-    - name: cert-manager
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-  backend:
-    finalizer: true
-    type: "argocd"
-    namespace: "example-argocd"
-    project: "default"
-    syncPolicy:
-      automated:
-        prune: true
-      managedNamespaceMetadata:
-        labels:
-          in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: in-cluster
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - CreateNamespace=true
-  valuesSelectors:
-    - name: custom
-      priority: 90
-      matchLabels:
-        addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: extra-resources
----
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/addon.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -173,6 +79,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -181,52 +88,134 @@ spec:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
   valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: extra-resources
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: extra-resources
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: extra-resources
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/addon.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: Addon
+metadata:
+  name: extra-resources
+spec:
+  chart: "helm-inserter"
+  pluginName: helm-with-values
+  repoURL: "example.com"
+  version: "0.2.5"
+  targetCluster: in-cluster
+  targetNamespace: "example-extra-resources"
+  variables:
+    cluster_name: in-cluster
+    dependency: "True"
+  valuesSources:
+    - name: parameters
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: example-system
+      extract:
+        - as: argocdServerAdminPassword
+          jsonPath: .data.argocdServerAdminPassword
+        - as: cluster.host
+          jsonPath: .data.clusterHost
+        - as: cluster.name
+          jsonPath: .data.clusterName
+        - as: cluster.port
+          jsonPath: .data.clusterPort
+        - as: dataCreationTimestamp
+          jsonPath: .metadata.creationTimestamp
+        - as: environment
+          jsonPath: .data.environment
+        - as: etcdbackupAppArgsStorecontainer
+          jsonPath: .data.etcdbackupAppArgsStorecontainer
+        - as: etcdbackupS3AccessKey
+          jsonPath: .data.etcdbackupS3AccessKey
+        - as: etcdbackupS3SecretAccessKey
+          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdbackupS3SecretEndpoint
+          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: systemIstioGwDomain
+          jsonPath: .data.systemIstioGwDomain
+        - as: istioGwVip
+          jsonPath: .data.systemIstioGwVip
+        - as: xcluster
+          jsonPath: .data.xcluster
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
+  initDependencies:
+    - name: addons-operator
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: addonset
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: true
+    - name: cert-manager
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+  backend:
+    finalizer: true
+    type: "argocd"
+    namespace: "example-argocd"
+    project: "default"
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          in-cloud.io/caBundle: approved
+          in-cloud.io/clusterName: in-cluster
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - CreateNamespace=true
+  valuesSelectors:
+    - name: default
+      priority: 0
+      matchLabels:
+        addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: extra-resources
+    - name: custom
+      priority: 95
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: extra-resources
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
+        addons.in-cloud.io/addon: extra-resources
+---
+# Source: addonset/templates/addons/extra-resources/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: extra-resources-client
 spec:
   rules:
-    - name: infra
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "false"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-client
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "infra"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-      selector:
-        name: infra
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: extra-resources
     - name: client
       criteria:
         - source:
@@ -250,80 +239,126 @@ spec:
         - source:
             apiVersion: v1
             kind: Secret
-            name: client-ca
+            name: infra-ca
             namespace: example-system
           jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
           operator: Exists
       selector:
         name: client
-        priority: 30
+        priority: 20
         matchLabels:
           addons.in-cloud.io/values: client
           addons.in-cloud.io/addon: extra-resources
-    - name: system
+    - name: network-policies-argocd
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
             name: parameters-client
             namespace: example-system
-          jsonPath: $.data.systemEnabled
+          jsonPath: $.data.environment
           operator: Equal
-          value: "true"
+          value: "infra"
           keep: false
         - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: argocd-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        # TODO политику нужно отключить после добавления целевых политик
+        # добавить критерий
+        #
+        # - source:
+        #     apiVersion: addons.in-cloud.io/v1alpha1
+        #     kind: AddonPhase
+        #     name: argocd-client
+        #   jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+        #   operator: NotExists
+        #   keep: false
+        #   # value: false
+        #
       selector:
-        name: system
-        priority: 40
+        name: network-policies-argocd
+        priority: 67
         matchLabels:
-          addons.in-cloud.io/values: system
+          addons.in-cloud.io/values: network-policies-argocd
           addons.in-cloud.io/addon: extra-resources
-    - name: system-migrated
+    - name: cluster-network-policies
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
             name: parameters-client
             namespace: example-system
-          jsonPath: $.data.systemEnabled
+          jsonPath: $.data.environment
           operator: Equal
-          value: "true"
+          value: "infra"
           keep: false
         - source:
-            apiVersion: v1
-            kind: Secret
-            name: client-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')]
           operator: Exists
-        - source:
-            apiVersion: clusterclaim.in-cloud.io/v1alpha1
-            kind: ClusterClaim
-            name: cluster
-            namespace: example-system
           keep: false
-          jsonPath: $.metadata.uid
-          operator: Exists
       selector:
-        name: system-migrated
-        priority: 50
+        name: cluster-network-policies
+        priority: 68
         matchLabels:
-          addons.in-cloud.io/values: system-migrated
+          addons.in-cloud.io/values: cluster-network-policies
           addons.in-cloud.io/addon: extra-resources
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: extra-resources
 spec:
   rules:
+    - name: client
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.systemEnabled
+          operator: Equal
+          value: "false"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "client"
+          keep: false
+        - source:
+            apiVersion: v1
+            kind: Secret
+            name: infra-ca
+            namespace: example-system
+          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
+          operator: Exists
+      selector:
+        name: client
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: client
+          addons.in-cloud.io/addon: extra-resources
     - name: infra
       criteria:
         - source:
@@ -356,39 +391,6 @@ spec:
         priority: 20
         matchLabels:
           addons.in-cloud.io/values: infra
-          addons.in-cloud.io/addon: extra-resources
-    - name: client
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "false"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.environment
-          operator: Equal
-          value: "client"
-          keep: false
-        - source:
-            apiVersion: v1
-            kind: Secret
-            name: infra-ca
-            namespace: example-system
-          jsonPath: $.metadata.annotations['secret-copy.in-cloud.io/copiedAt']
-          operator: Exists
-      selector:
-        name: client
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: client
           addons.in-cloud.io/addon: extra-resources
     - name: system
       criteria:
@@ -442,7 +444,7 @@ spec:
           operator: Exists
       selector:
         name: system-migrated
-        priority: 50
+        priority: 43
         matchLabels:
           addons.in-cloud.io/values: system-migrated
           addons.in-cloud.io/addon: extra-resources
@@ -487,7 +489,7 @@ spec:
         #
       selector:
         name: network-policies-argocd
-        priority: 55
+        priority: 67
         matchLabels:
           addons.in-cloud.io/values: network-policies-argocd
           addons.in-cloud.io/addon: extra-resources
@@ -508,14 +510,145 @@ spec:
             name: cilium
           jsonPath: $.status.phaseValuesSelector[?(@.name=='enforcement-always')]
           operator: Exists
+          keep: false
       selector:
         name: cluster-network-policies
-        priority: 57
+        priority: 68
         matchLabels:
           addons.in-cloud.io/values: cluster-network-policies
           addons.in-cloud.io/addon: extra-resources
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      certificate:
+        apiVersion: in-cloud.io/v1alpha1
+        kind: CertificateSet
+        metadata:
+          labels:
+            cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
+            clusterctl.cluster.x-k8s.io/move: "true"
+            xcluster.in-cloud.io/name: {{ .Values.cluster.name }}
+          name: {{ .Values.cluster.name }}
+          namespace: {{ .Values.companyPrefix }}-system
+        spec:
+          environment: client
+          argocdCluster: true
+          argocdEndpoint: https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443
+          issuerRef:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            name: selfsigned
+          kubeconfig: false
+          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
+      issuer:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: ca{{ if eq .Values.environment "client" }}-client{{ end }}
+        spec:
+          ca:
+            secretName: {{ .Values.cluster.name }}-ca
+---
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: extra-resources-cluster-network-policies
+  labels:
+    addons.in-cloud.io/values: cluster-network-policies
+    addons.in-cloud.io/addon: extra-resources
+spec:
+  values: |
+    resources:
+      ciliumclusternetpolicyCiliumHealth:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-bidirectional-cilium-health-checks-4240
+        spec:
+          endpointSelector: {}
+          ingress:
+          - fromEntities:
+            - remote-node
+            - health
+            toPorts:
+            - ports:
+              - port: '4240'
+                protocol: TCP
+          egress:
+          - toEntities:
+            - remote-node
+            - health
+            toPorts:
+            - ports:
+              - port: '4240'
+                protocol: TCP
+          description: |
+            Allows bidirectional Cilium health check traffic between remote nodes
+            and health endpoints on TCP/4240.
+      ciliumclusternetpolicyICMP:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-bidirectional-icmp-and-ipv6-discovery
+        spec:
+          endpointSelector: {}
+          egress:
+          - toEntities:
+            - remote-node
+            - host
+            - world
+            icmps:
+            - fields:
+              - type: 8
+                family: IPv4
+              - type: 0
+                family: IPv4
+              - type: 133
+                family: IPv6
+              - type: 134
+                family: IPv6
+              - type: 135
+                family: IPv6
+              - type: 136
+                family: IPv6
+              - type: 137
+                family: IPv6
+          ingress:
+          - fromEntities:
+            - remote-node
+            - host
+            - world
+            icmps:
+            - fields:
+              - type: 8
+                family: IPv4
+              - type: 0
+                family: IPv4
+              - type: 133
+                family: IPv6
+              - type: 134
+                family: IPv6
+              - type: 135
+                family: IPv6
+              - type: 136
+                family: IPv6
+              - type: 137
+                family: IPv6
+          description: |
+            Allows bidirectional ICMP echo traffic and IPv6 neighbor-discovery
+            control messages for all selected endpoints in the cluster.
+---
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -559,11 +692,11 @@ spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: extra-resources-network-policies
+  name: extra-resources-network-policies-argocd
   labels:
     addons.in-cloud.io/values: network-policies-argocd
     addons.in-cloud.io/addon: extra-resources
@@ -686,137 +819,7 @@ spec:
                     - port: "11043"
                       protocol: TCP
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: extra-resources-cluster-network-policies
-  labels:
-    addons.in-cloud.io/values: cluster-network-policies
-    addons.in-cloud.io/addon: extra-resources
-spec:
-  values: |
-    resources:
-      ciliumclusternetpolicyCiliumHealth:
-        apiVersion: cilium.io/v2
-        kind: CiliumClusterwideNetworkPolicy
-        metadata:
-          name: allow-bidirectional-cilium-health-checks-4240
-        spec:
-          endpointSelector: {}
-          ingress:
-          - fromEntities:
-            - remote-node
-            - health
-            toPorts:
-            - ports:
-              - port: '4240'
-                protocol: TCP
-          egress:
-          - toEntities:
-            - remote-node
-            - health
-            toPorts:
-            - ports:
-              - port: '4240'
-                protocol: TCP
-          description: |
-            Allows bidirectional Cilium health check traffic between remote nodes
-            and health endpoints on TCP/4240.
-      ciliumclusternetpolicyICMP:
-        apiVersion: cilium.io/v2
-        kind: CiliumClusterwideNetworkPolicy
-        metadata:
-          name: allow-bidirectional-icmp-and-ipv6-discovery
-        spec:
-          endpointSelector: {}
-          egress:
-          - toEntities:
-            - remote-node
-            - host
-            - world
-            icmps:
-            - fields:
-              - type: 8
-                family: IPv4
-              - type: 0
-                family: IPv4
-              - type: 133
-                family: IPv6
-              - type: 134
-                family: IPv6
-              - type: 135
-                family: IPv6
-              - type: 136
-                family: IPv6
-              - type: 137
-                family: IPv6
-          ingress:
-          - fromEntities:
-            - remote-node
-            - host
-            - world
-            icmps:
-            - fields:
-              - type: 8
-                family: IPv4
-              - type: 0
-                family: IPv4
-              - type: 133
-                family: IPv6
-              - type: 134
-                family: IPv6
-              - type: 135
-                family: IPv6
-              - type: 136
-                family: IPv6
-              - type: 137
-                family: IPv6
-          description: |
-            Allows bidirectional ICMP echo traffic and IPv6 neighbor-discovery
-            control messages for all selected endpoints in the cluster.
----
-# Source: addonset/templates/extra-resources/extra-resources.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: extra-resources-client
-  labels:
-    addons.in-cloud.io/values: client
-    addons.in-cloud.io/addon: extra-resources
-spec:
-  values: |
-    resources:
-      certificate:
-        apiVersion: in-cloud.io/v1alpha1
-        kind: CertificateSet
-        metadata:
-          labels:
-            cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
-            clusterctl.cluster.x-k8s.io/move: "true"
-            xcluster.in-cloud.io/name: {{ .Values.cluster.name }}
-          name: {{ .Values.cluster.name }}
-          namespace: {{ .Values.companyPrefix }}-system
-        spec:
-          environment: client
-          argocdCluster: true
-          argocdEndpoint: https://client-cp-control-plane-control-plane.{{ .Values.companyPrefix }}-system.svc:26443
-          issuerRef:
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            name: selfsigned
-          kubeconfig: false
-          kubeconfigEndpoint: {{ printf "https://%s:%s" .Values.cluster.host .Values.cluster.port }}
-      issuer:
-        apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          name: ca{{ if eq .Values.environment "client" }}-client{{ end }}
-        spec:
-          ca:
-            secretName: {{ .Values.cluster.name }}-ca
----
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -856,7 +859,7 @@ spec:
           ca:
             secretName: {{ .Values.cluster.name }}-ca
 ---
-# Source: addonset/templates/extra-resources/extra-resources.yml
+# Source: addonset/templates/addons/extra-resources/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
