@@ -1,0 +1,19 @@
+istio:
+  virtualService:
+    enabled: true
+    gateways:
+      - {{ .Values.companyPrefix }}-istio-gw/default
+    hosts:
+      - "*"
+    http:
+      name: argocd
+      route:
+        host: argocd-server
+        port: 443
+  destinationRule:
+    enabled: true
+    host: argocd-server
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true
