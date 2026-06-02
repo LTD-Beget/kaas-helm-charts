@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -56,6 +56,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -75,7 +76,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: cilium
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: cilium
@@ -85,7 +86,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: cilium
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -124,12 +125,12 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
-          addons.in-cloud.io/values: "vm-operator"
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: cilium
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -168,9 +169,9 @@ spec:
           value: "True"
       selector:
         name: vm-operator
-        priority: 30
+        priority: 45
         matchLabels:
-          addons.in-cloud.io/values: "vm-operator"
+          addons.in-cloud.io/values: vm-operator
           addons.in-cloud.io/addon: cilium
     - name: network-policies
       criteria:
@@ -182,9 +183,32 @@ spec:
           jsonPath: $.data.environment
           operator: Equal
           value: "infra"
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
       selector:
         name: network-policies
-        priority: 35
+        priority: 65
         matchLabels:
           addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: cilium
@@ -226,21 +250,41 @@ spec:
           jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
           operator: Equal
           value: true
-        # - source:
-        #     apiVersion: addons.in-cloud.io/v1alpha1
-        #     kind: AddonPhase
-        #     name: extra-resources
-        #   jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
-        #   operator: Equal
-        #   value: true
       selector:
         name: enforcement-always
-        priority: 40
+        priority: 80
         matchLabels:
           addons.in-cloud.io/values: enforcement-always
           addons.in-cloud.io/addon: cilium
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: cilium-client
+  labels:
+    addons.in-cloud.io/values: client
+    addons.in-cloud.io/addon: cilium
+spec:
+  values: |
+    cilium:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      operator:
+        podLabels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+        tolerations:
+          - operator: Exists
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: Exists
+          - key: "node-role.kubernetes.io/master" #deprecated
+            operator: Exists
+          - key: "node.kubernetes.io/not-ready"
+            operator: Exists
+          - key: "node.cloudprovider.kubernetes.io/uninitialized"
+            operator: Exists
+---
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -284,7 +328,7 @@ spec:
           create: false
           name: ~
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -302,40 +346,27 @@ spec:
           clusterPoolIPv4MaskSize: {{ .Values.podCidrMaskSize }}
           clusterPoolIPv4PodCIDRList: [ "{{ .Values.podCidr }}" ]
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: cilium-client
+  name: cilium-network-policies
   labels:
-    addons.in-cloud.io/values: client
+    addons.in-cloud.io/values: network-policies
     addons.in-cloud.io/addon: cilium
 spec:
   values: |
-    cilium:
-      podLabels:
-        toleration.{{ .Values.companyDomain }}/ignore: "true"
-      operator:
-        podLabels:
-          toleration.{{ .Values.companyDomain }}/ignore: "true"
-        tolerations:
-          - operator: Exists
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: Exists
-          - key: "node-role.kubernetes.io/master" #deprecated
-            operator: Exists
-          - key: "node.kubernetes.io/not-ready"
-            operator: Exists
-          - key: "node.cloudprovider.kubernetes.io/uninitialized"
-            operator: Exists
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
 ---
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
   name: cilium-vm-operator
   labels:
-    addons.in-cloud.io/values: "vm-operator"
+    addons.in-cloud.io/values: vm-operator
     addons.in-cloud.io/addon: cilium
 spec:
   values: |
@@ -371,6 +402,7 @@ spec:
           secret:
             defaultMode: 420
             secretName: cilium-agent-svc-tls
+
     monitoring:
       enabled: true
       secureService:
@@ -378,21 +410,7 @@ spec:
         issuer:
           name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/cilium/cilium.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: cilium-network-policies
-  labels:
-    addons.in-cloud.io/values: network-policies
-    addons.in-cloud.io/addon: cilium
-spec:
-  values: |
-    companyPrefix: {{ .Values.companyPrefix }}
-    networkPolicies:
-      enabled: true
----
-# Source: addonset/templates/cilium/cilium.yml
+# Source: addonset/templates/addons/cilium/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:

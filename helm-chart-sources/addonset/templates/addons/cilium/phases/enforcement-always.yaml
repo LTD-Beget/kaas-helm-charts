@@ -1,0 +1,46 @@
+{{- define "cilium.phase.rules.enforcement-always" -}}
+- name: enforcement-always
+  criteria:
+    - source:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      jsonPath: $.data.environment
+      operator: Equal
+      value: "infra"
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: AddonPhase
+        name: coredns
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+      operator: Equal
+      value: true
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: AddonPhase
+        name: argocd
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+      operator: Equal
+      value: true
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: AddonPhase
+        name: addons-operator
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+      operator: Equal
+      value: true
+    - source:
+        apiVersion: addons.in-cloud.io/v1alpha1
+        kind: AddonPhase
+        name: cilium
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+      operator: Equal
+      value: true
+  selector:
+    name: enforcement-always
+    priority: 80
+    matchLabels:
+      addons.in-cloud.io/values: enforcement-always
+      addons.in-cloud.io/addon: cilium
+{{- end }}
