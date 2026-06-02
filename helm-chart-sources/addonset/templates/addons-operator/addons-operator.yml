@@ -1,4 +1,4 @@
-{{- if .Values.addons.addonsoperator.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "addons-operator.addon" . }}

@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -28,6 +28,7 @@ spec:
     syncPolicy:
       automated:
         prune: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -41,13 +42,8 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: addons-operator
-    - name: infra
-      priority: 10
-      matchLabels:
-        addons.in-cloud.io/values: infra
-        addons.in-cloud.io/addon: addons-operator
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: addons-operator
@@ -57,22 +53,37 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: addons-operator
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
   name: addons-operator
 spec:
   rules:
+    - name: infra
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: example-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+      selector:
+        name: infra
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: infra
+          addons.in-cloud.io/addon: addons-operator
     - name: cert-manager
       criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')].deployed
-          operator: Equal
-          value: true
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -82,41 +93,9 @@ spec:
           value: "True"
       selector:
         name: cert-manager
-        priority: 20
-        matchLabels:
-          addons.in-cloud.io/values: cert-manager
-          addons.in-cloud.io/addon: addons-operator
-    # - name: infra
-    #   criteria:
-    #     - source:
-    #         apiVersion: v1
-    #         kind: ConfigMap
-    #         name: parameters-infra
-    #         namespace: example-system
-    #       jsonPath: $.data.environment
-    #       operator: Equal
-    #       value: "infra"
-    #   selector:
-    #     name: infra
-    #     priority: 23
-    #     matchLabels:
-    #       addons.in-cloud.io/values: infra
-    #       addons.in-cloud.io/addon: addons-operator
-    - name: system
-      criteria:
-        - source:
-            apiVersion: v1
-            kind: ConfigMap
-            name: parameters-infra
-            namespace: example-system
-          jsonPath: $.data.systemEnabled
-          operator: Equal
-          value: "true"
-      selector:
-        name: system
         priority: 25
         matchLabels:
-          addons.in-cloud.io/values: system
+          addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: addons-operator
     - name: network-policies
       criteria:
@@ -128,6 +107,7 @@ spec:
           jsonPath: $.data.environment
           operator: Equal
           value: "infra"
+          keep: false
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -136,76 +116,69 @@ spec:
           operator: Equal
           value: true
           keep: false
-      selector:
-        name: network-policies
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: network-policies
-          addons.in-cloud.io/addon: addons-operator
----
-# Source: addonset/templates/addons-operator/addons-operator.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonPhase
-metadata:
-  name: addons-operator-client
-spec:
-  rules:
-    - name: cert-manager
-      criteria:
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
-            name: cert-manager-client
-          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')].deployed
-          operator: Equal
-          value: true
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: cert-manager-client
+            name: cilium
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: AddonPhase
+            name: extra-resources
+          jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+          operator: Equal
+          value: true
       selector:
-        name: cert-manager
-        priority: 20
+        name: network-policies
+        priority: 65
         matchLabels:
-          addons.in-cloud.io/values: cert-manager
+          addons.in-cloud.io/values: network-policies
           addons.in-cloud.io/addon: addons-operator
-    # - name: infra
-    #   criteria:
-    #     - source:
-    #         apiVersion: v1
-    #         kind: ConfigMap
-    #         name: parameters-client
-    #         namespace: example-system
-    #       jsonPath: $.data.environment
-    #       operator: Equal
-    #       value: "infra"
-    #   selector:
-    #     name: infra
-    #     priority: 23
-    #     matchLabels:
-    #       addons.in-cloud.io/values: infra
-    #       addons.in-cloud.io/addon: addons-operator
     - name: system
       criteria:
         - source:
             apiVersion: v1
             kind: ConfigMap
-            name: parameters-client
+            name: parameters-infra
             namespace: example-system
           jsonPath: $.data.systemEnabled
           operator: Equal
           value: "true"
       selector:
         name: system
-        priority: 25
+        priority: 70
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: addons-operator
+    - name: disable-webhook
+      criteria:
+        - source:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Application
+            name: addonset
+            namespace: example-argocd
+          jsonPath: $.status.sync.status
+          operator: NotEqual
+          value: Synced
+          keep: false
+        - source:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Application
+            name: addonset
+            namespace: example-argocd
+          jsonPath: $.spec.syncPolicy.automated
+          operator: Exists
+          keep: false
+      selector:
+        name: disable-webhook
+        priority: 80
+        matchLabels:
+          addons.in-cloud.io/values: disable-webhook
+          addons.in-cloud.io/addon: addons-operator
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -238,7 +211,7 @@ spec:
       enable: false
       port: 8443
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -247,9 +220,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: addons-operator
 spec:
-  values: ""
+  values: |
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -271,36 +244,7 @@ spec:
       enable: true
       port: 8443
 ---
-# Source: addonset/templates/addons-operator/addons-operator.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: addons-operator-infra
-  labels:
-    addons.in-cloud.io/values: infra
-    addons.in-cloud.io/addon: addons-operator
-spec:
-  values: ""
----
-# Source: addonset/templates/addons-operator/addons-operator.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: addons-operator-system
-  labels:
-    addons.in-cloud.io/values: system
-    addons.in-cloud.io/addon: addons-operator
-spec:
-  values: |
-    managerClaim:
-      enable: true
-    manager:
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
----
-# Source: addonset/templates/addons-operator/addons-operator.yml
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -313,3 +257,16 @@ spec:
     companyPrefix: {{ .Values.companyPrefix }}
     networkPolicies:
       enabled: true
+---
+# Source: addonset/templates/addons/addons-operator/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: addons-operator-disable-webhook
+  labels:
+    addons.in-cloud.io/values: disable-webhook
+    addons.in-cloud.io/addon: addons-operator
+spec:
+  values: |
+    webhook:
+      enable: false
