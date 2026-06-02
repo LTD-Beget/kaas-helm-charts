@@ -1,4 +1,4 @@
-{{- if and .Values.addons.cmprovider.enabled .Values.addons.system.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
   
   {{- include "cm-provider.addon" . }}
