@@ -35,6 +35,7 @@ istio:
         insecureSkipVerify: true
 
 networkPolicies:
+  systemEnabled: false
   controller:
     enabled: false
   repoServer:

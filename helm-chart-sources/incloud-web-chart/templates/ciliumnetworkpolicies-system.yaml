@@ -1,0 +1,24 @@
+{{- if .Values.networkPolicies.systemEnabled }}
+---
+# Allow the internal Istio gateway to reach the incloud oauth2-proxy.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-incloud-web-chart-oauth2-proxy-from-istio-gw-internal-4180
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '4180'
+        protocol: TCP
+  description: Allows ingress from istio-gw-internal to incloud-web-chart-oauth2-proxy on 4180.
+{{- end }}

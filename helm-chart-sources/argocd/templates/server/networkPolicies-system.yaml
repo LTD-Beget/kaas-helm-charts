@@ -1,0 +1,24 @@
+{{- if .Values.networkPolicies.systemEnabled }}
+---
+# Allow the internal Istio gateway to reach `argocd-server`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-argocd-server-from-istio-gw-internal-8080
+  namespace: {{ include "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include "argo-cd-wrapper.namespace" . }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+  description: Allows ingress from istio-gw-internal to argocd-server on 8080.
+{{- end }}

@@ -168,4 +168,25 @@ spec:
         protocol: TCP
   description: |
     Allows ingress from vmagent to istio-gateway on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-istio-gw-to-dex-5554
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-dex
+            k8s:app.kubernetes.io/name: dex
+      toPorts:
+        - ports:
+            - port: "5554"
+              protocol: TCP
 {{- end }}
