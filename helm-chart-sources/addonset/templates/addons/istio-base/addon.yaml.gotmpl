@@ -1,5 +1,5 @@
+{{- if .Values.addons.istiobase.enabled }}
 ---
-# Source: addonset/templates/addons/istio-base/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -9,7 +9,7 @@ spec:
   repoURL: "https://istio-release.storage.googleapis.com/charts"
   version: "1.26.0"
   targetCluster: in-cluster
-  targetNamespace: "example-istio"
+  targetNamespace: "{{ .Values.companyPrefix }}-istio"
   variables:
     cluster_name: in-cluster
     dependency: "True"
@@ -19,7 +19,7 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
-        namespace: example-system
+        namespace: {{ .Values.companyPrefix }}-system
       extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
@@ -38,11 +38,13 @@ spec:
           operator: Equal
           value: true
           keep: true
+{{- if .Values.clientClusterEnabled }}
     - name: client-cp-control-plane
       criteria:
         - jsonPath: $.status.deployed
           operator: Equal
           value: true
+{{- end }}
   backend:
     finalizer: true
     type: "argocd"
@@ -51,7 +53,7 @@ spec:
       kind: ValidatingWebhookConfiguration
       jsonPointers:
       - /webhooks/0/failurePolicy
-    namespace: "example-argocd"
+    namespace: "{{ .Values.companyPrefix }}-argocd"
     project: "default"
     syncPolicy:
       automated:
@@ -80,27 +82,4 @@ spec:
       matchLabels:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: istio-base
----
-# Source: addonset/templates/addons/istio-base/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-base-default
-  labels:
-    addons.in-cloud.io/values: default
-    addons.in-cloud.io/addon: istio-base
-spec:
-  values: |
-    global:
-      istioNamespace: {{ .Values.companyPrefix }}-istio
----
-# Source: addonset/templates/addons/istio-base/values.yaml.gotmpl
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: istio-base-immutable
-  labels:
-    addons.in-cloud.io/values: immutable
-    addons.in-cloud.io/addon: istio-base
-spec:
-  values: |
+{{- end }}
