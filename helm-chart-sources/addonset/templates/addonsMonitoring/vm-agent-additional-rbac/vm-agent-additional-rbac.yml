@@ -1,4 +1,4 @@
-{{- if .Values.addons.vmagentadditionalrbac.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "vm-agent-additional-rbac.addon" . }}

@@ -1,4 +1,4 @@
-{{- if .Values.addons.kubestatemetrics.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "kube-state-metrics.addon" . }}

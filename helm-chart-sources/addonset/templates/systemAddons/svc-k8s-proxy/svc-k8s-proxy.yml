@@ -1,4 +1,4 @@
-{{- if and .Values.addons.svck8sproxy.enabled .Values.addons.system.enabled }}
+{{- if false }}
 
   {{- include "svc-k8s-proxy.addon" . }}
 

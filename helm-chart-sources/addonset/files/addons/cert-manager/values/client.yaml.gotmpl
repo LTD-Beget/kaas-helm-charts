@@ -1,0 +1,20 @@
+cert-manager:
+  cainjector:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  podLabels:
+    toleration.{{ .Values.companyDomain }}/ignore: "true"
+  tolerations:
+    - operator: "Exists"
+  startupapicheck:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  webhook:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"

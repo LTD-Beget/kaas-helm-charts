@@ -1,0 +1,19 @@
+istio:
+  virtualService:
+    enabled: true
+    gateways:
+      - {{ .Values.companyPrefix }}-istio-gw/default
+    hosts:
+      - "*"
+    http:
+      name: dex
+      route:
+        host: dex
+        port: 5554
+  destinationRule:
+    enabled: true
+    host: dex
+    trafficPolicy:
+      tls:
+        mode: SIMPLE
+        insecureSkipVerify: true

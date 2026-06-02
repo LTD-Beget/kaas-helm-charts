@@ -1,0 +1,155 @@
+{{- define "capi-cluster-class.values.system" -}}
+  {{- $O := "{{" -}}
+  {{- $C := "}}" -}}
+companyDomain: {{ $.Values.companyDomain }}
+companyPrefix: {{ $.Values.companyPrefix }}
+inCloud:
+  serviceAccount:
+    name: capi
+clusterResourcesEnabled: true
+capi:
+  k8s:
+    infrastructureType: {{ $.Values.companyPrefix }}
+    clusterInfrastructureTemplate:
+      {{ $.Values.companyPrefix }}:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+        kind: {{ printf "%sClusterTemplate" ($.Values.companyPrefix | title) }}
+    machineInfrastructureTemplate:
+      {{ $.Values.companyPrefix }}:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+        kind: {{ printf "%sMachineTemplate" ($.Values.companyPrefix | title) }}
+    controlPlane:
+      components:
+        kubelet:
+          extraArgs:
+            node-labels: "node-group.{{ $.Values.companyDomain }}/name={{$O}}`{{$O}} .builtin.cluster.name {{$C}}`{{$C}}-control-plane"
+    dataPlane:
+      components:
+        kubelet:
+          extraArgs:
+            node-labels: '{{$O}}`{{$O}} printf "node-group.{{ $.Values.companyDomain }}/name=%s-%s" .clusterName .name | quote {{$C}}`{{$C}}'
+    containerRuntime:
+      mirrors:
+        repos:
+          docker.io:
+            server: https://docker.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/registry-1-docker-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://registry-1.docker.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          registry-1.docker.io:
+            server: https://registry-1.docker.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/registry-1-docker-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://registry-1.docker.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          europe-docker.pkg.dev:
+            server: https://europe-docker.pkg.dev
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/europe-docker-pkg-dev'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://europe-docker.pkg.dev"
+                args:
+                  skip_verify: false
+                  priority: 2
+          gcr.io:
+            server: https://gcr.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/gcr-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://gcr.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          ghcr.io:
+            server: https://ghcr.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/ghcr-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://ghcr.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          mirror.gcr.io:
+            server: https://mirror.gcr.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/mirror-gcr-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://mirror.gcr.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          public.ecr.aws:
+            server: https://public.ecr.aws
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/public-ecr-aws'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://public.ecr.aws"
+                args:
+                  skip_verify: false
+                  priority: 2
+          quay.io:
+            server: https://quay.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/quay-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://quay.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          registry.k8s.io:
+            server: https://registry.k8s.io
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/registry-k8s-io'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://registry.k8s.io"
+                args:
+                  skip_verify: false
+                  priority: 2
+          {{$O}} .Values.companyInternalDockerRegistry {{$C}}:
+            server: https://{{$O}} .Values.companyInternalDockerRegistry {{$C}}
+            mirrors:
+              - mirror: '{{$O}} "{{$O}} if index . `containerdMirrorUrl` {{$C}}{{$O}} .containerdMirrorUrl {{$C}}{{$O}} else {{$C}}" {{$C}}{{$O}} .Values.systemIstioGwDomain {{$C}}{{$O}} "{{$O}} end {{$C}}" {{$C}}/repository/registry-{{ $.Values.companyPrefix }}-ru'
+                args:
+                  skip_verify: false
+                  ca: "/etc/kubernetes/pki/ca-oidc.crt"
+                  priority: 1
+              - mirror: "https://{{$O}} .Values.companyInternalDockerRegistry {{$C}}"
+                args:
+                  skip_verify: false
+                  priority: 2
+
+{{- end }}

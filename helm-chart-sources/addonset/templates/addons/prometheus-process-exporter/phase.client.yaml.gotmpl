@@ -1,0 +1,15 @@
+{{- if .Values.addons.prometheusprocessexporter.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "prometheus-process-exporter"           -}}
+  {{- $_        := set $context.Values "suffix"         "-client"           -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-client" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: prometheus-process-exporter-client
+spec:
+  rules:
+    {{- include "common.phase.rules.vm-operator"  $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}

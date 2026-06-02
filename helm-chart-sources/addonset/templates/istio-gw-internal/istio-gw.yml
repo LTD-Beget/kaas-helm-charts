@@ -1,4 +1,4 @@
-{{- if and .Values.addons.istiogw.enabled .Values.addons.system.enabled }}
+{{- if false }}
 
   {{- include "istio-gw-internal.addon" . }}
 

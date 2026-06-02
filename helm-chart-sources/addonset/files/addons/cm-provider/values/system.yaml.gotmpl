@@ -1,0 +1,33 @@
+companyPrefix: {{ .Values.companyPrefix }}
+certificates:
+  useExternalIssuer: true
+  externalIssuer:
+    name: selfsigned-cluster-issuer
+appSpec:
+  applications:
+    providerControllerManager:
+      name: provider-{{ .Values.companyPrefix }}-controller-manager
+      containers:
+        manager:
+          extraArgs:
+            metrics-cert-path: "/etc/provider-{{ .Values.companyPrefix }}-controller-manager/tls"
+          extraVolumeMounts:
+            certificate:
+              volumeMount:
+                path: "/etc/provider-{{ .Values.companyPrefix }}-controller-manager/tls"
+          image:
+            repository: {{ .Values.companyInternalDockerRegistry }}/cloud/k8s/controllers/capi-provider-{{ .Values.companyPrefix }}
+            pullPolicy: Always
+          extraResources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      enabled: true
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      imagePullSecrets:
+        - name: regcred

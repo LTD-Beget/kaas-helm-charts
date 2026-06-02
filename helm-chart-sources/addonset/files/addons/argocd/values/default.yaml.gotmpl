@@ -1,0 +1,246 @@
+istioGwDomain: {{ .Values.systemIstioGwDomain }}
+argo-cd:
+  global:
+    deploymentStrategy:
+      type: RollingUpdate
+  configs:
+    cm:
+      application.resourceTrackingMethod: annotation
+      reposerver.default.cache.expiration: 8h0m0s
+      reposerver.repo.cache.expiration: 8h0m0s
+      resource.compareoptions: |
+        ignoreAggregatedRoles: true
+      resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
+        jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
+      resource.customizations.ignoreDifferences.admissionregistration.k8s.io_ValidatingWebhookConfiguration: |
+        jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
+      resource.customizations.ignoreDifferences.all: |
+        jqPathExpressions:
+        - '.spec.template.spec.containers[].volumeMounts[] | select(.name == "ssl-certs")'
+        - '.spec.template.spec.volumes[] | select(.name == "ssl-certs")'
+        - '.spec.template.spec.securityContext'
+        - '.spec.template.spec.containers[].securityContext'
+        - '.spec.template.spec.initContainers[].securityContext'
+        - '.spec.replicas'
+        jsonPointers:
+        - /metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
+      resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
+        jqPathExpressions:
+        - '.spec.rules[] | select(.name|test("autogen-."))'
+      resource.customizations.ignoreDifferences.kyverno.io_Policy: |
+        jqPathExpressions:
+        - '.spec.rules[] | select(.name|test("autogen-."))'
+      kustomize.buildOptions: --enable-helm
+      timeout.reconciliation: 180s  
+      timeout.reconciliation.jitter: 30s
+    params:
+      application.namespaces: '*'
+      # repo.server: 127.0.0.1:8081
+      # redis.server: 127.0.0.1:6379
+      controller.sharding.algorithm: round-robin
+      server.basehref: /argocd
+      server.rootpath: /argocd
+      server.staticassets: /shared/app
+    secret:
+      argocdServerAdminPassword: "$2a$10$3MqvSHzzSj38YYNFDrkolONgKe9ejuphtk1Qe5gWNdm9ILVQYUOma"
+    rbac:
+      policy.default: role:readonly
+      policy.csv: |
+        g, {{ .Values.companyAdminUser }}, role:admin
+  dex:
+    enabled: false
+  notifications:
+    enabled: false
+  redis:
+    image:
+      imagePullPolicy: IfNotPresent
+    replicas: 1
+    # hostNetwork: true
+    exporter:
+      enabled: true
+      resources:
+        limits:
+          cpu: 50m
+          ephemeral-storage: 10Mi
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          ephemeral-storage: 10Mi
+          memory: 32Mi
+    metrics:
+      enabled: true
+    resources:
+      limits:
+        cpu: 100m
+        ephemeral-storage: 100Mi
+        memory: 192Mi
+      requests:
+        cpu: 50m
+        ephemeral-storage: 100Mi
+        memory: 64Mi
+  redisSecretInit:
+    enabled: true
+  repoServer:
+    image:
+      imagePullPolicy: IfNotPresent
+    # hostNetwork: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    emptyDir:
+      sizeLimit: 10Gi
+    metrics:
+      enabled: true
+    rbac:
+    - apiGroups:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+    replicas: 1
+    resources:
+      limits:
+        ephemeral-storage: 10Gi
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 10Gi
+        memory: 150Mi
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-redis
+            topologyKey: kubernetes.io/hostname
+  server:
+    image:
+      imagePullPolicy: IfNotPresent
+    # hostNetwork: true
+    containerSecurityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    extraArgs:
+      # - --repo-server
+      # - 127.0.0.1:8081
+      # - --redis
+      # - 127.0.0.1:6379
+      - --kubeconfig
+      - /etc/kubernetes/admin.conf
+    volumes:
+      - hostPath:
+          path: /etc/kubernetes/admin.conf
+          type: FileOrCreate
+        name: admin-conf
+    volumeMounts:
+      - mountPath: /etc/kubernetes/admin.conf
+        name: admin-conf
+    emptyDir:
+      sizeLimit: 500Mi
+    metrics:
+      enabled: true
+    resources:
+      limits:
+        ephemeral-storage: 100Mi
+      requests:
+        cpu: 50m
+        ephemeral-storage: 100Mi
+        memory: 64Mi
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-redis
+            topologyKey: kubernetes.io/hostname
+  controller:
+    dynamicClusterDistribution: true
+    replicas: 1
+    image:
+      imagePullPolicy: IfNotPresent
+    # hostNetwork: true
+    containerSecurityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    extraArgs:
+      # - --repo-server
+      # - 127.0.0.1:8081
+      # - --redis
+      # - 127.0.0.1:6379
+      - --kubeconfig
+      - /etc/kubernetes/admin.conf
+    volumes:
+      - hostPath:
+          path: /etc/kubernetes/admin.conf
+          type: FileOrCreate
+        name: admin-conf
+    volumeMounts:
+      - mountPath: /etc/kubernetes/admin.conf
+        name: admin-conf
+    emptyDir:
+      sizeLimit: 500Mi
+    metrics:
+      enabled: true
+    resources:
+      limits:
+        ephemeral-storage: 500Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 500Mi
+        memory: 64Mi
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-redis
+            topologyKey: kubernetes.io/hostname
+  applicationSet:
+    replicas: 0
+    image:
+      imagePullPolicy: IfNotPresent
+    allowAnyNamespace: false # if true, should be set applicationsetcontroller.allowed.scm.providers to non-empty value
+    emptyDir:
+      sizeLimit: 500Mi
+    metrics:
+      enabled: true
+    resources:
+      limits:
+        cpu: 400m
+        ephemeral-storage: 100Mi
+        memory: 256Mi
+      requests:
+        cpu: 10m
+        ephemeral-storage: 100Mi
+        memory: 32Mi
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: argocd-redis
+            topologyKey: kubernetes.io/hostname

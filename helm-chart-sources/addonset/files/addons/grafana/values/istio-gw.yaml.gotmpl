@@ -1,0 +1,13 @@
+istio:
+  virtualService:
+    enabled: true
+    gateways:
+      - {{ .Values.companyPrefix }}-istio-gw-internal/default
+    hosts:
+      - "*"
+    http:
+      name: grafana
+      route:
+        host: grafana-service
+        port: 3000
+

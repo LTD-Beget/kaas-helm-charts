@@ -61,10 +61,12 @@ addons:
     enabled: true
   grafanaoperator:
     enabled: true
+  kubeadmresources:
+    enabled: true
   kubestatemetrics:
     enabled: true
   konnectivityagent:
-    enabled: false
+    enabled: true
   metricsserver:
     enabled: true
   prometheusprocessexporter:

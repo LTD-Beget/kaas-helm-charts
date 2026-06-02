@@ -1,0 +1,219 @@
+victoria-metrics-k8s-stack:
+  vmcluster:
+    spec:
+      vmstorage:
+        containers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=http://127.0.0.1:8482
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - name: rbac-proxy-tls
+                mountPath: /app/config/metrics/tls
+                readOnly: true
+              - mountPath: /etc/ssl/certs/ca.crt
+                subPath: ca.crt
+                name: trusted-ca-certs
+                readOnly: true
+        volumes:
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: vmcluster-monitoring-svc-tls
+          - name: trusted-ca-certs
+            configMap:
+              name: ca
+          - hostPath:	
+              path: /var/lib/victoria-metrics	
+              type: DirectoryOrCreate	
+            name: vmstorage-data
+        serviceSpec:
+          spec:
+            ports:
+              - name: http
+                port: 8482
+                protocol: TCP
+                targetPort: 8482
+              - name: https-metrics
+                port: 11043
+                protocol: TCP
+                targetPort: https-metrics
+      vmselect:
+        containers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=https://127.0.0.1:8481
+              - --upstream-ca-file=/app/config/vmselect/tls/ca.crt
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - name: rbac-proxy-tls
+                mountPath: /app/config/metrics/tls
+                readOnly: true
+              - mountPath: /etc/ssl/certs/ca.crt
+                subPath: ca.crt
+                name: trusted-ca-certs
+                readOnly: true
+              - name: vmselect-tls
+                mountPath: /app/config/vmselect/tls
+                readOnly: true
+        extraArgs:
+          tls: "true"
+          tlsCertFile: "/tls/tls.crt"
+          tlsKeyFile: "/tls/tls.key"
+        volumes:
+          - name: vmselect-tls
+            secret:
+              secretName: vmselect-tls
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: vmcluster-monitoring-svc-tls
+          - name: trusted-ca-certs
+            configMap:
+              name: ca
+        volumeMounts:
+          - name: vmselect-tls
+            mountPath: /tls
+            readOnly: true
+        serviceSpec:
+          spec:
+            ports:
+              - name: http
+                port: 8481
+                protocol: TCP
+                targetPort: 8481
+              - name: https-metrics
+                port: 11043
+                protocol: TCP
+                targetPort: https-metrics
+      vminsert:
+        containers:
+          - name: rbac-proxy
+            image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+            args:
+              - --secure-listen-address=0.0.0.0:11043
+              - --upstream=https://127.0.0.1:8480
+              - --upstream-ca-file=/app/config/vminsert/tls/ca.crt
+              - --tls-cert-file=/app/config/metrics/tls/tls.crt
+              - --tls-private-key-file=/app/config/metrics/tls/tls.key
+              - --v=2
+            ports:
+              - name: https-metrics
+                containerPort: 11043
+                protocol: TCP
+            resources:
+              requests:
+                memory: "32Mi"
+                cpu: "10m"
+              limits:
+                memory: "64Mi"
+                cpu: "50m"
+            volumeMounts:
+              - name: rbac-proxy-tls
+                mountPath: /app/config/metrics/tls
+                readOnly: true
+              - mountPath: /etc/ssl/certs/ca.crt
+                subPath: ca.crt
+                name: trusted-ca-certs
+                readOnly: true
+              - name: vminsert-tls
+                mountPath: /app/config/vminsert/tls
+                readOnly: true
+        extraArgs:
+          tls: "true"
+          tlsCertFile: "/tls/tls.crt"
+          tlsKeyFile: "/tls/tls.key"
+        volumes:
+          - name: vminsert-tls
+            secret:
+              secretName: vminsert-tls
+          - name: rbac-proxy-tls
+            secret:
+              defaultMode: 420
+              secretName: vmcluster-monitoring-svc-tls
+          - name: trusted-ca-certs
+            configMap:
+              name: ca
+        volumeMounts:
+          - name: vminsert-tls
+            mountPath: /tls
+            readOnly: true
+        serviceSpec:
+          spec:
+            ports:
+              - name: http
+                port: 8480
+                protocol: TCP
+                targetPort: 8480
+              - name: https-metrics
+                port: 11043
+                protocol: TCP
+                targetPort: https-metrics
+# additionalService: Сервис vminsert определен через spec.[vminsert|vmselect|vmstorage].serviceSpec
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+tls:
+  vmInsert:
+    enabled: true
+    issuer:
+      kind: ClusterIssuer
+      name: selfsigned-cluster-issuer
+    certificate:
+      name: vminsert-tls
+      secretName: vminsert-tls
+      commonName: vminsert
+      dnsNames:
+        - "vminsert"
+        - "vminsert.{{ .Values.companyPrefix }}-vmcluster"
+        - "vminsert.{{ .Values.companyPrefix }}-vmcluster.svc"
+      ipAddresses:
+        - 127.0.0.1
+        - {{ .Values.systemVmInsertVIP }}
+  vmSelect:
+    enabled: true
+    issuer:
+      kind: ClusterIssuer
+      name: selfsigned-cluster-issuer
+    certificate:
+      name: vmselect-tls
+      secretName: vmselect-tls
+      commonName: vmselect
+      dnsNames:
+        - "vmselect"
+        - "vmselect.{{ .Values.companyPrefix }}-vmcluster"
+        - "vmselect.{{ .Values.companyPrefix }}-vmcluster.svc"
+

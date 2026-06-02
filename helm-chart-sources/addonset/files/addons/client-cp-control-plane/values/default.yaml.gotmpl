@@ -1,0 +1,125 @@
+companyPrefix: {{ .Values.companyPrefix }}
+appSpec:
+  companyPrefix: {{ .Values.companyPrefix }}
+  applications:
+    controlPlane:
+      csiDriver: true
+      clusterName: "{{ .Variables.clusterName }}"
+      clusterCustomer: "{{ .Variables.customer }}"
+      extraPriority: 0
+      extraPriorityClassName: ""
+      containers:
+        kubeApiserver:
+          image:
+            tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+          extraArgs:
+            advertise-address: "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+            secure-port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+            egress-selector-config-file: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
+            service-cluster-ip-range: "{{ .Variables.serviceCidr }}"
+            watch-cache: true
+          extraLivenessProbe:
+            httpGet:
+              port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+          extraReadinessProbe:
+            httpGet:
+              port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+          extraPorts:
+            https:
+              containerPort: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+          extraStartupProbe:
+            httpGet:
+              port: {{ .Variables.argocdApplicationControlPlaneValueArgsPort }}
+          certSANs:
+            - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane"
+            - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}"
+            - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc"
+            - "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+          certIPs:
+            - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+            - "127.0.0.1"
+          extraVolumeMounts:
+            kas-egress-selector:
+              volumeMount:
+                path: /etc/kubernetes/egress-selector/egress-selector-configuration.yaml
+                spec:
+                  subPath: kas-egress-selector
+                  readOnly: true 
+          extraResources:
+            requests:
+              cpu: 128m
+              memory: 128Mi
+        kubeControllerManager:
+          image:
+            tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+          extraResources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        kubeScheduler:
+          image:
+            tag: "{{ .Variables.argocdApplicationControlPlaneValueArgsClusterVersion }}"
+        konnectivityServer:
+          certIPs:
+            - "{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
+            - "127.0.0.1"
+          extraArgs:
+            agent-namespace: {{ .Values.companyPrefix }}-konnectivity-agent
+            mode: http-connect
+            server-count: "{{ .Variables.controlPlaneReplicas }}"
+            v: 2
+      service:
+        enabled: true
+        type: NodePort
+        nodePort: 30000
+        additional:
+          enabled: true
+          type: NodePort
+          ports:
+            - name: agent
+              port: 8132
+              targetPort: 8132
+              protocol: TCP
+              nodePort: 30132
+      issuers:
+        kubernetesCA:
+          enabled: true
+          type: ca
+          secretName: "{{ .Variables.certificatesCaName }}"
+        etcdCA:
+          enabled: true
+          type: ca
+          secretName: "{{ .Variables.certificatesEtcdName }}"
+      volumes:
+        ca-crt:
+          volume:
+            secretName: "{{ .Variables.certificatesCaName }}"
+        ca-key:
+          volume:
+            secretName: "{{ .Variables.certificatesCaName }}"
+        etcd-crt:
+          volume:
+            secretName: "{{ .Variables.certificatesEtcdName }}"
+        etcd-key:
+          volume:
+            secretName: "{{ .Variables.certificatesEtcdName }}"
+        kas-egress-selector:
+          volume:
+            mode: configMap
+            name: kas-egress-selector
+            payload:
+              format: yaml
+              content: |
+                apiVersion: apiserver.k8s.io/v1beta1
+                kind: EgressSelectorConfiguration
+                egressSelections:
+                  - name: cluster
+                    connection:
+                      proxyProtocol: HTTPConnect
+                      transport:
+                        tcp:
+                          url: https://127.0.0.1:8130
+                          tlsConfig:
+                            caBundle: /etc/kubernetes/pki/ca.crt
+                            clientCert: /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.crt
+                            clientKey:  /etc/kubernetes/pki/csi/apiserver-kubelet-client/tls.key

@@ -1,4 +1,4 @@
-{{- if and .Values.addons.svchub.enabled .Values.addons.system.enabled }}
+{{- if false }}
 
   {{- include "svc-hub.addon" . }}
 

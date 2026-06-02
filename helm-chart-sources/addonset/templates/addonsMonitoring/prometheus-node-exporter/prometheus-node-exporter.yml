@@ -1,4 +1,4 @@
-{{- if .Values.addons.prometheusnodeexporter.enabled }}
+{{- if false }}
   {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
 
   {{- include "prometheus-node-exporter.addon" . }}

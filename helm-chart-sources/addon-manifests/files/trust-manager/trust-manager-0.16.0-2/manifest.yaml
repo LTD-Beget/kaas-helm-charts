@@ -51,16 +51,21 @@ spec:
           matchLabels:
             addons.in-cloud.io/values: default
             addons.in-cloud.io/addon: trust-manager
-        - name: custom
-          priority: 90
-          matchLabels:
-            addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
-            addons.in-cloud.io/addon: trust-manager-client
         - name: client
-          priority: 95
+          priority: 90
           matchLabels:
             addons.in-cloud.io/values: client
             addons.in-cloud.io/addon: trust-manager
+        - name: client-custom
+          priority: 93
+          matchLabels:
+            addons.in-cloud.io/values: {{ "{{ .Values.spec.valueLabels }}" }}
+            addons.in-cloud.io/addon: trust-manager-client
+        - name: custom
+          priority: 95
+          matchLabels:
+            addons.in-cloud.io/values: custom
+            addons.in-cloud.io/addon: trust-manager-client
         - name: immutable
           priority: 99
           matchLabels:
