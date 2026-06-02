@@ -1,5 +1,5 @@
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/addon.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
@@ -54,6 +54,7 @@ spec:
       automated:
         prune: true
         selfHeal: true
+        selfHeal: true
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
@@ -68,7 +69,7 @@ spec:
         addons.in-cloud.io/values: default
         addons.in-cloud.io/addon: grafana
     - name: custom
-      priority: 90
+      priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
         addons.in-cloud.io/addon: grafana
@@ -78,7 +79,7 @@ spec:
         addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: grafana
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/phase.client.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -91,10 +92,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -102,42 +101,11 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
-          addons.in-cloud.io/values: "cert-manager"
-          addons.in-cloud.io/addon: grafana
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator-client
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: grafana
     - name: istio-gw
       criteria:
@@ -156,14 +124,58 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: grafana-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
       selector:
         name: istio-gw
         priority: 40
         matchLabels:
           addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: grafana
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator-client
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: grafana
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/phase.infra.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonPhase
 metadata:
@@ -176,10 +188,8 @@ spec:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
             name: cert-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
         - source:
             apiVersion: addons.in-cloud.io/v1alpha1
             kind: Addon
@@ -187,42 +197,11 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: trust-manager
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
       selector:
         name: cert-manager
-        priority: 20
+        priority: 25
         matchLabels:
-          addons.in-cloud.io/values: "cert-manager"
-          addons.in-cloud.io/addon: grafana
-    - name: vm-operator
-      criteria:
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
-        - source:
-            apiVersion: addons.in-cloud.io/v1alpha1
-            kind: Addon
-            name: vm-operator
-          jsonPath: $.spec.variables.dependency
-          operator: Equal
-          value: "True"
-      selector:
-        name: vm-operator
-        priority: 30
-        matchLabels:
-          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/values: cert-manager
           addons.in-cloud.io/addon: grafana
     - name: istio-gw
       criteria:
@@ -241,14 +220,130 @@ spec:
           jsonPath: $.spec.variables.dependency
           operator: Equal
           value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: grafana
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
       selector:
         name: istio-gw
         priority: 40
         matchLabels:
           addons.in-cloud.io/values: istio-gw
           addons.in-cloud.io/addon: grafana
+    - name: vm-operator
+      criteria:
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.status.phaseValuesSelector[?(@.name=='initialized-2')]
+          operator: Exists
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cert-manager
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: vm-operator
+          jsonPath: $.spec.variables.dependency
+          operator: Equal
+          value: "True"
+      selector:
+        name: vm-operator
+        priority: 45
+        matchLabels:
+          addons.in-cloud.io/values: vm-operator
+          addons.in-cloud.io/addon: grafana
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: grafana-cert-manager
+  labels:
+    addons.in-cloud.io/values: cert-manager
+    addons.in-cloud.io/addon: grafana
+spec:
+  values: |
+    grafana:
+      spec:
+        config:
+          auth.generic_oauth:
+            auth_url: "https://{{ .Values.systemIstioGwDomain }}/auth"
+            token_url: "https://{{ .Values.systemIstioGwDomain }}/token"
+            api_url: "https://{{ .Values.systemIstioGwDomain }}/userinfo"
+        deployment:
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: grafana
+                    env:
+                      - name: GRAFANA_OIDC_CLIENT_ID
+                        value: {{ .Variables.oidcClientID }}
+                      - name: GRAFANA_OIDC_CLIENT_SECRET
+                        value: {{ .Values.oidcClientSecret }}
+                    resources:
+                      requests:
+                        cpu: "100m"
+                        memory: "128Mi"
+                      limits:
+                        cpu: "2"
+                        memory: "2Gi"
+                    volumeMounts:
+                      - mountPath: /etc/ssl/certs/ca.crt
+                        subPath: ca.crt
+                        name: trusted-ca-certs
+                        readOnly: true
+                  - name: rbac-proxy
+                    image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+                    args:
+                      - --secure-listen-address=0.0.0.0:11043
+                      - --upstream=http://127.0.0.1:3000
+                      - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                      - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                      - --v=2
+                    ports:
+                      - name: https-metrics
+                        containerPort: 11043
+                        protocol: TCP
+                    resources:
+                      requests:
+                        memory: "32Mi"
+                        cpu: "10m"
+                      limits:
+                        memory: "64Mi"
+                        cpu: "50m"
+                    volumeMounts:
+                      - name: rbac-proxy-tls
+                        mountPath: /app/config/metrics/tls
+                        readOnly: true
+                volumes:
+                  - name: trusted-ca-certs
+                    configMap:
+                      name: ca
+                  - name: rbac-proxy-tls
+                    secret:
+                      defaultMode: 420
+                      secretName: grafana-monitoring-svc-tls
+---
+# Source: addonset/templates/addons/grafana/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -333,7 +428,7 @@ spec:
               dashboards: grafana
           resyncPeriod: 10m0s
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -342,99 +437,9 @@ metadata:
     addons.in-cloud.io/values: immutable
     addons.in-cloud.io/addon: grafana
 spec:
-  values: ""
----
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: grafana-cert-manager
-  labels:
-    addons.in-cloud.io/values: "cert-manager"
-    addons.in-cloud.io/addon: grafana
-spec:
   values: |
-    grafana:
-      spec:
-        config:
-          auth.generic_oauth:
-            auth_url: "https://{{ .Values.systemIstioGwDomain }}/auth"
-            token_url: "https://{{ .Values.systemIstioGwDomain }}/token"
-            api_url: "https://{{ .Values.systemIstioGwDomain }}/userinfo"
-        deployment:
-          spec:
-            template:
-              spec:
-                containers:
-                  - name: grafana
-                    env:
-                      - name: GRAFANA_OIDC_CLIENT_ID
-                        value: {{ .Variables.oidcClientID }}
-                      - name: GRAFANA_OIDC_CLIENT_SECRET
-                        value: {{ .Values.oidcClientSecret }}
-                    resources:
-                      requests:
-                        cpu: "100m"
-                        memory: "128Mi"
-                      limits:
-                        cpu: "2"
-                        memory: "2Gi"
-                    volumeMounts:
-                      - mountPath: /etc/ssl/certs/ca.crt
-                        subPath: ca.crt
-                        name: trusted-ca-certs
-                        readOnly: true
-                  - name: rbac-proxy
-                    image: quay.io/brancz/kube-rbac-proxy:v0.21.0
-                    args:
-                      - --secure-listen-address=0.0.0.0:11043
-                      - --upstream=http://127.0.0.1:3000
-                      - --tls-cert-file=/app/config/metrics/tls/tls.crt
-                      - --tls-private-key-file=/app/config/metrics/tls/tls.key
-                      - --v=2
-                    ports:
-                      - name: https-metrics
-                        containerPort: 11043
-                        protocol: TCP
-                    resources:
-                      requests:
-                        memory: "32Mi"
-                        cpu: "10m"
-                      limits:
-                        memory: "64Mi"
-                        cpu: "50m"
-                    volumeMounts:
-                      - name: rbac-proxy-tls
-                        mountPath: /app/config/metrics/tls
-                        readOnly: true
-                volumes:
-                  - name: trusted-ca-certs
-                    configMap:
-                      name: ca
-                  - name: rbac-proxy-tls
-                    secret:
-                      defaultMode: 420
-                      secretName: grafana-monitoring-svc-tls
-    monitoring:
-      secureService:
-        enabled: true
-        issuer:
-          name: selfsigned-cluster-issuer
 ---
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
-apiVersion: addons.in-cloud.io/v1alpha1
-kind: AddonValue
-metadata:
-  name: grafana-vm-operator
-  labels:
-    addons.in-cloud.io/values: vm-operator
-    addons.in-cloud.io/addon: grafana
-spec:
-  values: |
-    monitoring:
-      enabled: true
----
-# Source: addonset/templates/systemAddons/grafana/grafana.yml
+# Source: addonset/templates/addons/grafana/values.yaml.gotmpl
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
@@ -456,3 +461,20 @@ spec:
           route:
             host: grafana-service
             port: 3000
+---
+# Source: addonset/templates/addons/grafana/values.yaml.gotmpl
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonValue
+metadata:
+  name: grafana-vm-operator
+  labels:
+    addons.in-cloud.io/values: vm-operator
+    addons.in-cloud.io/addon: grafana
+spec:
+  values: |
+    monitoring:
+      enabled: true
+      secureService:
+        enabled: true
+        issuer:
+          name: selfsigned-cluster-issuer
