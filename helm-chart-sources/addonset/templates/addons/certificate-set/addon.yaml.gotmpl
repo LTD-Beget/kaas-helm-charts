@@ -15,13 +15,13 @@ spec:
     cluster_name: in-cluster
     dependency: "True"
   valuesSources:
-      name: parameters-infra
+    - name: parameters-infra
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
         namespace: beget-system
-    - extract:
+      extract:
         - as: companyPrefix
           jsonPath: .data.companyPrefix
         - as: systemEnabled
