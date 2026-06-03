@@ -1317,6 +1317,29 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-5.tgz
       version: 6.1.0-5
+    - apiVersion: v2
+      appVersion: v2.16.0
+      created: "2026-06-03T21:24:12.002073+05:00"
+      dependencies:
+        - condition: kube-state-metrics.enabled
+          name: kube-state-metrics
+          repository: https://prometheus-community.github.io/helm-charts
+          version: 6.1.0
+      description: Install kube-state-metrics to generate and expose cluster-level metrics
+      digest: 83ac9d0f487049703bf991c2f51a2a42f3246b6afcdba65702f1e05037cdc038
+      home: https://github.com/kubernetes/kube-state-metrics/
+      keywords:
+        - metric
+        - monitoring
+        - prometheus
+        - kubernetes
+      name: kube-state-metrics
+      sources:
+        - https://github.com/kubernetes/kube-state-metrics/
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-4.tgz
+      version: 6.1.0-4
   kubeadm-resources-client-cp:
     - apiVersion: v2
       created: "2026-06-02T12:49:04.486835+05:00"
