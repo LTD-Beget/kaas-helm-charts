@@ -79,11 +79,13 @@ index: check-tools
 	done; \
 	if [ ! -s "$(INDEX_FILE)" ]; then \
 		$(HELM) repo index "$(PACKAGES_DIR)" --url "$(REPO_PACKAGES_URL)"; \
+		$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$(PACKAGES_DIR)/index.yaml"; \
 		mv "$(PACKAGES_DIR)/index.yaml" "$(INDEX_FILE)"; \
 		echo "index $(INDEX_FILE) created"; \
 		exit 0; \
 	fi; \
 	if [ ! -s "$$purged" ] && [ ! -s "$$newly_built" ]; then \
+		$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$(INDEX_FILE)"; \
 		echo "index $(INDEX_FILE) up-to-date"; \
 		exit 0; \
 	fi; \
@@ -106,6 +108,7 @@ index: check-tools
 		$(HELM) repo index "$$new_pkg_dir" --url "$(REPO_PACKAGES_URL)"; \
 		$(YQ) -i '.entries = (.entries *+ load("'"$$new_pkg_dir/index.yaml"'").entries)' "$$work"; \
 	fi; \
+	$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$$work"; \
 	if diff -q "$$work" "$(INDEX_FILE)" > /dev/null 2>&1; then \
 		echo "index $(INDEX_FILE) up-to-date"; \
 	else \
