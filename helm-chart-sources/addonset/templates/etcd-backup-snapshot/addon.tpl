@@ -8,7 +8,7 @@ spec:
   chart: "etcd-backup-snapshot"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "0.1.2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-etcd-backup-snapshot"
   variables:
