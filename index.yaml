@@ -819,40 +819,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-06-05T01:29:52.541168+05:00"
+      created: "2026-06-05T06:24:21.713434+07:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: f533536fb52ee84c52bc5392385090bfd664e8116376f8c86fc25f50b20bf5e4
-      home: https://coredns.io
-      icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
-      keywords:
-        - coredns
-        - dns
-        - kubedns
-      maintainers:
-        - name: mrueg
-        - name: haad
-        - name: hagaibarel
-        - name: shubham-cmyk
-      name: coredns
-      sources:
-        - https://github.com/coredns/coredns
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/coredns-1.28.0-3.tgz
-      version: 1.28.0-3
-    - apiVersion: v2
-      appVersion: 1.11.1
-      created: "2026-06-03T03:19:52.324188+05:00"
-      dependencies:
-        - name: coredns
-          repository: https://coredns.github.io/helm
-          version: 1.28.0
-      description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: a798bc22e0681ad0418e38155bb2239f70fd6174f2f392f8ea4a23c4a7192eeb
+      digest: b8e6e6beb3c3c2692324d010d0958267f501971e38c2d732f7177764fb4b34de
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
