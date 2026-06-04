@@ -1,10 +1,22 @@
 {{- if .Values.networkPolicies.enabled }}
+{{- $endpoint := .Values.signalilo.config.icinga_url -}}
+{{- $proto := regexFind "^https?" $endpoint -}}
+{{- $host := regexReplaceAll "^https?://([^:/]+).*" $endpoint "${1}" -}}
+{{- $port := regexFind ":[0-9]+$" $endpoint | trimPrefix ":" -}}
+{{- if eq $port "" -}}
+  {{- if eq $proto "https" -}}
+    {{- $port = "443" -}}
+  {{- else -}}
+    {{- $port = "80" -}}
+  {{- end -}}
+{{- end -}}
+
 ---
 # Allow `signalilo` to reach the external Icinga endpoint.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-signalilo-to-192-168-88-204-25665
+  name: allow-egress-signalilo-to-thruk-{{ $port }}
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -13,10 +25,34 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
   - toFQDNs:
-    - matchName: thruk.beget.ru
+    - matchName: "{{ $host }}"
     toPorts:
     - ports:
-      - port: '25665'
+      - port: "{{ $port }}"
         protocol: TCP
-  description: Allows egress from signalilo to the Icinga endpoint on 25665.
+  description: |
+    Allows egress from signalilo to the Icinga endpoint on {{ $port }}.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-signalilo-from-alertmanager-80
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: signalilo
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmalertmanager-vm-alertmanager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-alertmanager
+    toPorts:
+    - ports:
+      - port: 80
+        protocol: TCP
+  description: |
+    Allows ingress from alertmanager to signalilo on 80 for webhook alerts.
 {{- end }}
