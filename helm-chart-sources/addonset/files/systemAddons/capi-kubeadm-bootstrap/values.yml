@@ -44,6 +44,9 @@ metadata:
     addons.in-cloud.io/addon: capi-kubeadm-bootstrap
 spec:
   values: |
+    companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     fullnameOverride: "capi-kubeadm-bootstrap"
     certificates:
       useExternalIssuer: true

@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "argo-cd"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "9.4.15-3"
+  version: "9.4.15-4"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-argocd"
@@ -36,6 +36,8 @@ spec:
           jsonPath: .data.systemIstioGwVipInternal
         - as: companyPrefix
           jsonPath: .data.companyPrefix
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
         - as: companyDomain
           jsonPath: .data.companyDomain
         - as: companyAdminUser

@@ -1,0 +1,167 @@
+{{- if .Values.networkPolicies.enabled }}
+{{- $providerSA := printf "%s-%s" .Release.Name .Values.appSpec.applications.providerControllerManager.name }}
+---
+# Allow `cm-provider` controller-manager to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from cm-provider controller-manager to the Kubernetes
+    API server on 6443 for control-plane interactions.
+
+---
+# Allow vmagent to scrape `cm-provider` controller-manager metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-cm-provider-from-vmagent-8443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress from vmagent to cm-provider controller-manager on 8443
+    for metrics collection.
+
+---
+# Allow the capi controller-manager to reach `cm-provider` webhooks.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-cm-provider-from-capi-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-capi
+    toPorts:
+    - ports:
+      - port: '9443'
+        protocol: TCP
+  description: Allows ingress from the capi controller-manager to cm-provider on 9443.
+
+---
+# Allow `cm-provider` to resolve manager service names via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: grpc-internal.svc-cloud-manager.service.consul
+        - matchName: grpc-internal.svc-vps-manager.service.consul
+        - matchName: _grpc_config.grpc-internal.svc-vps-manager.service.consul.
+  description: Allows egress from cm-provider to CoreDNS on 53 for manager service
+    name resolution.
+
+---
+# Allow `cm-provider` to reach the cloud-manager gRPC endpoint.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-cloud-manager-50051
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: grpc-internal.svc-cloud-manager.service.consul
+    toPorts:
+    - ports:
+      - port: '50051'
+        protocol: TCP
+  description: Allows egress from cm-provider to the cloud-manager gRPC endpoint on 50051.
+
+---
+# Allow `cm-provider` to reach the vps-manager gRPC endpoint.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-vps-manager-50051
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: grpc-internal.svc-vps-manager.service.consul
+    toPorts:
+    - ports:
+      - port: '50051'
+        protocol: TCP
+  description: Allows egress from cm-provider to the vps-manager gRPC endpoint on 50051.
+
+---
+# Allow `cm-provider` to reach the cloud-manager gRPC endpoint by CIDR.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-cloud-manager-cidr-50051
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toCIDRSet:
+    - cidr: 192.168.9.6/32
+    - cidr: 192.168.68.14/32
+    - cidr: 192.168.69.3/32
+    toPorts:
+    - ports:
+      - port: "50051"
+        protocol: TCP
+  description: Allows egress from cm-provider to the cloud-manager endpoint on 50051 by CIDR.
+{{- end }}

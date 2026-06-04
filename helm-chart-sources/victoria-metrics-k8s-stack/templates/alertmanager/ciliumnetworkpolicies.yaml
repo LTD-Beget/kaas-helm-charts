@@ -1,0 +1,170 @@
+{{- if .Values.networkPolicies.alertmanager.enabled }}
+{{- $alertmanagerSA := printf "vmalertmanager-%s" (include "victoria-metrics-k8s-stack.fullname" .) }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-alertmanager-from-vmalert-9093
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmalert-vm-alert
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmalert
+    toPorts:
+    - ports:
+      - port: '9093'
+        protocol: TCP
+  description: Allows ingress from vmalert to alertmanager on 9093 for alert notifications.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-alertmanager-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from alertmanager to the Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
+# Bidirectional gossip between alertmanager replicas for HA clustering.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-alertmanager-cluster-gossip-9094
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '9094'
+        protocol: TCP
+      - port: '9094'
+        protocol: UDP
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '9094'
+        protocol: TCP
+      - port: '9094'
+        protocol: UDP
+  description: Allows bidirectional gossip between alertmanager replicas on 9094 for
+    HA clustering.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-alertmanager-from-vmagent-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows ingress from vmagent to alertmanager on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-alertmanager-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+  description: Allows egress from alertmanager to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-alertmanager-to-telegram-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toCIDRSet:
+    - cidr: 149.154.160.0/20
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: Allows egress from alertmanager to Telegram on 443 for alert delivery.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-alertmanager-from-istio-gw-internal-9093
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '9093'
+        protocol: TCP
+  description: Allows ingress from istio-gw-internal to alertmanager on 9093.
+{{- end }}

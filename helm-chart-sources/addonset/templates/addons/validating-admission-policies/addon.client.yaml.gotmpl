@@ -1,4 +1,4 @@
-{{- if .Values.addons.validatingadmissionpolicies.enabled }}
+{{- if and .Values.addons.validatingadmissionpolicies.enabled (not .Values.addons.system.enabled) }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon

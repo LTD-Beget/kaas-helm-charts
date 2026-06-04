@@ -45,6 +45,8 @@ metadata:
 spec:
   values: |
     companyPrefix: {{ .Values.companyPrefix }}
+    networkPolicies:
+      enabled: true
     certificates:
       useExternalIssuer: true
       externalIssuer:

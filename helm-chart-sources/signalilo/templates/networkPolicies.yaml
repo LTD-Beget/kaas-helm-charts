@@ -1,0 +1,22 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow `signalilo` to reach the external Icinga endpoint.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-signalilo-to-192-168-88-204-25665
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: signalilo
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: thruk.beget.ru
+    toPorts:
+    - ports:
+      - port: '25665'
+        protocol: TCP
+  description: Allows egress from signalilo to the Icinga endpoint on 25665.
+{{- end }}

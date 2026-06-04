@@ -8,11 +8,23 @@ spec:
   chart: "trivy-operator"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.29.0-1"
+  version: "0.29.0-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-trivy-operator"
   variables:
     cluster_name: in-cluster
+  valuesSources:
+    - name: parameters-infra
+      sourceRef:
+        apiVersion: v1
+        kind: ConfigMap
+        name: parameters-infra
+        namespace: {{ .Values.companyPrefix }}-system
+      extract:
+        - as: companyPrefix
+          jsonPath: .data.companyPrefix
+        - as: companyDomain
+          jsonPath: .data.companyDomain
   backend:
     finalizer: true
     type: "argocd"

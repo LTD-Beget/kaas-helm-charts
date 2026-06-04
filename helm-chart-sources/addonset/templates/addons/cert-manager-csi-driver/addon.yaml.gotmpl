@@ -26,6 +26,8 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   backend:
     finalizer: true
     type: "argocd"

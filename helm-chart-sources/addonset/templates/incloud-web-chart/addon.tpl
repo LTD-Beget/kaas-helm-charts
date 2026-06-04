@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "incloud-web-chart"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.3.0-4"
+  version: "1.3.0-5"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-incloud-web-chart"
@@ -36,6 +36,8 @@ spec:
           jsonPath: .data.systemIstioGwVipInternal
         - as: companyPrefix
           jsonPath: .data.companyPrefix
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
         - as: companyDomain
           jsonPath: .data.companyDomain
   initDependencies:

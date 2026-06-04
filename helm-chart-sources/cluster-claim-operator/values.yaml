@@ -102,3 +102,8 @@ certManager:
 prometheus:
   enable: false
 
+## Cilium network policies for the controller manager.
+##
+networkPolicies:
+  enabled: false
+

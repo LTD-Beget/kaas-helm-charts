@@ -8,7 +8,7 @@ spec:
   chart: "capi-provider-controller-manager"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  version: "0.1.1"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cm-provider"
   variables:
@@ -27,6 +27,8 @@ spec:
           jsonPath: .data.companyDomain
         - as: companyInternalDockerRegistry
           jsonPath: .data.companyInternalDockerRegistry
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies: 
     - name: cert-manager
       criteria:

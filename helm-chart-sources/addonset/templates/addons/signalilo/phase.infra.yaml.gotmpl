@@ -1,0 +1,15 @@
+{{- if and .Values.addons.signalilo.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "signalilo"        -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: signalilo
+spec:
+  rules:
+    {{- include "common.phase.rules.network-policies" $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}

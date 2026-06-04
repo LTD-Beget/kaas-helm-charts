@@ -1,0 +1,166 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow vmagent to scrape `grafana` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-grafana-from-vmagent-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows ingress from vmagent to grafana on 11043 for metrics collection.
+
+---
+# Allow `grafana-operator` to reconcile Grafana.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-grafana-from-grafana-operator-3000
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: grafana-operator
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-grafana-operator
+    toPorts:
+    - ports:
+      - port: '3000'
+        protocol: TCP
+  description: Allows ingress from grafana-operator to grafana on 3000.
+
+---
+# Allow `grafana` to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from grafana to the Kubernetes API server on 6443 for
+    control-plane interactions.
+
+---
+# Allow `grafana` to resolve external names via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: grafana.com
+        - matchPattern: grafana.com.*
+        - matchName: storage.googleapis.com
+        - matchPattern: storage.googleapis.com.*
+  description: Allows egress from grafana to CoreDNS on 53 for external name resolution.
+
+---
+# Allow `grafana` to reach grafana.com for plugin downloads.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-grafana-com-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: grafana.com
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: Allows egress from grafana to grafana.com on 443 for plugin downloads.
+
+---
+# Allow `grafana` to reach Google Cloud Storage for plugin assets.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-storage-googleapis-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: storage.googleapis.com
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: Allows egress from grafana to storage.googleapis.com on 443 for plugin
+    assets.
+
+---
+# Allow the internal Istio gateway to reach Grafana.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-grafana-from-istio-gw-internal-3000
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw-internal
+    toPorts:
+    - ports:
+      - port: '3000'
+        protocol: TCP
+  description: Allows ingress from istio-gw-internal to grafana on 3000.
+{{- end }}

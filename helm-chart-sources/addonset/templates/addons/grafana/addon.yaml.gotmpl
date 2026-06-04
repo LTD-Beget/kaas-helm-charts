@@ -8,7 +8,7 @@ spec:
   chart: "grafana"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.1"
+  version: "0.1.2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-grafana"
   variables:
@@ -38,6 +38,8 @@ spec:
           jsonPath: .data.companyDomain
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies:
     - name: grafana-operator
       criteria:

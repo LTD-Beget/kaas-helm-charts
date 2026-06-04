@@ -9,6 +9,11 @@ nameOverride: ""                  # Override the base name used for resources
 
 externalDomain: "*"               # External domain used for ingress or service exposure
 
+companyPrefix: example
+
+networkPolicies:
+  enabled: false
+
 expose:
   enabled: false                  # Enable external exposure of the registry service
   # Method of exposure; valid options: 'istio' (Istio VirtualService) or 'ingress' (Kubernetes Ingress)

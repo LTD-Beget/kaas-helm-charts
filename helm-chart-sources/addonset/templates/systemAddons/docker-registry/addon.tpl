@@ -8,7 +8,7 @@ spec:
   chart: "docker-registry"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "3.0.0"
+  version: "3.0.1"
   targetCluster: in-cluster
   releaseName: docker-registry-cache
   targetNamespace: "{{ .Values.companyPrefix }}-docker-registry"

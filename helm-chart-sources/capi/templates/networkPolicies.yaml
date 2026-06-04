@@ -1,0 +1,177 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow vmagent to scrape `capi` controller-manager metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-capi-from-vmagent-8443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress from vmagent to capi-controller-manager on 8443 for metrics
+    collection.
+
+---
+# Allow `capi` controller-manager to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from capi-controller-manager to the Kubernetes API server
+    on 6443 for control-plane interactions.
+
+---
+# Allow `capi` controller-manager to resolve DNS via CoreDNS.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+  description: Allows egress from capi-controller-manager to CoreDNS on 53 for DNS
+    resolution.
+
+---
+# Allow `capi` controller-manager to reach the cm-provider webhook.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-to-cm-provider-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ .Values.companyPrefix }}-cm-provider-provider-{{ .Values.companyPrefix }}-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cm-provider
+    toPorts:
+    - ports:
+      - port: '9443'
+        protocol: TCP
+  description: Allows egress from capi-controller-manager to the cm-provider controller-manager
+    on 9443.
+
+---
+# Allow remote nodes to reach the `capi` controller-manager webhook.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-capi-from-remote-node-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - remote-node
+    toPorts:
+    - ports:
+      - port: '9443'
+        protocol: TCP
+  description: Allows ingress from remote nodes to capi-controller-manager on 9443.
+
+---
+# Allow all capi controllers to reach the local workload API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-controllers-to-workload-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:io.cilium.k8s.policy.serviceaccount
+      operator: In
+      values:
+      - capi
+      - capi-kcp
+      - capi-kubeadm-bootstrap
+    - key: k8s:io.kubernetes.pod.namespace
+      operator: In
+      values:
+      - {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: Allows egress from all capi controllers to workload API servers on 6443.
+
+---
+# Allow all capi controllers to reach client control-plane API servers.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-capi-controllers-to-world-client-apiserver-26443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:io.cilium.k8s.policy.serviceaccount
+      operator: In
+      values:
+      - capi
+      - capi-kcp
+      - capi-kubeadm-bootstrap
+    - key: k8s:io.kubernetes.pod.namespace
+      operator: In
+      values:
+      - {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
+  description: Allows egress from all capi controllers to client control-plane API
+    servers on 26443.
+{{- end }}

@@ -26,6 +26,8 @@ spec:
           jsonPath: .data.companyPrefix
         - as: companyDomain
           jsonPath: .data.companyDomain
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies:
 {{- if eq (lower (toString .Values.clientClusterEnabled)) "true" }}
     - name: client-cp-control-plane

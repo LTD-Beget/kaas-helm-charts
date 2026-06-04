@@ -22,4 +22,28 @@ spec:
         matchLabels:
           addons.in-cloud.io/values: system
           addons.in-cloud.io/addon: vault
+    - name: network-policies
+      criteria:
+        - source:
+            apiVersion: v1
+            kind: ConfigMap
+            name: parameters-infra
+            namespace: {{ .Values.companyPrefix }}-system
+          jsonPath: $.data.environment
+          operator: Equal
+          value: "infra"
+        - source:
+            apiVersion: addons.in-cloud.io/v1alpha1
+            kind: Addon
+            name: cilium
+          jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+          keep: false
+      selector:
+        name: network-policies
+        priority: 20
+        matchLabels:
+          addons.in-cloud.io/values: network-policies
+          addons.in-cloud.io/addon: vault
 {{- end }}

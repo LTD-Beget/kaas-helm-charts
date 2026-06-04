@@ -1,0 +1,15 @@
+{{- if and .Values.addons.svchub.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "svc-k8s-proxy"        -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: svc-k8s-proxy
+spec:
+  rules:
+    {{- include "common.phase.rules.network-policies" $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}

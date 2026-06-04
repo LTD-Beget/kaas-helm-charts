@@ -8,7 +8,7 @@ spec:
   chart: "vault"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.30.1-1"
+  version: "0.30.1-2"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vault"
   variables:
