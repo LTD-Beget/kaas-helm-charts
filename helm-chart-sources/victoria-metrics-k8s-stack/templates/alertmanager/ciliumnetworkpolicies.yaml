@@ -138,11 +138,11 @@ spec:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
-  - toFQDNs:
-    - matchName: api.telegram.org
+  - toCIDRSet:
+    - cidr: 149.154.160.0/20
     toPorts:
     - ports:
-      - port: "443"
+      - port: '443'
         protocol: TCP
   description: Allows egress from alertmanager to Telegram on 443 for alert delivery.
 
@@ -172,7 +172,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-alertmanager-to-signalilo-80
+  name: allow-egress-alertmanager-to-signalilo-8888
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -186,9 +186,9 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-signalilo
     toPorts:
     - ports:
-      - port: 80
+      - port: "8888"
         protocol: TCP
   description: |
-    Allows egress from alertmanager to signalilo on 80 for
+    Allows egress from alertmanager to signalilo on 8888 for
     webhook alert delivery.
 {{- end }}

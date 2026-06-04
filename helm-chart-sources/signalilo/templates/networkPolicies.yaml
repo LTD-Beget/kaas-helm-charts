@@ -37,7 +37,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-signalilo-from-alertmanager-80
+  name: allow-ingress-signalilo-from-alertmanager-8888
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -51,8 +51,8 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-alertmanager
     toPorts:
     - ports:
-      - port: 80
+      - port: "8888"
         protocol: TCP
   description: |
-    Allows ingress from alertmanager to signalilo on 80 for webhook alerts.
+    Allows ingress from alertmanager to signalilo on 8888 for webhook alerts.
 {{- end }}
