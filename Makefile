@@ -80,12 +80,14 @@ index: check-tools
 	if [ ! -s "$(INDEX_FILE)" ]; then \
 		$(HELM) repo index "$(PACKAGES_DIR)" --url "$(REPO_PACKAGES_URL)"; \
 		$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$(PACKAGES_DIR)/index.yaml"; \
+		$(YQ) -i '.entries[] |= (sort_by(.created) | reverse)' "$(PACKAGES_DIR)/index.yaml"; \
 		mv "$(PACKAGES_DIR)/index.yaml" "$(INDEX_FILE)"; \
 		echo "index $(INDEX_FILE) created"; \
 		exit 0; \
 	fi; \
 	if [ ! -s "$$purged" ] && [ ! -s "$$newly_built" ]; then \
 		$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$(INDEX_FILE)"; \
+		$(YQ) -i '.entries[] |= (sort_by(.created) | reverse)' "$(INDEX_FILE)"; \
 		echo "index $(INDEX_FILE) up-to-date"; \
 		exit 0; \
 	fi; \
@@ -109,6 +111,7 @@ index: check-tools
 		$(YQ) -i '.entries = (.entries *+ load("'"$$new_pkg_dir/index.yaml"'").entries)' "$$work"; \
 	fi; \
 	$(YQ) -i 'del(.entries[][] | select(has("digest") | not))' "$$work"; \
+	$(YQ) -i '.entries[] |= (sort_by(.created) | reverse)' "$$work"; \
 	if diff -q "$$work" "$(INDEX_FILE)" > /dev/null 2>&1; then \
 		echo "index $(INDEX_FILE) up-to-date"; \
 	else \
