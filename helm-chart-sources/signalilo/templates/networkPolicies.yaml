@@ -12,8 +12,8 @@ spec:
       k8s:io.cilium.k8s.policy.serviceaccount: signalilo
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
-  - toCIDR:
-    - 192.168.88.204/32
+  - toFQDNs:
+    - matchName: thruk.beget.ru
     toPorts:
     - ports:
       - port: '25665'

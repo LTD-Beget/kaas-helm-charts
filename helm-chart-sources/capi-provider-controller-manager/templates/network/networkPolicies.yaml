@@ -158,9 +158,10 @@ spec:
   - toCIDRSet:
     - cidr: 192.168.9.6/32
     - cidr: 192.168.68.14/32
+    - cidr: 192.168.69.3/32
     toPorts:
     - ports:
-      - port: '50051'
+      - port: "50051"
         protocol: TCP
   description: Allows egress from cm-provider to the cloud-manager endpoint on 50051 by CIDR.
 {{- end }}
