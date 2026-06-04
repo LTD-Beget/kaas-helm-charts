@@ -1,4 +1,4 @@
-{{- if .Values.addons.validatingadmissionpolicies.enabled }}
+{{- if and .Values.addons.validatingadmissionpolicies.enabled (not .Values.addons.system.enabled) }}
   {{- $context  := deepCopy . -}}
   {{- $_        := set $context.Values "addonName"      "validating-admission-policies"           -}}
   {{- $_        := set $context.Values "suffix"         "-client"           -}}
