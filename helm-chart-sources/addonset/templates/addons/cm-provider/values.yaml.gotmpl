@@ -1,5 +1,5 @@
 {{- if and .Values.addons.cmprovider.enabled .Values.addons.system.enabled }}
-  {{- $addonName := printf "%s-cm-provider" .Values.companyPrefix -}}
+  {{- $addonName := "cm-provider" -}}
 
   {{- /*
   Each item:
@@ -21,10 +21,10 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: AddonValue
 metadata:
-  name: {{ $addonName }}-{{ $value.name }}
+  name: {{ $.Values.companyPrefix }}-{{ $addonName }}-{{ $value.name }}
   labels:
     addons.in-cloud.io/values: {{ $value.name }}
-    addons.in-cloud.io/addon: {{ $addonName }}
+    addons.in-cloud.io/addon: {{ $.Values.companyPrefix }}-{{ $addonName }}
 spec:
   values: |
       {{- /* addon-specific values file */ -}}
