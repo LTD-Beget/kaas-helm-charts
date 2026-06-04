@@ -10,6 +10,7 @@
     {{- $port = "80" -}}
   {{- end -}}
 {{- end -}}
+{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host -}}
 
 ---
 # Allow `signalilo` to reach the external Icinga endpoint.
@@ -24,14 +25,49 @@ spec:
       k8s:io.cilium.k8s.policy.serviceaccount: signalilo
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
+  {{- if $isIP }}
+  - toCIDR:
+    - {{ $host }}/32
+  {{- else }}
   - toFQDNs:
     - matchName: "{{ $host }}"
+  {{- end }}
     toPorts:
     - ports:
       - port: "{{ $port }}"
         protocol: TCP
   description: |
     Allows egress from signalilo to the Icinga endpoint on {{ $port }}.
+
+{{- if not $isIP }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-signalilo-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: signalilo
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+      rules:
+        dns:
+        - matchPattern: "*"
+  description: |
+    Allows egress from signalilo to CoreDNS on 53 for DNS resolution.
+{{- end }}
 
 ---
 apiVersion: cilium.io/v2

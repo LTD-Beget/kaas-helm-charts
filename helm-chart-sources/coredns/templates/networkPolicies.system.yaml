@@ -405,4 +405,28 @@ spec:
       - port: '53'
         protocol: UDP
   description: Allows ingress from the vault-prepare job to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-coredns-from-signalilo-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: signalilo
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-signalilo
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+  description: Allows ingress from signalilo to CoreDNS on 53 for DNS resolution.
 {{- end }}

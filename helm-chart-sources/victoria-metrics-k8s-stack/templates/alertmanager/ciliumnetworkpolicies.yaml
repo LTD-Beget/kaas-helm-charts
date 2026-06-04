@@ -44,11 +44,36 @@ spec:
     for control-plane interactions.
 
 ---
-# Bidirectional gossip between alertmanager replicas for HA clustering.
+# Gossip egress: this replica → other replicas.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-alertmanager-cluster-gossip-9094
+  name: allow-egress-alertmanager-to-alertmanager-9094
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: '9094'
+        protocol: TCP
+      - port: '9094'
+        protocol: UDP
+  description: Allows egress gossip from alertmanager replicas on 9094 for HA clustering.
+
+---
+# Gossip ingress: other replicas → this replica.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-alertmanager-from-alertmanager-9094
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -66,25 +91,13 @@ spec:
         protocol: TCP
       - port: '9094'
         protocol: UDP
-  egress:
-  - toEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
-        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-    toPorts:
-    - ports:
-      - port: '9094'
-        protocol: TCP
-      - port: '9094'
-        protocol: UDP
-  description: Allows bidirectional gossip between alertmanager replicas on 9094 for
-    HA clustering.
+  description: Allows ingress gossip to alertmanager replicas on 9094 for HA clustering.
 
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-alertmanager-from-vmagent-11043
+  name: allow-ingress-vmagent-to-alertmanager-from-11043
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
