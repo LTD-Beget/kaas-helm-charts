@@ -93,6 +93,7 @@ spec:
       rules:
         dns:
         - matchName: grafana.com
+        - matchPattern: grafana.com.*
         - matchName: storage.googleapis.com
         - matchPattern: storage.googleapis.com.*
   description: Allows egress from grafana to CoreDNS on 53 for external name resolution.

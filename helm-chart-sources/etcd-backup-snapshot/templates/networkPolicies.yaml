@@ -1,4 +1,6 @@
 {{- if .Values.networkPolicies.enabled }}
+{{- $s3StorageDomain := (.Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://") }}
+
 ---
 # Allow the etcd backup job to reach the local etcd endpoint.
 apiVersion: cilium.io/v2
@@ -47,7 +49,8 @@ spec:
         protocol: UDP
       rules:
         dns:
-        - matchPattern: {{ .Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://" }}
+        - matchName: {{ $s3StorageDomain }}
+        - matchPattern: "{{ $s3StorageDomain }}.*"
   description: Allows egress from etcd-backup to CoreDNS on 53 for DNS resolution.
 
 ---
@@ -64,7 +67,8 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
   - toFQDNs:
-    - matchName: {{ .Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://" }}
+    - matchName: {{ $s3StorageDomain }}
+    - matchPattern: "{{ $s3StorageDomain }}.*"
     toPorts:
     - ports:
       - port: '443'
