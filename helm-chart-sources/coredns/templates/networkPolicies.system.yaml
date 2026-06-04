@@ -27,6 +27,31 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-ingress-coredns-from-vminsert-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vminsert
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: UDP
+      - port: '53'
+        protocol: TCP
+  description: Allows ingress from vminsert to CoreDNS on 53.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-ingress-coredns-from-vmselect-53
   namespace: {{ .Release.Namespace }}
 spec:
