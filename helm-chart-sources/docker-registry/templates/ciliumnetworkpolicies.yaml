@@ -12,7 +12,7 @@
 {{- end }}
 {{- end }}
 {{- $config             := $proxyMergedValues.config | default dict -}}
-{{- $storage            := dig "config" "storage" dict $config  -}}
+{{- $storage            := dig "storage" dict $config  -}}
 {{- $storageType        := $storage.type | default "inmemory" -}}
 {{- $s3Endpoint         := regexReplaceAll "https?://([^/]+).*" (dig "s3" "regionendpoint" "" $storage) "$1" -}}
 {{- $proxyEndpoint      := regexReplaceAll "https?://([^/]+).*" (dig "proxy" "remoteurl" "registry-1.docker.io" $config) "$1" -}}
