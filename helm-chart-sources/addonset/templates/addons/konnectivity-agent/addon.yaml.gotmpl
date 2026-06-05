@@ -3,12 +3,12 @@
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: konnectivity-agent
+  name: konnectivity-agent-client
 spec:
   chart: "konnectivity-agent"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.0"
+  version: "0.1.1"
   releaseName: konnectivity-agent
   targetCluster: {{ .Values.clientName }}
   targetNamespace: "{{ .Values.companyPrefix }}-konnectivity-agent"

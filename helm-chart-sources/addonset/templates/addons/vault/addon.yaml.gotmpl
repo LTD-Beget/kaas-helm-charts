@@ -1,4 +1,4 @@
-{{- if .Values.addons.vault.enabled }}
+{{- if and .Values.addons.vault.enabled .Values.addons.system.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
