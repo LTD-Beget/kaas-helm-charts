@@ -9,5 +9,5 @@ istioVirtualService:
     http:
       name: vmalertmanager
       route:
-        host: vmalertmanager.{{ .Values.companyPrefix }}-alertmanager
+        host: vmalertmanager
         port: 9093
