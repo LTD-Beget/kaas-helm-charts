@@ -165,7 +165,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-istio-gw-to-docker-registry-cache-5000
+  name: allow-ingress-istio-gw-to-{{ $registryName }}-5000
   namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
