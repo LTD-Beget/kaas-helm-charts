@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-05T09:27:12.865877+05:00"
+      created: "2026-06-05T10:20:17.941327+05:00"
       description: A Helm chart for Kubernetes
-      digest: 8df6dcc2d7034eb3475a06345480ec3a49b45ad9f365144933db0d682131f07b
+      digest: 188c9f19773b62bb4f112c5c04e01d52f256909e685436bfbcc8dab7e2de1113
       name: addonset
       type: application
       urls:
@@ -819,13 +819,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-06-05T05:36:17.962608+05:00"
+      created: "2026-06-05T10:20:17.942606+05:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: 8edd0ffb2e46b3144262429a8ccdb5ceda6ceb642a40bcf40c55dd0a176e0733
+      digest: f145b6693f170daf6b0c78fc4f99efdc580838115f8d91076208314b644752d4
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
