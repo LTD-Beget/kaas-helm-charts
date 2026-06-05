@@ -144,7 +144,7 @@ spec:
         - matchPattern: storage.googleapis.com.*
         - matchName: vmselect.{{ .Values.companyPrefix }}-vmcluster.svc
         - matchPattern: vmselect.{{ .Values.companyPrefix }}-vmcluster.svc.*
-{{- if .Values.systemIstioGwDomain -}}
+{{- if .Values.systemIstioGwDomain }}
         - matchName: {{ .Values.systemIstioGwDomain }}
         - matchPattern: {{ .Values.systemIstioGwDomain }}.*
 {{- end }}
