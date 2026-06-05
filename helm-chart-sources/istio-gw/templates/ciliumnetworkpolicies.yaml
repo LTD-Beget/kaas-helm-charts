@@ -3,6 +3,28 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-ingress-grafana-to-istio-gateway-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: >
+    Allows ingress from grafana to istio-gateway on 443
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+            k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-grafana
+      toPorts:
+        - ports:
+            - port: '443'
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-egress-istio-gateway-to-kube-apiserver-6443
   namespace: {{ .Release.Namespace }}
 spec:
