@@ -115,8 +115,35 @@ spec:
         protocol: UDP
       - port: '53'
         protocol: TCP
+      rules:
+        dns:
+        - matchName: {{ $proxyEndpoint }}
   description: |
     Allows egress from {{ $registryName }} to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: "allow-egress-{{ $registryName }}-to-world-443"
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $serviceAccountName }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: {{ $proxyEndpoint }}
+  description: |
+    Allows egress from {{ $registryName }} to world on 443.
 
 ---
 apiVersion: cilium.io/v2
