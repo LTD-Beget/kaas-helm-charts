@@ -66,4 +66,27 @@ spec:
         protocol: TCP
   description: Allows egress from svc-k8s-proxy to the Kubernetes API server on 6443
     for control-plane interactions.
+
+---
+# Allow `svc-k8s-proxy` to reach `svc-hub`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-svc-k8s-proxy-to-svc-hub-8082
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: svc-hub
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-svc-hub
+    toPorts:
+    - ports:
+      - port: '8082'
+        protocol: TCP
+  description: Allows egress from svc-k8s-proxy to svc-hub on 8082.
 {{- end }}

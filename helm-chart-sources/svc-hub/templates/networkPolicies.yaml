@@ -70,4 +70,27 @@ spec:
       - port: '5672'
         protocol: TCP
   description: Allows egress from svc-hub to the RabbitMQ hub on 5672.
+
+---
+# Allow ingress from `svc-k8s-proxy` to `svc-hub`.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-svc-k8s-proxy-svc-hub-from-8082
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: svc-k8s-proxy
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-svc-k8s-proxy
+    toPorts:
+    - ports:
+      - port: '8082'
+        protocol: TCP
+  description: Allows ingress from svc-k8s-proxy to svc-hub on 8082.
 {{- end }}
