@@ -481,6 +481,38 @@ spec:
             - ports:
               - port: "50051"
                 protocol: TCP
+      customerCcmClientToWorldGrpc50051:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-ccm-client-to-world-grpc-50051
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: ccm-client
+          egress:
+          - toCIDRSet:
+            - cidrGroupRef: cloud-endpoints
+            toPorts:
+            - ports:
+              - port: "50051"
+                protocol: TCP
+      customerCsrcClientToWorldGrpc50051:
+        apiVersion: cilium.io/v2
+        kind: CiliumClusterwideNetworkPolicy
+        metadata:
+          name: allow-customer-csrc-client-to-world-grpc-50051
+        spec:
+          endpointSelector:
+            matchLabels:
+              k8s:app.kubernetes.io/name: csrc-client
+          egress:
+          - toCIDRSet:
+            - cidrGroupRef: cloud-endpoints
+            toPorts:
+            - ports:
+              - port: "50051"
+                protocol: TCP
       customerCsrcClientToExternal26443:
         apiVersion: cilium.io/v2
         kind: CiliumClusterwideNetworkPolicy
