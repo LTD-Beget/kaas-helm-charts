@@ -215,4 +215,28 @@ spec:
               protocol: TCP
   description: |
     Allows egress from istio gateway to vault server on 8200.
+
+---
+# Allow istio gateway to reach docker registry cache on 5000.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-istio-gw-to-docker-registry-cache-5000
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-docker-registry
+            k8s:app.kubernetes.io/name: docker-registry-cache
+      toPorts:
+        - ports:
+            - port: "5000"
+              protocol: TCP
+  description: |
+    Allows egress from istio gateway to docker registry cache on 5000.
 {{- end }}

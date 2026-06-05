@@ -11,9 +11,11 @@
 {{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
 {{- end }}
 {{- end }}
-{{- $storage            := dig "config" "storage" dict $proxyMergedValues  -}}
+{{- $config             := $proxyMergedValues.config | default dict -}}
+{{- $storage            := dig "config" "storage" dict $config  -}}
 {{- $storageType        := $storage.type | default "inmemory" -}}
 {{- $s3Endpoint         := regexReplaceAll "https?://([^/]+).*" (dig "s3" "regionendpoint" "" $storage) "$1" -}}
+{{- $proxyEndpoint      := regexReplaceAll "https?://([^/]+).*" (dig "proxy" "remoteurl" "registry-1.docker.io" $config) "$1" -}}
 
 {{- if and (eq $storageType "s3") $s3Endpoint }}
 ---
@@ -150,13 +152,37 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   egress:
   - toFQDNs:
-    - matchName: europe-docker.pkg.dev
+    - matchName: {{ $proxyEndpoint }}
     toPorts:
     - ports:
       - port: '443'
         protocol: TCP
   description: |
-    Allows egress from {{ $registryName }} to europe-docker.pkg.dev on 443.
+    Allows egress from {{ $registryName }} to {{ $proxyEndpoint }} on 443.
+
+---
+# Allow istio gateway to reach docker registry cache on 5000.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-istio-gw-to-docker-registry-cache-5000
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $serviceAccountName }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-istio-gw
+    toPorts:
+    - ports:
+      - port: '5000'
+        protocol: TCP
+  description: |
+    Allows ingress from istio-gw to {{ $registryName }} on 5000.
 {{- end }}
 {{- end }}
 {{- end }}

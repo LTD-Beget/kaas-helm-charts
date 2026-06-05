@@ -977,9 +977,9 @@ entries:
   docker-registry:
     - apiVersion: v1
       appVersion: 3.0.0
-      created: "2026-06-05T01:29:52.542544+05:00"
+      created: "2026-06-05T06:37:07.087293+05:00"
       description: A Helm chart for Docker Registry
-      digest: 2b85956b64fc87e0378fe0481bfe0ea1f073c3886ad5dcec32ea55c429490547
+      digest: c09341cd5b4fffd87403a267471df121fbdf9677ec02713a2eee63e6d752c2d8
       home: https://hub.docker.com/_/registry/
       icon: https://helm.twun.io/docker-registry.png
       maintainers:
@@ -1042,11 +1042,21 @@ entries:
       version: 0.1.0
   gateway:
     - apiVersion: v2
-      appVersion: 0.36.3
-      created: "2026-06-05T01:29:52.542757+05:00"
-      description: Helm chart for the etcd-backup-snapshot
-      digest: b5db3002c4dda4edf3a932c2bfeb0e64d2ed587d9b7ecc2401d48fc114199a6a
-      name: etcd-backup-snapshot
+      appVersion: 1.26.0
+      created: "2026-06-05T06:37:07.087885+05:00"
+      dependencies:
+        - name: gateway
+          repository: https://istio-release.storage.googleapis.com/charts
+          version: 1.26.0
+      description: Helm chart for deploying Istio gateways
+      digest: 417e5c9237220434d71dfb8bec44358b512d988c37a1e1fe1f2ab493af609ad6
+      icon: https://istio.io/latest/favicons/android-192x192.png
+      keywords:
+        - istio
+        - gateways
+      name: gateway
+      sources:
+        - https://github.com/istio/istio
       type: application
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/gateway-1.26.0-4.tgz
