@@ -48,6 +48,8 @@ victoria-metrics-k8s-stack:
       extraEnvs:
         - name: GOMAXPROCS
           value: '1'
+      extraArgs:
+        cluster.reconnect-timeout: "15m"
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"

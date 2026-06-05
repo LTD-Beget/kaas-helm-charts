@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-05T07:03:59.668434+07:00"
+      created: "2026-06-05T05:36:17.961817+05:00"
       description: A Helm chart for Kubernetes
-      digest: 1fcb5832fa607b816bd6950ed434f77eb85b7249c0d0c533dee039106660d04d
+      digest: 647ae752e3d52ac7079bd7c6a41711a42948fc3066cfac94c12bf1dcbd4a62b9
       name: addonset
       type: application
       urls:
@@ -819,13 +819,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-06-05T06:24:21.713434+07:00"
+      created: "2026-06-05T05:36:17.962608+05:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: b8e6e6beb3c3c2692324d010d0958267f501971e38c2d732f7177764fb4b34de
+      digest: 8edd0ffb2e46b3144262429a8ccdb5ceda6ceb642a40bcf40c55dd0a176e0733
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
@@ -1683,9 +1683,9 @@ entries:
   signalilo:
     - apiVersion: v1
       appVersion: v0.14.0
-      created: "2026-06-05T04:08:06.227518+05:00"
+      created: "2026-06-05T05:27:57.535275+05:00"
       description: Alertmanager to Icinga2 bridge
-      digest: 6d3c5594af90da5f92293276c8985da2385651269f98658ebfd9e0436f146cc8
+      digest: 331dd1cbe4390f6036060bd5eae88dde34470123d4486b410e77c1bbf6aa73e2
       home: https://git.vshn.net/vshn/signalilo
       keywords:
         - prometheus
@@ -2099,13 +2099,13 @@ entries:
         artifacthub.io/operator: "true"
       apiVersion: v2
       appVersion: v0.60.0
-      created: "2026-06-05T01:29:52.594931+05:00"
+      created: "2026-06-05T05:27:57.544381+05:00"
       dependencies:
         - name: victoria-metrics-operator
           repository: https://victoriametrics.github.io/helm-charts/
           version: 0.52.0
       description: VictoriaMetrics Operator
-      digest: f36747477073a1cd7b7eceeaf0a71c7bca7fc20e4afa2dd3af2ee8dc71f46846
+      digest: dd259baadb3f39468598be4e45cba08597e77bda4731b07fa103588542b46853
       home: https://github.com/VictoriaMetrics/operator
       icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
       keywords:
