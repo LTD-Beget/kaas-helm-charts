@@ -292,6 +292,29 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-ingress-vmselect-from-grafana-8481
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:app.kubernetes.io/name: vmselect
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-grafana
+    toPorts:
+    - ports:
+      - port: '8481'
+        protocol: TCP
+  description: Allows ingress from grafana to vmselect on 8481 for datasources.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-egress-vmselect-to-coredns-53
   namespace: {{ .Release.Namespace }}
 spec:

@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-05T11:14:44.151551+05:00"
+      created: "2026-06-06T03:43:59.780703+07:00"
       description: A Helm chart for Kubernetes
-      digest: dbb5c3b14be26826becd7da92e3f1500af75f8ed3843414c9c5186904fc4d04d
+      digest: b17b0337bede2584ba96c30ea3e57351567be6eae823f91632650b27f95a1e9c
       name: addonset
       type: application
       urls:
@@ -1043,13 +1043,13 @@ entries:
   gateway:
     - apiVersion: v2
       appVersion: 1.26.0
-      created: "2026-06-05T06:37:07.087885+05:00"
+      created: "2026-06-06T03:43:59.782011+07:00"
       dependencies:
         - name: gateway
           repository: https://istio-release.storage.googleapis.com/charts
           version: 1.26.0
       description: Helm chart for deploying Istio gateways
-      digest: 417e5c9237220434d71dfb8bec44358b512d988c37a1e1fe1f2ab493af609ad6
+      digest: aba31d08487f8bae33e7ffe1682f549ce60102969836ee663517642490f60c4e
       icon: https://istio.io/latest/favicons/android-192x192.png
       keywords:
         - istio
@@ -1124,30 +1124,10 @@ entries:
   grafana:
     - apiVersion: v2
       appVersion: 11.3.0
-      created: "2026-06-05T01:29:52.543496+05:00"
+      created: "2026-06-06T04:00:05.106197+07:00"
       description: Helm chart for the Grafana
-      digest: c231df2f2dfdb3ff3555d52f31890a0bdfce8acff0b6884b7b93572de4d8a7a2
+      digest: d22db8463527404d244f7dbb70106773ddaf96157f52ca9fe81443d45f917293
       name: grafana
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.2.tgz
-      version: 0.1.2
-    - apiVersion: v2
-      appVersion: 1.26.0
-      created: "2026-06-05T01:29:52.543287+05:00"
-      dependencies:
-        - name: gateway
-          repository: https://istio-release.storage.googleapis.com/charts
-          version: 1.26.0
-      description: Helm chart for deploying Istio gateways
-      digest: 538d8af68f1606599108c208b143a299af7ae40423a7bd4e25fbac3d284152be
-      icon: https://istio.io/latest/favicons/android-192x192.png
-      keywords:
-        - istio
-        - gateways
-      name: gateway
-      sources:
-        - https://github.com/istio/istio
       type: application
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.2.tgz
@@ -1982,13 +1962,13 @@ entries:
         artifacthub.io/operator: "true"
       apiVersion: v2
       appVersion: v1.119.0
-      created: "2026-06-05T09:27:12.880543+05:00"
+      created: "2026-06-06T03:56:31.813586+07:00"
       dependencies:
         - name: victoria-metrics-k8s-stack
           repository: https://victoriametrics.github.io/helm-charts/
           version: 0.52.0
       description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: bed5ea9a102c9984eca3a3fda322c7557a9fe67b002afce146906e66737fd1f1
+      digest: 0244acf6563fb66b328d964f235fe5877edcd34ff8ae8f09a8fb192cb26cfeb3
       home: https://github.com/VictoriaMetrics/helm-charts
       icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
       keywords:

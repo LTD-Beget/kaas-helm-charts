@@ -1,4 +1,50 @@
 {{- if .Values.networkPolicies.enabled }}
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-vmselect-8481
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmcluster-vm-cluster-victoria-metrics-k8s-stack
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmcluster
+        k8s:app.kubernetes.io/name: vmselect
+    toPorts:
+    - ports:
+      - port: '8481'
+        protocol: TCP
+  description: Allows egress from grafana to vmselect on 8481 for datasources.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-grafana-to-istio-gw-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: grafana-sa
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+    - toEndpoints:
+      - matchLabels:
+          k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+          k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw
+      toPorts:
+        - ports:
+            - port: '443'
+              protocol: TCP
+  description: Allows egress from grafana to istio-gw on 443 for dex auth
+
 ---
 # Allow vmagent to scrape `grafana` metrics.
 apiVersion: cilium.io/v2
@@ -96,6 +142,12 @@ spec:
         - matchPattern: grafana.com.*
         - matchName: storage.googleapis.com
         - matchPattern: storage.googleapis.com.*
+        - matchName: vmselect.{{ .Values.companyPrefix }}-vmcluster.svc
+        - matchPattern: vmselect.{{ .Values.companyPrefix }}-vmcluster.svc.*
+{{- if .Values.systemIstioGwDomain -}}
+        - matchName: {{ .Values.systemIstioGwDomain }}
+        - matchPattern: {{ .Values.systemIstioGwDomain }}.*
+{{- end }}
   description: Allows egress from grafana to CoreDNS on 53 for external name resolution.
 
 ---
