@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-05T10:20:17.941327+05:00"
+      created: "2026-06-05T10:34:20.826732+05:00"
       description: A Helm chart for Kubernetes
-      digest: 188c9f19773b62bb4f112c5c04e01d52f256909e685436bfbcc8dab7e2de1113
+      digest: 72f14fb6f31fc88f801d7d10c14b9a8c72cad407ba40be897d7f88c4ef51ccda
       name: addonset
       type: application
       urls:
@@ -431,13 +431,13 @@ entries:
   capi-provider-controller-manager:
     - apiVersion: v2
       appVersion: v2.1.6
-      created: "2026-06-05T01:29:52.534088+05:00"
+      created: "2026-06-05T10:34:20.827484+05:00"
       dependencies:
         - name: appSpec
           repository: '@appSpec'
           version: '*'
       description: A Helm chart for Kubernetes
-      digest: c4f9c4c97e74e172d59d49a6613038ebd73e63caf263fd4ac45f4e02a1de2146
+      digest: d407fde88df22f320b87c27cded3173407934fb1f79b7950b9c081fd4e57b031
       name: capi-provider-controller-manager
       type: application
       urls:
