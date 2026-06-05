@@ -143,6 +143,17 @@ spec:
   description: Allows egress from cm-provider to the vps-manager gRPC endpoint on 50051.
 
 ---
+apiVersion: cilium.io/v2
+kind: CiliumCIDRGroup
+metadata:
+  name: cloud-endpoints-cidrs # TODO: deduplicate with cloud-endpoints
+spec:
+  externalCIDRs:
+    - "192.168.9.6/32"
+    - "192.168.68.14/32"
+    - "192.168.69.3/32"
+
+---
 # Allow `cm-provider` to reach the cloud-manager gRPC endpoint by CIDR.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -156,9 +167,7 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
   - toCIDRSet:
-    - cidr: 192.168.9.6/32
-    - cidr: 192.168.68.14/32
-    - cidr: 192.168.69.3/32
+    - cidrGroupRef: cloud-endpoints-cidrs
     toPorts:
     - ports:
       - port: "50051"

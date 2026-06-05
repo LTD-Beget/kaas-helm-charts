@@ -439,6 +439,16 @@ spec:
                 protocol: UDP
               - port: "53"
                 protocol: TCP
+      ciliumCIDRGroupCloudEndpoints:
+        apiVersion: cilium.io/v2
+        kind: CiliumCIDRGroup
+        metadata:
+          name: cloud-endpoints # TODO: deduplicate with cloud-endpoints-cidrs
+        spec:
+          externalCIDRs:
+            - "192.168.9.6/32"
+            - "192.168.68.14/32"
+            - "192.168.69.3/32"
       customerCcmToWorldGrpc50051:
         apiVersion: cilium.io/v2
         kind: CiliumClusterwideNetworkPolicy
@@ -450,9 +460,7 @@ spec:
               k8s:app.kubernetes.io/name: ccm-infra
           egress:
           - toCIDRSet:
-            - cidr: 192.168.9.6/32
-            - cidr: 192.168.68.14/32
-            - cidr: 192.168.69.3/32
+            - cidrGroupRef: cloud-endpoints
             toPorts:
             - ports:
               - port: "50051"
@@ -468,9 +476,7 @@ spec:
               k8s:app.kubernetes.io/name: csrc-infra
           egress:
           - toCIDRSet:
-            - cidr: 192.168.9.6/32
-            - cidr: 192.168.68.14/32
-            - cidr: 192.168.69.3/32
+            - cidrGroupRef: cloud-endpoints
             toPorts:
             - ports:
               - port: "50051"
