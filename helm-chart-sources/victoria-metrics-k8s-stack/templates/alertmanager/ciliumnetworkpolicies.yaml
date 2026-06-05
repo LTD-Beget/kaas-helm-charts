@@ -141,6 +141,15 @@ spec:
 
 ---
 apiVersion: cilium.io/v2
+kind: CiliumCIDRGroup
+metadata:
+  name: telegram-api
+spec:
+  externalCIDRs:
+    - "149.154.160.0/20"
+
+---
+apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-egress-alertmanager-to-telegram-443
@@ -152,7 +161,7 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
   - toCIDRSet:
-    - cidr: 149.154.160.0/20
+    - cidrGroupRef: telegram-api
     toPorts:
     - ports:
       - port: '443'
