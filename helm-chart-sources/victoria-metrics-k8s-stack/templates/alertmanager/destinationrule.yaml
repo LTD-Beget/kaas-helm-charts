@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  host: vmalertmanager.{{ .Release.Namespace }}
+  host: vmalertmanager
   trafficPolicy:
     portLevelSettings:
     - port:
