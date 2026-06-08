@@ -62,6 +62,10 @@ proxies:
           rootdirectory: /{{ .Values.clusterName }}/registry-1-docker-io
       proxy:
         remoteurl: https://registry-1.docker.io
+    extraAccessNetworkPolicies:
+      fqdns:
+        - index.docker.io
+        - auth.docker.io
 
   europe-docker-pkg-dev:
     enabled: true
@@ -92,6 +96,9 @@ proxies:
           rootdirectory: /{{ .Values.clusterName }}/ghcr-io
       proxy:
         remoteurl: https://ghcr.io
+    extraAccessNetworkPolicies:
+      fqdns:
+        - pkg-containers.githubusercontent.com
 
   mirror-gcr-io:
     enabled: true
@@ -132,6 +139,9 @@ proxies:
           rootdirectory: /{{ .Values.clusterName }}/registry-k8s-io
       proxy:
         remoteurl: https://registry.k8s.io
+    extraAccessNetworkPolicies:
+      fqdns:
+        - europe-north1-docker.pkg.dev
 
   registry-{{ .Values.companyPrefix }}-ru:
     enabled: true

@@ -417,6 +417,10 @@ default:
     #       - architecture: amd64
     #         os: linux
 
+  extraAccessNetworkPolicies:
+    fqdns: []
+    cidrs: []
+
 # [optional] Create for selected registry /v2 path in VirtualService
 mainRegistryName: docker-io
 

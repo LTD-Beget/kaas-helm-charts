@@ -16,6 +16,9 @@
 {{- $storageType        := $storage.type | default "inmemory" -}}
 {{- $s3Endpoint         := regexReplaceAll "https?://([^/]+).*" (dig "s3" "regionendpoint" "" $storage) "$1" -}}
 {{- $proxyEndpoint      := regexReplaceAll "https?://([^/]+).*" (dig "proxy" "remoteurl" "registry-1.docker.io" $config) "$1" -}}
+{{- $extraNetPolicies   := $proxyMergedValues.extraAccessNetworkPolicies -}}
+{{- $extraAccessToFQDNs := $extraNetPolicies.fqdns -}}
+{{- $extraAccessToCIDRs := $extraNetPolicies.cidrs -}}
 
 {{- if and (eq $storageType "s3") $s3Endpoint }}
 ---
@@ -118,6 +121,9 @@ spec:
       rules:
         dns:
         - matchName: {{ $proxyEndpoint }}
+        {{- range $extraAccessToFQDNs }}
+        - matchName: {{ . }}
+        {{- end }}
   description: |
     Allows egress from {{ $registryName }} to CoreDNS on 53 for DNS resolution.
 
@@ -183,6 +189,52 @@ spec:
         protocol: TCP
   description: |
     Allows egress from {{ $registryName }} to {{ $proxyEndpoint }} on 443.
+
+{{- range $extraAccessToFQDNs }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: "allow-egress-{{ $registryName }}-to-{{ regexReplaceAll "[^a-z0-9-]" (. | lower) "-" }}-443"
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $serviceAccountName }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toFQDNs:
+    - matchName: {{ . }}
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: |
+    Allows egress from {{ $registryName }} to {{ . }} on 443.
+{{- end }}
+
+{{- range $extraAccessToCIDRs }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: "allow-egress-{{ $registryName }}-to-{{ regexReplaceAll "[^a-z0-9-]" (. | lower) "-" }}-443"
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $serviceAccountName }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toCIDR:
+    - {{ . }}
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  description: |
+    Allows egress from {{ $registryName }} to {{ . }} on 443.
+{{- end }}
 
 ---
 # Allow istio gateway to reach docker registry cache on 5000.
