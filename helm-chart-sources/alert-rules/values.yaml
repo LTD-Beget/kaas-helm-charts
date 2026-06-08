@@ -12,6 +12,8 @@ vmrules:
         rules:
           Watchdog:
             enabled: true
+          AlertmanagerHighNumberOfAlerts:
+            enabled: true
   argocd:
     enabled: true
     groups:

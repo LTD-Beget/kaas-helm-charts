@@ -18,3 +18,20 @@ alertmanager:
             expr: vector(1)
             labels:
               severity: info
+
+        AlertmanagerHighNumberOfAlerts:
+          enabled: false
+          spec:
+            alert: "AlertmanagerHighNumberOfAlerts"
+            annotations:
+              summary: Alertmanager high number of alerts (cluster {{ $labels.cluster_full_name }})
+              description: Alertmanager has more than 3000 alerts firing
+              message: |
+                {{ $labels.cluster_full_name }}: alertmanager alerts above threshold
+
+                Cluster: {{ $labels.cluster_full_name }}
+                Value: {{ $value }}
+            expr: max by (cluster_full_name) (alertmanager_alerts{}) > 3000
+            for: 0m
+            labels:
+              severity: critical
