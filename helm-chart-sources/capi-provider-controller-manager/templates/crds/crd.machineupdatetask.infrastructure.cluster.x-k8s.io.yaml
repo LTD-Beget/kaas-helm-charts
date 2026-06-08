@@ -168,6 +168,12 @@ spec:
                   - type
                   type: object
                 type: array
+              drainAttempts:
+                description: |-
+                  DrainAttempts counts how many times the node drain has been attempted for this task.
+                  Used to bound drain retries before the task is marked Failed.
+                format: int32
+                type: integer
               drainRequired:
                 description: DrainRequired indicates whether a node drain is needed
                   before applying the update.
@@ -175,6 +181,12 @@ spec:
               drainStartedAt:
                 description: DrainStartedAt is the time when drain was initiated.
                   Used for drain timeout tracking.
+                format: date-time
+                type: string
+              lastFailureTime:
+                description: |-
+                  LastFailureTime is the time when the task last transitioned to the Failed phase.
+                  Used by the UpdateMachine hook to decide when a failed task may be recreated (self-heal).
                 format: date-time
                 type: string
               nodeName:
