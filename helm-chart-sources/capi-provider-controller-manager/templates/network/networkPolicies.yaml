@@ -1,6 +1,29 @@
 {{- if .Values.networkPolicies.enabled }}
 {{- $providerSA := printf "%s-%s" .Release.Name .Values.appSpec.applications.providerControllerManager.name }}
 ---
+# Allow `cm-provider` controller-manager to talk to the remote Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-cm-provider-to-remote-kube-apiserver-6443-26443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $providerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "6443"
+        protocol: TCP
+      - port: "26443"
+        protocol: TCP
+  description: Allows egress from cm-provider to the remote Kubernetes API server on 6443 and 26443
+    for control-plane interactions.
+---
 # Allow `cm-provider` controller-manager to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
