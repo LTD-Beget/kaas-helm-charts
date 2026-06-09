@@ -28,6 +28,8 @@ spec:
           jsonPath: .data.clusterName
         - as: companyPrefix
           jsonPath: .data.companyPrefix
+        - as: systemEnabled
+          jsonPath: .data.systemEnabled
   initDependencies:
     - name: cert-manager
       criteria:
