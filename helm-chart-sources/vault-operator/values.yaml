@@ -56,7 +56,7 @@ crd:
   keep: true
 
 metrics:
-  enable: true
+  enable: false
   port: 11043       # kube-rbac-proxy HTTPS port (external)
   internalPort: 8080 # manager internal HTTP metrics port
 
