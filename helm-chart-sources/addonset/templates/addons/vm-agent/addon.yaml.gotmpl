@@ -5,10 +5,13 @@ kind: Addon
 metadata:
   name: vm-agent
 spec:
-  chart: "victoria-metrics-k8s-stack"
+  path: helm-chart-sources/victoria-metrics-k8s-stack
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  version: feature/k8s-417
+  # chart: "victoria-metrics-k8s-stack"
+  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  # version: "0.52.0-5"
   pluginName: helm-with-values
-  repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.52.0-5"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmagent"
   variables:
