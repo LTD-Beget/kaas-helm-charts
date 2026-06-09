@@ -2,6 +2,8 @@ vaultConfigs:
   default:
     spec:
       address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
+      managerAuth:
+        mountPath: {{ .Values.cluster.name }}
       tls:
         caBundleSecretRef:
           namespace: {{ .Values.companyPrefix }}-vault
