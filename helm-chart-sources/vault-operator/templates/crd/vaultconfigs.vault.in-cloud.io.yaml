@@ -17,25 +17,26 @@ spec:
   scope: Cluster
   versions:
     - additionalPrinterColumns:
-      - jsonPath: .spec.address
-        name: Address
-        type: string
-      - jsonPath: .status.conditions[?(@.type=='VaultUnsealed')].status
-        name: Unsealed
-        type: string
-      - jsonPath: .status.conditions[?(@.type=='Reachable')].status
-        name: Reachable
-        type: string
-      - jsonPath: .status.referencedBy
-        name: Refs
-        type: integer
-      - jsonPath: .metadata.creationTimestamp
-        name: Age
-        type: date
+        - jsonPath: .spec.address
+          name: Address
+          type: string
+        - jsonPath: .status.conditions[?(@.type=='VaultUnsealed')].status
+          name: Unsealed
+          type: string
+        - jsonPath: .status.conditions[?(@.type=='Reachable')].status
+          name: Reachable
+          type: string
+        - jsonPath: .status.referencedBy
+          name: Refs
+          type: integer
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
       name: v1alpha1
       schema:
         openAPIV3Schema:
-          description: VaultConfig is the cluster-scoped Vault connection referenced by VaultClaims.
+          description: VaultConfig is the cluster-scoped Vault connection referenced
+            by VaultClaims.
           properties:
             apiVersion:
               description: |-
@@ -111,11 +112,19 @@ spec:
                       type: string
                   type: object
                 tls:
-                  description: TLSSpec describes TLS settings for connecting to Vault.
+                  description: |-
+                    TLSSpec describes TLS settings for connecting to Vault. At most one of
+                    caBundleSecretRef, caBundleConfigMapRef, or caBundleFile may be set; an empty
+                    spec uses the system CA pool.
                   properties:
-                    caBundleRef:
-                      description: LocalObjectRef references a Secret/ConfigMap (used for CA bundle, etc.).
+                    caBundleConfigMapRef:
+                      description: CABundleConfigMapRef references a ConfigMap containing
+                        the CA bundle.
                       properties:
+                        key:
+                          default: ca.crt
+                          minLength: 1
+                          type: string
                         name:
                           minLength: 1
                           type: string
@@ -126,9 +135,44 @@ spec:
                         - name
                         - namespace
                       type: object
+                    caBundleFile:
+                      description: |-
+                        CABundleFile is a filesystem path inside the operator pod where the CA
+                        bundle is mounted (e.g. via a volume from a cluster-wide CA Secret).
+                      type: string
+                    caBundleSecretRef:
+                      description: |-
+                        CABundleSecretRef references a Secret containing the CA bundle used to
+                        verify the Vault server certificate.
+                      properties:
+                        key:
+                          default: ca.crt
+                          minLength: 1
+                          type: string
+                        name:
+                          minLength: 1
+                          type: string
+                        namespace:
+                          minLength: 1
+                          type: string
+                      required:
+                        - name
+                        - namespace
+                      type: object
+                    insecureSkipVerify:
+                      description: InsecureSkipVerify disables certificate verification.
+                        Dev only.
+                      type: boolean
                     serverName:
+                      description: ServerName overrides the hostname used in TLS SNI/verification.
                       type: string
                   type: object
+                  x-kubernetes-validations:
+                    - message: at most one of caBundleSecretRef, caBundleConfigMapRef
+                        or caBundleFile may be set
+                      rule: '[has(self.caBundleSecretRef), has(self.caBundleConfigMapRef),
+                        (has(self.caBundleFile) && self.caBundleFile != '''')].filter(x,
+                        x).size() <= 1'
               required:
                 - address
               type: object
@@ -140,7 +184,8 @@ spec:
               properties:
                 conditions:
                   items:
-                    description: Condition contains details for one aspect of the current state of this API Resource.
+                    description: Condition contains details for one aspect of the current
+                      state of this API Resource.
                     properties:
                       lastTransitionTime:
                         description: |-
@@ -209,7 +254,8 @@ spec:
                   format: int32
                   type: integer
                 sealStatus:
-                  description: SealStatus mirrors GET /v1/sys/seal-status (OPERATOR-SPEC §3.8).
+                  description: SealStatus mirrors GET /v1/sys/seal-status (OPERATOR-SPEC
+                    §3.8).
                   properties:
                     initialized:
                       type: boolean
@@ -218,7 +264,8 @@ spec:
                       format: int32
                       type: integer
                     progress:
-                      description: Progress is the number of unseal shares submitted so far.
+                      description: Progress is the number of unseal shares submitted
+                        so far.
                       format: int32
                       type: integer
                     sealed:
