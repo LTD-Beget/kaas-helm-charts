@@ -3,7 +3,8 @@ vaultConfigs:
     spec:
       address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
       tls:
-        caBundleRef:
-          name: vault-tls-server
+        caBundleSecretRef:
           namespace: {{ .Values.companyPrefix }}-vault
+          name: vault-tls-server
+          key: ca.crt
         serverName: vault.{{ .Values.companyPrefix }}-vault.svc
