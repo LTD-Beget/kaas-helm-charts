@@ -64,6 +64,7 @@ spec:
 {{- $isK8s = true }}
 {{- end }}
 {{- end }}
+{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host -}}
 ---
 # Allow vault-operator controller-manager to reach vault "{{ $name }}".
 apiVersion: cilium.io/v2
@@ -96,5 +97,35 @@ spec:
   {{- end }}
   description: |
     Allows egress from vault-operator to vault "{{ $name }}" ({{ $addr }}) for management operations.
+
+{{- if not $isIP }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-operator-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: {{ $host }}
+  description: |
+    Allows egress from vault-operator to CoreDNS on 53 for DNS resolution.
+{{- end }}
 {{- end }}
 {{- end }}
