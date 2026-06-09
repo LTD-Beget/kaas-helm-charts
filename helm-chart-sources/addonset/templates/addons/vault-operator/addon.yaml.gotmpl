@@ -5,10 +5,13 @@ kind: Addon
 metadata:
   name: vault-operator
 spec:
-  chart: "vault-operator"
+  path: helm-chart-sources/vault-operator
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  version: feature/k8s-417
+  # chart: "vault-operator"
+  # repoURL: {{ .Values.companyExternalChartRegistry }}
+  # version: "0.1.0"
   pluginName: helm-with-values
-  repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.1.0"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vault-operator"
   variables:
