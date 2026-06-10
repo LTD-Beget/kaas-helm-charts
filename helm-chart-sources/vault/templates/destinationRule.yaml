@@ -1,0 +1,16 @@
+{{- if and .Values.tls.enabled (.Values.tls.server.enabled) }}
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: vault
+  namespace: {{ $.Release.Namespace }}
+spec:
+  host: vault-active.{{ $.Release.Namespace }}.svc
+  trafficPolicy:
+    portLevelSettings:
+    - port:
+        number: {{ .Values.vault.server.service.port }}
+      tls:
+        insecureSkipVerify: true
+        mode: SIMPLE
+{{- end }}
