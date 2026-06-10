@@ -148,7 +148,8 @@ spec:
         protocol: TCP
       rules:
         dns:
-        - matchPattern: '*'
+        - matchName: {{ $host }}
+        - matchPattern: {{ $host }}.*
   description: |
     Allows egress from vault-operator to CoreDNS on 53 for DNS resolution.
 {{- end }}
