@@ -23,6 +23,29 @@ spec:
     for control-plane interactions.
 
 ---
+# Allow vault-operator controller-manager to external Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-operator-to-external-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from vault-operator to external Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
 # Allow vmagent to scrape vault-operator metrics.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
