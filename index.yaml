@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-09T21:18:12.773633+05:00"
+      created: "2026-06-10T22:58:01.661244+05:00"
       description: A Helm chart for Kubernetes
-      digest: 85999ed4cba2b3cb3f3a83593c69eea647eda23e47e58651e1ed97b8b88f9f04
+      digest: 18cb50e7c17ba809c2e7e00721723c17ab7acf6c6aaa22efadff66acf0b2fe1d
       name: addonset
       type: application
       urls:
@@ -158,46 +158,13 @@ entries:
           url: https://argoproj.github.io/argo-helm/pgp_keys.asc
       apiVersion: v2
       appVersion: v3.3.4
-      created: "2026-06-05T01:29:52.527201+05:00"
+      created: "2026-06-10T22:58:01.66809+05:00"
       dependencies:
         - name: argo-cd
           repository: https://argoproj.github.io/argo-helm
           version: 9.4.15
       description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: 67cca54e38dfc02cb23c72a76bbae347947f467a3c891b75c04a7c99ac2b3184
-      home: https://github.com/argoproj/argo-helm
-      icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
-      keywords:
-        - argoproj
-        - argocd
-        - gitops
-      kubeVersion: '>=1.25.0-0'
-      maintainers:
-        - name: argoproj
-          url: https://argoproj.github.io/
-      name: argo-cd
-      sources:
-        - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
-        - https://github.com/argoproj/argo-cd
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-4.tgz
-      version: 9.4.15-4
-    - annotations:
-        artifacthub.io/changes: |
-          - kind: changed
-            description: Bump dex to v2.42.1
-        artifacthub.io/signKey: |
-          fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
-          url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-      apiVersion: v2
-      appVersion: v3.3.4
-      created: "2026-06-03T03:19:52.316251+05:00"
-      dependencies:
-        - name: argo-cd
-          repository: https://argoproj.github.io/argo-helm
-          version: 9.4.15
-      description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: 5106b35921d645cf20eedb5eba28423672415edfc021ca011605d45ebcbe345a
+      digest: 89b125dec395d7bae8de7e01c56e05eb91fbe62cd5034c57cb9ec4165dcad13d
       home: https://github.com/argoproj/argo-helm
       icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
       keywords:
@@ -829,13 +796,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-06-05T10:20:17.942606+05:00"
+      created: "2026-06-10T22:58:01.668726+05:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: f145b6693f170daf6b0c78fc4f99efdc580838115f8d91076208314b644752d4
+      digest: 2aee0e710f8b51f9526499ae0da002feda10bae074402886eaa112072182020e
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
@@ -1053,13 +1020,13 @@ entries:
   gateway:
     - apiVersion: v2
       appVersion: 1.26.0
-      created: "2026-06-06T03:43:59.782011+07:00"
+      created: "2026-06-10T22:58:01.669261+05:00"
       dependencies:
         - name: gateway
           repository: https://istio-release.storage.googleapis.com/charts
           version: 1.26.0
       description: Helm chart for deploying Istio gateways
-      digest: aba31d08487f8bae33e7ffe1682f549ce60102969836ee663517642490f60c4e
+      digest: ba959f7cccf8cd3952426b2a588dea2086468d689f98c5c474680367f0fe1579
       icon: https://istio.io/latest/favicons/android-192x192.png
       keywords:
         - istio
@@ -1887,13 +1854,13 @@ entries:
   vault:
     - apiVersion: v2
       appVersion: 1.20.1
-      created: "2026-06-09T21:30:22.413808+05:00"
+      created: "2026-06-10T22:58:01.671061+05:00"
       dependencies:
         - name: vault
           repository: https://helm.releases.hashicorp.com
           version: 0.30.1
       description: Official HashiCorp Vault Chart
-      digest: 7ab7db1a8722a62164788a96b2a6c1364d130edc7c398489ab01b450f1e7d344
+      digest: 9cd1d2719202c475d825f687ce871b5cf34d54f05d7a8a337858974aad88d64b
       home: https://www.vaultproject.io
       icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
       keywords:
@@ -2002,13 +1969,13 @@ entries:
         artifacthub.io/operator: "true"
       apiVersion: v2
       appVersion: v1.119.0
-      created: "2026-06-06T03:56:31.813586+07:00"
+      created: "2026-06-10T22:58:01.685201+05:00"
       dependencies:
         - name: victoria-metrics-k8s-stack
           repository: https://victoriametrics.github.io/helm-charts/
           version: 0.52.0
       description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: 0244acf6563fb66b328d964f235fe5877edcd34ff8ae8f09a8fb192cb26cfeb3
+      digest: 761202e2bf6c281b92794ba3bfaf390d6ff6aa864dae5a420e16a43f32d04d8b
       home: https://github.com/VictoriaMetrics/helm-charts
       icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
       keywords:
@@ -2237,9 +2204,9 @@ entries:
   vault-operator:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-09T21:18:12.775757+05:00"
+      created: "2026-06-10T22:58:01.671645+05:00"
       description: A Helm chart to distribute the project vault-operator
-      digest: 8dc17fbaf79185f3224bd114d47a40e9ddf6af43c87e1810cb0910e1be9e423b
+      digest: b7e5231e1ba09dd59c4a5c1184eb64061fb2d7ee7474b5c01c708359592aec76
       name: vault-operator
       type: application
       urls:
