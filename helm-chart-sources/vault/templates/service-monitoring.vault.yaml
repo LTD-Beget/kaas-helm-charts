@@ -17,4 +17,5 @@ spec:
     app.kubernetes.io/name: vault
     app.kubernetes.io/instance: {{ .Release.Name }}
     component: server
+    vault-active: "true"
 {{- end }}
