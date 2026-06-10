@@ -551,4 +551,50 @@ spec:
         protocol: UDP
   description: |
     Allows egress for vmagent to coredns on port 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vault-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to vault server on on 11043.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vault-operator-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows egress from vmagent to vault-operator server on on 11043.
 {{- end }}
