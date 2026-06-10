@@ -106,6 +106,10 @@ prepareJob:
   enabled: true
   clusterName: "{{ .Values.cluster.name }}"
 
+  vaultOperator:
+    enabled: true
+    namespace: {{ .Values.companyPrefix }}-vault-operator
+
 tls:
   enabled: true
   server:
