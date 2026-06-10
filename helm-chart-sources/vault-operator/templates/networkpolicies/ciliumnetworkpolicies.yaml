@@ -149,7 +149,9 @@ spec:
       rules:
         dns:
         - matchName: {{ $host }}
-        - matchPattern: {{ $host }}.*
+        {{- if $isK8s }}
+        - matchName: {{ $host }}.cluster.local
+        {{- end }}
   description: |
     Allows egress from vault-operator to CoreDNS on 53 for DNS resolution.
 {{- end }}
