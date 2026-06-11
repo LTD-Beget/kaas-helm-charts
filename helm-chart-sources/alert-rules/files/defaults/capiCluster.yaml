@@ -62,7 +62,7 @@ capiClusterAlerts:
               summary: Cluster is not ready too long
               description: |
                 Cluster {{ $labels.cluster_namespace }}/{{ $labels.cluster_name }}
-                has not reached Ready state for more than 90 minutes.
+                has not reached Ready state for more than 20 minutes.
               message: |
                 {{ $labels.cluster_full_name }}: Cluster not ready too long
 
@@ -71,7 +71,7 @@ capiClusterAlerts:
                 Name: {{ $labels.cluster_name }}
             expr: |
                 in_cloud_capi_cluster_ready != 1
-            for: 90m
+            for: 20m
             labels:
               severity: critical
 
