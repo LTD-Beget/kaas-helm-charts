@@ -94,7 +94,7 @@ spec:
       machineTemplate:
         spec:
           deletion:
-            nodeDeletionTimeoutSeconds: 120
-            nodeDrainTimeoutSeconds: 60
-            nodeVolumeDetachTimeoutSeconds: 60
+            nodeDeletionTimeoutSeconds: 240
+            nodeDrainTimeoutSeconds: 180
+            nodeVolumeDetachTimeoutSeconds: 180
 {{- end }}
