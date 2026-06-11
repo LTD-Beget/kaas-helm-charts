@@ -69,9 +69,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-06-10T22:58:01.661244+05:00"
+      created: "2026-06-11T17:14:33.214968+05:00"
       description: A Helm chart for Kubernetes
-      digest: 18cb50e7c17ba809c2e7e00721723c17ab7acf6c6aaa22efadff66acf0b2fe1d
+      digest: d009aaf544a673a1be371860c1dae10d1506440b3616fac53d0c64d4ec9d0681
       name: addonset
       type: application
       urls:
@@ -712,6 +712,16 @@ entries:
   cluster-claim-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-06-10T23:45:10.695994+05:00"
+      description: A Helm chart for Kubernetes
+      digest: f76517915d6bd070d58fb6a10eb49000d748360f482529f4f3494c98b847972b
+      name: cluster-claim-manifests
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-06-02T12:49:04.438469+05:00"
       description: A Helm chart for Kubernetes
       digest: aa85fc73425376dac158af401dcde1def3e40753351917159b6bdad7ddb753f4
@@ -731,6 +741,17 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.0.tgz
       version: 0.1.0
   cluster-claim-operator:
+    - apiVersion: v2
+      appVersion: v0.0.3-b29f0f09
+      created: "2026-06-10T23:40:37.43334+05:00"
+      description: A Helm chart to distribute the project cluster-claim-operator
+      digest: a2c98ba1ec81f4fa897cf79af60bca47832a61bbe665f5eb1e95dd06b795992a
+      icon: https://example.com/icon.png
+      name: cluster-claim-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.2.tgz
+      version: 0.1.2
     - apiVersion: v2
       appVersion: v0.0.2-ab7b930f
       created: "2026-06-05T01:29:52.538155+05:00"

@@ -38,7 +38,7 @@ spec:
             value: {{ .Values.versions.clientControlPlane }}
 
           - name: {{ .Values.extraArgs.companyPrefix }}CltLoadBalancerListenerPort
-            values: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}
+            value: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerPorts
             value:
               - from: {{`{{ .ClusterClaim.spec.client.network.kubeApiserverPort }}`}}

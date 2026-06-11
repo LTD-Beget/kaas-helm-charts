@@ -1,0 +1,48 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-vaultclaim
+spec:
+  apiVersion: vault.in-cloud.io/v1alpha1
+  kind: VaultClaim
+  value: |
+    metadata:
+      labels:
+        xcluster.in-cloud.io/name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+    spec:
+      auth:
+        autoCreate: true
+        mountPath: "{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}"
+        tokenReviewer:
+          serviceAccount:
+            autoCreate: true
+            name: vault-token-reviewer
+            namespace: {{ .Values.extraArgs.companyPrefix }}-vault
+          ttl: 24h0m0s
+      clusterRef:
+        kubeconfigSecret: "{{`{{ .ClusterClaim.metadata.name }}`}}-infra-kubeconfig"
+        name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+      policies:
+      - name: "{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}-ro"
+        rules: |
+          path "sys/mounts" { capabilities = ["read"] }
+
+          path "secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
+            capabilities = ["read"]
+          }
+
+          path "secret/metadata/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
+            capabilities = ["list"]
+          }
+      roles: # TODO set list of SA name/ns
+      - boundServiceAccounts:
+          name: '*'
+          namespace: '*'
+        name: "{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}-ro"
+        policies:
+        - "{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}-ro"
+        tokenTTL: 1h0m0s
+      secretsPrefix: "clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}"
+      vaultConfigRef:
+        name: default # TODO make it possible to specify custom vault config
