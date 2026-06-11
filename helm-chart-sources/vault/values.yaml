@@ -1,19 +1,48 @@
-vault: {}
+# vault - values for vault chart
+vault:
+  server:
+    service:
+      port: 8200
 
 prepareJob:
   enabled: false
-  initialize:
+
+  image:
+    repository: hashicorp/vault
+    tag: ""  # defaults to .Chart.AppVersion
+    pullPolicy: IfNotPresent
+
+  # Name of the secret holding ROOT_TOKEN and UNSEAL_KEYS
+  secretName: vault-keys
+  rootTokenKey: ROOT_TOKEN
+  # unsealKeysKey: UNSEAL_KEYS
+
+  # Kubernetes auth mount path (typically the cluster name)
+  clusterName: ""
+
+  kubernetesAuth:
     enabled: true
-  unseal:
+
+  vaultOperator:
     enabled: true
-    secretName: vault-keys
-    secretKey: UNSEAL_KEYS
-  # configureKubernetesAuthAndPolicies: true
-  # configureMonitoring: true
+    serviceAccountName: vault-operator-controller-manager
+    namespace: example-vault-operator
+
+  monitoring:
+    # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
+    # (k8s RBAC), so the vault-side metrics-reader policy/role is not required.
+    enabled: false
+    serviceAccountName: vmagent-vmagent
+    namespace: example-vmagent
 
 monitoring:
   enabled: false
   type: VictoriaMetrics
+  secureService:
+    enabled: false
+    issuer:
+      kind: ClusterIssuer
+      name: default-issuer-name
 
 tls:
   enabled: false   # общий рубильник
@@ -60,3 +89,11 @@ companyPrefix: example
 
 networkPolicies:
   enabled: false
+  systemEnabled: false
+
+istioVirtualService:
+  enabled: false
+  gateways:
+    - istio-gw/default
+  hosts:
+    - "*"

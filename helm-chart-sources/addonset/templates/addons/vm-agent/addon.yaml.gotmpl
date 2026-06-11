@@ -6,9 +6,9 @@ metadata:
   name: vm-agent
 spec:
   chart: "victoria-metrics-k8s-stack"
-  pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.52.0-5"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmagent"
   variables:

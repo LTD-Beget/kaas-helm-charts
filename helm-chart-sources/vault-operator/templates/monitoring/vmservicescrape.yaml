@@ -1,0 +1,41 @@
+{{- if and .Values.metrics.enable .Values.monitoring.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  labels:
+    {{- include "vault-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-scrape" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    path: /metrics
+    port: https-metrics
+    scheme: HTTPS
+    tlsConfig:
+      serverName: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+      {{- if .Values.monitoring.secureService.enabled }}
+      insecureSkipVerify: false
+      ca:
+        secret:
+          name: {{ include "vault-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: ca.crt
+      cert:
+        secret:
+          name: {{ include "vault-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: tls.crt
+      keySecret:
+        name: {{ include "vault-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+        key: tls.key
+      {{- else }}
+      insecureSkipVerify: true
+      {{- end }}
+  jobLabel: vault-operator
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ include "vault-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+      app.kubernetes.io/name: {{ include "vault-operator.name" . }}
+      control-plane: controller-manager
+{{- end }}

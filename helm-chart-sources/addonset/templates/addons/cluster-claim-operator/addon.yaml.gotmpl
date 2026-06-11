@@ -6,9 +6,9 @@ metadata:
   name: cluster-claim-operator
 spec:
   chart: "cluster-claim-operator"
-  pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
   version: "0.1.1"
+  pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cluster-claim-operator"
   variables:

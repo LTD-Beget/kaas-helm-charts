@@ -1,0 +1,90 @@
+{{- $prepare := .Values.prepareJob }}
+{{- if $prepare.enabled }}
+{{- $tlsEnabled := and .Values.tls.enabled .Values.tls.server.enabled }}
+{{- $scheme := ternary "https" "http" $tlsEnabled }}
+{{- $vaultAddr := $prepare.vaultAddr | default (printf "%s://vault.%s:8200" $scheme .Release.Namespace) }}
+{{- $extraEnv := ((.Values.vault).server).extraEnvironmentVars }}
+{{- $extraSecretEnv := ((.Values.vault).server).extraSecretEnvironmentVars }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-prepare
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    # Run after all other resources are synced and healthy (Argo CD PostSync).
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "10"
+    # Helm hook equivalents (honored outside Argo CD / by helm install|upgrade).
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccountName: {{ .Release.Name }}-prepare
+      restartPolicy: OnFailure
+      containers:
+        - name: prepare
+          image: "{{ $prepare.image.repository }}:{{ $prepare.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $prepare.image.pullPolicy }}
+          command: ["/bin/sh", "/scripts/prepare-vault.sh"]
+          env:
+            {{- range $key, $val := $extraEnv }}
+            {{- if ne $key "VAULT_ADDR" }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- end }}
+            {{- range $extraSecretEnv }}
+            - name: {{ .envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
+            {{- end }}
+            # VAULT_ADDR points at the in-cluster service (the job runs in its own pod,
+            # so any 127.0.0.1 value from extraEnvironmentVars must not apply here).
+            - name: VAULT_ADDR
+              value: {{ $vaultAddr | quote }}
+            - name: CLUSTER_NAME
+              value: {{ $prepare.clusterName | quote }}
+            {{- if $prepare.vaultOperator.enabled }}
+            - name: VAULT_OPERATOR_SA
+              value: {{ $prepare.vaultOperator.serviceAccountName | quote }}
+            - name: VAULT_OPERATOR_NAMESPACE
+              value: {{ $prepare.vaultOperator.namespace | quote }}
+            {{- end }}
+            {{- if $prepare.monitoring.enabled }}
+            - name: MONITORING_SA
+              value: {{ $prepare.monitoring.serviceAccountName | quote }}
+            - name: MONITORING_NAMESPACE
+              value: {{ $prepare.monitoring.namespace | quote }}
+            {{- end }}
+            - name: ROOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $prepare.secretName }}
+                  key: {{ $prepare.rootTokenKey }}
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            {{- if $tlsEnabled }}
+            - name: vault-tls-server
+              mountPath: /vault/userconfig/vault-tls-server
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: scripts
+          configMap:
+            name: {{ .Release.Name }}-prepare
+            defaultMode: 0755
+        {{- if $tlsEnabled }}
+        - name: vault-tls-server
+          secret:
+            secretName: vault-tls-server
+        {{- end }}
+{{- end }}
