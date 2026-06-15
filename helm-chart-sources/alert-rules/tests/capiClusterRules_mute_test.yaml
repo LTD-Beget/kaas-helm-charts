@@ -1,0 +1,139 @@
+rule_files:
+  - rendered.rules.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # ── Критерий 1: только что создан (< 15м) → mute = 1
+  - name: created cluster within 15m is muted
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x20'   # создан в t=0
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 10m      # возраст 600с < 900с
+        exp_samples:
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+
+  # ── Критерий 2: старый простаивающий кластер → серии mute нет
+  - name: old idle cluster is not muted
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x30'
+      - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x30'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 20m      # возраст 1200с > 900с, не удаляется, не на паузе
+        exp_samples: []
+
+  # ── Критерий 3: удаление в пределах SLA (< 30м) → mute = 1
+  - name: deleting cluster within 30m is muted
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '1200+0x40'  # удаление начато в t=1200с
+      - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
+        values: '1+0x40'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 30m       # возраст удаления 1800-1200 = 600с < 1800с
+        exp_samples:
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+
+  # ── Критерий 4: зависшее удаление (> 30м), не на паузе → mute снят
+  - name: stuck deletion past 30m drops mute (alerts allowed)
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x40'    # удаление начато в t=0
+      - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
+        values: '1+0x40'
+      - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x40'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 25m       # возраст 1500с < 1800с → ещё muted (проверка границы)
+        exp_samples:
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 35m       # возраст 2100с > 1800с → mute снят
+        exp_samples: []
+
+  # ── Критерий 5: удаление на паузе → mute = 1 без ограничения по времени
+  - name: paused deletion is muted indefinitely
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x70'
+      - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
+        values: '1+0x70'
+      - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '1+0x70'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 60m       # возраст 3600с ≫ 1800с, но на паузе → muted
+        exp_samples:
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+
+  # ── Критерий 6: ровно одна серия на cluster_full_name (без дублей)
+  - name: infra and client series collapse to one mute per cluster
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-infra",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x10'
+      - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-client",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x10'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 5m
+        exp_samples:
+          # одна серия только с cluster_full_name подтверждает агрегацию max by
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+
+  # ── Критерий 7: mute переживает исчезновение метрик, но не дольше SLA
+  - name: mute outlives disappearing series within SLA only
+    interval: 1m
+    input_series:
+      # удалён в t=300с, серия пропадает после 5м (kube-state-metrics перестаёт экспортировать)
+      - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
+        values: '0x5 _x55'
+      - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
+        values: '1x5 _x55'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 25m       # серия пропала, но last_over_time[40m] её держит; 1500с < 1800с → muted
+        exp_samples:
+          - labels: 'in_cloud_capi_cluster_mute{cluster_full_name="ns-c1-h1"}'
+            value: 1
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 35m       # сэмпл ещё в окне, но гейт 2100с > 1800с → mute снят (SLA держит)
+        exp_samples: []
+
+  # ── Критерий 9: пересозданный кластер не наследует mute от прошлого удаления
+  - name: recreated cluster is not muted by previous deletion
+    interval: 1m
+    input_series:
+      # прошлое удаление жило только в 0..5м, затем исчезло
+      - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-old",cluster_full_name="ns-c1-h1"}'
+        values: '0x5 _x55'
+      - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
+        values: '1x5 _x55'
+      # кластер пересоздан (то же full_name) в t=10м, на момент eval старше 15м
+      - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-new",cluster_full_name="ns-c1-h1"}'
+        values: '_x10 600+0x50'
+      - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-new",cluster_full_name="ns-c1-h1"}'
+        values: '_x10 0+0x50'
+    promql_expr_test:
+      - expr: in_cloud_capi_cluster_mute
+        eval_time: 50m
+        # возраст создания 3000-600 = 2400с > 900с (создание не мьютит);
+        # старый сэмпл удаления в 300с вне окна last_over_time[40m] (600..3000с) → нет утечки
+        exp_samples: []
