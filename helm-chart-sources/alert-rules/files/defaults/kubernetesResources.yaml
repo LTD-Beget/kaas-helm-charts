@@ -316,7 +316,7 @@ kubernetesResources:
                 Pod: {{ $labels.pod }}
                 Container: {{ $labels.container }}
                 Node: {{ $labels.node }}
-                Throttling ratio (5m): {{ $value | humanizePercentage }}
+                Throttling ratio (15m): {{ $value | humanizePercentage }}
               message: |
                 {{ $labels.cluster_full_name }}: Elevated CPU throttling
 
@@ -335,7 +335,7 @@ kubernetesResources:
                     metrics_path="/metrics/cadvisor",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*",
                     cluster_type!="client"
-                  }[5m])
+                  }[15m])
                 )
               /
                 sum by (cluster_full_name, namespace, pod, container, node) (
@@ -345,7 +345,7 @@ kubernetesResources:
                     metrics_path="/metrics/cadvisor",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*",
                     cluster_type!="client"
-                  }[5m])
+                  }[15m])
                 )
               ) > 0.25
               and
@@ -357,7 +357,7 @@ kubernetesResources:
                     metrics_path="/metrics/cadvisor",
                     namespace=~"{{ .Values.companyPrefix }}.*|kube.*",
                     cluster_type!="client"
-                  }[5m])
+                  }[15m])
                 )
               ) > 0.05
             for: 15m

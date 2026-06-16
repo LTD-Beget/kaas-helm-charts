@@ -1,0 +1,76 @@
+rule_files:
+  - rendered.rules.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # Критерий: короткий всплеск троттлинга (доли секунды троттлят, но средняя
+  # загрузка CPU низкая) НЕ должен поднимать CPUThrottlingHigh. Окно просмотра
+  # расширено с 5m до 15m — кратковременный burst размывается по большому окну
+  # и ratio за 15m остаётся ниже порога 0.25, поэтому алерт не флапает.
+  - interval: 1m
+    name: brief throttling burst does not fire (anti-flap)
+    input_series:
+      # Постоянный поток CFS-периодов: 600 периодов/мин (10 периодов/сек).
+      - series: 'container_cpu_cfs_periods_total{container="app",pod="web-0",node="node-1",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-a"}'
+        values: '0+600x40'
+      # Троттлинг только в минуты 6-8 (короткий burst), затем счётчик стоит.
+      - series: 'container_cpu_cfs_throttled_periods_total{container="app",pod="web-0",node="node-1",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-a"}'
+        values: '0+0x5 500+500x2 1500+0x31'
+      - series: 'container_cpu_cfs_throttled_seconds_total{container="app",pod="web-0",node="node-1",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-a"}'
+        values: '0+0x5 40+40x2 120+0x31'
+    alert_rule_test:
+      # burst целиком внутри 15m-окна: ratio = 1500/9000 = 0.167 < 0.25 → молчим.
+      - eval_time: 22m
+        alertname: CPUThrottlingHigh
+        exp_alerts: []
+      # burst уже вышел из 15m-окна: increase = 0 → молчим.
+      - eval_time: 35m
+        alertname: CPUThrottlingHigh
+        exp_alerts: []
+
+  # Критерий: устойчивый троттлинг выше порогов держится дольше 15m и должен
+  # поднять алерт после for: 15m.
+  - interval: 1m
+    name: sustained throttling fires
+    input_series:
+      - series: 'container_cpu_cfs_periods_total{container="app",pod="web-1",node="node-2",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-b"}'
+        values: '0+600x40'
+      # 50% периодов троттлятся: ratio = 300/600 = 0.5 > 0.25.
+      - series: 'container_cpu_cfs_throttled_periods_total{container="app",pod="web-1",node="node-2",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-b"}'
+        values: '0+300x40'
+      # 30s троттлинга/мин: rate = 30/60 = 0.5 > 0.05.
+      - series: 'container_cpu_cfs_throttled_seconds_total{container="app",pod="web-1",node="node-2",namespace="kube-system",job="kubelet",metrics_path="/metrics/cadvisor",cluster_type="provisioned",cluster_full_name="prod-b"}'
+        values: '0+30x40'
+    alert_rule_test:
+      # Условие истинно с ~t=15m (заполнилось 15m-окно), for: 15m → срабатывает к t=30m.
+      - eval_time: 31m
+        alertname: CPUThrottlingHigh
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              cluster_full_name: prod-b
+              namespace: kube-system
+              pod: web-1
+              container: app
+              node: node-2
+            exp_annotations:
+              summary: Elevated CPU throttling
+              description: |
+                Elevated CPU throttling for 15m.
+
+                Cluster: prod-b
+                Namespace: kube-system
+                Pod: web-1
+                Container: app
+                Node: node-2
+                Throttling ratio (15m): 50%
+              message: |
+                prod-b: Elevated CPU throttling
+
+                Cluster: prod-b
+                Namespace: kube-system
+                Pod: web-1
+                Container: app
+                Node: node-2
+                Throttling: 50%
