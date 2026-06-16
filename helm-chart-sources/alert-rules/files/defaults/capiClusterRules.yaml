@@ -304,17 +304,36 @@ capiClusterRules:
             record: "in_cloud_capi_cluster_mute"
             annotations: {}
             expr: |
-              (
-                (
-                  time() - in_cloud_capi_cluster_created_timestamp_seconds
-                ) < bool 900
-              )
-              or
-              (
-                in_cloud_capi_cluster_deletion_requested == bool 1
-              )
-              or
-              (
-                (last_over_time(in_cloud_capi_cluster_created_timestamp_seconds[30m]) > bool 0)
+              clamp_max(
+                max by (cluster_full_name) (
+                  (
+                    (
+                      time() - in_cloud_capi_cluster_created_timestamp_seconds
+                    ) < 900
+                  )
+                  or
+                  (
+                    (
+                      (
+                        time() - last_over_time(in_cloud_capi_cluster_deleted_timestamp_seconds[40m])
+                      ) < 1800
+                    )
+                    and on (cluster_full_name)
+                    (
+                      last_over_time(in_cloud_capi_cluster_deletion_requested[40m]) == 1
+                    )
+                  )
+                  or
+                  (
+                    (
+                      in_cloud_capi_cluster_spec_paused == 1
+                    )
+                    and on (cluster_full_name)
+                    (
+                      in_cloud_capi_cluster_deletion_requested == 1
+                    )
+                  )
+                ),
+                1
               )
             labels: {}
