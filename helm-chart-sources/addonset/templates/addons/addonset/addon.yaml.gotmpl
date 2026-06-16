@@ -64,15 +64,15 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: addon-set
+        addons.in-cloud.io/addon: addonset
     - name: custom
       priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: addon-set
+        addons.in-cloud.io/addon: addonset
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: addon-set
+        addons.in-cloud.io/addon: addonset
 {{- end }}
