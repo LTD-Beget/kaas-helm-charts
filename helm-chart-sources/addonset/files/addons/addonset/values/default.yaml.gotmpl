@@ -1,0 +1,13 @@
+addons:
+  system:
+    enabled: {{ .Values.cluster.systemEnabled }}
+clientName: {{ .Values.cluster.client.name }}
+clusterClaim: {{ .Values.clusterClaim }}
+clusterName: {{ .Values.cluster.name }}
+addonRevision: {{ .Values.addonRevision }}
+clientClusterEnabled: {{ .Values.cluster.clusterClientEnabled }}
+companyPrefix: {{ .Values.companyPrefix }}
+companyDomain: {{ .Values.companyDomain }}
+companyExternalChartRegistry: {{ .Values.companyExternalChartRegistry }}
+companyExternalGitRepository: {{ .Values.companyExternalGitRepository }}
+companyAdminUser: {{ .Values.companyAdminUser }}
