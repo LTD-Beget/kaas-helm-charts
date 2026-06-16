@@ -50,15 +50,31 @@ for f in "${TEST_FILES[@]}"; do
 done
 
 cd "${WORK}"
-echo ">> Running promtool on: ${BASENAMES[*]}"
-if command -v promtool >/dev/null 2>&1; then
-  exec promtool test rules "${BASENAMES[@]}"
-elif command -v docker >/dev/null 2>&1; then
+
+# Wrapper around promtool that works either with a local binary or the
+# prom/prometheus container as a fallback.
+run_promtool() {
+  if command -v promtool >/dev/null 2>&1; then
+    promtool test rules "$@"
+  elif command -v docker >/dev/null 2>&1; then
+    docker run --rm -v "${WORK}:/work" -w /work \
+      --entrypoint promtool prom/prometheus:latest test rules "$@"
+  else
+    echo "ERROR: neither promtool nor docker is available." >&2
+    echo "Install Prometheus (brew install prometheus) or Docker, then re-run." >&2
+    exit 1
+  fi
+}
+
+if ! command -v promtool >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
   echo ">> promtool not found; running via prom/prometheus container"
-  exec docker run --rm -v "${WORK}:/work" -w /work \
-    --entrypoint promtool prom/prometheus:latest test rules "${BASENAMES[@]}"
-else
-  echo "ERROR: neither promtool nor docker is available." >&2
-  echo "Install Prometheus (brew install prometheus) or Docker, then re-run." >&2
-  exit 1
 fi
+
+# Run each test file separately so the output shows which file ran and its result.
+RC=0
+for f in "${BASENAMES[@]}"; do
+  echo ">> ${f}"
+  run_promtool "${f}" || RC=1
+done
+
+exit "${RC}"
