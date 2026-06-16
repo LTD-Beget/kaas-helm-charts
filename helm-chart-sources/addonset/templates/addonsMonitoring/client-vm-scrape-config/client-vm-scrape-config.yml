@@ -1,9 +1,0 @@
-{{- if false }}
-  {{- $clientContext := set (deepCopy .) "Values" (set (deepCopy .Values) "environment" "client") -}}
-
-  {{- include "client-vm-scrape-config.addon" . }}
-
-  {{- .Files.Get "files/addonsMonitoring/client-vm-scrape-config/values.yml" | nindent 0 }}
-
-  {{- include "client-vm-scrape-config.phase" . }}
-{{- end }}
