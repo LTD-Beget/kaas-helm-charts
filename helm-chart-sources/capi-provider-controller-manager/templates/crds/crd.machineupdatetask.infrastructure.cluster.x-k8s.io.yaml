@@ -112,6 +112,12 @@ spec:
             description: {{ $.Values.companyPrefix | title }}MachineUpdateTaskStatus defines the observed state of
               {{ $.Values.companyPrefix | title }}MachineUpdateTask.
             properties:
+              applyAttempts:
+                description: |-
+                  ApplyAttempts counts how many times the infrastructure update has errored for this task.
+                  Used to bound apply retries before the task is marked Failed.
+                format: int32
+                type: integer
               conditions:
                 items:
                   description: Condition contains details for one aspect of the current
@@ -194,6 +200,11 @@ spec:
                   NodeName is the name of the workload cluster node associated with this machine.
                   Stored during drain phase for use in subsequent phases.
                 type: string
+              nonRetryable:
+                description: |-
+                  NonRetryable marks a terminal failure that retrying cannot fix (e.g. an invalid
+                  configuration rejected by the infrastructure). Such tasks are not reset for self-heal.
+                type: boolean
               operationId:
                 format: int32
                 type: integer
