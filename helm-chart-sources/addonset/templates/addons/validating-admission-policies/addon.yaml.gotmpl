@@ -13,8 +13,6 @@ spec:
   targetNamespace: "{{ .Values.companyPrefix }}-system"
   variables:
     cluster_name: in-cluster
-  valuesSources: []
-  initDependencies: []
   backend:
     finalizer: true
     type: "argocd"
