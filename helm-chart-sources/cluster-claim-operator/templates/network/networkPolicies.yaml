@@ -21,4 +21,27 @@ spec:
         protocol: TCP
   description: Allows egress from cluster-claim-operator-controller-manager to the
     Kubernetes API server on 6443 for control-plane interactions.
+
+---
+# Allow vmagent to scrape `cluster-claim-operator` metrics.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-cluster-claim-operator-from-vm-agent-8443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ include "cluster-claim-operator.namespaceName" . }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '8443'
+        protocol: TCP
+  description: Allows ingress to cluster-claim-operator from vmagent on 8443 for metrics collection.
 {{- end }}
