@@ -12,6 +12,7 @@ spec:
   targetNamespace: "{{ .Values.companyPrefix }}-addonset"
   variables:
     cluster_name: in-cluster
+    dependency: "True"
   valuesSources:
     - name: parameters-infra
       sourceRef:
@@ -53,7 +54,7 @@ spec:
       managedNamespaceMetadata:
         labels:
           in-cloud.io/caBundle: approved
-          in-cloud.io/clusterName: infra
+          in-cloud.io/clusterName: in-cluster
       syncOptions:
         - ApplyOutOfSyncOnly=true
         - CreateNamespace=true
@@ -62,4 +63,14 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
+        addons.in-cloud.io/addon: addonset
+    - name: custom
+      priority: 95
+      matchLabels:
+        addons.in-cloud.io/values: custom
+        addons.in-cloud.io/addon: addonset
+    - name: immutable
+      priority: 99
+      matchLabels:
+        addons.in-cloud.io/values: immutable
         addons.in-cloud.io/addon: addonset
