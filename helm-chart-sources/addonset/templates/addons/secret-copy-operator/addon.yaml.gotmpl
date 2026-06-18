@@ -10,7 +10,7 @@ spec:
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
   version: "0.1.2"
   targetCluster: in-cluster
-  targetNamespace: "{{ .Values.companyPrefix }}-system"
+  targetNamespace: "{{ .Values.companyPrefix }}-secret-copy-operator"
   variables:
     cluster_name: in-cluster
   valuesSources: 
