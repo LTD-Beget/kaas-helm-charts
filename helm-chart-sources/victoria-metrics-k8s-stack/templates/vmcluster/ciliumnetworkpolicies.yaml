@@ -56,6 +56,28 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-host-probes-vminsert-8480
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to vminsert on :8480"
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:app.kubernetes.io/name: vminsert
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "8480"
+        protocol: TCP
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-ingress-vminsert-from-world-8480
   namespace: {{ .Release.Namespace }}
 spec:
@@ -217,6 +239,28 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-host-probes-vmstorage-8482
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to vmstorage on :8482"
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:app.kubernetes.io/name: vmstorage
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "8482"
+        protocol: TCP
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-ingress-vmstorage-from-vminsert-8400
   namespace: {{ .Release.Namespace }}
 spec:
@@ -287,6 +331,28 @@ spec:
 # ============================================================
 # vmselect — read path
 # ============================================================
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-vmselect-8481
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to vmselect on :8481"
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:app.kubernetes.io/name: vmselect
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "8481"
+        protocol: TCP
 
 ---
 apiVersion: cilium.io/v2

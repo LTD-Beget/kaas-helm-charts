@@ -1,5 +1,26 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to istiod — health (8080)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-istio-8080
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to istiod"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: istiod
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+
+---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -81,6 +102,7 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   ingress:
   - fromEntities:
+    - host
     - remote-node
     - kube-apiserver
     toPorts:

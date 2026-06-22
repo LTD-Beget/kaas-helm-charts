@@ -1,5 +1,28 @@
 {{ if .Values.networkPolicies.enabled }}
 ---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-coredns
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to beget-coredns/coredns"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "8080"
+        protocol: TCP
+      - port: "8181"
+        protocol: TCP
+---
 # Allow `vmagent` to coredns.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

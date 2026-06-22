@@ -50,7 +50,9 @@ spec:
       rules:
         dns:
         - matchName: {{ $s3StorageDomain }}
-        - matchPattern: "{{ $s3StorageDomain }}.*"
+        - matchName: {{ $s3StorageDomain }}.{{ .Values.clusterDomain }}
+        - matchName: {{ $s3StorageDomain }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ $s3StorageDomain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   description: Allows egress from etcd-backup to CoreDNS on 53 for DNS resolution.
 
 ---
@@ -68,7 +70,9 @@ spec:
   egress:
   - toFQDNs:
     - matchName: {{ $s3StorageDomain }}
-    - matchPattern: "{{ $s3StorageDomain }}.*"
+    - matchName: {{ $s3StorageDomain }}.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3StorageDomain }}.svc.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3StorageDomain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
     toPorts:
     - ports:
       - port: '443'

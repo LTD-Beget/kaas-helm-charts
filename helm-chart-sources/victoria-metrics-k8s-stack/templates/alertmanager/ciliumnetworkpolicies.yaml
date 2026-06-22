@@ -26,6 +26,26 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-host-probes-alertmanager-9093
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to alertmanager on :9093"
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9093"
+        protocol: TCP
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-egress-alertmanager-to-kube-apiserver-6443
   namespace: {{ .Release.Namespace }}
 spec:

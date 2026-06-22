@@ -1,6 +1,27 @@
 {{- if .Values.networkPolicies.clientKubeStateMetrics.enabled }}
 
 ---
+# host to client-kube-state-metrics — metrics (8888)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-client-kube-state-metrics-8888
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to client-kube-state-metrics"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8888"
+        protocol: TCP
+
+---
 # Allow `client-ksm` to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -67,8 +88,8 @@ spec:
       - port: '26443'
         protocol: TCP
   # НУЖНО ПЕРЕДЕЛАТЬ  В ВАРИАНТ ВЫШЕ, ДЛЯ ЭТОГО НАДО ПЕРЕДЕЛАТЬ KUBECONFIG НА FQDN КОТОРЫЙ РЕЗОЛВИТСЯ ВНУТРИ КЛАСТЕРА.
-  - toEntities:
-    - world
+  - toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '26443'

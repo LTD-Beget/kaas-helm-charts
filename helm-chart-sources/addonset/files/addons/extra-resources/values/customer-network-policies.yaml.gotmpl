@@ -10,9 +10,10 @@ resources:
           k8s:app.kubernetes.io/name: csrc-infra
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "6443"
@@ -28,9 +29,10 @@ resources:
           k8s:app.kubernetes.io/name: ccm-infra
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "6443"
@@ -160,9 +162,10 @@ resources:
           k8s:app.kubernetes.io/name: csrc-client
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "26443"
@@ -178,9 +181,10 @@ resources:
           k8s:app.kubernetes.io/name: csrc-client
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "6443"
@@ -196,9 +200,10 @@ resources:
           k8s:app.kubernetes.io/name: ccm-client
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "26443"
@@ -214,9 +219,10 @@ resources:
           k8s:app.kubernetes.io/name: ccm-client
       egress:
       - toEntities:
-        - world
         - kube-apiserver
         - remote-node
+        toCIDR:
+        - 0.0.0.0/0
         toPorts:
         - ports:
           - port: "6443"

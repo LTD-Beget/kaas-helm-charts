@@ -1,4 +1,53 @@
 {{- if .Values.networkPolicies.server.enabled }}
+{{- $ns := include "argo-cd-wrapper.namespace" . }}
+{{- $redis := include "argo-cd-wrapper.redis.fullname" . }}
+{{- $repoServer := include "argo-cd-wrapper.repoServer.fullname" . }}
+---
+# host to argocd-server — health (8080)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-argocd-server-8080
+  namespace: {{ include "argo-cd-wrapper.namespace" . }}
+spec:
+  description: "Allow kubelet probes to argocd-server"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ include "argo-cd-wrapper.namespace" . }}
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+
+---
+# Allow `argocd-server` to talk to the Kubernetes API server (client).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-server-to-kube-apiserver-26443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toCIDR:
+    - 0.0.0.0/0
+    toPorts:
+    - ports:
+      - port: '26443'
+        protocol: TCP
+  description: Allows egress from argocd-server to the Kubernetes API server
+    on 26443 for control-plane interactions.
+
+---
 # Allow `argocd-server` to talk to the Kubernetes API server (infra).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -12,8 +61,9 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
   egress:
   - toEntities:
-    - world
     - kube-apiserver
+    toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '6443'
@@ -46,7 +96,23 @@ spec:
         protocol: UDP
       rules:
         dns:
-        - matchPattern: '{{ .Values.istioGwDomain }}' # Dex/Gateway endpoint
+        - matchName: {{ .Values.istioGwDomain }}
+        - matchName: {{ .Values.istioGwDomain }}.{{ .Values.clusterDomain }}
+        - matchName: {{ .Values.istioGwDomain }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ .Values.istioGwDomain }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
+        - matchPattern: '{{ .Values.istioGwDomain }}.*'
+        - matchName: {{ $redis }}
+        - matchName: {{ $redis }}.{{ .Values.clusterDomain }}
+        - matchName: {{ $redis }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ $redis }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
+        - matchPattern: '{{ $redis }}.*'
+        - matchName: {{ $repoServer }}
+        - matchName: {{ $repoServer }}.{{ .Values.clusterDomain }}
+        - matchName: {{ $repoServer }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ $repoServer }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
+        - matchPattern: '{{ $repoServer }}.*'
+        - matchName: _grpc_config.localhost
+        - matchPattern: '_grpc_config.localhost.*'
   description: Allows egress from argocd-server to CoreDNS on 53 for DNS resolution.
 
 

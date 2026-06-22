@@ -1,5 +1,45 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to cert-manager — healthz (9403)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-cert-manager-controller-9403
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to cert-manager (controller)"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: cert-manager
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9403"
+        protocol: TCP
+---
+# host to cert-manager-webhook — healthcheck (6080)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-cert-manager-webhook-6080
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to cert-manager-webhook"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-webhook
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "6080"
+        protocol: TCP
+---
 # Allow vmagent to scrape `cert-manager-webhook` metrics.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

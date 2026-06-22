@@ -9,6 +9,7 @@ nameOverride: ""                  # Override the base name used for resources
 
 externalDomain: "*"               # External domain used for ingress or service exposure
 
+clusterDomain: cluster.local
 companyPrefix: example
 
 networkPolicies:

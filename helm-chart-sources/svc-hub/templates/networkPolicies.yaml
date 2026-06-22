@@ -25,9 +25,36 @@ spec:
       rules:
         dns:
         - matchName: consul.{{ .Values.companyPrefix }}
+        - matchName: consul.{{ .Values.companyPrefix }}.{{ .Values.clusterDomain }}
+        - matchName: consul.{{ .Values.companyPrefix }}.svc.{{ .Values.clusterDomain }}
+        - matchName: consul.{{ .Values.companyPrefix }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
         - matchName: amqp.rabbit-hub.service.consul
+        - matchName: amqp.rabbit-hub.service.consul.{{ .Values.clusterDomain }}
+        - matchName: amqp.rabbit-hub.service.consul.svc.{{ .Values.clusterDomain }}
+        - matchName: amqp.rabbit-hub.service.consul.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   description: Allows egress from svc-hub to CoreDNS on 53 for Consul/RabbitMQ name
     resolution.
+
+---
+# Allow kubelet to probe `svc-hub` health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-svc-hub-6379
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to svc-hub on :6379"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "6379"
+        protocol: TCP
 
 ---
 # Allow `svc-hub` to reach the Consul service.

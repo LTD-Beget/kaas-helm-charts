@@ -1,5 +1,28 @@
 {{- if .Values.networkPolicies.internal.enabled }}
 ---
+# host to istio-gw-internal — kubelet readiness (15021) + kube-apiserver webhooks (443)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-istio-gw-internal-15021
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes and kube-apiserver webhooks to istio-gw-internal from host"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+      - port: "15021"
+        protocol: TCP
+
+---
 # Allow the internal Istio gateway to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

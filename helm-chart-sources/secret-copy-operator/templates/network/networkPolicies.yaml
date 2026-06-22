@@ -37,9 +37,10 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include "chart.namespaceName" . }}
   egress:
   - toEntities:
-    - world
     - remote-node
     - kube-apiserver
+    toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '6443'
@@ -61,8 +62,9 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include "chart.namespaceName" . }}
   egress:
   - toEntities:
-    - world
     - remote-node
+    toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '6443'

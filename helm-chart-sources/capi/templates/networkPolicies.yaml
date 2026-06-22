@@ -96,6 +96,27 @@ spec:
     on 9443.
 
 ---
+# Allow kubelet to probe `capi` controller-manager health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-capi-9440
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to capi-controller-manager on :9440"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: capi
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9440"
+        protocol: TCP
+
+---
 # Allow remote nodes to reach the `capi` controller-manager webhook.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -137,8 +158,8 @@ spec:
       values:
       - {{ .Release.Namespace }}
   egress:
-  - toEntities:
-    - world
+  - toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '6443'
@@ -166,8 +187,8 @@ spec:
       values:
       - {{ .Release.Namespace }}
   egress:
-  - toEntities:
-    - world
+  - toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '26443'

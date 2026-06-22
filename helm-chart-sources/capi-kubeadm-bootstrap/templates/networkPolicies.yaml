@@ -46,6 +46,27 @@ spec:
     Kubernetes API server on 6443 for control-plane interactions.
 
 ---
+# Allow kubelet to probe `capi-kubeadm-bootstrap` controller-manager health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-capi-kubeadm-bootstrap-9440
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to capi-kubeadm-bootstrap-controller-manager on :9440"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: capi-kubeadm-bootstrap
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9440"
+        protocol: TCP
+
+---
 # Allow remote nodes to reach the `capi-kubeadm-bootstrap` controller-manager webhook.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

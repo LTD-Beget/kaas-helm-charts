@@ -70,6 +70,27 @@ spec:
   description: Allows egress from trivy-operator to CoreDNS on 53 for DNS resolution.
 
 ---
+# Allow kubelet to probe `trivy-operator` health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-trivy-operator-9090
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to trivy-operator on :9090"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: trivy-operator
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9090"
+        protocol: TCP
+
+---
 # Allow `trivy-operator` to reach external registries for vulnerability data.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -82,12 +103,12 @@ spec:
       k8s:io.cilium.k8s.policy.serviceaccount: trivy-operator
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
-  - toEntities:
-    - world
+  - toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '443'
         protocol: TCP
-  description: Allows egress from trivy-operator to the world on 443 for vulnerability
-    database and registry access.
+  description: Allows egress from trivy-operator to external registries/vulnerability
+    databases on 443.
 {{- end }}

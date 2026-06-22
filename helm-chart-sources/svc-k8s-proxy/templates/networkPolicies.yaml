@@ -21,6 +21,27 @@ spec:
   description: Allows ingress from the world to svc-k8s-proxy on 50051.
 
 ---
+# Allow kubelet to probe `svc-k8s-proxy` health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-svc-k8s-proxy-50051
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to svc-k8s-proxy on :50051"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "50051"
+        protocol: TCP
+
+---
 # Allow `svc-k8s-proxy` to resolve DNS via CoreDNS.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

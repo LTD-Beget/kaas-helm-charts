@@ -1,5 +1,26 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to cert-manager-csi-driver — metrics (9809)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-cert-manager-csi-driver-9809
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to cert-manager-csi-driver"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-csi-driver
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "9809"
+        protocol: TCP
+
+---
 # Allow `cert-manager-csi-driver` to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
