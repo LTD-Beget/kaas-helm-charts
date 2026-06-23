@@ -112,6 +112,7 @@ rules:
         - vault.in-cloud.io
       resources:
         - vaultclaims
+        - vaultsecretclaims
       verbs:
         - create
         - delete
