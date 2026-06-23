@@ -1,3 +1,6 @@
+# Движок: vmalert-tool (MetricsQL/VM). Запуск: ./run.sh
+# values: `<start>+<step>x<count>`; `_` — нет данных; `stale` — stale-маркер.
+# last_over_time[40m] игнорирует stale и держит значение до конца окна.
 rule_files:
   - rendered.rules.yaml
 
@@ -10,7 +13,7 @@ tests:
     input_series:
       - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
         values: '0+0x20'   # создан в t=0
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 10m      # возраст 600с < 900с
         exp_samples:
@@ -25,7 +28,7 @@ tests:
         values: '0+0x30'
       - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
         values: '0+0x30'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 20m      # возраст 1200с > 900с, не удаляется, не на паузе
         exp_samples: []
@@ -38,7 +41,7 @@ tests:
         values: '1200+0x40'  # удаление начато в t=1200с
       - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
         values: '1+0x40'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 30m       # возраст удаления 1800-1200 = 600с < 1800с
         exp_samples:
@@ -55,7 +58,7 @@ tests:
         values: '1+0x40'
       - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
         values: '0+0x40'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 25m       # возраст 1500с < 1800с → ещё muted (проверка границы)
         exp_samples:
@@ -75,7 +78,7 @@ tests:
         values: '1+0x70'
       - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
         values: '1+0x70'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 60m       # возраст 3600с ≫ 1800с, но на паузе → muted
         exp_samples:
@@ -90,7 +93,7 @@ tests:
         values: '0+0x10'
       - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-client",cluster_full_name="ns-c1-h1"}'
         values: '0+0x10'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 5m
         exp_samples:
@@ -102,12 +105,13 @@ tests:
   - name: mute outlives disappearing series within SLA only
     interval: 1m
     input_series:
-      # удалён в t=300с, серия пропадает после 5м (kube-state-metrics перестаёт экспортировать)
+      # удалён в t=0, серия пропадает после 5м со stale-маркером
+      # (kube-state-metrics перестаёт экспортировать → vmagent пишет stale)
       - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h1",cluster_full_name="ns-c1-h1"}'
-        values: '0x5 _x55'
+        values: '0x5 stale'
       - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
-        values: '1x5 _x55'
-    promql_expr_test:
+        values: '1x5 stale'
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 25m       # серия пропала, но last_over_time[40m] её держит; 1500с < 1800с → muted
         exp_samples:
@@ -121,17 +125,17 @@ tests:
   - name: recreated cluster is not muted by previous deletion
     interval: 1m
     input_series:
-      # прошлое удаление жило только в 0..5м, затем исчезло
+      # прошлое удаление жило только в 0..5м, затем исчезло (stale-маркер)
       - series: 'in_cloud_capi_cluster_deleted_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-old",cluster_full_name="ns-c1-h1"}'
-        values: '0x5 _x55'
+        values: '0x5 stale'
       - series: 'in_cloud_capi_cluster_deletion_requested{cluster_full_name="ns-c1-h1"}'
-        values: '1x5 _x55'
+        values: '1x5 stale'
       # кластер пересоздан (то же full_name) в t=10м, на момент eval старше 15м
       - series: 'in_cloud_capi_cluster_created_timestamp_seconds{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-new",cluster_full_name="ns-c1-h1"}'
         values: '_x10 600+0x50'
       - series: 'in_cloud_capi_cluster_spec_paused{cluster_name="c1",cluster_namespace="ns",cluster_hash="h-new",cluster_full_name="ns-c1-h1"}'
         values: '_x10 0+0x50'
-    promql_expr_test:
+    metricsql_expr_test:
       - expr: in_cloud_capi_cluster_mute
         eval_time: 50m
         # возраст создания 3000-600 = 2400с > 900с (создание не мьютит);
