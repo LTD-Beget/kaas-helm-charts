@@ -1,0 +1,69 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "manager-role" "context" $) }}
+rules:
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultsecretclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultsecretclaims/status
+    verbs:
+      - get
+      - update
+      - patch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultsecretclaims/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultconfigs
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultconfigs/status
+    verbs:
+      - get
+      - update
+      - patch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultconfigs/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
