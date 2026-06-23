@@ -40,6 +40,11 @@ prepareJob:
     serviceAccountName: vmagent-vmagent
     namespace: example-vmagent
 
+  # Optional step: enable the KV v2 secrets engine.
+  secretEngine:
+    enabled: false
+    path: secret
+
 monitoring:
   enabled: false
   type: VictoriaMetrics

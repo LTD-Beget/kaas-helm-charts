@@ -55,6 +55,15 @@ data:
       kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
     {{- end }}
 
+    {{- if .Values.prepareJob.secretEngine.enabled }}
+    # ------------------------------------------------------------------ #
+    # Secrets engine: KV v2 at path "{{ .Values.prepareJob.secretEngine.path }}"
+    # ------------------------------------------------------------------ #
+    echo "Enabling KV v2 secrets engine at path: {{ .Values.prepareJob.secretEngine.path }}..."
+    vault secrets enable -path="{{ .Values.prepareJob.secretEngine.path }}" -version=2 kv 2>/dev/null || \
+      echo "  secrets engine at {{ .Values.prepareJob.secretEngine.path }} already enabled, skipping."
+    {{- end }}
+
     {{- if .Values.prepareJob.vaultOperator.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-operator-admin
@@ -107,6 +116,43 @@ data:
       bound_service_account_names="${VAULT_OPERATOR_SA}" \
       bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}" \
       token_policies=vault-operator-admin \
+      token_ttl=1h \
+      token_max_ttl=24h
+    {{- end }}
+
+    {{- if .Values.prepareJob.vaultSecretOperator.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: vault-secret-operator
+    # Generates/copies secrets from the system vault into child-cluster secrets.
+    # Kept separate from vault-operator-admin to split responsibilities.
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-secret-operator policy..."
+    # Unquoted heredoc so ${CLUSTER_NAME} expands into the policy.
+    vault policy write vault-secret-operator - <<EOF
+    # Health check
+    path "sys/health" {
+      capabilities = ["read"]
+    }
+
+    # Write/generate secrets into any child cluster (write only, no read-back).
+    path "{{ .Values.prepareJob.secretEngine.path }}/data/*" {
+      capabilities = ["create", "update"]
+    }
+
+    # Read/list only this cluster's own secrets.
+    path "{{ .Values.prepareJob.secretEngine.path }}/data/${CLUSTER_NAME}" {
+      capabilities = ["read", "list"]
+    }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: vault-secret-operator
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-secret-operator role..."
+    vault write "auth/${CLUSTER_NAME}/role/vault-secret-operator" \
+      bound_service_account_names="${VAULT_SECRET_OPERATOR_SA}" \
+      bound_service_account_namespaces="${VAULT_SECRET_OPERATOR_NAMESPACE}" \
+      token_policies=vault-secret-operator \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}

@@ -58,6 +58,12 @@ spec:
             - name: VAULT_OPERATOR_NAMESPACE
               value: {{ $prepare.vaultOperator.namespace | quote }}
             {{- end }}
+            {{- if $prepare.vaultSecretOperator.enabled }}
+            - name: VAULT_SECRET_OPERATOR_SA
+              value: {{ $prepare.vaultSecretOperator.serviceAccountName | quote }}
+            - name: VAULT_SECRET_OPERATOR_NAMESPACE
+              value: {{ $prepare.vaultSecretOperator.namespace | quote }}
+            {{- end }}
             {{- if $prepare.monitoring.enabled }}
             - name: MONITORING_SA
               value: {{ $prepare.monitoring.serviceAccountName | quote }}
