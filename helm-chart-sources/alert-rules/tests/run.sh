@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 #
 # Renders the ENTIRE alert-rules chart (every group of every rule file) into a
-# temp dir and runs every *_test.yaml in this directory against it. Nothing is
-# written into the repo — the rendered rules are a transient artifact for the
-# duration of the run.
+# temp dir and runs every *_test.yaml in this directory against it with
+# vmalert-tool. Nothing is written into the repo — the rendered rules are a
+# transient artifact for the duration of the run.
+#
+# vmalert-tool (not promtool) is used on purpose: the chart runs on
+# VictoriaMetrics/vmalert, and MetricsQL staleness / last_over_time semantics
+# differ from Prometheus. Tests must run on the same engine as prod.
 #
 # No rule/group/file names are hardcoded: all rules are force-enabled generically
 # from files/defaults/*.yaml, so a test for any rule (in any file, present or
@@ -11,8 +15,10 @@
 #
 # Adding a new test = drop a new <something>_test.yaml here; no script changes.
 #
-# Requires: helm, yq, promtool (Prometheus). If promtool is not on PATH, falls
-# back to the prom/prometheus container image when docker is available.
+# Requires: helm, yq, vmalert-tool. If vmalert-tool is not on PATH, falls back to
+# ~/.local/bin/vmalert-tool, then to the victoriametrics/vmalert-tool container
+# when docker is available. Install vmalert-tool from the vmutils release:
+#   https://github.com/VictoriaMetrics/VictoriaMetrics/releases (asset vmutils-*)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -51,30 +57,37 @@ done
 
 cd "${WORK}"
 
-# Wrapper around promtool that works either with a local binary or the
-# prom/prometheus container as a fallback.
-run_promtool() {
-  if command -v promtool >/dev/null 2>&1; then
-    promtool test rules "$@"
+# Resolve vmalert-tool: PATH, then ~/.local/bin, then the docker image.
+VMALERT_TOOL=""
+if command -v vmalert-tool >/dev/null 2>&1; then
+  VMALERT_TOOL="vmalert-tool"
+elif [ -x "${HOME}/.local/bin/vmalert-tool" ]; then
+  VMALERT_TOOL="${HOME}/.local/bin/vmalert-tool"
+fi
+
+# --disableAlertgroupLabel: don't require `groupname` in alert_rule_test and don't
+# inject the group name as a label — alerts are matched by alertname only, and our
+# rendered group names are auto-prefixed (release/VMRule) and not meant to be
+# referenced from tests.
+run_unittest() {
+  if [ -n "${VMALERT_TOOL}" ]; then
+    "${VMALERT_TOOL}" unittest --disableAlertgroupLabel --files="$1"
   elif command -v docker >/dev/null 2>&1; then
     docker run --rm -v "${WORK}:/work" -w /work \
-      --entrypoint promtool prom/prometheus:latest test rules "$@"
+      victoriametrics/vmalert-tool:latest unittest --disableAlertgroupLabel --files="$1"
   else
-    echo "ERROR: neither promtool nor docker is available." >&2
-    echo "Install Prometheus (brew install prometheus) or Docker, then re-run." >&2
+    echo "ERROR: vmalert-tool not found and docker is unavailable." >&2
+    echo "Install it from the vmutils release:" >&2
+    echo "  https://github.com/VictoriaMetrics/VictoriaMetrics/releases" >&2
     exit 1
   fi
 }
-
-if ! command -v promtool >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
-  echo ">> promtool not found; running via prom/prometheus container"
-fi
 
 # Run each test file separately so the output shows which file ran and its result.
 RC=0
 for f in "${BASENAMES[@]}"; do
   echo ">> ${f}"
-  run_promtool "${f}" || RC=1
+  run_unittest "${f}" || RC=1
 done
 
 exit "${RC}"

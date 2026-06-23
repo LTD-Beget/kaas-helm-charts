@@ -5,8 +5,19 @@
 
 | Файл | Назначение |
 |---|---|
-| `run.sh` | Рендерит **весь** чарт (все группы из всех файлов правил) во временную папку и прогоняет против него все `*_test.yaml` из этой директории (использует `promtool`, либо `prom/prometheus` через docker как фоллбэк). |
-| `*_test.yaml` | Кейсы `promtool test rules`. Один файл на правило (или на группу связанных правил). |
+| `run.sh` | Рендерит **весь** чарт (все группы из всех файлов правил) во временную папку и прогоняет против него все `*_test.yaml` из этой директории через `vmalert-tool` (либо образ `victoriametrics/vmalert-tool` через docker как фоллбэк). |
+| `*_test.yaml` | Кейсы `vmalert-tool unittest`. Один файл на правило (или на группу связанных правил). |
+
+**Движок — vmalert-tool (MetricsQL/VictoriaMetrics), а не promtool.** Чарт работает
+на VictoriaMetrics + vmalert, а семантика staleness и `last_over_time` у VM
+отличается от Prometheus. Тесты должны идти на том же движке, что и прод —
+promtool давал ложную уверенность.
+
+Установка `vmalert-tool` (из релиза vmutils):
+[github.com/VictoriaMetrics/VictoriaMetrics/releases](https://github.com/VictoriaMetrics/VictoriaMetrics/releases)
+— скачать asset `vmutils-<os>-<arch>-v<ver>.tar.gz`, распаковать `vmalert-tool-prod`
+в `~/.local/bin/vmalert-tool`. Либо ничего не ставить — `run.sh` сам падает на
+docker-образ.
 
 Отрендеренные правила — временный артефакт: `run.sh` генерирует их во временную
 директорию на время прогона и удаляет после, так что в репозиторий ничего лишнего
@@ -33,9 +44,25 @@
      - rendered.rules.yaml
    ```
 
-3. Опиши свои `input_series` и кейсы `promql_expr_test` / `alert_rule_test`,
-   затем обращайся к recording-метрике по имени (например `in_cloud_capi_cluster_ready`).
+3. Опиши свои `input_series` и кейсы:
+   - `metricsql_expr_test` — для recording-правил (обращайся к метрике по имени,
+     например `in_cloud_capi_cluster_ready`);
+   - `alert_rule_test` — для алертов (матчинг по `alertname`; `run.sh` запускает с
+     `--disableAlertgroupLabel`, поэтому `groupname` не нужен и group-лейбл в
+     `exp_labels` указывать не надо).
 4. Запусти `./run.sh` — он сам подхватит новый файл. Править скрипты не нужно.
+
+### Нотация `values`
+
+`<start>+<step>x<count>` → `count + 1` сэмплов с интервалом теста, от `t=0`.
+Спецтокены: `_` — нет данных (серия не существует), `stale` — stale-маркер
+(серия пропала, как при удалении CR и снятии экспорта в kube-state-metrics).
+
+Важно для VM: `last_over_time(m[window])` **игнорирует** stale-маркер и держит
+последнее реальное значение до конца окна (от последнего реального сэмпла), а
+«голая» метрика (`default_rollup`) на stale-маркере гаснет. Поэтому для
+«переживания» исчезновения серии используется именно `last_over_time`, а кейсы
+на это (см. mute, критерий 7) подают `stale`, а не `_`.
 
 `run.sh` рендерит **весь** чарт, поэтому тест может ссылаться на любое правило из
 любого файла — включая цепочки (например `in_cloud_capi_cluster_ready` зависит от
