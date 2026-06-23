@@ -2,7 +2,7 @@ manager:
   args:
     - --metrics-secure=false
 vaultConfigs:
-  default:
+  vault-secret:
     spec:
       address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
       managerAuth:

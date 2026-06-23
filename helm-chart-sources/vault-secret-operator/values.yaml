@@ -78,8 +78,8 @@ networkPolicies:
   enabled: false
 
 vaultConfigs:
-  default:
-    name: default
+  vault-secret:
+    name: vault-secret
     spec:
       address: http://vault.vault-system.svc:8200
       managerAuth:
