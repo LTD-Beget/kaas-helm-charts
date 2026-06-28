@@ -17,6 +17,7 @@ cilium:
     image:
       pullPolicy: IfNotPresent
   dnsPolicy: ClusterFirstWithHostNet
+  policyAuditMode: false
   prometheus:
     metricsService: true
     enabled: true
