@@ -46,7 +46,7 @@ spec:
             - {{ . }}
             {{- end }}
           command:
-            - /manager
+            - /vault-secret-manager
           {{- if .Values.manager.env }}
           env:
             {{- range .Values.manager.env }}
