@@ -113,8 +113,13 @@ prepareJob:
   clusterName: "{{ .Values.cluster.name }}"
 
   vaultOperator:
-    enabled: true
     namespace: {{ .Values.companyPrefix }}-vault-operator
+
+  vaultSecretOperator:
+    namespace: {{ .Values.companyPrefix }}-vault-secret-operator
+
+  secretEngine:
+    enabled: true
 
 tls:
   enabled: true
