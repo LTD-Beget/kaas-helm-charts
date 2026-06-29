@@ -52,6 +52,14 @@ rules:
     verbs:
       - update
   - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - vaultclaims
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
       - ""
     resources:
       - secrets
