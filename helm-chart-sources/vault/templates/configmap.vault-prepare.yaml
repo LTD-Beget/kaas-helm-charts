@@ -135,13 +135,17 @@ data:
     }
 
     # Write/generate secrets into any child cluster (write only, no read-back).
-    path "{{ $prepare.secretEngine.path }}/data/*" {
+    path "{{ $prepare.secretEngine.path }}/data/clusters/*" {
       capabilities = ["create", "update"]
     }
 
     # Read/list only this cluster's own secrets.
-    path "{{ $prepare.secretEngine.path }}/data/${CLUSTER_NAME}" {
+    path "{{ $prepare.secretEngine.path }}/data/clusters/${CLUSTER_NAME}/*" {
       capabilities = ["read", "list"]
+    }
+
+    path "{{ $prepare.secretEngine.path }}/metadata/clusters/${CLUSTER_NAME}/*" {
+      capabilities = ["list"]
     }
 
     path "sys/mounts" {
