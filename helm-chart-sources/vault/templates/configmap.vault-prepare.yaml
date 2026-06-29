@@ -42,7 +42,7 @@ data:
     echo "Authenticating with root token..."
     vault login "$ROOT_TOKEN" > /dev/null
 
-    {{- if .Values.prepareJob.kubernetesAuth.enabled }}
+    {{- if $prepare.kubernetesAuth.enabled }}
     # ------------------------------------------------------------------ #
     # Kubernetes auth — enable and configure
     # ------------------------------------------------------------------ #
@@ -55,16 +55,16 @@ data:
       kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
     {{- end }}
 
-    {{- if .Values.prepareJob.secretEngine.enabled }}
+    {{- if $prepare.secretEngine.enabled }}
     # ------------------------------------------------------------------ #
-    # Secrets engine: KV v2 at path "{{ .Values.prepareJob.secretEngine.path }}"
+    # Secrets engine: KV v2 at path "{{ $prepare.secretEngine.path }}"
     # ------------------------------------------------------------------ #
-    echo "Enabling KV v2 secrets engine at path: {{ .Values.prepareJob.secretEngine.path }}..."
-    vault secrets enable -path="{{ .Values.prepareJob.secretEngine.path }}" -version=2 kv 2>/dev/null || \
-      echo "  secrets engine at {{ .Values.prepareJob.secretEngine.path }} already enabled, skipping."
+    echo "Enabling KV v2 secrets engine at path: {{ $prepare.secretEngine.path }}..."
+    vault secrets enable -path="{{ $prepare.secretEngine.path }}" -version=2 kv 2>/dev/null || \
+      echo "  secrets engine at {{ $prepare.secretEngine.path }} already enabled, skipping."
     {{- end }}
 
-    {{- if .Values.prepareJob.vaultOperator.enabled }}
+    {{- if $prepare.vaultOperator.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-operator-admin
     # ------------------------------------------------------------------ #
@@ -113,14 +113,14 @@ data:
     # ------------------------------------------------------------------ #
     echo "Writing vault-operator role..."
     vault write "auth/${CLUSTER_NAME}/role/vault-operator" \
-      bound_service_account_names="${VAULT_OPERATOR_SA}" \
-      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}" \
+      bound_service_account_names="${VAULT_OPERATOR_SA}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_SA}{{- end -}}" \
+      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_NAMESPACE}{{- end -}}" \
       token_policies=vault-operator-admin \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}
 
-    {{- if .Values.prepareJob.vaultSecretOperator.enabled }}
+    {{- if $prepare.vaultSecretOperator.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-secret-operator
     # Generates/copies secrets from the system vault into child-cluster secrets.
@@ -135,12 +135,12 @@ data:
     }
 
     # Write/generate secrets into any child cluster (write only, no read-back).
-    path "{{ .Values.prepareJob.secretEngine.path }}/data/*" {
+    path "{{ $prepare.secretEngine.path }}/data/*" {
       capabilities = ["create", "update"]
     }
 
     # Read/list only this cluster's own secrets.
-    path "{{ .Values.prepareJob.secretEngine.path }}/data/${CLUSTER_NAME}" {
+    path "{{ $prepare.secretEngine.path }}/data/${CLUSTER_NAME}" {
       capabilities = ["read", "list"]
     }
     EOF
@@ -157,7 +157,7 @@ data:
       token_max_ttl=24h
     {{- end }}
 
-    {{- if .Values.prepareJob.monitoring.enabled }}
+    {{- if $prepare.monitoring.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: metrics-reader (for authenticated monitoring agents)
     # ------------------------------------------------------------------ #
