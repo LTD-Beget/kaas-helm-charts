@@ -113,15 +113,12 @@ data:
     # ------------------------------------------------------------------ #
     echo "Writing vault-operator role..."
     vault write "auth/${CLUSTER_NAME}/role/vault-operator" \
-      bound_service_account_names="*" \
-      bound_service_account_namespaces="*" \
+      bound_service_account_names="${VAULT_OPERATOR_SA}" \
+      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}" \
       token_policies=vault-operator-admin \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}
-    # "${VAULT_OPERATOR_SA}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_SA}{{- end -}}"
-    # "${VAULT_OPERATOR_NAMESPACE}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_NAMESPACE}{{- end -}}"
-
 
     {{- if $prepare.vaultSecretOperator.enabled }}
     # ------------------------------------------------------------------ #
@@ -157,14 +154,12 @@ data:
     # ------------------------------------------------------------------ #
     echo "Writing vault-secret-operator role..."
     vault write "auth/${CLUSTER_NAME}/role/vault-secret-operator" \
-      bound_service_account_names="*" \
-      bound_service_account_namespaces="*" \
+      bound_service_account_names="${VAULT_SECRET_OPERATOR_SA}" \
+      bound_service_account_namespaces="${VAULT_SECRET_OPERATOR_NAMESPACE}" \
       token_policies=vault-secret-operator \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}
-    # "${VAULT_SECRET_OPERATOR_SA}"
-    # ${VAULT_SECRET_OPERATOR_NAMESPACE}
 
     {{- if $prepare.monitoring.enabled }}
     # ------------------------------------------------------------------ #
