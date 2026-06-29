@@ -27,6 +27,7 @@ spec:
           generate:
             length: 16
             hash: bcrypt
+
         - name: vmuser
           type: generate
           destination:
@@ -35,27 +36,132 @@ spec:
           generate:
             length: 24
             hash: none
+
         - name: etcd-backup-s3-bucket
           type: copy
           source:
-            path: clusters/SYSTEM-CLUSTER-FULLNAME/etcd-backup # TODO: зашаблонить SYSTEM-CLUSTER-FULLNAME
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
             key: bucket
           destination:
             path: etcd-backup
             key: bucket
+
         - name: etcd-backup-s3-access-key
           type: copy
           source:
-            path: clusters/SYSTEM-CLUSTER-FULLNAME/etcd-backup # TODO: зашаблонить SYSTEM-CLUSTER-FULLNAME
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
             key: access-key
           destination:
             path: etcd-backup
             key: access-key
-        - name: etcd-backup-s3-access-secret
+
+        - name: etcd-backup-s3-secret-key
           type: copy
           source:
-            path: clusters/SYSTEM-CLUSTER-FULLNAME/etcd-backup # TODO: зашаблонить SYSTEM-CLUSTER-FULLNAME
-            key: access-secret
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: secret-key
           destination:
             path: etcd-backup
-            key: access-secret
+            key: secret-key
+
+        - name: incloud-ui-cookie-secret
+          type: generate
+          destination:
+            path: incloud-web
+            key: cookie-secret
+          generate:
+            length: 32
+            hash: none
+
+        {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+        - name: dex-admin
+          type: generate
+          destination:
+            path: dex
+            key: admin.password
+            hashedKey: admin.passwordBcrypt
+          generate:
+            length: 16
+            hash: bcrypt
+
+        - name: grafana-admin
+          type: generate
+          destination:
+            path: grafana
+            key: admin.password
+          generate:
+            length: 16
+            hash: none
+
+        - name: grafana-oidc-client-secret
+          type: generate
+          destination:
+            path: grafana
+            key: oidc-client-secret
+          generate:
+            length: 32
+            hash: none
+
+        - name: docker-registry-s3-bucket
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: bucket
+          destination:
+            path: docker-registry
+            key: bucket
+
+        - name: docker-registry-s3-access-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: access-key
+          destination:
+            path: docker-registry
+            key: access-key
+
+        - name: docker-registry-s3-secret-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: secret-key
+          destination:
+            path: docker-registry
+            key: secret-key
+
+        - name: alertmanager-signalilo-token
+          type: generate
+          destination:
+            path: signalilo
+            key: alertmanager-token
+          generate:
+            length: 32
+            hash: none
+
+        - name: icinga-password
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/signalilo
+            key: icinga-password
+          destination:
+            path: signalilo
+            key: icinga-password
+
+        - name: svc-hub-rabbit-password
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/svc-hub
+            key: rabbit-password
+          destination:
+            path: svc-hub
+            key: rabbit-password
+
+        - name: telegram-token
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/telegram
+            key: token
+          destination:
+            path: telegram
+            key: token
+        {{`{{- end }}`}}
