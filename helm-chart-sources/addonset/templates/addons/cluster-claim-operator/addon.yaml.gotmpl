@@ -5,9 +5,14 @@ kind: Addon
 metadata:
   name: cluster-claim-operator
 spec:
-  chart: "cluster-claim-operator"
-  repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.1.2"
+  # chart: "cluster-claim-operator"
+  # repoURL: {{ .Values.companyExternalChartRegistry }}
+  # version: "0.1.2"
+
+  path: helm-chart-sources/cluster-claim-operator
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts
+  version: feature/K8S-562
+
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-cluster-claim-operator"
