@@ -43,12 +43,12 @@ spec:
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
 
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
-      argocdServerAdminPassword: {{ .Values.extraArgs.argocdServerAdminPassword }}
-      etcdbackupAppArgsStorecontainer: {{ .Values.extraArgs.etcdbackupAppArgsStorecontainer }}
-      etcdbackupS3AccessKey: {{ .Values.extraArgs.etcdbackupS3AccessKey }}
-      etcdbackupS3SecretAccessKey: {{ .Values.extraArgs.etcdbackupS3SecretAccessKey }}
+      argocdServerAdminPassword: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/argocd#admin.passwordBcrypt>"
+      etcdbackupAppArgsStorecontainer: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#bucket>"
+      etcdbackupS3AccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#access-key>"
+      etcdbackupS3SecretAccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#secret-key>"
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
-      incloudUICookieSecret: {{ .Values.extraArgs.incloudUICookieSecret }}
+      incloudUICookieSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/incloud-web#cookie-secret>"
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}
