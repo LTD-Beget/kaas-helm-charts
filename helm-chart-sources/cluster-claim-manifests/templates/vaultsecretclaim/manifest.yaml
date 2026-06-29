@@ -2,7 +2,7 @@
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
 metadata:
-  name: {{ .Release.Name }}-vaultclaim
+  name: {{ .Release.Name }}-vaultsecretclaim
 spec:
   apiVersion: vault.in-cloud.io/v1alpha1
   kind: VaultSecretClaim
