@@ -113,8 +113,8 @@ data:
     # ------------------------------------------------------------------ #
     echo "Writing vault-operator role..."
     vault write "auth/${CLUSTER_NAME}/role/vault-operator" \
-      bound_service_account_names="${VAULT_OPERATOR_SA}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_SA}{{- end -}}" \
-      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_NAMESPACE}{{- end -}}" \
+      bound_service_account_names="*" #"${VAULT_OPERATOR_SA}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_SA}{{- end -}}" \
+      bound_service_account_namespaces="*" #"${VAULT_OPERATOR_NAMESPACE}{{- if $prepare.vaultSecretOperator.enabled -}},${VAULT_SECRET_OPERATOR_NAMESPACE}{{- end -}}" \
       token_policies=vault-operator-admin \
       token_ttl=1h \
       token_max_ttl=24h
@@ -143,7 +143,7 @@ data:
     path "{{ $prepare.secretEngine.path }}/data/${CLUSTER_NAME}" {
       capabilities = ["read", "list"]
     }
-    
+
     path "sys/mounts" {
       capabilities = ["read"]
     }
