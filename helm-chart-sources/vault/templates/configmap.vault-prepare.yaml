@@ -136,7 +136,7 @@ data:
 
     # Write/generate secrets into any child cluster (write only, no read-back).
     path "{{ $prepare.secretEngine.path }}/data/clusters/*" {
-      capabilities = ["create", "update"]
+      capabilities = ["read", "create", "update"]
     }
 
     # Read/list only this cluster's own secrets.
