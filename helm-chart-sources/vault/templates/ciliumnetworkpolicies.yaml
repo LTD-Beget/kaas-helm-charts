@@ -100,12 +100,11 @@ spec:
     for telemetry/metrics collection.
 
 ---
-# Allow configured sources to reach vault server on 8200.
-# vault-operator is always included; additional sources via networkPolicies.additionalIngressSources.
+# Allow access for vault-operator to reach vault server on 8200.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-to-vault-8200
+  name: allow-ingress-vault-operator-to-vault-8200
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -123,7 +122,30 @@ spec:
         protocol: TCP
   description: |
     Allows ingress to vault server on 8200 from vault-operator
-    {{- range .Values.networkPolicies.additionalIngressSources }} and {{ .serviceAccount }} ({{ .namespace }}){{ end }}.
+
+---
+# Allow access for vault-secret-operator to reach vault server on 8200.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vault-secret-operator-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-secret-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault-secret-operator
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows ingress to vault server on 8200 from vault-secret-operator
 
 ---
 # Allow istio gateway to reach vault server on 8200.
