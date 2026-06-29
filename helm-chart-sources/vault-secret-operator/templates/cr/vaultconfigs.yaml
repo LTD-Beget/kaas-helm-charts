@@ -4,6 +4,8 @@ apiVersion: vault.in-cloud.io/v1alpha1
 kind: VaultConfig
 metadata:
   name: {{ $vc.name | default $name }}
+  labels:
+    vault.in-cloud.io/owner: vault-secret
 spec:
   {{- toYaml $vc.spec | nindent 2 }}
 {{- end }}
