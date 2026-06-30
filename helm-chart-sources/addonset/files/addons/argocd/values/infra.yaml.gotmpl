@@ -99,6 +99,8 @@ argo-cd:
       metadata:
         name: avp-config
         namespace: {{ .Values.companyPrefix }}-argocd
+        labels:
+          avp-secret.in-cloud.io/updated: "true"
       type: Opaque
       stringData:
         AVP_TYPE: "vault"
