@@ -5,14 +5,9 @@ kind: Addon
 metadata:
   name: vault
 spec:
-  # chart: "vault"
-  # repoURL: {{ .Values.companyExternalChartRegistry }}
-  # version: "0.30.1-3"
-
-  path: helm-chart-sources/vault
-  repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-  version: feature/K8S-562
-
+  chart: "vault"
+  repoURL: {{ .Values.companyExternalChartRegistry }}
+  version: "0.30.1-4"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vault"

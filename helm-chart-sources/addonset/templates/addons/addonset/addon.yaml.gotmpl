@@ -5,14 +5,9 @@ kind: Addon
 metadata:
   name: addonset
 spec:
-  # chart: "addonset"
-  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  # version: "{{ .Values.addonRevision }}"
-
-  path: helm-chart-sources/addonset
-  repoURL: https://github.com/LTD-Beget/kaas-helm-charts
-  version: feature/K8S-562
-
+  chart: "addonset"
+  repoURL: "{{ .Values.companyExternalChartRegistry }}"
+  version: "{{ .Values.addonRevision }}"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-addonset"
