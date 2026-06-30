@@ -29,12 +29,13 @@ spec:
           path "sys/mounts" { capabilities = ["read"] }
 
           path "secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
-            capabilities = ["read"]
+            capabilities = ["read", "list"]
           }
 
           path "secret/metadata/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
             capabilities = ["list"]
           }
+
       roles: # TODO set list of SA name/ns
       - boundServiceAccounts:
           name: '*'
