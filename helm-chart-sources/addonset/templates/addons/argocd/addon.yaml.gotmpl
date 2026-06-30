@@ -24,6 +24,10 @@ spec:
       extract:
         - as: clusterName
           jsonPath: .data.clusterName
+        - as: clusterClaimName
+          jsonPath: .data.clusterClaimName
+        - as: customer
+          jsonPath: .data.customer
         - as: argocdServerAdminPassword
           jsonPath: .data.argocdServerAdminPassword
         - as: dataCreationTimestamp

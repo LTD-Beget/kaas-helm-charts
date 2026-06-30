@@ -105,8 +105,8 @@ argo-cd:
       stringData:
         AVP_TYPE: "vault"
         AVP_AUTH_TYPE: "k8s"
-        AVP_K8S_ROLE: "{{ .Values.clusterName }}-ro"
-        AVP_K8S_MOUNT_PATH: "auth/{{ .Values.clusterName }}"
+        AVP_K8S_ROLE: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}-ro"
+        AVP_K8S_MOUNT_PATH: "auth/{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
         VAULT_ADDR: "https://{{ .Values.systemIstioGwDomain }}"
         VAULT_SKIP_VERIFY: "true" # TODO: use CA
     - apiVersion: rbac.authorization.k8s.io/v1

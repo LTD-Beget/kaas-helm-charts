@@ -13,6 +13,7 @@ spec:
     data:
       environment: client
       xcluster: {{`{{ .ClusterClaim.metadata.name }}`}}
+      clusterClaimName: {{`{{ .ClusterClaim.metadata.name }}`}}
       customer: {{`{{ .ClusterClaim.metadata.namespace }}`}}
       systemNamespace: {{`{{ .ClusterClaim.metadata.namespace }}`}}
 
