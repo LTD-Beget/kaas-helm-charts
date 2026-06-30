@@ -12,7 +12,7 @@
   {{- range $value := list
     (dict "name" "default"                "enabled" true  "file"  true  "template"  false "common"  false )
     (dict "name" "immutable"              "enabled" true  "file"  false "template"  false "common"  false )
-    (dict "name" "initialized"            "enabled" true  "file"  false "template"  false "common"  true  )
+    (dict "name" "initialized"            "enabled" true  "file"  true  "template"  false "common"  false )
     (dict "name" "infra"                  "enabled" true  "file"  true  "template"  false "common"  false )
     (dict "name" "network-policies"       "enabled" true  "file"  true  "template"  false "common"  false )
     (dict "name" "trust-manager"          "enabled" true  "file"  true  "template"  false "common"  false )
