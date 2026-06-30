@@ -23,6 +23,29 @@ spec:
     for control-plane interactions and kubernetes service_registration.
 
 ---
+# Allow vault server to reach the external Kubernetes API server (kubernetes auth validation).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vault-to-external-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from vault server to the external Kubernetes API server on 6443
+    for validating Kubernetes auth (TokenReview), as its IP is classified as world.
+
+---
 # Allow vault server to reach etcd on control-plane nodes (storage backend).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
