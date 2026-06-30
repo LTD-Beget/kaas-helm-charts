@@ -47,6 +47,8 @@ spec:
       etcdbackupS3SecretAccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#secret-key>"
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
       incloudUICookieSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/incloud-web#cookie-secret>"
+      argocdOidcClientSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/argocd#oidc-client-secret>"
+      incloudWebOidcClientSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/incloud-web#oidc-client-secret>"
       companyPrefix: {{ .Values.extraArgs.companyPrefix }}
       companyDomain: {{ .Values.extraArgs.companyDomain }}
       companyExternalChartRegistry: {{ .Values.extraArgs.companyExternalChartRegistry }}

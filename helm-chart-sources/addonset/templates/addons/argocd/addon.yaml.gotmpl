@@ -35,6 +35,8 @@ spec:
           jsonPath: .data.customer
         - as: argocdServerAdminPassword
           jsonPath: .data.argocdServerAdminPassword
+        - as: argocdOidcClientSecret
+          jsonPath: .data.argocdOidcClientSecret
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
         - as: systemIstioGwDomain

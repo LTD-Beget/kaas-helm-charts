@@ -14,7 +14,7 @@ argo-cd:
         name: Dex
         issuer: "https://{{ .Values.systemIstioGwDomain }}"
         clientID: argocd
-        clientSecret: argo-cd-super-secret
+        clientSecret: {{ .Values.argocdOidcClientSecret }}
         requestedScopes: ["openid","profile","email","groups"]
         insecureSkipVerify: true
       oidc.tls.insecure.skip.verify: "true"
