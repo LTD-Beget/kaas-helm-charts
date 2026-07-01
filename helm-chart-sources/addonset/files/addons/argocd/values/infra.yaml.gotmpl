@@ -10,14 +10,6 @@ argo-cd:
   configs:
     cm:
       url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
-      oidc.config: |
-        name: Dex
-        issuer: "https://{{ .Values.systemIstioGwDomain }}"
-        clientID: argocd
-        clientSecret: {{ .Values.argocdOidcClientSecret }}
-        requestedScopes: ["openid","profile","email","groups"]
-        insecureSkipVerify: true
-      oidc.tls.insecure.skip.verify: "true"
     cmp:
       create: true
       plugins:
@@ -67,9 +59,6 @@ argo-cd:
     envFrom:
       - secretRef:
           name: avp-config
-    secret:
-      argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
-      argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
   redisSecretInit:
     enabled: false
   repoServer:

@@ -1,2 +1,17 @@
 argocdPlugins:
   vault: true
+
+argo-cd:
+  configs:
+    cm:
+      oidc.config: |
+        name: Dex
+        issuer: "https://{{ .Values.systemIstioGwDomain }}"
+        clientID: argocd
+        clientSecret: {{ .Values.argocdOidcClientSecret }}
+        requestedScopes: ["openid","profile","email","groups"]
+        insecureSkipVerify: true
+      oidc.tls.insecure.skip.verify: "true"  
+    secret:
+      argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
+      argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
