@@ -2660,21 +2660,13 @@ entries:
         artifacthub.io/operator: "true"
       apiVersion: v2
       appVersion: v1.119.0
-<<<<<<< HEAD
-      created: "2026-06-22T15:25:07.839492+03:00"
-=======
       created: "2026-07-01T04:35:01.781892+07:00"
->>>>>>> master
       dependencies:
         - name: victoria-metrics-k8s-stack
           repository: https://victoriametrics.github.io/helm-charts/
           version: 0.52.0
       description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-<<<<<<< HEAD
-      digest: a809db51117ded9dbe709a182c339ee4bf4da8fb24a0163f95dfa72263882938
-=======
       digest: cbf1f22c6bd08c752e37d5f53d02a6fbdb6f41770c221c67294ed672cd8c0198
->>>>>>> master
       home: https://github.com/VictoriaMetrics/helm-charts
       icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
       keywords:
@@ -2693,13 +2685,8 @@ entries:
         - https://github.com/VictoriaMetrics/helm-charts
       type: application
       urls:
-<<<<<<< HEAD
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-6.tgz
-      version: 0.52.0-6
-=======
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-5-debug.tgz
       version: 0.52.0-5-debug
->>>>>>> master
     - annotations:
         artifacthub.io/category: monitoring-logging
         artifacthub.io/license: Apache-2.0
@@ -3020,16 +3007,5 @@ entries:
       type: application
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.0.tgz
-      version: 0.1.0
-  vault-secret-operator:
-    - apiVersion: v2
-      appVersion: v0.0.2-2bfbb682
-      created: "2026-07-01T03:35:03.029805+05:00"
-      description: A Helm chart to distribute the project vault-secret-operator
-      digest: 69a5652bd7a7ed5a9b35a562b471e390f699a0b110ce295748fbae7ba3ac15b2
-      name: vault-secret-operator
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secret-operator-0.1.0.tgz
       version: 0.1.0
 generated: "2026-06-02T12:49:04.360593+05:00"
