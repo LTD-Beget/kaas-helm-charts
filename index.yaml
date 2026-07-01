@@ -90,6 +90,16 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-07-01T18:55:56.531635+05:00"
+      description: A Helm chart for Kubernetes
+      digest: c1e84e2964776ff19d3b41f7ef4c4c5ee519ca91e6371dbc213cbc434ef9567d
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.9.tgz
+      version: 1.0.9
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-07-01T14:49:35.059736+03:00"
       description: A Helm chart for Kubernetes
       digest: d667f761076a87b6b4f00da0a0055b2390389c3ce18f128d99a1000d2939f674
@@ -98,16 +108,6 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.8.tgz
       version: 1.0.8
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-07-01T12:06:52.663825+05:00"
-      description: A Helm chart for Kubernetes
-      digest: abdef0043a6f43580dafbf2cf3be633ac0124e4a593b9de6455f87447ef216f9
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.9.tgz
-      version: 1.0.9
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-07-01T06:41:55.657658+07:00"
@@ -401,9 +401,9 @@ entries:
   bootstrap:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-07-01T12:06:52.663932+05:00"
+      created: "2026-07-01T18:55:56.531765+05:00"
       description: Helm chart for bootstrap addonset
-      digest: 776f2b93f61c331ed26d54d55ad24e9f7d615e13311abc9f6d51b1ff4d4356d8
+      digest: a7ea530118b1298f88903474c91287a699a348ee0d8a6cb38a43e2163bfae453
       name: bootstrap
       type: application
       urls:
@@ -2660,13 +2660,13 @@ entries:
         artifacthub.io/operator: "true"
       apiVersion: v2
       appVersion: v1.119.0
-      created: "2026-07-01T14:49:35.097196+03:00"
+      created: "2026-07-01T18:56:55.410319+05:00"
       dependencies:
         - name: victoria-metrics-k8s-stack
           repository: https://victoriametrics.github.io/helm-charts/
           version: 0.52.0
       description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
-      digest: 0f9c3e8ef276a6cb4cfd5144e4d07297465af57f4b777f9cf9b29fdfb0b0a1bc
+      digest: 4f301a4be56f5f8239a45d0404d565d459dbeb28239fd67ab958bad4edf83d73
       home: https://github.com/VictoriaMetrics/helm-charts
       icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
       keywords:
