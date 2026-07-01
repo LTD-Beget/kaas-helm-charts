@@ -1,4 +1,24 @@
 {{ if .Values.networkPolicies.controller.enabled }}
+---
+# host to argocd-application-controller — metrics readiness (8082)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-argocd-app-controller-8082
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to argocd-application-controller"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: argocd-application-controller
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8082"
+        protocol: TCP
 
 ---
 # Allow `argocd-application-controller` to talk to the Kubernetes API server (client).
@@ -14,8 +34,9 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
   egress:
   - toEntities:
-    - world
     - kube-apiserver
+    toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '26443'
@@ -37,8 +58,9 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
   egress:
   - toEntities:
-    - world
     - kube-apiserver
+    toCIDR:
+    - 0.0.0.0/0
     toPorts:
     - ports:
       - port: '6443'

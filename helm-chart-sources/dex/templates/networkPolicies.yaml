@@ -45,6 +45,30 @@ spec:
   description: Allows ingress from vmagent to dex on 11043 for metrics collection.
 
 ---
+# Allow kubelet to probe `dex` health.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-dex-5554-5558
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to dex on :5554 (health) and :5558 (metrics)"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: dex
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "5554"
+        protocol: TCP
+      - port: "5558"
+        protocol: TCP
+
+---
 # Allow remote nodes to reach `dex`.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

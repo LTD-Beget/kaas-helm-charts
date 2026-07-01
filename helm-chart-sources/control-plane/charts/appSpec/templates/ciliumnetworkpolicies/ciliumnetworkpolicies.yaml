@@ -1,5 +1,32 @@
 {{- if $.Values.networkPolicies.enabled }}
 ---
+# host to client-cp-control-plane-control-plane — health (8134), etcd metrics (20257, 20259), nested apiserver (26443)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-control-plane
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to client-cp-control-plane-control-plane"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8134"
+        protocol: TCP
+      - port: "20257"
+        protocol: TCP
+      - port: "20259"
+        protocol: TCP
+      - port: "26443"
+        protocol: TCP
+
+---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

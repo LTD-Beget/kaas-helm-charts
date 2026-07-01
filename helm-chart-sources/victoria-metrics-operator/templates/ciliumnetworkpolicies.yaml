@@ -1,5 +1,26 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to vm-operator — health (8081)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-vm-operator-8081
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to vm-operator"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: vm-operator
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+
+---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

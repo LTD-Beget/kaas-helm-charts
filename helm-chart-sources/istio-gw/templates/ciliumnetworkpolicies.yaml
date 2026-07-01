@@ -1,5 +1,31 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to istio-gw — kubelet readiness probe (15021) + kube-apiserver admission webhooks (443)
+# В системном кластере kube-apiserver — нативный процесс (entity: host), вызывает
+# admission webhooks через istio-gw. fromEntities:world не покрывает host entity
+# при включённом hostFirewall.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-istio-gw-15021
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes and kube-apiserver webhooks to istio-gw from host"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+      - port: "15021"
+        protocol: TCP
+
+---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

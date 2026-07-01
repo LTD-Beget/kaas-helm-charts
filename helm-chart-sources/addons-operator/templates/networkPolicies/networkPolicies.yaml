@@ -1,5 +1,28 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to addons-operator-addon-operator-controller-manager — health (8081), webhook (9443)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-addons-operator-8081-9443
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to addons-operator-addon-operator-controller-manager"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: addons-operator-addon-operator-controller-manager
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+      - port: "9443"
+        protocol: TCP
+
+---
 # Allow `addons-operator` to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

@@ -35,3 +35,165 @@ resources:
     spec:
       ca:
         secretName: {{ .Values.cluster.name }}-etcd
+
+
+  ccnpVxlanOverlay:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-vxlan-overlay
+    spec:
+      description: "Allow Cilium VXLAN overlay (UDP:8472) between all cluster nodes"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+      ingress:
+      - fromEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+  ccnpCiliumHealthInterNode:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-cilium-health-inter-node
+    spec:
+      description: "Allow Cilium health checks (TCP:4240 + ICMP) between cluster nodes"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+      - toEntities:
+        - remote-node
+        - kube-apiserver
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+      ingress:
+      - fromEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+      - fromEntities:
+        - remote-node
+        - kube-apiserver
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+  ccnpEtcdPeer:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-etcd-peer-2380
+    spec:
+      description: "Allow etcd peer replication (TCP:2380) between cluster nodes"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+      ingress:
+      - fromEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+  ccnpToApiserver:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-egress-to-kube-apiserver-6443
+    spec:
+      description: "Allow kubelet egress to kube-apiserver on :6443 (entity + specific VIP CIDR)"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+  ccnpToKubelet:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-ingress-kube-apiserver-kubelet
+    spec:
+      description: "Allow kube-apiserver to reach kubelet API (:10250) for exec/logs/port-forward"
+      nodeSelector: {}
+      ingress:
+      - fromEntities:
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "10250"
+            protocol: TCP
+  ccnpKubeletProbes:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-egress-kubelet-probes-system
+    spec:
+      description: "Allow kubelet (host) to probe system-cluster-specific pods on health/readiness ports"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - cluster
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "3000"
+            protocol: TCP
+          - port: "5000"
+            protocol: TCP
+          - port: "5554"
+            protocol: TCP
+          - port: "5558"
+            protocol: TCP
+          - port: "6379"
+            protocol: TCP
+          - port: "8480"
+            protocol: TCP
+          - port: "8481"
+            protocol: TCP
+          - port: "8482"
+            protocol: TCP
+          - port: "9090"
+            protocol: TCP
+          - port: "9093"
+            protocol: TCP
+          - port: "9440"
+            protocol: TCP
+          - port: "50051"
+            protocol: TCP

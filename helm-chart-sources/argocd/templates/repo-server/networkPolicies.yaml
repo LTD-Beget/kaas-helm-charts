@@ -3,6 +3,27 @@
 {{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
 
 ---
+# host to argocd-repo-server — metrics readiness (8084)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-argocd-repo-server-8084
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to argocd-repo-server"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8084"
+        protocol: TCP
+
+---
 # Allow `argocd-repo-server` to talk to the Kubernetes API server (infra).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

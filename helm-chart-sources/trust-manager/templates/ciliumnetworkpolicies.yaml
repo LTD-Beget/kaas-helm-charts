@@ -1,5 +1,26 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to trust-manager — health (6060)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-trust-manager-6060
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to trust-manager"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: trust-manager
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "6060"
+        protocol: TCP
+
+---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

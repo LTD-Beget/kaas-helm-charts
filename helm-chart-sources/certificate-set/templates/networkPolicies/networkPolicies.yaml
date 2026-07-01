@@ -1,5 +1,26 @@
 {{- if .Values.networkPolicies.enabled }}
 ---
+# host to certs-controller-manager — health (8081)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-certificate-set-8081
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to certs-controller-manager"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: certs-controller-manager
+  ingress:
+  - fromEntities:
+    - host
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+
+---
 # Allow `certificate-set` to talk to the Kubernetes API server.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

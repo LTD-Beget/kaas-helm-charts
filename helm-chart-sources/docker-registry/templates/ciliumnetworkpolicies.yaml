@@ -1,4 +1,5 @@
 {{- if .Values.networkPolicies.enabled }}
+{{- $clusterDomain      := .Values.clusterDomain -}}
 {{ range $proxyName, $proxyValue := .Values.proxies }}
 {{- if $proxyValue.enabled }}
 {{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
@@ -47,6 +48,9 @@ spec:
       rules:
         dns:
         - matchName: {{ $s3Endpoint }}
+        - matchName: {{ $s3Endpoint }}.{{ $clusterDomain }}
+        - matchName: {{ $s3Endpoint }}.svc.{{ $clusterDomain }}
+        - matchName: {{ $s3Endpoint }}.{{ $.Release.Namespace }}.svc.{{ $clusterDomain }}
   description: |
     Allows egress from all {{ $registryName }} pods to CoreDNS on 53 for S3 backend name resolution.
 
@@ -121,8 +125,16 @@ spec:
       rules:
         dns:
         - matchName: {{ $proxyEndpoint }}
+        - matchName: {{ $proxyEndpoint }}.{{ $clusterDomain }}
+        - matchName: {{ $proxyEndpoint }}.svc.{{ $clusterDomain }}
+        - matchName: {{ $proxyEndpoint }}.{{ $.Release.Namespace }}.svc.{{ $clusterDomain }}
+        - matchPattern: "{{ $proxyEndpoint }}.*"
         {{- range $extraAccessToFQDNs }}
         - matchName: {{ . }}
+        - matchName: {{ . }}.{{ $clusterDomain }}
+        - matchName: {{ . }}.svc.{{ $clusterDomain }}
+        - matchName: {{ . }}.{{ $.Release.Namespace }}.svc.{{ $clusterDomain }}
+        - matchPattern: "{{ . }}.*"
         {{- end }}
   description: |
     Allows egress from {{ $registryName }} to CoreDNS on 53 for DNS resolution.
@@ -235,6 +247,28 @@ spec:
   description: |
     Allows egress from {{ $registryName }} to {{ . }} on 443.
 {{- end }}
+
+---
+# Allow kubelet to probe docker registry cache health on 5000.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-host-probes-{{ $registryName }}-5000
+  namespace: {{ $.Release.Namespace }}
+spec:
+  description: "Allow kubelet probes to {{ $registryName }} on :5000"
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $serviceAccountName }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "5000"
+        protocol: TCP
 
 ---
 # Allow istio gateway to reach docker registry cache on 5000.
