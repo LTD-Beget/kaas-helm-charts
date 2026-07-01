@@ -6,7 +6,7 @@ metadata:
   name: allow-host-probes-coredns
   namespace: {{ .Release.Namespace }}
 spec:
-  description: "Allow kubelet probes to beget-coredns/coredns"
+  description: "Allow kubelet probes to {{ .Release.Namespace }}-coredns/coredns"
   endpointSelector:
     matchLabels:
       k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}

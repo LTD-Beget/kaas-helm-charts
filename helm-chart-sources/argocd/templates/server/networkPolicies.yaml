@@ -100,17 +100,14 @@ spec:
         - matchName: {{ .Values.istioGwDomain }}.{{ .Values.clusterDomain }}
         - matchName: {{ .Values.istioGwDomain }}.svc.{{ .Values.clusterDomain }}
         - matchName: {{ .Values.istioGwDomain }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
-        - matchPattern: '{{ .Values.istioGwDomain }}.*'
         - matchName: {{ $redis }}
         - matchName: {{ $redis }}.{{ .Values.clusterDomain }}
         - matchName: {{ $redis }}.svc.{{ .Values.clusterDomain }}
         - matchName: {{ $redis }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
-        - matchPattern: '{{ $redis }}.*'
         - matchName: {{ $repoServer }}
         - matchName: {{ $repoServer }}.{{ .Values.clusterDomain }}
         - matchName: {{ $repoServer }}.svc.{{ .Values.clusterDomain }}
         - matchName: {{ $repoServer }}.{{ $ns }}.svc.{{ .Values.clusterDomain }}
-        - matchPattern: '{{ $repoServer }}.*'
         - matchName: _grpc_config.localhost
         - matchPattern: '_grpc_config.localhost.*'
   description: Allows egress from argocd-server to CoreDNS on 53 for DNS resolution.
