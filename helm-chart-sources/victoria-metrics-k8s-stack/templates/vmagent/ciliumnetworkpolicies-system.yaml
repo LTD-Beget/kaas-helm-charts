@@ -558,7 +558,7 @@ spec:
   - toEndpoints:
     - matchLabels:
         k8s:io.cilium.k8s.policy.serviceaccount: secret-copy-operator-controller-manager
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-system
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-secret-copy-operator
     toPorts:
     - ports:
       - port: '8443'
