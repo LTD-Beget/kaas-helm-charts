@@ -90,6 +90,16 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-07-01T14:49:35.059736+03:00"
+      description: A Helm chart for Kubernetes
+      digest: d667f761076a87b6b4f00da0a0055b2390389c3ce18f128d99a1000d2939f674
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.8.tgz
+      version: 1.0.8
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-07-01T12:06:52.663825+05:00"
       description: A Helm chart for Kubernetes
       digest: abdef0043a6f43580dafbf2cf3be633ac0124e4a593b9de6455f87447ef216f9
@@ -118,16 +128,6 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.8-debug.tgz
       version: 1.0.8-debug
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-06-17T17:19:37.815523+03:00"
-      description: A Helm chart for Kubernetes
-      digest: 91f47f52bb58f969ca354b08e0d5fa731220b47189a31a800a160315fe11589b
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.8.tgz
-      version: 1.0.8
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-06-08T14:02:48.600811+05:00"
@@ -2645,6 +2645,48 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secrets-0.1.0.tgz
       version: 0.1.0
   victoria-metrics-k8s-stack:
+    - annotations:
+        artifacthub.io/category: monitoring-logging
+        artifacthub.io/license: Apache-2.0
+        artifacthub.io/links: |
+          - name: Sources
+            url: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+          - name: Charts repo
+            url: https://victoriametrics.github.io/helm-charts/
+          - name: Docs
+            url: https://docs.victoriametrics.com/victoriametrics/
+          - name: Changelog
+            url: https://docs.victoriametrics.com/changelog
+        artifacthub.io/operator: "true"
+      apiVersion: v2
+      appVersion: v1.119.0
+      created: "2026-07-01T14:49:35.097196+03:00"
+      dependencies:
+        - name: victoria-metrics-k8s-stack
+          repository: https://victoriametrics.github.io/helm-charts/
+          version: 0.52.0
+      description: Kubernetes monitoring on VictoriaMetrics stack. Includes VictoriaMetrics Operator, Grafana dashboards, ServiceScrapes and VMRules
+      digest: 0f9c3e8ef276a6cb4cfd5144e4d07297465af57f4b777f9cf9b29fdfb0b0a1bc
+      home: https://github.com/VictoriaMetrics/helm-charts
+      icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+      keywords:
+        - victoriametrics
+        - operator
+        - monitoring
+        - kubernetes
+        - observability
+        - tsdb
+        - metrics
+        - metricsql
+        - timeseries
+      kubeVersion: '>=1.25.0-0'
+      name: victoria-metrics-k8s-stack
+      sources:
+        - https://github.com/VictoriaMetrics/helm-charts
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-k8s-stack-0.52.0-6.tgz
+      version: 0.52.0-6
     - annotations:
         artifacthub.io/category: monitoring-logging
         artifacthub.io/license: Apache-2.0
