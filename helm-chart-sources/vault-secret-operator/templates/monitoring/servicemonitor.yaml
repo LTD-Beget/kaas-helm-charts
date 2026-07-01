@@ -1,0 +1,38 @@
+{{- if .Values.prometheus.enable }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "vault-secret-operator.labels" . | nindent 4 }}
+    controller.in-cloud.io: vault-secret-operator
+  name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager-metrics-monitor" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: https-metrics
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+        {{- if .Values.monitoring.secureService.enabled }}
+        insecureSkipVerify: false
+        ca:
+          secret:
+            name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: ca.crt
+        cert:
+          secret:
+            name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: tls.crt
+        keySecret:
+          name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: tls.key
+        {{- else }}
+        insecureSkipVerify: true
+        {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "vault-secret-operator.name" . }}
+      controller.in-cloud.io: vault-secret-operator
+{{- end }}

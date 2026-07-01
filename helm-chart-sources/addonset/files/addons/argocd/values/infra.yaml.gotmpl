@@ -10,14 +10,6 @@ argo-cd:
   configs:
     cm:
       url: "https://localhost/argocd" # TODO должен подставляться infraIstioGwVip
-      oidc.config: |
-        name: Dex
-        issuer: "https://{{ .Values.systemIstioGwDomain }}"
-        clientID: argocd
-        clientSecret: argo-cd-super-secret
-        requestedScopes: ["openid","profile","email","groups"]
-        insecureSkipVerify: true
-      oidc.tls.insecure.skip.verify: "true"
     cmp:
       create: true
       plugins:
@@ -64,9 +56,9 @@ argo-cd:
                   else
                       echo "$OUTPUT"
                   fi
-    secret:
-      argocdServerAdminPassword: {{ .Values.argocdServerAdminPassword }}
-      argocdServerAdminPasswordMtime: {{ .Values.dataCreationTimestamp }}
+    envFrom:
+      - secretRef:
+          name: avp-config
   redisSecretInit:
     enabled: false
   repoServer:
@@ -90,3 +82,31 @@ argo-cd:
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
             subPath: helm-with-values.yaml
             name: cmp-plugin
+  extraObjects:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: avp-config
+        namespace: {{ .Values.companyPrefix }}-argocd
+        labels:
+          avp-secret.in-cloud.io/updated: "true"
+      type: Opaque
+      stringData:
+        AVP_TYPE: "vault"
+        AVP_AUTH_TYPE: "k8s"
+        AVP_K8S_ROLE: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}-ro"
+        AVP_K8S_MOUNT_PATH: "auth/{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
+        VAULT_ADDR: "https://{{ .Values.systemIstioGwDomain }}"
+        VAULT_SKIP_VERIFY: "true" # TODO: use CA
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: argocd-repo-server-avp
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: system:auth-delegator
+      subjects:
+        - kind: ServiceAccount
+          name: argocd-repo-server
+          namespace: {{ .Values.companyPrefix }}-argocd

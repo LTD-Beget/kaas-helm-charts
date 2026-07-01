@@ -97,19 +97,19 @@ addons:
     enabled: true
   trustmanager:
     enabled: true
-  vmagent:
-    enabled: true
-  vmagentadditionalrbac:
-    enabled: true
   trivyoperator:
     enabled: true
-  vmoperator:
+  validatingadmissionpolicies:
     enabled: true
   vault:
     enabled: true
   vaultoperator:
     enabled: true
-  validatingadmissionpolicies:
+  vaultsecretoperator:
+    enabled: true
+  vmagent:
+    enabled: true
+  vmagentadditionalrbac:
     enabled: true
   vmalert:
     enabled: true
@@ -118,6 +118,8 @@ addons:
   vmalertrules:
     enabled: true
   vmcluster:
+    enabled: true
+  vmoperator:
     enabled: true
   system:
     enabled: false

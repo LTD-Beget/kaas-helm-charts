@@ -1,0 +1,203 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-vaultsecretclaim
+spec:
+  apiVersion: vault.in-cloud.io/v1alpha1
+  kind: VaultSecretClaim
+  value: |
+    metadata:
+      labels:
+        xcluster.in-cloud.io/name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+    spec:
+      vaultConfigRef:
+        name: vault-secret
+      clusterRef:
+        name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+      secretsPrefix: "clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}"
+      deletionPolicy: Purge
+      secretList:
+        - name: argocd-admin
+          type: generate
+          destination:
+            path: argocd
+            key: admin.password
+            hashedKey: admin.passwordBcrypt
+          generate:
+            length: 16
+            hash: bcrypt
+
+        - name: vmuser
+          type: generate
+          destination:
+            path: vmuser
+            key: password
+          generate:
+            length: 24
+            hash: none
+
+        - name: etcd-backup-s3-bucket
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: bucket
+          destination:
+            path: etcd-backup
+            key: bucket
+
+        - name: etcd-backup-s3-access-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: access-key
+          destination:
+            path: etcd-backup
+            key: access-key
+
+        - name: etcd-backup-s3-secret-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: secret-key
+          destination:
+            path: etcd-backup
+            key: secret-key
+
+        - name: incloud-ui-cookie-secret
+          type: generate
+          destination:
+            path: incloud-web
+            key: cookie-secret
+          generate:
+            length: 32
+            hash: none
+
+        {{`{{- if eq .ClusterClaim.spec.infra.role "system" }}`}}
+        - name: dex-admin
+          type: generate
+          destination:
+            path: dex
+            key: admin.password
+            hashedKey: admin.passwordBcrypt
+          generate:
+            length: 16
+            hash: bcrypt
+
+        - name: grafana-admin
+          type: generate
+          destination:
+            path: grafana
+            key: admin.password
+          generate:
+            length: 16
+            hash: none
+
+        - name: grafana-oidc-client-secret
+          type: generate
+          destination:
+            path: grafana
+            key: oidc-client-secret
+          generate:
+            length: 32
+            hash: none
+
+        - name: argocd-oidc-client-secret
+          type: generate
+          destination:
+            path: argocd
+            key: oidc-client-secret
+          generate:
+            length: 32
+            hash: none
+
+        - name: incloud-web-oidc-client-secret
+          type: generate
+          destination:
+            path: incloud-web
+            key: oidc-client-secret
+          generate:
+            length: 32
+            hash: none
+
+        - name: docker-registry-s3-bucket
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: bucket
+          destination:
+            path: docker-registry
+            key: bucket
+
+        - name: docker-registry-s3-access-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: access-key
+          destination:
+            path: docker-registry
+            key: access-key
+
+        - name: docker-registry-s3-secret-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/docker-registry
+            key: secret-key
+          destination:
+            path: docker-registry
+            key: secret-key
+
+        - name: alertmanager-signalilo-token
+          type: generate
+          destination:
+            path: signalilo
+            key: alertmanager-token
+          generate:
+            length: 32
+            hash: none
+
+        - name: icinga-password
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/signalilo
+            key: icinga-password
+          destination:
+            path: signalilo
+            key: icinga-password
+
+        - name: svc-hub-rabbit-password
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/svc-hub
+            key: rabbit-password
+          destination:
+            path: svc-hub
+            key: rabbit-password
+
+        - name: telegram-token
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/telegram
+            key: token
+          destination:
+            path: telegram
+            key: token
+        {{`{{- else }}`}}
+        - name: argocd-oidc-client-secret
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/argocd
+            key: oidc-client-secret
+          destination:
+            path: argocd
+            key: oidc-client-secret
+
+        - name: incloud-web-oidc-client-secret
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/incloud-web
+            key: oidc-client-secret
+          destination:
+            path: incloud-web
+            key: oidc-client-secret
+        {{`{{- end }}`}}

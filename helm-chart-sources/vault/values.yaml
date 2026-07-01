@@ -28,12 +28,22 @@ prepareJob:
     serviceAccountName: vault-operator-controller-manager
     namespace: example-vault-operator
 
+  vaultSecretOperator:
+    enabled: true
+    serviceAccountName: vault-secret-operator-controller-manager
+    namespace: example-vault-operator
+
   monitoring:
     # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
     # (k8s RBAC), so the vault-side metrics-reader policy/role is not required.
     enabled: false
     serviceAccountName: vmagent-vmagent
     namespace: example-vmagent
+
+  # Optional step: enable the KV v2 secrets engine.
+  secretEngine:
+    enabled: false
+    path: secret
 
 monitoring:
   enabled: false

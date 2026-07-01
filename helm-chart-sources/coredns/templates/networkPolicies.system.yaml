@@ -472,7 +472,31 @@ spec:
         protocol: TCP
       - port: '53'
         protocol: UDP
-  description: Allows ingress from the vault-operator job to CoreDNS on 53 for DNS resolution.
+  description: Allows ingress from the vault-operator to CoreDNS on 53 for DNS resolution.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vault-seceret-operator-to-coredns-53
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: coredns
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-secret-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault-secret-operator
+    toPorts:
+    - ports:
+      - port: '53'
+        protocol: TCP
+      - port: '53'
+        protocol: UDP
+  description: Allows ingress from the vault-secret-operator to CoreDNS on 53 for DNS resolution.
 
 ---
 apiVersion: cilium.io/v2

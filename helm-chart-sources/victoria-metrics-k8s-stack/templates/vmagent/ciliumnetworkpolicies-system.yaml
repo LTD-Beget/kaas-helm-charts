@@ -676,4 +676,26 @@ spec:
       - port: '11043'
         protocol: TCP
   description: Allows egress from vmagent to vault-operator on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-vault-secret-operator-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-secret-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault-secret-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to vault-secret-operator on 11043 for metrics collection.
 {{- end }}

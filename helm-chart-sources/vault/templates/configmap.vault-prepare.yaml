@@ -42,7 +42,7 @@ data:
     echo "Authenticating with root token..."
     vault login "$ROOT_TOKEN" > /dev/null
 
-    {{- if .Values.prepareJob.kubernetesAuth.enabled }}
+    {{- if $prepare.kubernetesAuth.enabled }}
     # ------------------------------------------------------------------ #
     # Kubernetes auth — enable and configure
     # ------------------------------------------------------------------ #
@@ -55,7 +55,16 @@ data:
       kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
     {{- end }}
 
-    {{- if .Values.prepareJob.vaultOperator.enabled }}
+    {{- if $prepare.secretEngine.enabled }}
+    # ------------------------------------------------------------------ #
+    # Secrets engine: KV v2 at path "{{ $prepare.secretEngine.path }}"
+    # ------------------------------------------------------------------ #
+    echo "Enabling KV v2 secrets engine at path: {{ $prepare.secretEngine.path }}..."
+    vault secrets enable -path="{{ $prepare.secretEngine.path }}" -version=2 kv 2>/dev/null || \
+      echo "  secrets engine at {{ $prepare.secretEngine.path }} already enabled, skipping."
+    {{- end }}
+
+    {{- if $prepare.vaultOperator.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-operator-admin
     # ------------------------------------------------------------------ #
@@ -111,7 +120,52 @@ data:
       token_max_ttl=24h
     {{- end }}
 
-    {{- if .Values.prepareJob.monitoring.enabled }}
+    {{- if $prepare.vaultSecretOperator.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: vault-secret-operator
+    # Generates/copies secrets from the system vault into child-cluster secrets.
+    # Kept separate from vault-operator-admin to split responsibilities.
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-secret-operator policy..."
+    # Unquoted heredoc so ${CLUSTER_NAME} expands into the policy.
+    vault policy write vault-secret-operator - <<EOF
+    # Health check
+    path "sys/health" {
+      capabilities = ["read"]
+    }
+
+    # Write/generate secrets into any child cluster (write only, no read-back).
+    path "{{ $prepare.secretEngine.path }}/data/clusters/*" {
+      capabilities = ["read", "create", "update"]
+    }
+
+    # Read/list only this cluster's own secrets.
+    path "{{ $prepare.secretEngine.path }}/data/clusters/${CLUSTER_NAME}/*" {
+      capabilities = ["read", "list"]
+    }
+
+    path "{{ $prepare.secretEngine.path }}/metadata/clusters/${CLUSTER_NAME}/*" {
+      capabilities = ["list"]
+    }
+
+    path "sys/mounts" {
+      capabilities = ["read"]
+    }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: vault-secret-operator
+    # ------------------------------------------------------------------ #
+    echo "Writing vault-secret-operator role..."
+    vault write "auth/${CLUSTER_NAME}/role/vault-secret-operator" \
+      bound_service_account_names="${VAULT_SECRET_OPERATOR_SA}" \
+      bound_service_account_namespaces="${VAULT_SECRET_OPERATOR_NAMESPACE}" \
+      token_policies=vault-secret-operator \
+      token_ttl=1h \
+      token_max_ttl=24h
+    {{- end }}
+
+    {{- if $prepare.monitoring.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: metrics-reader (for authenticated monitoring agents)
     # ------------------------------------------------------------------ #

@@ -1,0 +1,18 @@
+{{- if and .Values.addons.vaultsecretoperator.enabled .Values.addons.system.enabled }}
+  {{- $context  := deepCopy . -}}
+  {{- $_        := set $context.Values "addonName"      "vault-secret-operator"          -}}
+  {{- $_        := set $context.Values "suffix"         ""                 -}}
+  {{- $_        := set $context.Values "parametersName" "parameters-infra" -}}
+
+---
+apiVersion: addons.in-cloud.io/v1alpha1
+kind: AddonPhase
+metadata:
+  name: vault-secret-operator
+spec:
+  rules:
+    {{- include "common.phase.rules.cert-manager"     $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"      $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.network-policies" $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.system"           $context | nindent 4 | include "common.trimEmptyLines" }}
+{{- end }}

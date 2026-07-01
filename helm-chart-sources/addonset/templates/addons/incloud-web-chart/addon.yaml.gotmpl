@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "incloud-web-chart"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "1.3.0-5"
+  version: "1.3.0-6"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-incloud-web-chart"
@@ -26,6 +26,8 @@ spec:
           jsonPath: .data.clusterName
         - as: incloudUICookieSecret
           jsonPath: .data.incloudUICookieSecret
+        - as: incloudWebOidcClientSecret
+          jsonPath: .data.incloudWebOidcClientSecret
         - as: systemIstioGwDomain
           jsonPath: .data.systemIstioGwDomain
         - as: system.istioGwVip

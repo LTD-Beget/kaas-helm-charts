@@ -129,6 +129,9 @@ proxies:
           rootdirectory: /{{ .Values.clusterName }}/quay-io
       proxy:
         remoteurl: https://quay.io
+    extraAccessNetworkPolicies:
+      fqdns:
+        - cdn01.quay.io.
 
   registry-k8s-io:
     enabled: true

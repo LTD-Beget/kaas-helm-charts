@@ -7,7 +7,7 @@ metadata:
 spec:
   chart: "argo-cd"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "9.4.15-4"
+  version: "9.4.15-5"
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-argocd"
@@ -24,8 +24,14 @@ spec:
       extract:
         - as: clusterName
           jsonPath: .data.clusterName
+        - as: clusterClaimName
+          jsonPath: .data.clusterClaimName
+        - as: customer
+          jsonPath: .data.customer
         - as: argocdServerAdminPassword
           jsonPath: .data.argocdServerAdminPassword
+        - as: argocdOidcClientSecret
+          jsonPath: .data.argocdOidcClientSecret
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
         - as: systemIstioGwDomain

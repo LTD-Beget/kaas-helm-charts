@@ -1,9 +1,11 @@
+argocdPlugins:
+  vault: true
 incloud-web-chart:
   oauth2-proxy:
     enabled: true
     config:
       clientID: "kubernetes"
-      clientSecret: "incloud-web-chart-super-secret"
+      clientSecret: "{{ .Values.incloudWebOidcClientSecret }}"
       cookieSecret: "{{ .Values.incloudUICookieSecret }}"
     extraArgs:
       upstream: "http://incloud-web-chart-incloud-web-chart.{{ .Values.companyPrefix }}-incloud-web-chart.svc:8081"

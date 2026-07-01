@@ -1,4 +1,6 @@
 {{- if .Values.networkPolicies.repoServer.enabled }}
+{{- $istioGwDomain := .Values.istioGwDomain }}
+{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
 
 ---
 # Allow `argocd-repo-server` to talk to the Kubernetes API server (infra).
@@ -140,6 +142,36 @@ spec:
       - port: "80"
         protocol: TCP
   description: Allows egress for argocd-repo-server to specific external FQDNs on 80 and 443 for external repositories.
+
+---
+# Allow `argocd-repo-server` to reach Vault via the istio gateway on 443.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-repo-server-to-vault-443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  {{- if $isIP }}
+  - toCIDR:
+    - {{ $istioGwDomain }}/32
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  {{- else }}
+  - toFQDNs:
+    - matchName: {{ $istioGwDomain }}
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+  {{- end }}
+  description: Allows egress from argocd-repo-server to Vault via the istio gateway ({{ $istioGwDomain }}) on 443.
 
 ---
 # Allow vmagent to scrape `argocd-repo-server` metrics.
