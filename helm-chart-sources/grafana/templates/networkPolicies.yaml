@@ -1,4 +1,5 @@
 {{- if .Values.networkPolicies.enabled }}
+{{- $dataSourceServer := regexReplaceAll "https?://([^/:]+).*" .Values.grafanaDataSources.victoriametrics.spec.datasource.url "$1" -}}
 
 ---
 apiVersion: cilium.io/v2
@@ -167,10 +168,10 @@ spec:
         - matchName: storage.googleapis.com.{{ .Values.clusterDomain }}
         - matchName: storage.googleapis.com.svc.{{ .Values.clusterDomain }}
         - matchName: storage.googleapis.com.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-        - matchName: vmselect
-        - matchName: vmselect.{{ .Values.clusterDomain }}
-        - matchName: vmselect.svc.{{ .Values.clusterDomain }}
-        - matchName: vmselect.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ $dataSourceServer }}
+        - matchName: {{ $dataSourceServer }}.{{ .Values.clusterDomain }}
+        - matchName: {{ $dataSourceServer }}.svc.{{ .Values.clusterDomain }}
+        - matchName: {{ $dataSourceServer }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
 {{- if .Values.systemIstioGwDomain }}
         - matchName: {{ .Values.systemIstioGwDomain }}
         - matchName: {{ .Values.systemIstioGwDomain }}.{{ .Values.clusterDomain }}
