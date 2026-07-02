@@ -41,6 +41,7 @@ spec:
       trackingID: {{`{{ .ClusterClaim.metadata.namespace }}`}}_{{`{{ .ClusterClaim.metadata.name }}`}}:argoproj.io/Application:{{`{{ .ClusterClaim.metadata.namespace }}`}}/{{`{{ .ClusterClaim.metadata.name }}`}}
 
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
+      systemClusterName: {{ .Values.extraArgs.systemClusterName }}
       argocdServerAdminPassword: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/argocd#admin.passwordBcrypt>"
       etcdbackupAppArgsStorecontainer: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#bucket>"
       etcdbackupS3AccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#access-key>"
