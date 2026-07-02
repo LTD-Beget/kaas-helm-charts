@@ -110,7 +110,7 @@ vault:
 
 prepareJob:
   enabled: true
-  clusterName: "{{ .Values.systemClusterName }}"
+  clusterName: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
 
   vaultOperator:
     namespace: {{ .Values.companyPrefix }}-vault-operator
