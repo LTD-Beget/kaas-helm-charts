@@ -55,6 +55,35 @@ data:
       kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
     {{- end }}
 
+    {{- if $prepare.clusterReadOnlyRole.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: cluster-ro
+    # ------------------------------------------------------------------ #
+    echo "Writing ${CLUSTER_NAME}-ro policy..."
+    vault policy write ${CLUSTER_NAME}-ro - <<'EOF'
+      path "sys/mounts" { capabilities = ["read"] }
+
+      path "secret/data/clusters/${CLUSTER_NAME}/*" {
+        capabilities = ["read", "list"]
+      }
+
+      path "secret/metadata/clusters/${CLUSTER_NAME}/*" {
+        capabilities = ["list"]
+      }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: ${CLUSTER_NAME}-ro
+    # ------------------------------------------------------------------ #
+    echo "Writing ${CLUSTER_NAME}-ro role..."
+    vault write "auth/${CLUSTER_NAME}/role/${CLUSTER_NAME}-ro" \
+      bound_service_account_names="*" \
+      bound_service_account_namespaces="*" \
+      token_policies=${CLUSTER_NAME}-ro \
+      token_ttl=1h \
+      token_max_ttl=24h
+    {{- end }}
+  
     {{- if $prepare.secretEngine.enabled }}
     # ------------------------------------------------------------------ #
     # Secrets engine: KV v2 at path "{{ $prepare.secretEngine.path }}"
@@ -64,7 +93,7 @@ data:
       echo "  secrets engine at {{ $prepare.secretEngine.path }} already enabled, skipping."
     {{- end }}
 
-    {{- if $prepare.vaultOperator.enabled }}
+    {{- if $prepare.vaultOperatorRole.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-operator-admin
     # ------------------------------------------------------------------ #
@@ -120,7 +149,7 @@ data:
       token_max_ttl=24h
     {{- end }}
 
-    {{- if $prepare.vaultSecretOperator.enabled }}
+    {{- if $prepare.vaultSecretOperatorRole.enabled }}
     # ------------------------------------------------------------------ #
     # Policy: vault-secret-operator
     # Generates/copies secrets from the system vault into child-cluster secrets.
@@ -136,7 +165,7 @@ data:
 
     # Write/generate secrets into any child cluster (write only, no read-back).
     path "{{ $prepare.secretEngine.path }}/data/clusters/*" {
-      capabilities = ["read", "create", "update"]
+      capabilities = ["read", "create", "update", "delete"]
     }
 
     # Read/list only this cluster's own secrets.

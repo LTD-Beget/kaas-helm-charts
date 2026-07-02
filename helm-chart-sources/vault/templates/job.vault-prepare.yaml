@@ -52,17 +52,17 @@ spec:
               value: {{ $vaultAddr | quote }}
             - name: CLUSTER_NAME
               value: {{ $prepare.clusterName | quote }}
-            {{- if $prepare.vaultOperator.enabled }}
+            {{- if $prepare.vaultOperatorRole.enabled }}
             - name: VAULT_OPERATOR_SA
-              value: {{ $prepare.vaultOperator.serviceAccountName | quote }}
+              value: {{ $prepare.vaultOperatorRole.serviceAccountName | quote }}
             - name: VAULT_OPERATOR_NAMESPACE
-              value: {{ $prepare.vaultOperator.namespace | quote }}
+              value: {{ $prepare.vaultOperatorRole.namespace | quote }}
             {{- end }}
-            {{- if $prepare.vaultSecretOperator.enabled }}
+            {{- if $prepare.vaultSecretOperatorRole.enabled }}
             - name: VAULT_SECRET_OPERATOR_SA
-              value: {{ $prepare.vaultSecretOperator.serviceAccountName | quote }}
+              value: {{ $prepare.vaultSecretOperatorRole.serviceAccountName | quote }}
             - name: VAULT_SECRET_OPERATOR_NAMESPACE
-              value: {{ $prepare.vaultSecretOperator.namespace | quote }}
+              value: {{ $prepare.vaultSecretOperatorRole.namespace | quote }}
             {{- end }}
             {{- if $prepare.monitoring.enabled }}
             - name: MONITORING_SA

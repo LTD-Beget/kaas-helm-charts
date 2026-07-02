@@ -23,12 +23,15 @@ prepareJob:
   kubernetesAuth:
     enabled: true
 
-  vaultOperator:
+  clusterReadOnlyRole:
+    enabled: true
+
+  vaultOperatorRole:
     enabled: true
     serviceAccountName: vault-operator-controller-manager
     namespace: example-vault-operator
 
-  vaultSecretOperator:
+  vaultSecretOperatorRole:
     enabled: true
     serviceAccountName: vault-secret-operator-controller-manager
     namespace: example-vault-operator
