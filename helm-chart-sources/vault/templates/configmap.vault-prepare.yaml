@@ -63,11 +63,11 @@ data:
     vault policy write ${CLUSTER_NAME}-ro - <<'EOF'
       path "sys/mounts" { capabilities = ["read"] }
 
-      path "secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
+      path "secret/data/clusters/${CLUSTER_NAME}/*" {
         capabilities = ["read", "list"]
       }
 
-      path "secret/metadata/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/*" {
+      path "secret/metadata/clusters/${CLUSTER_NAME}/*" {
         capabilities = ["list"]
       }
     EOF
