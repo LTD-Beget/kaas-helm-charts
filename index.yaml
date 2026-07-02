@@ -101,9 +101,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-07-02T03:44:42.069096+07:00"
+      created: "2026-07-02T22:40:24.223382+07:00"
       description: A Helm chart for Kubernetes
-      digest: a7f447f7b40433ffe9a8c648c973fb79409e0e985869cf8a41454469c9a13da2
+      digest: cef8f045d01dbaabba835959a1735a425eef189b06cd4c181af21e5d6d1ee620
       name: addonset
       type: application
       urls:
@@ -220,13 +220,13 @@ entries:
           url: https://argoproj.github.io/argo-helm/pgp_keys.asc
       apiVersion: v2
       appVersion: v3.3.4
-      created: "2026-07-02T03:20:41.403545+07:00"
+      created: "2026-07-02T22:40:24.234385+07:00"
       dependencies:
         - name: argo-cd
           repository: https://argoproj.github.io/argo-helm
           version: 9.4.15
       description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: a2b2b1412c17dcc2460b868cbf345dc51bb51e25440f671e1513fe31e81ffd6f
+      digest: 74983616a01ec0f1b88a17772de6ee4c42f5da0147ceaee567d15c6d3490f76b
       home: https://github.com/argoproj/argo-helm
       icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
       keywords:
@@ -1155,9 +1155,9 @@ entries:
   cluster-claim-operator:
     - apiVersion: v2
       appVersion: v0.0.5-7d93653d
-      created: "2026-07-02T03:00:04.400543+07:00"
+      created: "2026-07-02T22:40:24.23525+07:00"
       description: A Helm chart to distribute the project cluster-claim-operator
-      digest: e866b7fc266c429b9227de878e1f82ae992b21070bc0771fafe6ba649fcddd68
+      digest: 3f64bed62ab796b536ba81e300eb44eac579e1b137bb0b8511f790046cd5ac68
       icon: https://example.com/icon.png
       name: cluster-claim-operator
       type: application
@@ -2480,9 +2480,9 @@ entries:
   secret-copy-operator:
     - apiVersion: v2
       appVersion: v0.0.3-64328be5
-      created: "2026-07-02T03:00:04.42394+07:00"
+      created: "2026-07-02T22:40:24.235528+07:00"
       description: A Helm chart to distribute the project secret-copy-operator
-      digest: 00d192cbb040497ca85cf9ee0190a64d95f9d06437471653cbeb3f13ce8bb68a
+      digest: 55e7b9c10ddcce2496bce068bad7e05311a260114a224a21e927719f4d1e67e7
       icon: https://example.com/icon.png
       name: secret-copy-operator
       type: application
