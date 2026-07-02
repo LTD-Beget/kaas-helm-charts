@@ -326,7 +326,25 @@ resources:
       - toEntities:
         - remote-node
         - host
-        toCIDR:
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+          - type: 0
+            family: IPv4
+          - type: 11
+            family: IPv4
+          - type: 133
+            family: IPv6
+          - type: 134
+            family: IPv6
+          - type: 135
+            family: IPv6
+          - type: 136
+            family: IPv6
+          - type: 137
+            family: IPv6
+      - toCIDR:
         - 0.0.0.0/0
         icmps:
         - fields:
@@ -350,7 +368,25 @@ resources:
       - fromEntities:
         - remote-node
         - host
-        fromCIDR:
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+          - type: 0
+            family: IPv4
+          - type: 11
+            family: IPv4
+          - type: 133
+            family: IPv6
+          - type: 134
+            family: IPv6
+          - type: 135
+            family: IPv6
+          - type: 136
+            family: IPv6
+          - type: 137
+            family: IPv6
+      - fromCIDR:
         - 0.0.0.0/0
         icmps:
         - fields:

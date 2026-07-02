@@ -12,7 +12,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
@@ -31,7 +35,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
@@ -164,7 +172,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "26443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
@@ -183,7 +195,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
@@ -202,7 +218,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "26443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
@@ -221,7 +241,11 @@ resources:
       - toEntities:
         - kube-apiserver
         - remote-node
-        toCIDR:
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - toCIDR:
         - 0.0.0.0/0
         toPorts:
         - ports:
