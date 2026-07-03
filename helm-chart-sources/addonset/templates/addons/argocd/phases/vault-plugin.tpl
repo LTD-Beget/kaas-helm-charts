@@ -21,7 +21,7 @@
         kind: AddonPhase
         name: argocd
         namespace: {{ .Values.companyPrefix }}-argocd
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
       operator: Equal
       value: true
     - source:
