@@ -6,7 +6,7 @@ vaultConfigs:
     spec:
       address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
       managerAuth:
-        mountPath: {{ .Values.cluster.name }}
+        mountPath: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
       tls:
         caBundleSecretRef:
           namespace: {{ .Values.companyPrefix }}-vault
