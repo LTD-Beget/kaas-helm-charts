@@ -1,0 +1,41 @@
+{{- if and .Values.metrics.enable .Values.monitoring.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  labels:
+    {{- include "worker-group-claim-operator.labels" . | nindent 4 }}
+    controller.in-cloud.io: worker-group-claim-operator
+  name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-scrape" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    path: /metrics
+    port: https-metrics
+    scheme: HTTPS
+    tlsConfig:
+      serverName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+      {{- if .Values.monitoring.secureService.enabled }}
+      insecureSkipVerify: false
+      ca:
+        secret:
+          name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: ca.crt
+      cert:
+        secret:
+          name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: tls.crt
+      keySecret:
+        name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+        key: tls.key
+      {{- else }}
+      insecureSkipVerify: true
+      {{- end }}
+  jobLabel: worker-group-claim-operator
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+      app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+      controller.in-cloud.io: worker-group-claim-operator
+{{- end }}

@@ -86,15 +86,23 @@ crd:
 ## Enable to expose /metrics endpoint with RBAC protection.
 ##
 metrics:
-  enable: true
-  # Metrics server port
-  port: 8443
+  enable: false
+  port: 11043        # kube-rbac-proxy HTTPS port (external)
+  internalPort: 8443 # manager internal HTTP metrics port
 
 ## Cert-manager integration for TLS certificates.
 ## Required for webhook certificates and metrics endpoint certificates.
 ##
 certManager:
   enable: false
+
+monitoring:
+  enabled: false
+  secureService:
+    enabled: false
+    issuer:
+      kind: ClusterIssuer
+      name: default-issuer-name
 
 ## Prometheus ServiceMonitor for metrics scraping.
 ## Requires prometheus-operator to be installed in the cluster.
@@ -106,4 +114,3 @@ prometheus:
 ##
 networkPolicies:
   enabled: false
-

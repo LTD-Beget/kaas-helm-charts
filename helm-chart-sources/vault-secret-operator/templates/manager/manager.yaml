@@ -63,14 +63,7 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           name: manager
-          {{- if .Values.metrics.enable }}
-          ports:
-            - containerPort: {{ .Values.metrics.internalPort }}
-              name: metrics
-              protocol: TCP
-          {{- else }}
           ports: []
-          {{- end }}
           readinessProbe:
             httpGet:
               path: /readyz
