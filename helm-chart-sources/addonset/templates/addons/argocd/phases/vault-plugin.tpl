@@ -18,6 +18,14 @@
       value: true
     - source:
         apiVersion: v1
+        kind: AddonPhase
+        name: argocd
+        namespace: {{ .Values.companyPrefix }}-argocd
+      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies-argocd')].deployed
+      operator: Equal
+      value: true
+    - source:
+        apiVersion: v1
         kind: Secret
         name: avp-config
         namespace: {{ .Values.companyPrefix }}-argocd
