@@ -112,10 +112,10 @@ prepareJob:
   enabled: true
   clusterName: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
 
-  vaultOperator:
+  vaultOperatorRole:
     namespace: {{ .Values.companyPrefix }}-vault-operator
 
-  vaultSecretOperator:
+  vaultSecretOperatorRole:
     namespace: {{ .Values.companyPrefix }}-vault-secret-operator
 
   secretEngine:
