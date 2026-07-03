@@ -17,7 +17,7 @@
       operator: Equal
       value: true
     - source:
-        apiVersion: v1
+        apiVersion: addons.in-cloud.io/v1alpha1
         kind: AddonPhase
         name: argocd
         namespace: {{ .Values.companyPrefix }}-argocd
