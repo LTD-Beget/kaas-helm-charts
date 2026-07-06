@@ -40,6 +40,7 @@ spec:
         - args:
             {{- if .Values.metrics.enable }}
             - --metrics-bind-address=127.0.0.1:{{ .Values.metrics.internalPort }}
+            - --metrics-secure=false
             {{- end }}
             - --health-probe-bind-address=:8081
             {{- range .Values.manager.args }}
