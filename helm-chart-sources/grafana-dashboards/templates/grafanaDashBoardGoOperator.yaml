@@ -32,789 +32,175 @@ spec:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 30,
       "links": [],
       "panels": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Максимально допустимое число параллельных reconcile worker'ов для контроллера. Это верхняя граница пропускной способности controller-runtime. Если значение равно 1, контроллер обрабатывает очередь строго последовательно. Само по себе не доказывает throttling, но задает ceiling для throughput.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "workers",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 2
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 0
-          },
-          "id": 5,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "group by(controller)(controller_runtime_max_concurrent_reconciles{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Max concurrent reconciles",
-          "type": "timeseries"
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+          "id": 40,
+          "panels": [],
+          "title": "Здоровье и пропускная способность",
+          "type": "row"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Текущее количество объектов, ожидающих обработки в workqueue. Основной индикатор backlog. Кратковременные пики допустимы, но плато или устойчивый рост означают, что контроллер не успевает разгребать очередь.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Суммарная частота reconcile по контроллерам (все результаты). Базовый индикатор нагрузки. Резкий или устойчивый рост означает повышенное количество реконсиляций — либо всплеск изменений в объектах, либо self-requeue.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "items",
+                "axisLabel": "reconciles/sec",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 10
-                  },
-                  {
-                    "color": "red",
-                    "value": 50
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "secret"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 0
-          },
-          "id": 2,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
-              "editorMode": "code",
-              "expr": "sum by(name) (workqueue_depth{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Workqueue depth",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Скорость поступления новых элементов в workqueue. Это не скорость обработки, а входной поток. Если adds стабильно выше фактической пропускной способности worker'ов, очередь будет расти.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "adds/sec",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 8,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
               },
               "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 5
-                  }
-                ]
-              },
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
               "unit": "ops"
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 8
-          },
-          "id": 1,
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+          "id": 20,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "sum by (name) (rate(workqueue_adds_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m]))",
-              "legendFormat": "__auto",
+              "expr": "sum by(controller) (rate(controller_runtime_reconcile_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
+              "legendFormat": "{{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Workqueue adds rate",
+          "title": "Reconcile rate by controller",
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Количество worker'ов, которые прямо сейчас заняты reconcile. Если график почти всегда равен max_concurrent_reconciles, контроллер работает на пределе доступной параллельности.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Частота ошибок reconcile: обычные ошибки (будут requeue'иться), terminal-ошибки (reconcile прекращён) и паники. Любой ненулевой terminal/panic — сигнал к разбору. Рост errors коррелирует с ростом retries и очереди.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "workers",
+                "axisLabel": "errors/sec",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 8,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
               },
               "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 1
-                  }
-                ]
-              }
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.05 }, { "color": "red", "value": 0.5 } ] },
+              "unit": "ops"
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 8
-          },
-          "id": 4,
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+          "id": 21,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "group by(controller) (controller_runtime_active_workers{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Active workers",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Перцентили времени ожидания элемента в очереди до того, как worker возьмет его в работу. Это latency очереди, а не длительность reconcile. Если p90/p99 растут, а work_duration остается низким, проблема обычно в backlog, а не в медленном reconcile.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "seconds",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 6,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "log": 10,
-                  "type": "log"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 10
-                  }
-                ]
-              },
-              "unit": "s"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": ".*"
-                },
-                "properties": [
-                  {
-                    "id": "displayName"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 16
-          },
-          "id": 7,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "pluginVersion": "11.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.5, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])))",
-              "legendFormat": "p50 {{`{{name}}`}}",
+              "expr": "sum by(controller) (rate(controller_runtime_reconcile_errors_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
+              "legendFormat": "error {{`{{controller}}`}}",
               "range": true,
               "refId": "A"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])))",
+              "expr": "sum by(controller) (rate(controller_runtime_terminal_reconcile_errors_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
               "hide": false,
-              "instant": false,
-              "legendFormat": "p90 {{`{{name}}`}}",
+              "legendFormat": "terminal {{`{{controller}}`}}",
               "range": true,
               "refId": "B"
-            }
-          ],
-          "title": "Queue wait time percentiles",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Среднее время ожидания в очереди за окно 5m и p90 для сравнения. Среднее помогает увидеть общий фон, p90 — хвост. Если среднее низкое, а p90 высокое, проблема может быть только в хвосте или в грубых бакетах histogram_quantile.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "seconds",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 6,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "log": 10,
-                  "type": "log"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 10
-                  }
-                ]
-              },
-              "unit": "s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 16
-          },
-          "id": 9,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "pluginVersion": "11.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
-              "editorMode": "code",
-              "expr": "rate(workqueue_queue_duration_seconds_sum{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m]) / rate(workqueue_queue_duration_seconds_count{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])",
-              "legendFormat": "avg {{`{{name}}`}}",
-              "range": true,
-              "refId": "A"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])))",
+              "expr": "sum by(controller) (rate(controller_runtime_reconcile_panics_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
               "hide": false,
-              "instant": false,
-              "legendFormat": "p90 {{`{{name}}`}}",
+              "legendFormat": "panic {{`{{controller}}`}}",
               "range": true,
-              "refId": "B"
+              "refId": "C"
             }
           ],
-          "title": "Queue wait time avg vs p90",
+          "title": "Reconcile errors / terminal / panics",
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Насыщение worker'ов: отношение занятых worker'ов к максимально доступным. Главное для диагностики bottleneck. Если значение стабильно около 1 и при этом queue_depth > 0, контроллер упирается в свою параллельность, а не обязательно в API throttling.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Насыщение worker'ов: отношение занятых worker'ов к максимально доступным. Главное для диагностики bottleneck. Если значение стабильно около 1 и при этом queue_depth > 0, контроллер упирается в свою параллельность (max_concurrent_reconciles), а не обязательно в API throttling.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "ratio",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
               },
               "mappings": [],
               "max": 1.2,
               "min": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 0.7
-                  },
-                  {
-                    "color": "red",
-                    "value": 0.95
-                  }
-                ]
-              }
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.7 }, { "color": "red", "value": 0.95 } ] }
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 24
-          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
           "id": 8,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "none" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
               "expr": "controller_runtime_active_workers{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"} / controller_runtime_max_concurrent_reconciles{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}",
               "legendFormat": "{{`{{controller}}`}}",
@@ -826,202 +212,56 @@ spec:
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Скорость повторных постановок элементов в очередь. Если retries высоки относительно входного потока, контроллер либо часто requeue'ит сам себя, либо попадает в конфликтные/временные состояния. Это одна из самых полезных метрик для поиска self-induced backlog.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "retries/sec",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 8,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 2,
-                "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 0.5
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
-              "unit": "ops"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 24
-          },
-          "id": 10,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "pluginVersion": "11.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
-              "editorMode": "code",
-              "expr": "sum by(name) (rate(workqueue_retries_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m]))",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Workqueue retries rate",
-          "type": "timeseries"
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+          "id": 41,
+          "panels": [],
+          "title": "Реконсиляции",
+          "type": "row"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Распределение результатов reconcile: success, requeue, requeue_after, error. Если доминирует requeue_after, контроллер сам регулярно будит себя и может создавать искусственный backlog даже при отсутствии внешнего throttling.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Распределение результатов reconcile по контроллерам: success, requeue, requeue_after, error. Если доминирует requeue_after, контроллер сам регулярно будит себя и может создавать искусственный backlog даже при отсутствии внешнего throttling.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": true,
-                "axisColorMode": "text",
                 "axisLabel": "reconciles/sec",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 8,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
               },
               "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
               "unit": "ops"
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 32
-          },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 10 },
           "id": 11,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "sum by(result) (rate(controller_runtime_reconcile_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m]))",
-              "legendFormat": "{{`{{result}}`}}",
+              "expr": "sum by(controller, result) (rate(controller_runtime_reconcile_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
+              "legendFormat": "{{`{{controller}}`}} {{`{{result}}`}}",
               "range": true,
               "refId": "A"
             }
@@ -1030,103 +270,573 @@ spec:
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Ошибочные и проблемные ответы rest client'а к kube-apiserver: 409, 5xx, 503 и transport errors. Это не полная диагностика throttling, но хороший индикатор давления на API и конфликтных обновлений.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Скорость поступления новых элементов в workqueue. Это входной поток, а не скорость обработки. Если adds стабильно выше фактической пропускной способности worker'ов, очередь будет расти.",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": true,
-                "axisColorMode": "text",
-                "axisLabel": "req/sec",
+                "axisLabel": "adds/sec",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 8,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
               },
               "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 0.1
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 5 } ] },
               "unit": "ops"
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 32
-          },
-          "id": 12,
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 10 },
+          "id": 1,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "sum by(code, method) (rate(rest_client_requests_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", code=~\"409|429|5..|503|<error>\"}[5m]))",
+              "expr": "sum by (name) (rate(workqueue_adds_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
+              "legendFormat": "{{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Workqueue adds rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Скорость повторных постановок элементов в очередь. Если retries высоки относительно входного потока, контроллер либо часто requeue'ит сам себя, либо попадает в конфликтные/временные состояния. Одна из самых полезных метрик для поиска self-induced backlog.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "retries/sec",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 8,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.5 }, { "color": "red", "value": 1 } ] },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 10 },
+          "id": 10,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "sum by(name) (rate(workqueue_retries_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]))",
+              "legendFormat": "{{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Workqueue retries rate",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+          "id": 42,
+          "panels": [],
+          "title": "Очереди (workqueue)",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Текущее количество объектов, ожидающих обработки в workqueue. Основной индикатор backlog. Кратковременные пики допустимы, но плато или устойчивый рост означают, что контроллер не успевает разгребать очередь.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "items",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 10 }, { "color": "red", "value": 50 } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+          "id": 2,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "none" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "sum by(name) (workqueue_depth{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
+              "legendFormat": "{{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Workqueue depth",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Тренд глубины очереди (производная depth за 10m). Значение > 0, удерживающееся во времени, означает растущую очередь: входной поток превышает пропускную способность. Около 0 — очередь стабильна, < 0 — разгребается.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisCenteredZero": true,
+                "axisLabel": "items/sec",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 8,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.05 }, { "color": "red", "value": 0.5 } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 19 },
+          "id": 23,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "sum by(name) (deriv(workqueue_depth{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[10m]))",
+              "legendFormat": "{{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Workqueue depth trend",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "unfinished_work — сколько времени накопилось у элементов, которые сейчас в работе, но ещё не завершены. longest_running_processor — длительность самого долгого текущего reconcile. Устойчивый рост любого из них указывает на застрявший/зависший reconcile, который держит worker и блокирует очередь.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "seconds",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 30 }, { "color": "red", "value": 120 } ] },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+          "id": 24,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "max by(name) (workqueue_unfinished_work_seconds{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
+              "legendFormat": "unfinished {{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "max by(name) (workqueue_longest_running_processor_seconds{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
+              "hide": false,
+              "legendFormat": "longest {{`{{name}}`}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Unfinished & longest running work",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Перцентили времени ожидания элемента в очереди до того, как worker возьмёт его в работу. Это latency очереди, а не длительность reconcile. Если p90/p99 растут, а reconcile time остаётся низким, проблема обычно в backlog/недостатке concurrency, а не в медленном reconcile.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "seconds",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "log": 10, "type": "log" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 10 } ] },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
+          "id": 7,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p90 {{`{{name}}`}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Queue wait time percentiles",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Среднее время ожидания в очереди за окно и p90 для сравнения. Среднее показывает общий фон, p90 — хвост. Если среднее низкое, а p90 высокое, проблема может быть только в хвосте или в грубых бакетах histogram_quantile.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "seconds",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "log": 10, "type": "log" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 10 } ] },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
+          "id": 9,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "rate(workqueue_queue_duration_seconds_sum{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]) / rate(workqueue_queue_duration_seconds_count{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])",
+              "legendFormat": "avg {{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_queue_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p90 {{`{{name}}`}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Queue wait time avg vs p90",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 35 },
+          "id": 43,
+          "panels": [],
+          "title": "Время обработки",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Реальная длительность функции reconcile (controller_runtime_reconcile_time_seconds), перцентили p50/p90/p99 по контроллерам. Это время самой бизнес-логики (без ожидания в очереди). Рост p90/p99 — медленный reconcile: тяжёлые внешние вызовы (kube-apiserver, Vault) или неоптимальная логика.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "seconds",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "log": 10, "type": "log" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.5 }, { "color": "red", "value": 2 } ] },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+          "id": 25,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "legendFormat": "p50 {{`{{controller}}`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.9, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "legendFormat": "p90 {{`{{controller}}`}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum by (le, controller) (rate(controller_runtime_reconcile_time_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "legendFormat": "p99 {{`{{controller}}`}}",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Reconcile time percentiles",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Среднее время обработки элемента worker'ом после взятия из очереди (workqueue_work_duration) и p90. Сравнивай с Queue wait time: если wait высокий, а work низкий — проблема в backlog/низком concurrency; если оба высокие — ищи медленный reconcile или внешний API.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "seconds",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "log": 10, "type": "log" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.1 }, { "color": "red", "value": 1 } ] },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+          "id": 13,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "rate(workqueue_work_duration_seconds_sum{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval]) / rate(workqueue_work_duration_seconds_count{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])",
+              "legendFormat": "avg {{`{{name}}`}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_work_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[$__rate_interval])))",
+              "legendFormat": "p90 {{`{{name}}`}}",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Work duration avg vs p90",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 44 },
+          "id": 44,
+          "panels": [],
+          "title": "Нагрузка на API (kube-apiserver & Vault)",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Ошибочные и проблемные ответы rest client'а к kube-apiserver: 409 (конфликты), 429 (throttling), 5xx, 503 и transport errors. Хороший индикатор давления на API и конфликтных обновлений. Метрика без controller-лейбла — скоупится переменной Pod.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "req/sec",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 8,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.1 }, { "color": "red", "value": 1 } ] },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 45 },
+          "id": 12,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "sum by(code, method) (rate(rest_client_requests_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\", code=~\"409|429|5..|503|<error>\"}[$__rate_interval]))",
               "legendFormat": "{{`{{method}}`}} {{`{{code}}`}}",
               "range": true,
               "refId": "A"
@@ -1136,121 +846,417 @@ spec:
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "description": "Среднее время обработки элемента worker'ом после взятия из очереди. Сравнивай с Queue wait time: если wait time высокий, а work duration низкий, проблема скорее в backlog/низком concurrency; если оба высокие — ищи медленный reconcile или внешний API.",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Полная скорость запросов rest client'а к kube-apiserver по кодам ответа. Помогает увидеть общий объём трафика к API: аномально высокий rate при растущей очереди указывает на неэффективный reconcile (лишние GET/LIST/PATCH).",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
+              "color": { "mode": "palette-classic" },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "seconds",
+                "axisLabel": "req/sec",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
-                "fillOpacity": 6,
+                "fillOpacity": 8,
                 "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 2,
                 "pointSize": 4,
-                "scaleDistribution": {
-                  "log": 10,
-                  "type": "log"
-                },
+                "scaleDistribution": { "type": "linear" },
                 "showPoints": "auto",
                 "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
+                "stacking": { "group": "A", "mode": "normal" },
+                "thresholdsStyle": { "mode": "off" }
               },
               "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "orange",
-                    "value": 0.1
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              },
-              "unit": "s"
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
+              "unit": "ops"
             },
             "overrides": []
           },
-          "gridPos": {
-            "h": 8,
-            "w": 24,
-            "x": 0,
-            "y": 40
-          },
-          "id": 13,
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 45 },
+          "id": 26,
           "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "mean",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
           },
           "pluginVersion": "11.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "rate(workqueue_work_duration_seconds_sum{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m]) / rate(workqueue_work_duration_seconds_count{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])",
-              "legendFormat": "avg {{`{{name}}`}}",
+              "expr": "sum by(method, code) (rate(rest_client_requests_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "{{`{{method}}`}} {{`{{code}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "REST client request rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Активность Vault-клиента (только vault-операторы): скорость ответов по кодам (2xx/4xx/5xx) и обновления/логины токена. Ненулевые не-2xx ответы или проваленные token renewal — деградация связи с Vault, которая напрямую увеличивает reconcile time и очередь. Скоупится переменной Pod.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "ops/sec",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 8,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 45 },
+          "id": 27,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "sum by(code) (rate(vault_api_responses_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "resp {{`{{code}}`}}",
               "range": true,
               "refId": "A"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$datasource"
-              },
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.9, sum by (le, name) (rate(workqueue_work_duration_seconds_bucket{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"}[5m])))",
-              "legendFormat": "p90 {{`{{name}}`}}",
+              "expr": "sum by(result) (rate(vault_client_token_renewal_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "token {{`{{result}}`}}",
               "range": true,
               "refId": "B"
             }
           ],
-          "title": "Work duration avg vs p90",
+          "title": "Vault client activity",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 53 },
+          "id": 45,
+          "panels": [],
+          "title": "Конфигурация и ресурсы",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Максимально допустимое число параллельных reconcile worker'ов (верхняя граница пропускной способности). Если значение 1 — очередь обрабатывается строго последовательно. Сравнивай с Worker saturation и Workqueue depth: sat≈1 и растущая очередь при низком max — сигнал неоптимальной конфигурации (мало concurrency).",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "workers",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 2 }, { "color": "red", "value": 1 } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 54 },
+          "id": 5,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "none" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "group by(controller)(controller_runtime_max_concurrent_reconciles{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
+              "legendFormat": "{{`{{controller}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max concurrent reconciles",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Количество worker'ов, занятых reconcile прямо сейчас. Если график почти всегда равен max_concurrent_reconciles, контроллер работает на пределе доступной параллельности.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "workers",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 8,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 54 },
+          "id": 4,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "none" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "group by(controller) (controller_runtime_active_workers{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", controller=~\"$controller\"})",
+              "legendFormat": "{{`{{controller}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Active workers",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Статус leader election по подам (1 — лидер, 0 — standby). Показывает, какая реплика активно обрабатывает очередь. Полезно при чтении остальных метрик: нагрузка reconcile идёт только на лидера. Частые переключения лидера — нестабильность (рестарты, потеря lease).",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "leader",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "stepAfter",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "max": 1,
+              "min": 0,
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 54 },
+          "id": 28,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "max by(pod) (leader_election_master_status{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"})",
+              "legendFormat": "{{`{{pod}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Leader election status",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Количество горутин по подам операторов. Устойчивый монотонный рост — признак goroutine leak (часто из-за незакрытых watch/подключений), что со временем ведёт к росту памяти и деградации. Скоупится переменной Pod.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "goroutines",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] }
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 62 },
+          "id": 29,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "go_goroutines{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}",
+              "legendFormat": "{{`{{pod}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Goroutines",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Резидентная память (RSS) подов операторов. Сопоставляй с memory limit пода: приближение к лимиту грозит OOMKill и рестартами, которые сбрасывают leader election и очередь. Постоянный рост — утечка. Скоупится переменной Pod.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "memory",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 62 },
+          "id": 30,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}",
+              "legendFormat": "{{`{{pod}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Resident memory",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "description": "Потребление CPU (в ядрах) подами операторов. Сопоставляй с CPU limit/request: если под упирается в лимит (CPU throttling) при растущей очереди — конфигурация недооптимальна (мало CPU) или reconcile слишком тяжёлый. Скоупится переменной Pod.",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisLabel": "cores",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 6,
+                "gradientMode": "none",
+                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 4,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "off" }
+              },
+              "mappings": [],
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 62 },
+          "id": 31,
+          "options": {
+            "legend": { "calcs": [ "lastNotNull", "mean", "max" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${datasource}" },
+              "editorMode": "code",
+              "expr": "rate(process_cpu_seconds_total{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])",
+              "legendFormat": "{{`{{pod}}`}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "CPU usage",
           "type": "timeseries"
         }
       ],
@@ -1267,29 +1273,36 @@ spec:
         "list": [
           {
             "current": {
-              "text": "victoriametrics",
-              "value": "f0cf3734-7ffc-4865-b99b-9783a4ac465a"
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
             },
+            "includeAll": false,
             "label": "Datasource",
             "name": "datasource",
             "options": [],
             "query": "prometheus",
             "refresh": 1,
+            "regex": "",
             "type": "datasource"
           },
           {
             "allValue": ".*",
             "current": {
               "text": [
-                "begetk8s-system-1-infra"
+                "All"
               ],
               "value": [
-                "begetk8s-system-1-infra"
+                "$__all"
               ]
             },
             "datasource": {
               "type": "prometheus",
-              "uid": "$datasource"
+              "uid": "${datasource}"
             },
             "definition": "label_values(controller_runtime_active_workers,cluster_full_name)",
             "includeAll": true,
@@ -1303,6 +1316,7 @@ spec:
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 2,
+            "regex": "",
             "sort": 1,
             "type": "query"
           },
@@ -1310,10 +1324,10 @@ spec:
             "allValue": ".*",
             "current": {
               "text": [
-                "beget-system"
+                "All"
               ],
               "value": [
-                "beget-system"
+                "$__all"
               ]
             },
             "datasource": {
@@ -1332,6 +1346,7 @@ spec:
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 2,
+            "regex": "",
             "sort": 1,
             "type": "query"
           },
@@ -1347,7 +1362,7 @@ spec:
             },
             "datasource": {
               "type": "prometheus",
-              "uid": "$datasource"
+              "uid": "${datasource}"
             },
             "definition": "label_values(controller_runtime_active_workers{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\"}, controller)",
             "includeAll": true,
@@ -1356,10 +1371,42 @@ spec:
             "name": "controller",
             "options": [],
             "query": {
+              "qryType": 1,
               "query": "label_values(controller_runtime_active_workers{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\"}, controller)",
               "refId": "PrometheusVariableQueryEditor-Controller"
             },
             "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\"}, pod)",
+            "includeAll": true,
+            "label": "Pod",
+            "multi": true,
+            "name": "pod",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values(process_resident_memory_bytes{cluster_full_name=~\"$cluster_full_name\", namespace=~\"$namespace\"}, pod)",
+              "refId": "PrometheusVariableQueryEditor-Pod"
+            },
+            "refresh": 2,
+            "regex": "",
             "sort": 1,
             "type": "query"
           }
@@ -1373,7 +1420,7 @@ spec:
       "timezone": "browser",
       "title": "GoOperatorDashboard",
       "uid": "go-operator-dashboard",
-      "version": 4,
+      "version": 1,
       "weekStart": ""
     }
 {{- end }}
