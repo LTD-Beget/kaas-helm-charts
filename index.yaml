@@ -90,9 +90,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-07-03T16:51:39.992054+03:00"
+      created: "2026-07-06T19:21:15.787791+05:00"
       description: A Helm chart for Kubernetes
-      digest: 31fdf34d26ef057864c5644015f53956ef340271dcdc1445387e773c97d55a76
+      digest: 855f051171abb89b640b46a1164494f8baa0aa5d313503b478c8fc0e64aabbe3
       name: addonset
       type: application
       urls:
@@ -764,6 +764,17 @@ entries:
   certificate-set:
     - apiVersion: v2
       appVersion: v0.0.2-ba5ef9b4
+      created: "2026-07-06T19:21:15.78806+05:00"
+      description: A Helm chart to distribute the project certs
+      digest: b084c99b942238a7ef8dd0e76dc4fe789d43c3581309419f650a544926b5f70c
+      icon: https://example.com/icon.png
+      name: certificate-set
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/certificate-set-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: v0.0.2-ba5ef9b4
       created: "2026-07-02T21:02:35.396822+05:00"
       description: A Helm chart to distribute the project certs
       digest: 4d879bd4442469f41c4f3803d22abbba912c21e025a5203ce8efcab3aac5e766
@@ -916,6 +927,17 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.0.tgz
       version: 0.1.0
   cluster-claim-operator:
+    - apiVersion: v2
+      appVersion: v0.0.5-7d93653d
+      created: "2026-07-06T19:21:15.788332+05:00"
+      description: A Helm chart to distribute the project cluster-claim-operator
+      digest: 953734bdc5fe6f19aebb46208cd1d60f9d14f8ec4cd11faa03b18f0f2ace4ff6
+      icon: https://example.com/icon.png
+      name: cluster-claim-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.4.tgz
+      version: 0.1.4
     - apiVersion: v2
       appVersion: v0.0.5-7d93653d
       created: "2026-07-02T21:02:35.419969+05:00"
@@ -1930,6 +1952,17 @@ entries:
   secret-copy-operator:
     - apiVersion: v2
       appVersion: v0.0.3-64328be5
+      created: "2026-07-06T19:21:15.788523+05:00"
+      description: A Helm chart to distribute the project secret-copy-operator
+      digest: 23aac5074a8cf6fa6089196ae917801cd8b9b2b6d04ae93a4eb63630e855134e
+      icon: https://example.com/icon.png
+      name: secret-copy-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/secret-copy-operator-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: v0.0.3-64328be5
       created: "2026-07-02T21:02:35.512778+05:00"
       description: A Helm chart to distribute the project secret-copy-operator
       digest: a1c1419f6bf049bdc841cfa25a5498c3c13445b59d3fccf53079cf2257f44813
@@ -2343,6 +2376,16 @@ entries:
       version: 0.30.1-1
   vault-operator:
     - apiVersion: v2
+      appVersion: v0.0.4-83829d77
+      created: "2026-07-06T19:21:15.788824+05:00"
+      description: A Helm chart to distribute the project vault-operator
+      digest: e41b9550548dbca5fc36e8ca1ad060981c2e4fba79fb3f15f78d20bd5ab958fc
+      name: vault-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
       appVersion: v0.0.3-741f5d8a
       created: "2026-07-06T13:49:58.251534+05:00"
       description: A Helm chart to distribute the project vault-operator
@@ -2363,6 +2406,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.0.tgz
       version: 0.1.0
   vault-secret-operator:
+    - apiVersion: v2
+      appVersion: v0.0.4-83829d77
+      created: "2026-07-06T19:21:15.78907+05:00"
+      description: A Helm chart to distribute the project vault-secret-operator
+      digest: 81fd4dcae3f748ad7e180b8062489caeb68634633fa708fcb4c3ad44d2615187
+      name: vault-secret-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secret-operator-0.1.1.tgz
+      version: 0.1.1
     - apiVersion: v2
       appVersion: v0.0.3-741f5d8a
       created: "2026-07-06T13:49:58.25205+05:00"
@@ -2684,6 +2737,17 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-2.tgz
       version: 0.52.0-2
   worker-group-claim-operator:
+    - apiVersion: v2
+      appVersion: v0.0.2-dec3570e
+      created: "2026-07-06T19:21:15.789367+05:00"
+      description: A Helm chart to distribute the project worker-group-claim-operator
+      digest: e8f81f539a30db80f048e08b4d0394e6b3c236f4fdd28d7f49a42eed0a1ab5f2
+      icon: https://example.com/icon.png
+      name: worker-group-claim-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.3.tgz
+      version: 0.1.3
     - apiVersion: v2
       appVersion: v0.0.2-dec3570e
       created: "2026-07-02T21:02:35.619146+05:00"
