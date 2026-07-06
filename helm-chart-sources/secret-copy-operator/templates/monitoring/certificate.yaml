@@ -1,0 +1,30 @@
+{{- if and .Values.metrics.enable .Values.certManager.enable }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: metrics-server-cert
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: metrics-server-cert
+  duration: 8760h
+  renewBefore: 720h
+  commonName: secret-copy-operator-controller-manager-metrics-service
+  dnsNames:
+    - secret-copy-operator-controller-manager-metrics-service
+    - secret-copy-operator-controller-manager-metrics-service.{{ .Release.Namespace }}
+    - secret-copy-operator-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.certManager.issuer.kind }}
+    name: {{ .Values.certManager.issuer.name }}
+{{- end }}

@@ -12,13 +12,30 @@ spec:
   endpoints:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     path: /metrics
-    port: metrics
+    port: https-metrics
     scheme: HTTPS
     tlsConfig:
+      serverName: secret-copy-operator-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
+      {{- if .Values.certManager.enable }}
+      insecureSkipVerify: false
+      ca:
+        secret:
+          name: metrics-server-cert
+          key: ca.crt
+      cert:
+        secret:
+          name: metrics-server-cert
+          key: tls.crt
+      keySecret:
+        name: metrics-server-cert
+        key: tls.key
+      {{- else }}
       insecureSkipVerify: true
-      serverName: localhost
+      {{- end }}
   jobLabel: secret-copy-operator
   selector:
     matchLabels:
+      monitoring.in-cloud.io/service: secret-copy-operator-controller-manager-metrics-service
+      app.kubernetes.io/name: secret-copy-operator
       control-plane: controller-manager
 {{- end }}
