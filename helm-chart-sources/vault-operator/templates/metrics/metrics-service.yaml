@@ -10,10 +10,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-    - name: metrics
+    - name: https-metrics
       port: {{ .Values.metrics.port }}
       protocol: TCP
-      targetPort: metrics
+      targetPort: https-metrics
   selector:
     app.kubernetes.io/name: {{ include "vault-operator.name" . }}
     control-plane: controller-manager

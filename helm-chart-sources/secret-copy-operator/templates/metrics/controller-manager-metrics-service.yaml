@@ -6,15 +6,16 @@ metadata:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: secret-copy-operator
         control-plane: controller-manager
+        monitoring.in-cloud.io/service: secret-copy-operator-controller-manager-metrics-service
     name: secret-copy-operator-controller-manager-metrics-service
     namespace: {{ .Release.Namespace }}
 spec:
     ports:
-        - name: metrics
+        - name: https-metrics
           port: {{ .Values.metrics.port }}
           protocol: TCP
-          targetPort: {{ .Values.metrics.port }}
+          targetPort: https-metrics
     selector:
-        app.kubernetes.io/name: secret-copy-operator
-        control-plane: controller-manager
+      app.kubernetes.io/name: secret-copy-operator
+      control-plane: controller-manager
 {{- end }}

@@ -46,31 +46,7 @@ spec:
     for control-plane interactions.
 
 ---
-# Allow vmagent to scrape vault-secret-operator metrics.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-ingress-vmagent-to-vault-secret-operator-8443
-  namespace: {{ .Release.Namespace }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
-      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
-        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
-    toPorts:
-    - ports:
-      - port: '{{ .Values.metrics.port }}'
-        protocol: TCP
-  description: |
-    Allows ingress from vmagent to vault-secret-operator on {{ .Values.metrics.port }} for metrics collection.
-
----
-# Allow vmagent to scrape vault metrics via the kube-rbac-proxy sidecar.
+# Allow vmagent to scrape vault-secret-operator metrics via the kube-rbac-proxy sidecar.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

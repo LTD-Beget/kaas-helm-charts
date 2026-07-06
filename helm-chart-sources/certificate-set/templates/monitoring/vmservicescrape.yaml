@@ -4,12 +4,9 @@ apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMServiceScrape
 metadata:
   labels:
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    app.kubernetes.io/name: {{ include "cluster-claim-operator.name" . }}
-    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "chart.labels" . | nindent 4 }}
     control-plane: controller-manager
-  name: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-monitor" "context" $) }}
+  name: certs-controller-manager-service-scrape
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
@@ -18,7 +15,7 @@ spec:
     port: https-metrics
     scheme: HTTPS
     tlsConfig:
-      serverName: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+      serverName: certs-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
       {{- if .Values.certManager.enable }}
       insecureSkipVerify: false
       ca:
@@ -35,10 +32,10 @@ spec:
       {{- else }}
       insecureSkipVerify: true
       {{- end }}
-  jobLabel: cluster-claim-operator
+  jobLabel: certs
   selector:
     matchLabels:
-      monitoring.in-cloud.io/service: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
-      app.kubernetes.io/name: {{ include "cluster-claim-operator.name" . }}
+      monitoring.in-cloud.io/service: certs-controller-manager-metrics-service
+      app.kubernetes.io/name: certs
       control-plane: controller-manager
 {{- end }}

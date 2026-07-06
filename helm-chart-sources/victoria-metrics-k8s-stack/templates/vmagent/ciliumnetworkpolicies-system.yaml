@@ -231,7 +231,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-vmagent-to-cluster-claim-operator-8443
+  name: allow-egress-vmagent-to-cluster-claim-operator-11043
   namespace: {{ $ns }}
 spec:
   endpointSelector:
@@ -245,9 +245,9 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-cluster-claim-operator
     toPorts:
     - ports:
-      - port: '8443'
+      - port: '11043'
         protocol: TCP
-  description: Allows egress from vmagent to cluster-claim-operator on 8443 for metrics collection.
+  description: Allows egress from vmagent to cluster-claim-operator on 11043 for metrics collection.
 
 ---
 apiVersion: cilium.io/v2
@@ -547,7 +547,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-vmagent-to-secret-copy-operator-8443
+  name: allow-egress-vmagent-to-secret-copy-operator-11043
   namespace: {{ $ns }}
 spec:
   endpointSelector:
@@ -561,9 +561,9 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-secret-copy-operator
     toPorts:
     - ports:
-      - port: '8443'
+      - port: '11043'
         protocol: TCP
-  description: Allows egress from vmagent to secret-copy-operator on 8443 for metrics collection.
+  description: Allows egress from vmagent to secret-copy-operator on 11043 for metrics collection.
 
 ---
 apiVersion: cilium.io/v2
@@ -698,4 +698,48 @@ spec:
       - port: '11043'
         protocol: TCP
   description: Allows egress from vmagent to vault-secret-operator on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-certificate-set-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: certs-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-certificate-set
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to certificate-set on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-worker-group-claim-operator-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: worker-group-claim-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-worker-group-claim-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to worker-group-claim-operator on 11043 for metrics collection.
 {{- end }}

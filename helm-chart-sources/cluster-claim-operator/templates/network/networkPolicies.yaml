@@ -32,7 +32,7 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-cluster-claim-operator-from-vm-agent-8443
+  name: allow-ingress-cluster-claim-operator-from-vm-agent-11043
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
@@ -46,7 +46,7 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
     toPorts:
     - ports:
-      - port: '8443'
+      - port: '11043'
         protocol: TCP
-  description: Allows ingress to cluster-claim-operator from vmagent on 8443 for metrics collection.
+  description: Allows ingress to cluster-claim-operator from vmagent on 11043 for metrics collection.
 {{- end }}
