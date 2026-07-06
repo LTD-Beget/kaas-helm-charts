@@ -38,7 +38,7 @@ spec:
             containers:
                 - args:
                     {{- if .Values.metrics.enable }}
-                    - --metrics-bind-address=:{{ .Values.metrics.port }}
+                    - --metrics-bind-address=127.0.0.1:{{ .Values.metrics.internalPort }}
                     {{- else }}
                     # Bind to :0 to disable the controller-runtime managed metrics server
                     - --metrics-bind-address=0
@@ -65,14 +65,7 @@ spec:
                     initialDelaySeconds: 15
                     periodSeconds: 20
                   name: manager
-                  {{- if .Values.metrics.enable }}
-                  ports:
-                    - containerPort: {{ .Values.metrics.port }}
-                      name: metrics
-                      protocol: TCP
-                  {{- else }}
                   ports: []
-                  {{- end }}
                   readinessProbe:
                     httpGet:
                         path: /readyz
@@ -92,6 +85,37 @@ spec:
                     {}
                     {{- end }}
                   volumeMounts: []
+                {{- if .Values.metrics.enable }}
+                - name: rbac-proxy
+                  image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+                  args:
+                    - --secure-listen-address=0.0.0.0:{{ .Values.metrics.port }}
+                    - --upstream=http://127.0.0.1:{{ .Values.metrics.internalPort }}
+                    {{- if .Values.certManager.enable }}
+                    - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                    - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                    {{- end }}
+                    - --v=2
+                  ports:
+                    - name: https-metrics
+                      containerPort: {{ .Values.metrics.port }}
+                      protocol: TCP
+                  resources:
+                    requests:
+                        memory: "32Mi"
+                        cpu: "10m"
+                    limits:
+                        memory: "64Mi"
+                        cpu: "50m"
+                  {{- if .Values.certManager.enable }}
+                  volumeMounts:
+                    - name: rbac-proxy-tls
+                      mountPath: /app/config/metrics/tls
+                      readOnly: true
+                  {{- else }}
+                  volumeMounts: []
+                  {{- end }}
+                {{- end }}
             securityContext:
               {{- if .Values.manager.podSecurityContext }}
               {{- toYaml .Values.manager.podSecurityContext | nindent 14 }}
@@ -100,4 +124,12 @@ spec:
               {{- end }}
             serviceAccountName: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
             terminationGracePeriodSeconds: 10
+            {{- if and .Values.metrics.enable .Values.certManager.enable }}
+            volumes:
+                - name: rbac-proxy-tls
+                  secret:
+                    defaultMode: 420
+                    secretName: metrics-server-cert
+            {{- else }}
             volumes: []
+            {{- end }}

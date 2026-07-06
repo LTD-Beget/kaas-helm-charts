@@ -1,0 +1,33 @@
+{{- if and .Values.metrics.enable .Values.certManager.enable }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "cluster-claim-operator.name" . }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    control-plane: controller-manager
+  name: metrics-server-cert
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: metrics-server-cert
+  duration: 8760h
+  renewBefore: 720h
+  commonName: {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+  dnsNames:
+    - {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+    - {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}
+    - {{ include "cluster-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    kind: {{ .Values.certManager.issuer.kind }}
+    name: {{ .Values.certManager.issuer.name }}
+{{- end }}
