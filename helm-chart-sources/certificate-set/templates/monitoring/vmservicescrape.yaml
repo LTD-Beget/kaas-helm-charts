@@ -1,0 +1,41 @@
+{{- if .Values.metrics.enable }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: certs-controller-manager-service-scrape
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    path: /metrics
+    port: https-metrics
+    scheme: HTTPS
+    tlsConfig:
+      serverName: certs-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
+      {{- if .Values.certManager.enable }}
+      insecureSkipVerify: false
+      ca:
+        secret:
+          name: metrics-server-cert
+          key: ca.crt
+      cert:
+        secret:
+          name: metrics-server-cert
+          key: tls.crt
+      keySecret:
+        name: metrics-server-cert
+        key: tls.key
+      {{- else }}
+      insecureSkipVerify: true
+      {{- end }}
+  jobLabel: certs
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: certs-controller-manager-metrics-service
+      app.kubernetes.io/name: certs
+      control-plane: controller-manager
+{{- end }}

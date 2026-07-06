@@ -6,14 +6,15 @@ metadata:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: certs
         control-plane: controller-manager
+        monitoring.in-cloud.io/service: certs-controller-manager-metrics-service
     name: certs-controller-manager-metrics-service
     namespace: {{ .Release.Namespace }}
 spec:
     ports:
-        - name: metrics
+        - name: https-metrics
           port: {{ .Values.metrics.port }}
           protocol: TCP
-          targetPort: {{ .Values.metrics.port }}
+          targetPort: https-metrics
     selector:
         app.kubernetes.io/name: certs
         control-plane: controller-manager

@@ -52,15 +52,21 @@ crd:
   keep: true    # Keep CRDs when uninstalling
 
 # Controller metrics endpoint.
-# Enable to expose /metrics endpoint with RBAC protection.
+# Enable to expose /metrics endpoint with RBAC protection via kube-rbac-proxy.
 metrics:
   enable: true
-  port: 8443  # Metrics server port
+  port: 8443         # kube-rbac-proxy HTTPS port (external)
+  internalPort: 8080 # manager internal HTTP metrics port
 
 # Cert-manager integration for TLS certificates.
 # Required for webhook certificates and metrics endpoint certificates.
+# When enabled, kube-rbac-proxy serves metrics with a cert-manager issued
+# certificate and the VMServiceScrape verifies it.
 certManager:
   enable: false
+  issuer:
+    kind: ClusterIssuer
+    name: default-issuer-name
 
 # Prometheus ServiceMonitor for metrics scraping.
 # Requires prometheus-operator to be installed in the cluster.
