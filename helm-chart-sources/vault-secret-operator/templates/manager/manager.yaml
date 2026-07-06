@@ -89,8 +89,10 @@ spec:
           args:
             - --secure-listen-address=0.0.0.0:{{ .Values.metrics.port }}
             - --upstream=http://127.0.0.1:{{ .Values.metrics.internalPort }}
+            {{- if .Values.monitoring.secureService.enabled }}
             - --tls-cert-file=/app/config/metrics/tls/tls.crt
             - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            {{- end }}
             - --v=2
           ports:
             - name: https-metrics
@@ -103,10 +105,14 @@ spec:
             limits:
               memory: "64Mi"
               cpu: "50m"
+          {{- if .Values.monitoring.secureService.enabled }}
           volumeMounts:
             - name: rbac-proxy-tls
               mountPath: /app/config/metrics/tls
               readOnly: true
+          {{- else }}
+          volumeMounts: []
+          {{- end }}
         {{- end }}
       securityContext:
         {{- if .Values.manager.podSecurityContext }}
@@ -116,10 +122,12 @@ spec:
         {{- end }}
       serviceAccountName: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
       terminationGracePeriodSeconds: 10
+      {{- if and .Values.metrics.enable .Values.monitoring.secureService.enabled }}
       volumes:
-        {{- if .Values.metrics.enable }}
         - name: rbac-proxy-tls
           secret:
             defaultMode: 420
             secretName: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
-        {{- end }}
+      {{- else }}
+      volumes: []
+      {{- end }}
