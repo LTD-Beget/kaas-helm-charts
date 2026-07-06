@@ -4,7 +4,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-ingress-secret-copy-operator-from-vmagent-8443
+  name: allow-ingress-secret-copy-operator-from-vmagent-11043
   namespace: {{ include "chart.namespaceName" . }}
 spec:
   endpointSelector:
@@ -18,9 +18,9 @@ spec:
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
     toPorts:
     - ports:
-      - port: '8443'
+      - port: '11043'
         protocol: TCP
-  description: Allows ingress from vmagent to secret-copy-operator on 8443 for metrics
+  description: Allows ingress from vmagent to secret-copy-operator on 11043 for metrics
     collection.
 
 ---
