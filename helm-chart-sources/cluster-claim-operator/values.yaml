@@ -86,7 +86,7 @@ crd:
 ## Enable to expose /metrics endpoint with RBAC protection via kube-rbac-proxy.
 ##
 metrics:
-  enable: true
+  enable: false
   # kube-rbac-proxy HTTPS port (external)
   port: 11043
   # manager internal HTTP metrics port
