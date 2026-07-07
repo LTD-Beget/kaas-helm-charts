@@ -1,0 +1,125 @@
+rule_files:
+  - rendered.rules.yaml
+
+evaluation_interval: 1m
+
+# Правило InCloudCapiClusterNoMetrics: кластер жив (in_cloud_capi_cluster_alive == 1),
+# но нет heartbeat от vmagent (up{job="vmagent"} == 1). Ловит инцидент, когда
+# системный контур изолирован по сети: capi (системная сторона) продолжает считать
+# кластер живым, а клиентски-инициированный remote-write vmagent не доходит.
+#
+# in_cloud_capi_cluster_alive — recording-правило; подаём его напрямую (как mute-тест
+# подаёт in_cloud_capi_cluster_deletion_requested) и НЕ подаём его источники
+# (in_cloud_capi_cluster_condition), иначе правило пересчитает и затрёт ввод.
+
+tests:
+  # ── Критерий 1: жив, heartbeat vmagent отсутствует всё время → firing после for=10m
+  - name: alive without any vmagent heartbeat fires
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      # up{job="vmagent"} нет вовсе
+    alert_rule_test:
+      - eval_time: 9m           # for ещё не истёк (< 10m) → pending, не firing
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts: []
+      - eval_time: 11m          # for=10m истёк → firing
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts:
+          - exp_labels: &expLabels
+              severity: critical
+              cluster_full_name: ns-c1-h1
+              cluster_namespace: ns
+              cluster_name: c1
+            exp_annotations: &expAnnotations
+              summary: No metrics from cluster vmagent
+              description: |
+                Cluster ns/c1
+                is alive, but no metrics are arriving from its vmagent.
+
+                Likely the client-initiated remote-write connection is broken
+                (e.g. network isolation of the system contour), while the
+                system-side liveness probe still works — so CAPI still reports
+                the cluster as alive.
+              message: |
+                ns-c1-h1: No metrics from cluster vmagent
+
+                Cluster: ns-c1-h1
+                Namespace: ns
+                Name: c1
+
+  # ── Критерий 2: жив и heartbeat vmagent есть (up==1) → тишина
+  - name: alive with healthy vmagent heartbeat is silent
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+        values: '1+0x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts: []
+
+  # ── Критерий 3: жив, но vmagent-таргет скрейпится и лежит (up==0) → firing
+  - name: alive with vmagent target down fires
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+        values: '0+0x20'
+    alert_rule_test:
+      - eval_time: 11m
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts:
+          - exp_labels: *expLabels
+            exp_annotations: *expAnnotations
+
+  # ── Критерий 4: heartbeat пропал в t=6m (stale-маркер) → for от пропажи (граница)
+  - name: heartbeat loss starts the for timer
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x25'
+      # up==1 на минутах 0..5, затем remote-write встал → серия помечается stale
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+        values: '1x5 stale'
+    alert_rule_test:
+      - eval_time: 12m          # условие истинно с t=6m → всего 6m < 10m → pending
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts: []
+      - eval_time: 17m          # условие истинно с t=6m → 11m ≥ 10m → firing
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts:
+          - exp_labels: *expLabels
+            exp_annotations: *expAnnotations
+
+  # ── Критерий 5: кластер не жив (alive==0) → алерта нет даже без heartbeat
+  - name: not-alive cluster does not fire even without heartbeat
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+        values: '0+0x20'
+      # heartbeat нет
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts: []
+
+  # ── Критерий 6: infra+client серии alive схлопываются в одну (group by cluster_full_name)
+  - name: infra and client alive collapse to a single alert
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h-infra",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h-client",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      # heartbeat нет
+    alert_rule_test:
+      - eval_time: 11m
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts:
+          - exp_labels: *expLabels
+            exp_annotations: *expAnnotations

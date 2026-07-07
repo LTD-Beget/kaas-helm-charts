@@ -5,8 +5,13 @@
 
 | Файл | Назначение |
 |---|---|
-| `run.sh` | Рендерит **весь** чарт (все группы из всех файлов правил) во временную папку и прогоняет против него все `*_test.yaml` из этой директории (использует `promtool`, либо `prom/prometheus` через docker как фоллбэк). |
-| `*_test.yaml` | Кейсы `promtool test rules`. Один файл на правило (или на группу связанных правил). |
+| `run.sh` | Рендерит **весь** чарт (все группы из всех файлов правил) во временную папку и прогоняет против него все `*_test.yaml` из этой директории (использует `vmalert-tool`, либо образ `victoriametrics/vmalert-tool` через docker как фоллбэк). |
+| `*_test.yaml` | Кейсы `vmalert-tool unittest`. Один файл на правило (или на группу связанных правил). |
+
+Движок — **vmalert-tool** (MetricsQL/VM), а не promtool: он корректно воспроизводит
+staleness/`last_over_time` VictoriaMetrics. Recording-правила тестируются через
+`metricsql_expr_test`, алерты — через `alert_rule_test` (матчатся по `alertname`,
+без `groupname` и без group-лейбла — за счёт `--disableAlertgroupLabel`).
 
 Отрендеренные правила — временный артефакт: `run.sh` генерирует их во временную
 директорию на время прогона и удаляет после, так что в репозиторий ничего лишнего
@@ -33,8 +38,8 @@
      - rendered.rules.yaml
    ```
 
-3. Опиши свои `input_series` и кейсы `promql_expr_test` / `alert_rule_test`,
-   затем обращайся к recording-метрике по имени (например `in_cloud_capi_cluster_ready`).
+3. Опиши свои `input_series` и кейсы `metricsql_expr_test` / `alert_rule_test`,
+   затем обращайся к recording-метрике/алерту по имени (например `in_cloud_capi_cluster_ready`).
 4. Запусти `./run.sh` — он сам подхватит новый файл. Править скрипты не нужно.
 
 `run.sh` рендерит **весь** чарт, поэтому тест может ссылаться на любое правило из

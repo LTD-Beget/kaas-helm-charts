@@ -57,6 +57,8 @@ vmrules:
         rules:
           InCloudCapiClusterNotAlive:
             enabled: true
+          InCloudCapiClusterNoMetrics:
+            enabled: true
           InCloudCapiClusterNotReady:
             enabled: true
           InCloudCapiClusterNotReadyTooLong:
