@@ -455,6 +455,28 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: allow-egress-vmagent-to-certificate-set-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: certs-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-certificate-set
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to certificate-set on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: allow-egress-vmagent-to-metrics-server-10250
   namespace: {{ .Release.Namespace }}
 spec:
