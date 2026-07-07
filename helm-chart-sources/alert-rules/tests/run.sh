@@ -11,8 +11,13 @@
 #
 # Adding a new test = drop a new <something>_test.yaml here; no script changes.
 #
-# Requires: helm, yq, promtool (Prometheus). If promtool is not on PATH, falls
-# back to the prom/prometheus container image when docker is available.
+# Engine: vmalert-tool (MetricsQL/VM). It matches VictoriaMetrics semantics for
+# staleness/last_over_time, which promtool does NOT reproduce faithfully. Tests
+# use `metricsql_expr_test` for recording rules and `alert_rule_test` for alerts
+# (matched by alertname; group label disabled via --disableAlertgroupLabel).
+#
+# Requires: helm, yq, vmalert-tool. If vmalert-tool is not on PATH, falls back to
+# the victoriametrics/vmalert-tool container image when docker is available.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -51,30 +56,32 @@ done
 
 cd "${WORK}"
 
-# Wrapper around promtool that works either with a local binary or the
-# prom/prometheus container as a fallback.
-run_promtool() {
-  if command -v promtool >/dev/null 2>&1; then
-    promtool test rules "$@"
+# Wrapper around vmalert-tool that works either with a local binary or the
+# victoriametrics/vmalert-tool container as a fallback.
+run_vmalert_tool() {
+  local file="$1"
+  if command -v vmalert-tool >/dev/null 2>&1; then
+    vmalert-tool unittest --disableAlertgroupLabel --files="${file}"
   elif command -v docker >/dev/null 2>&1; then
     docker run --rm -v "${WORK}:/work" -w /work \
-      --entrypoint promtool prom/prometheus:latest test rules "$@"
+      victoriametrics/vmalert-tool:latest \
+      unittest --disableAlertgroupLabel --files="${file}"
   else
-    echo "ERROR: neither promtool nor docker is available." >&2
-    echo "Install Prometheus (brew install prometheus) or Docker, then re-run." >&2
+    echo "ERROR: neither vmalert-tool nor docker is available." >&2
+    echo "Install vmalert-tool (from vmutils release) or Docker, then re-run." >&2
     exit 1
   fi
 }
 
-if ! command -v promtool >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
-  echo ">> promtool not found; running via prom/prometheus container"
+if ! command -v vmalert-tool >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
+  echo ">> vmalert-tool not found; running via victoriametrics/vmalert-tool container"
 fi
 
 # Run each test file separately so the output shows which file ran and its result.
 RC=0
 for f in "${BASENAMES[@]}"; do
   echo ">> ${f}"
-  run_promtool "${f}" || RC=1
+  run_vmalert_tool "${f}" || RC=1
 done
 
 exit "${RC}"
