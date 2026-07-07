@@ -456,12 +456,12 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-egress-vmagent-to-certificate-set-11043
-  namespace: {{ $ns }}
+  namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
-      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
   egress:
   - toEndpoints:
     - matchLabels:
