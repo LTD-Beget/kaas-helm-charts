@@ -90,9 +90,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-07-07T17:39:58.350918+03:00"
+      created: "2026-07-07T20:38:04.800954+05:00"
       description: A Helm chart for Kubernetes
-      digest: 34c28c7c15e4d47e0cd751c2bc17837f27e8b80362ef0bd4ecce2f6c1e5019a0
+      digest: cdbe0e32f8a79b04b35cc86cba918a7e7685ec32ff4ec199bf9d1423e2346e01
       name: addonset
       type: application
       urls:
@@ -159,6 +159,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.3.tgz
       version: 1.0.3
   alert-rules:
+    - apiVersion: v2
+      appVersion: 1.16.0
+      created: "2026-07-07T20:34:07.193336+05:00"
+      description: A Helm chart for Kubernetes
+      digest: 7a30047e938adaa5b53ed343590bebd8294dbaa4d76f15fcd02fb6b7c99271fa
+      name: alert-rules
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/alert-rules-0.1.4.tgz
+      version: 0.1.4
     - apiVersion: v2
       appVersion: 1.16.0
       created: "2026-07-02T21:02:35.324662+05:00"

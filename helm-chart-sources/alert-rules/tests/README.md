@@ -8,7 +8,7 @@
 | `run.sh` | Рендерит **весь** чарт (все группы из всех файлов правил) во временную папку и прогоняет против него все `*_test.yaml` из этой директории (использует `vmalert-tool`, либо образ `victoriametrics/vmalert-tool` через docker как фоллбэк). |
 | `*_test.yaml` | Кейсы `vmalert-tool unittest`. Один файл на правило (или на группу связанных правил). |
 
-Движок — **vmalert-tool** (MetricsQL/VM), а не promtool: он корректно воспроизводит
+Движок — **vmalert-tool** (MetricsQL/VM): он корректно воспроизводит
 staleness/`last_over_time` VictoriaMetrics. Recording-правила тестируются через
 `metricsql_expr_test`, алерты — через `alert_rule_test` (матчатся по `alertname`,
 без `groupname` и без group-лейбла — за счёт `--disableAlertgroupLabel`).
