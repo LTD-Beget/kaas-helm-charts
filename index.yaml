@@ -90,9 +90,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-07-06T19:56:10.191502+05:00"
+      created: "2026-07-07T13:32:27.540048+05:00"
       description: A Helm chart for Kubernetes
-      digest: a27f4e371dcdd10011c34b7f78d38a42f09ae9c67f9345e04c54ed3909625a54
+      digest: 11c2e9fa1eb7f21f8664edb7f682199ad896d67ecd04a5aa53c0fe22631d02d3
       name: addonset
       type: application
       urls:
@@ -1446,6 +1446,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-0.1.0.tgz
       version: 0.1.0
   grafana-dashboards:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-07-07T13:32:27.542946+05:00"
+      description: Helm chart for the Grafana Dashboards
+      digest: ee63e7a7e81facfe767e9ca082c5fd053131387311fedcfbb19a937153c205f1
+      name: grafana-dashboards
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/grafana-dashboards-0.1.2.tgz
+      version: 0.1.2
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-07-02T21:02:35.444825+05:00"
