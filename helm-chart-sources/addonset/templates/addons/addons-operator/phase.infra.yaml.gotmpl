@@ -14,6 +14,7 @@ spec:
     {{- include "common.phase.rules.infra"                    $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.cert-manager"             $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.network-policies"         $context | nindent 4 | include "common.trimEmptyLines" }}
+    {{- include "common.phase.rules.vm-operator"              $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "common.phase.rules.system"                   $context | nindent 4 | include "common.trimEmptyLines" }}
     {{- include "addonsoperator.phase.rules.disable-webhook"  $context | nindent 4 | include "common.trimEmptyLines" }}
 {{- end }}
