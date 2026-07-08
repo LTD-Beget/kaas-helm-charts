@@ -70,7 +70,7 @@ spec:
     Allows ingress from vmagent to the vault-operator kube-rbac-proxy sidecar on 11043
     for metrics collection.
 
-{{- range $name, $vc := .Values.vaultConfigs }}
+{{ range $name, $vc := .Values.vaultConfigs }}
 {{- $addr := $vc.spec.address }}
 {{- $isHttps := hasPrefix "https://" $addr }}
 {{- $hostpart := $addr | trimPrefix "https://" | trimPrefix "http://" }}
