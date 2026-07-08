@@ -36,6 +36,10 @@ spec:
       {{- else }}
       insecureSkipVerify: true
       {{- end }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: worker-group-claim-operator
   selector:
     matchLabels:
