@@ -18,11 +18,34 @@ spec:
   ingress:
   - fromEntities:
     - host
+    - remote-node
     toPorts:
     - ports:
       - port: "443"
         protocol: TCP
       - port: "15021"
+        protocol: TCP
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-argocd-repo-server-to-istio-gw-443
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Allow argocd-repo-server to reach istio-gw on 443 (Dex/OIDC, internal services)"
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-argocd
+    toPorts:
+    - ports:
+      - port: "443"
         protocol: TCP
 
 ---
@@ -310,4 +333,25 @@ spec:
               protocol: TCP
   description: |
     Allows egress from istio gateway to docker registry cache on 5000.
+
+---
+# Envoy/Istio may query instance metadata service on startup.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-istio-gw-to-imds-80
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toCIDR:
+    - 169.254.169.254/32
+    toPorts:
+    - ports:
+      - port: "80"
+        protocol: TCP
+  description: Allows egress from istio-gw to instance metadata service on 169.254.169.254:80.
 {{- end }}
