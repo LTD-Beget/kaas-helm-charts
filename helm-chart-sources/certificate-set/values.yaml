@@ -76,3 +76,10 @@ prometheus:
 
 networkPolicies:
   enabled: false
+
+monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "kube_service_info"

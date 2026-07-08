@@ -16,5 +16,9 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ .Release.Name }}-operator
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: cilium-operator
 {{- end }}
