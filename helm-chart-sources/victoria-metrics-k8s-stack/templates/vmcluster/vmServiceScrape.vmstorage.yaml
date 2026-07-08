@@ -18,7 +18,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: vmstorage
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs.vmstorage }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}
