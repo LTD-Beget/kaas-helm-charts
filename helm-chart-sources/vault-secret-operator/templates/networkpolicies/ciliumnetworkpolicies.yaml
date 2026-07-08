@@ -148,9 +148,9 @@ spec:
       rules:
         dns:
         - matchName: {{ $host }}
-        {{- if $isK8s }}
-        - matchName: {{ $host }}.cluster.local
-        {{- end }}
+        - matchName: {{ $host }}.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.svc.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}
   description: |
     Allows egress from vault-secret-operator to CoreDNS on 53 for DNS resolution.
 {{- end }}

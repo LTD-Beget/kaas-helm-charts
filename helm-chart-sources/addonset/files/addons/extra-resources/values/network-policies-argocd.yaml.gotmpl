@@ -39,6 +39,16 @@ resources:
               #   dns:
               #     - matchPattern: "*"
 
+        # RepoServer (и другие поды argocd) обращаются к istio-gw на 443 (Dex/OIDC, внутренние сервисы)
+        - toEndpoints:
+            - matchLabels:
+                k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+                k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-istio-gw
+          toPorts:
+            - ports:
+                - port: "443"
+                  protocol: TCP
+
         # ApplicationController отправляет запросы в эти списки
         # ArgocdServer отправляет запросы в эти списки
         - toEndpoints:
