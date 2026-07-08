@@ -17,5 +17,9 @@ spec:
       tlsConfig:
         serverName: localhost
         insecureSkipVerify: true
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: metrics-server
 {{- end }}

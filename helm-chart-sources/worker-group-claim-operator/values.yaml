@@ -97,6 +97,11 @@ certManager:
   enable: false
 
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "kube_service_info"
   enabled: false
   secureService:
     enabled: false
