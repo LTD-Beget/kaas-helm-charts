@@ -1,65 +1,10 @@
 companyPrefix: exmaple
-
 prometheus-process-exporter: {}
 # some values for process-exporter
 
 monitoring:
   serviceScrapeConfig:
-    metricRelabelConfigs:
-      - sourceLabels: [__name__]
-        action: keep
-        regex: |
-          container_cpu_cfs_periods_total|
-          container_cpu_cfs_throttled_periods_total|
-          container_cpu_cfs_throttled_seconds_total|
-          container_cpu_usage_seconds_total|
-          container_memory_rss|
-          container_memory_working_set_bytes|
-          container_network_receive_bytes_total|
-          container_network_receive_errors_total|
-          container_network_receive_packets_dropped_total|
-          container_network_receive_packets_total|
-          container_network_transmit_bytes_total|
-          container_network_transmit_errors_total|
-          container_network_transmit_packets_dropped_total|
-          container_network_transmit_packets_total|
-          container_oom_events_total|
-          go_gc_duration_seconds_count|
-          go_gc_duration_seconds_sum|
-          go_goroutines|
-          go_memstats_alloc_bytes_total|
-          go_memstats_gc_sys_bytes|
-          go_memstats_heap_idle_bytes|
-          go_memstats_heap_inuse_bytes|
-          go_memstats_heap_released_bytes|
-          go_memstats_mcache_sys_bytes|
-          go_memstats_mspan_sys_bytes|
-          go_memstats_other_sys_bytes|
-          go_memstats_stack_inuse_bytes|
-          go_memstats_sys_bytes|
-          kube_service_info|
-          namedprocess_namegroup_context_switches_total|
-          namedprocess_namegroup_cpu_seconds_total|
-          namedprocess_namegroup_major_page_faults_total|
-          namedprocess_namegroup_memory_bytes|
-          namedprocess_namegroup_minor_page_faults_total|
-          namedprocess_namegroup_num_procs|
-          namedprocess_namegroup_num_threads|
-          namedprocess_namegroup_oldest_start_time_seconds|
-          namedprocess_namegroup_open_filedesc|
-          namedprocess_namegroup_read_bytes_total|
-          namedprocess_namegroup_write_bytes_total|
-          namespace_cpu|
-          namespace_memory|
-          node_namespace_pod:kube_pod_info:|
-          process_cpu_seconds_total|
-          process_max_fds|
-          process_open_fds|
-          process_resident_memory_bytes|
-          process_start_time_seconds|
-          process_virtual_memory_bytes|
-          scrape_series_added|
-          up
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

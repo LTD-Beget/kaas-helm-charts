@@ -3,15 +3,12 @@ vault:
   server:
     service:
       port: 8200
-
 prepareJob:
   enabled: false
-
   image:
     repository: hashicorp/vault
-    tag: ""  # defaults to .Chart.AppVersion
+    tag: "" # defaults to .Chart.AppVersion
     pullPolicy: IfNotPresent
-
   # Name of the secret holding ROOT_TOKEN and UNSEAL_KEYS
   secretName: vault-keys
   rootTokenKey: ROOT_TOKEN
@@ -19,108 +16,31 @@ prepareJob:
 
   # Kubernetes auth mount path (typically the cluster name)
   clusterName: ""
-
   kubernetesAuth:
     enabled: true
-
   clusterReadOnlyRole:
     enabled: true
-
   vaultOperatorRole:
     enabled: true
     serviceAccountName: vault-operator-controller-manager
     namespace: example-vault-operator
-
   vaultSecretOperatorRole:
     enabled: true
     serviceAccountName: vault-secret-operator-controller-manager
     namespace: example-vault-operator
-
   monitoring:
     # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
     # (k8s RBAC), so the vault-side metrics-reader policy/role is not required.
     enabled: false
     serviceAccountName: vmagent-vmagent
     namespace: example-vmagent
-
   # Optional step: enable the KV v2 secrets engine.
   secretEngine:
     enabled: false
     path: secret
-
 monitoring:
   serviceScrapeConfig:
-    metricRelabelConfigs:
-      - sourceLabels: [__name__]
-        action: keep
-        regex: |
-          container_cpu_cfs_periods_total|
-          container_cpu_cfs_throttled_periods_total|
-          container_cpu_cfs_throttled_seconds_total|
-          container_cpu_usage_seconds_total|
-          container_memory_rss|
-          container_memory_working_set_bytes|
-          container_network_receive_bytes_total|
-          container_network_receive_errors_total|
-          container_network_receive_packets_dropped_total|
-          container_network_receive_packets_total|
-          container_network_transmit_bytes_total|
-          container_network_transmit_errors_total|
-          container_network_transmit_packets_dropped_total|
-          container_network_transmit_packets_total|
-          container_oom_events_total|
-          go_gc_duration_seconds_count|
-          go_gc_duration_seconds_sum|
-          go_goroutines|
-          go_memstats_alloc_bytes_total|
-          go_memstats_gc_sys_bytes|
-          go_memstats_heap_idle_bytes|
-          go_memstats_heap_inuse_bytes|
-          go_memstats_heap_released_bytes|
-          go_memstats_mcache_sys_bytes|
-          go_memstats_mspan_sys_bytes|
-          go_memstats_other_sys_bytes|
-          go_memstats_stack_inuse_bytes|
-          go_memstats_sys_bytes|
-          kube_service_info|
-          namespace_cpu|
-          namespace_memory|
-          node_namespace_pod:kube_pod_info:|
-          process_cpu_seconds_total|
-          process_max_fds|
-          process_open_fds|
-          process_resident_memory_bytes|
-          process_start_time_seconds|
-          process_virtual_memory_bytes|
-          scrape_series_added|
-          up|
-          vault_core_active|
-          vault_core_handle_request_count|
-          vault_core_in_flight_requests|
-          vault_core_mount_table_num_entries|
-          vault_core_mount_table_size|
-          vault_core_replication_dr_primary|
-          vault_core_unsealed|
-          vault_expire_num_irrevocable_leases|
-          vault_expire_num_leases|
-          vault_identity_entity_alias_count|
-          vault_identity_num_entities|
-          vault_policy_get_policy_count|
-          vault_policy_set_policy_count|
-          vault_route_read_secret__sum|
-          vault_runtime_alloc_bytes|
-          vault_runtime_heap_objects|
-          vault_runtime_malloc_count|
-          vault_runtime_num_goroutines|
-          vault_secret_kv_count|
-          vault_token_count|
-          vault_token_count_by_auth|
-          vault_token_count_by_policy|
-          vault_token_count_by_ttl|
-          vault_token_create_count|
-          vault_token_creation|
-          vault_token_lookup_count|
-          vault_token_store_count
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:
@@ -128,9 +48,8 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default-issuer-name
-
 tls:
-  enabled: false   # общий рубильник
+  enabled: false # общий рубильник
   # Общие дефолты (можно переопределять в server/client)
   defaults:
     duration: 8760h
@@ -138,7 +57,6 @@ tls:
     privateKey:
       algorithm: RSA
       size: 2048
-
   server:
     enabled: false
     certificate:
@@ -154,8 +72,7 @@ tls:
         - server auth
     issuer:
       name: default-server-issuer
-      kind: ClusterIssuer     # или Issuer
-
+      kind: ClusterIssuer # или Issuer
   client:
     enabled: false
     certificate:
@@ -169,13 +86,10 @@ tls:
     issuer:
       name: default-client-issuer
       kind: ClusterIssuer
-
 companyPrefix: example
-
 networkPolicies:
   enabled: false
   systemEnabled: false
-
 istioVirtualService:
   enabled: false
   gateways:

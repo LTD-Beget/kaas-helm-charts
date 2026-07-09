@@ -10,70 +10,58 @@
 ##
 manager:
   replicas: 1
-  
   image:
     repository: controller
     pullPolicy: IfNotPresent
-
   ## Arguments
   ##
   args:
     - --leader-elect
-
   ## Environment variables
   ##
   env:
-  - name: ENABLE_WEBHOOKS
-    value: false
-
+    - name: ENABLE_WEBHOOKS
+      value: false
   ## Image pull secrets
   ##
   imagePullSecrets: []
-
   ## Pod-level security settings
   ##
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
-        type: RuntimeDefault
-
+      type: RuntimeDefault
   ## Container-level security settings
   ##
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-        drop:
-            - ALL
+      drop:
+        - ALL
     readOnlyRootFilesystem: true
-
   ## Resource limits and requests
   ##
   resources:
     limits:
-        cpu: 500m
-        memory: 1024Mi
+      cpu: 500m
+      memory: 1024Mi
     requests:
-        cpu: 10m
-        memory: 64Mi
-
+      cpu: 10m
+      memory: 64Mi
   ## Manager pod's affinity
   ##
   affinity: {}
-
   ## Manager pod's node selector
   ##
   nodeSelector: {}
-
   ## Manager pod's tolerations
   ##
   tolerations: []
-
 ## Helper RBAC roles for managing custom resources
 ##
 rbacHelpers:
   # Install convenience admin/editor/viewer roles for CRDs
   enable: false
-
 ## Custom Resource Definitions
 ##
 crd:
@@ -81,7 +69,6 @@ crd:
   enable: true
   # Keep CRDs when uninstalling
   keep: true
-
 ## Controller metrics endpoint.
 ## Enable to expose /metrics endpoint with RBAC protection via kube-rbac-proxy.
 ##
@@ -91,7 +78,6 @@ metrics:
   port: 11043
   # manager internal HTTP metrics port
   internalPort: 8080
-
 ## Cert-manager integration for TLS certificates.
 ## Required for webhook certificates and metrics endpoint certificates.
 ## When enabled, kube-rbac-proxy serves metrics with a cert-manager issued
@@ -102,80 +88,15 @@ certManager:
   issuer:
     kind: ClusterIssuer
     name: default-issuer-name
-
 ## Prometheus ServiceMonitor for metrics scraping.
 ## Requires prometheus-operator to be installed in the cluster.
 ##
 prometheus:
   enable: false
-
 ## Cilium network policies for the controller manager.
 ##
 networkPolicies:
   enabled: false
-
 monitoring:
   serviceScrapeConfig:
-    metricRelabelConfigs:
-      - sourceLabels: [__name__]
-        action: keep
-        regex: |
-          container_cpu_cfs_periods_total|
-          container_cpu_cfs_throttled_periods_total|
-          container_cpu_cfs_throttled_seconds_total|
-          container_cpu_usage_seconds_total|
-          container_memory_rss|
-          container_memory_working_set_bytes|
-          container_network_receive_bytes_total|
-          container_network_receive_errors_total|
-          container_network_receive_packets_dropped_total|
-          container_network_receive_packets_total|
-          container_network_transmit_bytes_total|
-          container_network_transmit_errors_total|
-          container_network_transmit_packets_dropped_total|
-          container_network_transmit_packets_total|
-          container_oom_events_total|
-          controller_runtime_active_workers|
-          controller_runtime_max_concurrent_reconciles|
-          controller_runtime_reconcile_errors_total|
-          controller_runtime_reconcile_panics_total|
-          controller_runtime_reconcile_time_seconds_bucket|
-          controller_runtime_reconcile_total|
-          controller_runtime_terminal_reconcile_errors_total|
-          go_gc_duration_seconds_count|
-          go_gc_duration_seconds_sum|
-          go_goroutines|
-          go_memstats_alloc_bytes_total|
-          go_memstats_gc_sys_bytes|
-          go_memstats_heap_idle_bytes|
-          go_memstats_heap_inuse_bytes|
-          go_memstats_heap_released_bytes|
-          go_memstats_mcache_sys_bytes|
-          go_memstats_mspan_sys_bytes|
-          go_memstats_other_sys_bytes|
-          go_memstats_stack_inuse_bytes|
-          go_memstats_sys_bytes|
-          go_sched_latencies_seconds_bucket|
-          kube_service_info|
-          leader_election_master_status|
-          namespace_cpu|
-          namespace_memory|
-          node_namespace_pod:kube_pod_info:|
-          process_cpu_seconds_total|
-          process_max_fds|
-          process_open_fds|
-          process_resident_memory_bytes|
-          process_start_time_seconds|
-          process_virtual_memory_bytes|
-          rest_client_requests_total|
-          scrape_series_added|
-          up|
-          workqueue_adds_total|
-          workqueue_depth|
-          workqueue_longest_running_processor_seconds|
-          workqueue_queue_duration_seconds_count|
-          workqueue_queue_duration_seconds_sum|
-          workqueue_retries_total|
-          workqueue_unfinished_work_seconds|
-          workqueue_work_duration_seconds_count|
-          workqueue_work_duration_seconds_sum
+    metricRelabelConfigs: []
