@@ -17,7 +17,7 @@ tests:
   - name: alive without any vmagent heartbeat fires
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x20'
       # up{job="vmagent"} нет вовсе
     alert_rule_test:
@@ -29,7 +29,7 @@ tests:
         exp_alerts:
           - exp_labels: &expLabels
               severity: critical
-              cluster_full_name: ns-c1-h1
+              cluster_full_name: ns-c1-infra
               cluster_namespace: ns
               cluster_name: c1
             exp_annotations: &expAnnotations
@@ -43,9 +43,9 @@ tests:
                 system-side liveness probe still works — so CAPI still reports
                 the cluster as alive.
               message: |
-                ns-c1-h1: No metrics from cluster vmagent
+                ns-c1-infra: No metrics from cluster vmagent
 
-                Cluster: ns-c1-h1
+                Cluster: ns-c1-infra
                 Namespace: ns
                 Name: c1
 
@@ -53,9 +53,9 @@ tests:
   - name: alive with healthy vmagent heartbeat is silent
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x20'
-      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-infra"}'
         values: '1+0x20'
     alert_rule_test:
       - eval_time: 15m
@@ -66,9 +66,9 @@ tests:
   - name: alive with vmagent target down fires
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x20'
-      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-infra"}'
         values: '0+0x20'
     alert_rule_test:
       - eval_time: 11m
@@ -81,10 +81,10 @@ tests:
   - name: heartbeat loss starts the for timer
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x25'
       # up==1 на минутах 0..5, затем remote-write встал → серия помечается stale
-      - series: 'up{job="vmagent",cluster_full_name="ns-c1-h1"}'
+      - series: 'up{job="vmagent",cluster_full_name="ns-c1-infra"}'
         values: '1x5 stale'
     alert_rule_test:
       - eval_time: 12m          # условие истинно с t=6m → всего 6m < 10m → pending
@@ -100,7 +100,7 @@ tests:
   - name: not-alive cluster does not fire even without heartbeat
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h1",cluster_namespace="ns",cluster_name="c1"}'
         values: '0+0x20'
       # heartbeat нет
     alert_rule_test:
@@ -108,13 +108,14 @@ tests:
         alertname: InCloudCapiClusterNoMetrics
         exp_alerts: []
 
-  # ── Критерий 6: infra+client серии alive схлопываются в одну (group by cluster_full_name)
-  - name: infra and client alive collapse to a single alert
+  # ── Критерий 6: несколько серий alive одного infra-кластера (разные cluster_hash)
+  #    схлопываются в один алерт через group by (cluster_full_name, ...)
+  - name: duplicate alive series of one infra cluster collapse to a single alert
     interval: 1m
     input_series:
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h-infra",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h-infra-1",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x20'
-      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-h1",cluster_hash="h-client",cluster_namespace="ns",cluster_name="c1"}'
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-infra",cluster_hash="h-infra-2",cluster_namespace="ns",cluster_name="c1"}'
         values: '1+0x20'
       # heartbeat нет
     alert_rule_test:
@@ -123,3 +124,17 @@ tests:
         exp_alerts:
           - exp_labels: *expLabels
             exp_annotations: *expAnnotations
+
+  # ── Критерий 7: client-кластер (cluster_full_name НЕ *-infra) исключён фильтром
+  #    {cluster_full_name=~".*-infra"} (см. commit 99d7e815, K8S-577) → алерта нет
+  #    даже если он жив и без heartbeat
+  - name: client cluster is excluded by the .*-infra filter
+    interval: 1m
+    input_series:
+      - series: 'in_cloud_capi_cluster_alive{cluster_full_name="ns-c1-client",cluster_hash="h-client",cluster_namespace="ns",cluster_name="c1"}'
+        values: '1+0x20'
+      # heartbeat нет
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: InCloudCapiClusterNoMetrics
+        exp_alerts: []
