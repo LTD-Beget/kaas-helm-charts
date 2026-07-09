@@ -1,0 +1,219 @@
+rule_files:
+  - rendered.rules.yaml
+
+evaluation_interval: 1m
+
+# Два взаимодополняющих алерта по vm_promscrape_scrape_pool_targets:
+#
+#   VMAgentScrapePoolHasNoTargets   — sum(up+down) == 0 → пул пустой / SD сломан
+#   VMAgentScrapePoolHasDownTargets — sum(down)   >  0 → таргеты есть, но лежат
+#
+# Условия взаимоисключающие (первый требует total==0, второй down>0), поэтому на
+# одном пуле одновременно не срабатывают — это и проверяем (кейсы 1 и 5).
+#
+# Оба гейтятся `unless on(cluster_full_name)` по «пустым» кластерам
+# (controlplane+workers ready replicas == 0). Метрики реплик — внешние, не
+# recording-правила, подаём напрямую. companyPrefix в рендере = example.com,
+# поэтому kubelet-исключение в HasNoTargets матчит scrape_job
+# "scrapeConfig/example.com-vmagent/client-cluster-kubelet-*".
+
+tests:
+  # ── Критерий 1: пул без таргетов (up=0,down=0) на живом кластере →
+  #    HasNoTargets firing после for=30m, HasDownTargets молчит (down не >0)
+  - name: pool with zero targets fires HasNoTargets only
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '2+0x40'
+    alert_rule_test:
+      - eval_time: 29m          # for=30m ещё не истёк → pending
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts: []
+      - eval_time: 31m          # for истёк → firing
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              cluster_full_name: ns-c1
+              cluster_type: client
+              scrape_job: scrapeConfig/example.com-vmagent/my-app
+              job: vmagent
+            exp_annotations:
+              summary: Vmagent scrape_pool has no discovered targets
+              description: |
+                Vmagent "vmagent" has scrape_pool "scrapeConfig/example.com-vmagent/my-app"
+                with 0 discovered targets for more than 30 minutes.
+                This usually indicates misconfiguration or broken service discovery.
+              message: |-
+                ns-c1: Vmagent scrape_pool has no targets
+
+                Cluster: ns-c1
+                Job: vmagent
+                Scrape pool: scrapeConfig/example.com-vmagent/my-app
+                Cluster type: client
+      - eval_time: 31m          # тот же пул: HasDownTargets НЕ срабатывает
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts: []
+
+  # ── Критерий 2: таргеты есть и живы (up=2,down=0) → оба алерта молчат
+  - name: healthy pool is silent for both
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '2+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '2+0x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts: []
+      - eval_time: 35m
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts: []
+
+  # ── Критерий 3: пустой кластер (replicas sum==0) с пулом без таргетов →
+  #    HasNoTargets НЕ срабатывает (unless-гейт)
+  - name: empty cluster suppresses HasNoTargets
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-empty",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-empty",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-empty"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-empty"}'
+        values: '0+0x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts: []
+
+  # ── Критерий 4: kubelet-пул исключён по regex в HasNoTargets даже при 0 таргетов.
+  #    ВАЖНО про харнесс: run.sh собирает enable-all values из files/defaults БЕЗ
+  #    подстановки companyPrefix, и они перекрывают отрендеренный `replace`, поэтому
+  #    в тестовом рендере regex остаётся литеральным
+  #    scrape_job!~"scrapeConfig/{{ .Values.companyPrefix }}-vmagent/(kubelet-cadvisor|kubelet-resource)".
+  #    Чтобы серия попала под исключение, scrape_job должен матчить именно эту
+  #    строку — с литеральным плейсхолдером. Проверяем kubelet-альтернацию, не prefix.
+  - name: kubelet scrape_job excluded from HasNoTargets by regex
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/{{ .Values.companyPrefix }}-vmagent/client-cluster-kubelet-cadvisor",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/{{ .Values.companyPrefix }}-vmagent/client-cluster-kubelet-cadvisor",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '2+0x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts: []
+
+  # ── Критерий 5: все таргеты пула лежат (up=0,down=3) на живом кластере →
+  #    HasDownTargets firing после for=30m, HasNoTargets молчит (total=3>0).
+  #    Ключевой кейс: «все down» ловит именно второй алерт, первый нем.
+  - name: all-down pool fires HasDownTargets only
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '2+0x40'
+    alert_rule_test:
+      - eval_time: 29m          # for=30m ещё не истёк → pending
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts: []
+      - eval_time: 31m          # for истёк → firing
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              cluster_full_name: ns-c1
+              cluster_type: client
+              scrape_job: scrapeConfig/example.com-vmagent/my-app
+            exp_annotations:
+              summary: Vmagent scrape_pool has unreachable targets
+              description: |
+                Vmagent scrape_pool "scrapeConfig/example.com-vmagent/my-app" has one or more
+                discovered targets in DOWN state for more than 30 minutes.
+                Targets are discovered but cannot be scraped — check target
+                health, network connectivity, or authentication.
+              message: |-
+                ns-c1: Vmagent scrape_pool has down targets
+
+                Cluster: ns-c1
+                Scrape pool: scrapeConfig/example.com-vmagent/my-app
+                Cluster type: client
+      - eval_time: 31m          # тот же пул: HasNoTargets НЕ срабатывает
+        alertname: VMAgentScrapePoolHasNoTargets
+        exp_alerts: []
+
+  # ── Критерий 6: часть таргетов лежит (up=1,down=1) → HasDownTargets firing
+  - name: partially-down pool fires HasDownTargets
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '1+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-c1",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '1+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '3+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-c1"}'
+        values: '2+0x40'
+    alert_rule_test:
+      - eval_time: 31m
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              cluster_full_name: ns-c1
+              cluster_type: client
+              scrape_job: scrapeConfig/example.com-vmagent/my-app
+            exp_annotations:
+              summary: Vmagent scrape_pool has unreachable targets
+              description: |
+                Vmagent scrape_pool "scrapeConfig/example.com-vmagent/my-app" has one or more
+                discovered targets in DOWN state for more than 30 minutes.
+                Targets are discovered but cannot be scraped — check target
+                health, network connectivity, or authentication.
+              message: |-
+                ns-c1: Vmagent scrape_pool has down targets
+
+                Cluster: ns-c1
+                Scrape pool: scrapeConfig/example.com-vmagent/my-app
+                Cluster type: client
+
+  # ── Критерий 7: пустой кластер (replicas sum==0) с лежащими таргетами →
+  #    HasDownTargets НЕ срабатывает (unless-гейт)
+  - name: empty cluster suppresses HasDownTargets
+    interval: 1m
+    input_series:
+      - series: 'vm_promscrape_scrape_pool_targets{status="up",cluster_full_name="ns-empty",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '0+0x40'
+      - series: 'vm_promscrape_scrape_pool_targets{status="down",cluster_full_name="ns-empty",cluster_type="client",scrape_job="scrapeConfig/example.com-vmagent/my-app",job="vmagent"}'
+        values: '2+0x40'
+      - series: 'in_cloud_capi_cluster_controlplane_ready_replicas{cluster_full_name="ns-empty"}'
+        values: '0+0x40'
+      - series: 'in_cloud_capi_cluster_workers_ready_replicas{cluster_full_name="ns-empty"}'
+        values: '0+0x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: VMAgentScrapePoolHasDownTargets
+        exp_alerts: []

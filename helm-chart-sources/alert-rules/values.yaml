@@ -1,4 +1,4 @@
-companyPrefix: example.com
+companyPrefix: example
 companyWikiAlertingUrl: example.com
 
 additionalLabels: {}
@@ -653,7 +653,7 @@ vmrules:
             enabled: true
           VMAgentScrapePoolHasNoTargets:
             enabled: true
-          VMAgentTooManyScrapePoolWithoutTargets:
+          VMAgentScrapePoolHasDownTargets:
             enabled: true
           VMagentLogsErrorsHigh:
             enabled: true

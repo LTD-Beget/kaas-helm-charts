@@ -102,7 +102,7 @@ alertmanagerConfig:
       - source_matchers:
           - alertname="InCloudCapiClusterNotAlive"
         target_matchers:
-          - alertname=~"ArgoCdClusterConnectionError|InCloudCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentTooManyScrapePoolWithoutTargets|VMagentLogsErrorsHigh"
+          - alertname=~"ArgoCdClusterConnectionError|InCloudCapiClusterNotReadyTooLong|VMAgentJobAbsent|VMAlertJobAbsent|VMAlertmanagerJobAbsent|VMAgentScrapePoolHasDownTargets|VMagentLogsErrorsHigh"
         equal:
           - cluster_full_name
 
@@ -140,7 +140,7 @@ alertmanagerConfig:
 
       # Более критичный алерт глушит аналогичный предупредительный
       - source_matchers:
-          - alertname="VMAgentTooManyScrapePoolWithoutTargets"
+          - alertname="VMAgentScrapePoolHasDownTargets"
         target_matchers:
           - alertname="VMAgentScrapePoolHasNoTargets"
         equal:
