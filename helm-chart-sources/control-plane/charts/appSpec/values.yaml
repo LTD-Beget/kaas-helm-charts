@@ -1,27 +1,19 @@
 companyPrefix: example
 networkPolicies:
   enabled: false
-
 defaults:
   defaultReplicas: 0
-
   defaultVolumes: {}
-
   defaultContainerSpec:
     defaultImagePullPolicy: IfNotPresent
-
     defaultResources:
       requests:
         ephemeral-storage: 50Mi
         cpu: 100m
         memory: 128Mi
-
     defaultVolumeMounts: {}
-
     defaultEnv: {}
-
     defaultPorts: {}
-
     defaultSecurityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
@@ -32,16 +24,12 @@ defaults:
       runAsNonRoot: true
       runAsGroup: 65532
       runAsUser: 65532
-
     defaultTerminationMessagePath: /dev/termination-log
     defaultTerminationMessagePolicy: File
-
   defaultInitContainers: {}
   defaultContainers: {}
-
   defaultRestartPolicy: Always
   defaultTerminationGracePeriodSeconds: 30
-
   defaultDnsPolicy: ClusterFirst
   # defaultServiceAccountName: FOO
 
@@ -49,7 +37,6 @@ defaults:
   defaultHostPID: "false"
   defaultHostIPC: "false"
   defaultSchedulerName: default-scheduler
-
   # enableServiceLinks в Kubernetes контролирует, будут ли ссылки на сервисы, которые доступны в namespace пода, 
   # автоматически добавляться в переменные окружения пода. 
   # По умолчанию, Kubernetes автоматически создает переменные окружения для всех сервисов, 
@@ -58,23 +45,18 @@ defaults:
   # true:  Включает  автоматическое создание переменных окружения для сервисов в namespace. Это значение по умолчанию.
   # false: Отключает автоматическое создание переменных окружения для сервисов в namespace.
   defaultEnableServiceLinks: false
-
-
   # В Kubernetes приоритеты задаются с помощью объектов PriorityClass. 
   # Администраторы кластера могут создавать свои собственные PriorityClass, 
   # задавая при этом уровень приоритета и параметры preemption (предварительное вытеснение). 
   # По умолчанию в Kubernetes доступны следующие приоритеты:
   # BCLOUDTODO
   # defaultPriorityClassName: ""
-
   defaultPriority: 0
-
   # PreemptionPolicy в Kubernetes используется для управления поведением предварительного вытеснения (preemption) подов. 
   # Предварительное вытеснение позволяет подам с высоким приоритетом вытеснять поды с более низким приоритетом, 
   # чтобы освободить ресурсы для подов с высоким приоритетом.
   # BCLOUDTODO
   # defaultPreemptionPolicy: ""
-
 
   # runtimeClassName в Kubernetes используется для указания конкретного RuntimeClass, 
   # который должен быть использован для запуска контейнеров пода. 
@@ -82,86 +64,7 @@ defaults:
   # для различных подов в одном кластере.
   # BCLOUDTODO
   # defaultRuntimeClassName: ""
-
-
 applications: {}
-
 monitoring:
   serviceScrapeConfig:
-    metricRelabelConfigs:
-      - sourceLabels: [__name__]
-        action: keep
-        regex: |
-          aggregator_unavailable_apiservice|
-          aggregator_unavailable_apiservice_total|
-          apiserver_admission_webhook_admission_duration_seconds_bucket|
-          apiserver_audit_error_total|
-          apiserver_audit_event_total|
-          apiserver_client_certificate_expiration_seconds_bucket|
-          apiserver_client_certificate_expiration_seconds_count|
-          apiserver_current_inflight_requests|
-          apiserver_request_duration_seconds_bucket|
-          apiserver_request_duration_seconds_count|
-          apiserver_request_duration_seconds_sum|
-          apiserver_request_terminations_total|
-          apiserver_request_total|
-          apiserver_requested_deprecated_apis|
-          apiserver_watch_cache_events_received_total|
-          apiserver_watch_events_sizes_sum|
-          container_cpu_cfs_periods_total|
-          container_cpu_cfs_throttled_periods_total|
-          container_cpu_cfs_throttled_seconds_total|
-          container_cpu_usage_seconds_total|
-          container_memory_rss|
-          container_memory_working_set_bytes|
-          container_network_receive_bytes_total|
-          container_network_receive_errors_total|
-          container_network_receive_packets_dropped_total|
-          container_network_receive_packets_total|
-          container_network_transmit_bytes_total|
-          container_network_transmit_errors_total|
-          container_network_transmit_packets_dropped_total|
-          container_network_transmit_packets_total|
-          container_oom_events_total|
-          go_gc_duration_seconds_count|
-          go_gc_duration_seconds_sum|
-          go_goroutines|
-          go_memstats_alloc_bytes_total|
-          go_memstats_gc_sys_bytes|
-          go_memstats_heap_idle_bytes|
-          go_memstats_heap_inuse_bytes|
-          go_memstats_heap_released_bytes|
-          go_memstats_mcache_sys_bytes|
-          go_memstats_mspan_sys_bytes|
-          go_memstats_other_sys_bytes|
-          go_memstats_stack_inuse_bytes|
-          go_memstats_sys_bytes|
-          go_sched_latencies_seconds_bucket|
-          kube_service_info|
-          kubernetes_build_info|
-          leader_election_master_status|
-          namespace_cpu|
-          namespace_memory|
-          node_namespace_pod:kube_pod_info:|
-          pod_security_evaluations_total|
-          process_cpu_seconds_total|
-          process_max_fds|
-          process_open_fds|
-          process_resident_memory_bytes|
-          process_start_time_seconds|
-          process_virtual_memory_bytes|
-          rest_client_request_duration_seconds_bucket|
-          rest_client_requests_total|
-          scheduler_schedule_attempts_total|
-          scheduler_scheduling_attempt_duration_seconds_count|
-          scrape_series_added|
-          up|
-          workqueue_adds_total|
-          workqueue_depth|
-          workqueue_longest_running_processor_seconds|
-          workqueue_queue_duration_seconds_count|
-          workqueue_queue_duration_seconds_sum|
-          workqueue_retries_total|
-          workqueue_unfinished_work_seconds|
-          workqueue_work_duration_seconds_count|
-          workqueue_work_duration_seconds_sum
+    metricRelabelConfigs: []

@@ -4,6 +4,15 @@ monitoring:
       - sourceLabels: [__name__]
         action: keep
         regex: "\
+          apiserver_audit_event_total|\
+          apiserver_client_certificate_expiration_seconds_bucket|\
+          apiserver_client_certificate_expiration_seconds_count|\
+          apiserver_current_inflight_requests|\
+          apiserver_request_duration_seconds_bucket|\
+          apiserver_request_duration_seconds_count|\
+          apiserver_request_duration_seconds_sum|\
+          apiserver_request_terminations_total|\
+          apiserver_request_total|\
           container_cpu_cfs_periods_total|\
           container_cpu_cfs_throttled_periods_total|\
           container_cpu_cfs_throttled_seconds_total|\
@@ -19,13 +28,6 @@ monitoring:
           container_network_transmit_packets_dropped_total|\
           container_network_transmit_packets_total|\
           container_oom_events_total|\
-          controller_runtime_active_workers|\
-          controller_runtime_max_concurrent_reconciles|\
-          controller_runtime_reconcile_errors_total|\
-          controller_runtime_reconcile_panics_total|\
-          controller_runtime_reconcile_time_seconds_bucket|\
-          controller_runtime_reconcile_total|\
-          controller_runtime_terminal_reconcile_errors_total|\
           go_gc_duration_seconds_count|\
           go_gc_duration_seconds_sum|\
           go_goroutines|\
@@ -41,7 +43,6 @@ monitoring:
           go_memstats_sys_bytes|\
           go_sched_latencies_seconds_bucket|\
           kube_service_info|\
-          leader_election_master_status|\
           namespace_cpu|\
           namespace_memory|\
           node_namespace_pod:kube_pod_info:|\
@@ -51,11 +52,10 @@ monitoring:
           process_resident_memory_bytes|\
           process_start_time_seconds|\
           process_virtual_memory_bytes|\
+          rest_client_request_duration_seconds_bucket|\
           rest_client_requests_total|\
           scrape_series_added|\
           up|\
-          vault_api_responses_total|\
-          vault_client_token_renewal_total|\
           workqueue_adds_total|\
           workqueue_depth|\
           workqueue_longest_running_processor_seconds|\
@@ -66,4 +66,3 @@ monitoring:
           workqueue_work_duration_seconds_count|\
           workqueue_work_duration_seconds_sum\
           "
-  enabled: true

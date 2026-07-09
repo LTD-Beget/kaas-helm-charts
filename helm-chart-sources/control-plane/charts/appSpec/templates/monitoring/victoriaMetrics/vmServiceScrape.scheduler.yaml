@@ -44,7 +44,7 @@ spec:
   selector:
     matchLabels:
       monitoring.in-cloud.io/service: "{{ $.Release.Name }}-scheduler-monitoring"
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      {{- with $appValue.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}
