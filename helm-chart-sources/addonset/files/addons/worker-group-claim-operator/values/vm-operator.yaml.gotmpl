@@ -1,6 +1,13 @@
 metrics:
   enable: true
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          kube_service_info\
+          "
   enabled: true
   secureService:
     enabled: true

@@ -4,3 +4,12 @@ certManager:
   enable: true
   issuer:
     name: selfsigned-cluster-issuer
+
+monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          kube_service_info\
+          "
