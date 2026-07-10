@@ -1,0 +1,14 @@
+cilium:
+  k8sServiceHost: "{{ .Values.cluster.host }}"
+  k8sServicePort: "{{ .Values.cluster.port }}"
+  ipam:
+    mode: multi-pool
+    operator:
+      autoCreateCiliumPodIPPools:
+        default:
+          ipv4:
+            cidrs:
+              - "{{ .Values.podCidr }}"
+            maskSize: {{ .Values.podCidrMaskSize }}
+  bpf:
+    masquerade: true
