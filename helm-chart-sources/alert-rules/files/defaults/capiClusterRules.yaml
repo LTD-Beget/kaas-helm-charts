@@ -4,32 +4,44 @@ capiClusterRules:
     capiClusterRules:
       enabled: false
       rules:
-        "in_cloud_capi_cluster_deletion_requested":
+        "in_cloud_capi_cluster_deleting":
           enabled: false
           spec:
-            record: "in_cloud_capi_cluster_deletion_requested"
+            record: "in_cloud_capi_cluster_deleting"
             annotations: {}
             expr: |
-              max by (cluster_full_name) (
-                (
-                  in_cloud_capi_clusterclaim_infra_clusterclaim_deleted_timestamp_seconds > bool 0
-                )
-                or
-                on(cluster_full_name)
-                (
-                  in_cloud_capi_clusterclaim_client_clusterclaim_deleted_timestamp_seconds > bool 0
-                )
-                or
-                on(cluster_full_name)
-                (
-                  in_cloud_capi_cluster_status_phase{phase="Deleting"} == bool 1
-                )
-                or
-                on(cluster_full_name)
-                (
-                  in_cloud_capi_cluster_condition{type="Deleting"} == bool 1
-                )
+              clamp_max(
+                max by (cluster_full_name) (
+                  (
+                    last_over_time(in_cloud_capi_clusterclaim_infra_clusterclaim_deleted_timestamp_seconds[40m]) > 0
+                  )
+                  or
+                  on(cluster_full_name)
+                  (
+                    last_over_time(in_cloud_capi_clusterclaim_client_clusterclaim_deleted_timestamp_seconds[40m]) > 0
+                  )
+                  or
+                  on(cluster_full_name)
+                  (
+                    last_over_time(in_cloud_capi_cluster_status_phase{phase="Deleting"}[40m]) == 1
+                  )
+                  or
+                  on(cluster_full_name)
+                  (
+                    last_over_time(in_cloud_capi_cluster_condition{type="Deleting"}[40m]) == 1
+                  )
+                ),
+                1
               )
+            labels: {}
+
+        "in_cloud_capi_cluster_deleted_timestamp_held_seconds":
+          enabled: false
+          spec:
+            record: "in_cloud_capi_cluster_deleted_timestamp_held_seconds"
+            annotations: {}
+            expr: |
+              last_over_time(in_cloud_capi_cluster_deleted_timestamp_seconds[40m])
             labels: {}
 
         "in_cloud_capi_cluster_controlplane_condition_consistent":
@@ -219,7 +231,7 @@ capiClusterRules:
               )
               unless
               on(cluster_full_name) (
-                in_cloud_capi_cluster_deletion_requested > 0
+                in_cloud_capi_cluster_deleting > 0
               )
             labels: {}
 
@@ -240,7 +252,7 @@ capiClusterRules:
               )
               unless
               on(cluster_full_name) (
-                in_cloud_capi_cluster_deletion_requested > 0
+                in_cloud_capi_cluster_deleting > 0
               )
             labels: {}
 
@@ -315,12 +327,12 @@ capiClusterRules:
                   (
                     (
                       (
-                        time() - last_over_time(in_cloud_capi_cluster_deleted_timestamp_seconds[40m])
+                        time() - in_cloud_capi_cluster_deleted_timestamp_held_seconds
                       ) < 1800
                     )
                     and on (cluster_full_name)
                     (
-                      last_over_time(in_cloud_capi_cluster_deletion_requested[40m]) == 1
+                      in_cloud_capi_cluster_deleting == 1
                     )
                   )
                   or
@@ -330,7 +342,7 @@ capiClusterRules:
                     )
                     and on (cluster_full_name)
                     (
-                      in_cloud_capi_cluster_deletion_requested == 1
+                      in_cloud_capi_cluster_deleting == 1
                     )
                   )
                 ),
