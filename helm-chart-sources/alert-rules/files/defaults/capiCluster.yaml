@@ -195,7 +195,7 @@ capiClusterAlerts:
               )
               *
               on(cluster_full_name) (
-                in_cloud_capi_cluster_deletion_requested == 1
+                in_cloud_capi_cluster_deleting == 1
               )
             for: 15m
             labels:

@@ -9,7 +9,7 @@ evaluation_interval: 1m
 # кластер живым, а клиентски-инициированный remote-write vmagent не доходит.
 #
 # in_cloud_capi_cluster_alive — recording-правило; подаём его напрямую (как mute-тест
-# подаёт in_cloud_capi_cluster_deletion_requested) и НЕ подаём его источники
+# подаёт in_cloud_capi_cluster_deleting) и НЕ подаём его источники
 # (in_cloud_capi_cluster_condition), иначе правило пересчитает и затрёт ввод.
 
 tests:
