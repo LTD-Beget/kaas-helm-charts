@@ -69,6 +69,13 @@ spec:
           operator: Equal
           value: true
           keep: false
+{{- if .Values.clientClusterEnabled }}
+    - name: client-cp-control-plane
+      criteria:
+        - jsonPath: $.status.deployed
+          operator: Equal
+          value: true
+{{- end }}
   backend:
     finalizer: true
     type: "argocd"
