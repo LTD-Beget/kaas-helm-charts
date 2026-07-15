@@ -1,0 +1,28 @@
+{{- define "cilium.values.immutable" -}}
+{{- $O := "{{" -}}
+{{- $C := "}}" -}}
+{{- $ipamMode := $.Values.ipamMode | default "cluster-pool" -}}
+
+cilium:
+  k8sServiceHost: "{{$O}} $.Values.cluster.host {{$C}}"
+  k8sServicePort: "{{$O}} $.Values.cluster.port {{$C}}"
+{{- if eq $ipamMode "multi-pool" }}
+  ipam:
+    mode: multi-pool
+    operator:
+      autoCreateCiliumPodIPPools:
+        default:
+          ipv4:
+            cidrs:
+              - "{{$O}} $.Values.podCidr {{$C}}"
+            maskSize: {{$O}} $.Values.podCidrMaskSize {{$C}}
+  bpf:
+    masquerade: true
+{{- else }}
+  ipam:
+    operator:
+      clusterPoolIPv4MaskSize: {{$O}} $.Values.podCidrMaskSize {{$C}}
+      clusterPoolIPv4PodCIDRList:
+        - "{{$O}} $.Values.podCidr {{$C}}"
+{{- end }}
+{{- end -}}
