@@ -44,6 +44,7 @@
     export CLUSTER_ENDPOINT_HOST
     export CLUSTER_ENDPOINT_PORT
     export CLUSTER_DNS_HOST="{{`{{ .clusterDnsSvc }}`}}"
+    export CLUSTER_IPAM_MODE="{{`{{ .clusterIpamMode }}`}}"
 
     logger -t "$LOG_TAG" "[INFO] apiserver endpoint: ${CLUSTER_ENDPOINT_HOST}:${CLUSTER_ENDPOINT_PORT}"
 
@@ -52,13 +53,45 @@
     logger -t "$LOG_TAG" "[INFO] workdir: $TEMPDIRCLUSTER"
     cd "$TEMPDIRCLUSTER"
 
+    export MAX_ATTEMPTS=5
+
+    retry() {
+      local operation="$1"
+      shift
+
+      local attempt=1
+      local retry_delay
+
+      while (( attempt <= MAX_ATTEMPTS )); do
+        logger -t "$LOG_TAG" "[INFO] ${operation}, attempt ${attempt}/${MAX_ATTEMPTS}..."
+
+        if "$@"; then
+          logger -t "$LOG_TAG" "[INFO] ${operation} completed successfully on attempt ${attempt}"
+          return 0
+        fi
+
+        if (( attempt == MAX_ATTEMPTS )); then
+          logger -t "$LOG_TAG" "[ERROR] ${operation} failed after ${MAX_ATTEMPTS} attempts"
+          return 1
+        fi
+
+        retry_delay=$((10 * attempt))
+        logger -t "$LOG_TAG" "[WARN] ${operation} failed; retrying in ${retry_delay}s"
+        sleep "$retry_delay"
+
+        ((attempt++))
+      done
+    }
+
     # ---- (3) helm add + update ----
     logger -t "$LOG_TAG" "[INFO] adding {{ $.Values.companyPrefix }} charts repo..."
 
-    helm repo add {{ $.Values.companyPrefix }} https://blog.{{ $.Values.companyDomain }}/kaas-helm-charts/
+    retry "adding {{ $.Values.companyPrefix }} charts repo" \
+      helm repo add {{ $.Values.companyPrefix }} https://blog.{{ $.Values.companyDomain }}/kaas-helm-charts/ --force-update || exit 1
 
     logger -t "$LOG_TAG" "[INFO] updating {{ $.Values.companyPrefix }} charts repo..."
-    helm repo update {{ $.Values.companyPrefix }}
+    retry "updating {{ $.Values.companyPrefix }} charts repo" \
+      helm repo update {{ $.Values.companyPrefix }} || exit 1
 
     # ---- (4) ставим аддоны через helm ----
     logger -t "$LOG_TAG" "[INFO] install/upgrade cilium..."
@@ -67,8 +100,34 @@
     kubectl wait --timeout=-1s node -l node-role.kubernetes.io/control-plane \
       --for=jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}'
 
-    # TODO: delete chart version hardcode
-    cat <<EOF | helm install cilium {{ $.Values.companyPrefix }}/cilium -n {{ $.Values.companyPrefix }}-cilium --create-namespace --version 1.18.5-1 -f -
+    if [[ "${CLUSTER_IPAM_MODE}" == "multi-pool" ]]; then
+      IPAM_VALUES=$(cat <<'EOF'
+          ipam:
+            mode: multi-pool
+            operator:
+              autoCreateCiliumPodIPPools:
+                default:
+                  ipv4:
+                    cidrs:
+                      - "{{ .Values.podCidr }}"
+                    maskSize: {{ .Values.podCidrMaskSize }}
+          bpf:
+            masquerade: true
+    EOF
+    )
+    else
+      IPAM_VALUES=$(cat <<'EOF'
+          ipam:
+            operator:
+              clusterPoolIPv4MaskSize: {{ .Values.podCidrMaskSize }}
+              clusterPoolIPv4PodCIDRList:
+                - "{{ .Values.podCidr }}"
+    EOF
+    )
+    fi
+
+    CILIUM_VALUES_FILE="${TEMPDIRCLUSTER}/cilium-values.yaml"
+    cat <<EOF > "$CILIUM_VALUES_FILE"
     cilium:
       ciliumEndpointSlice:
         enabled: true
@@ -83,12 +142,10 @@
       operator:
         replicas: 1
         tolerations:
-        - operator: Exists
-          effect: NoSchedule
-      ipam:
-        operator:
-          clusterPoolIPv4MaskSize: {{`{{ .clusterPodCidrMaskSize }}`}}
-          clusterPoolIPv4PodCIDRList: '{{`{{ .clusterPodCidr }}`}}'
+          - operator: Exists
+            effect: NoSchedule
+
+    ${IPAM_VALUES}
 
       resources:
         requests:
@@ -102,13 +159,22 @@
           create: false
           name: null
       tolerations:
-      - operator: Exists
-        effect: NoSchedule
+        - operator: Exists
+          effect: NoSchedule
     EOF
+
+    # TODO: delete chart version hardcode
+    retry "installing cilium" \
+      helm install cilium {{ $.Values.companyPrefix }}/cilium \
+        -n {{ $.Values.companyPrefix }}-cilium \
+        --create-namespace \
+        --version 1.19.4-1 \
+        -f "$CILIUM_VALUES_FILE" || exit 1
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade coredns..."
     # TODO: delete chart version hardcode
-    cat <<EOF | helm install coredns {{ $.Values.companyPrefix }}/coredns -n {{ $.Values.companyPrefix }}-coredns --create-namespace --version 1.28.0-1 -f -
+    COREDNS_VALUES_FILE="${TEMPDIRCLUSTER}/coredns-values.yaml"
+    cat <<EOF > "$COREDNS_VALUES_FILE"
     coredns:
       livenessProbe:
         initialDelaySeconds: 10
@@ -192,11 +258,20 @@
         effect: NoSchedule
     EOF
 
+    # TODO: delete chart version hardcode
+    retry "installing coredns" \
+      helm install coredns {{ $.Values.companyPrefix }}/coredns \
+        -n {{ $.Values.companyPrefix }}-coredns \
+        --create-namespace \
+        --version 1.28.0-4 \
+        -f "$COREDNS_VALUES_FILE" || exit 1
+
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/instance=coredns -n {{ $.Values.companyPrefix }}-coredns
 
     logger -t "$LOG_TAG" "[INFO] install/upgrade argocd..."
     # TODO: delete chart version hardcode
-    cat <<'EOF' | helm install argocd {{ $.Values.companyPrefix }}/argo-cd -n {{ $.Values.companyPrefix }}-argocd --create-namespace --version 9.4.15-1 -f -
+    ARGOCD_VALUES_FILE="${TEMPDIRCLUSTER}/argocd-values.yaml"
+    cat <<'EOF' > "$ARGOCD_VALUES_FILE"
     argo-cd:
       fullnameOverride: "argocd"
       applicationSet:
@@ -391,9 +466,18 @@
             name: admin-conf
     EOF
 
+    # TODO: delete chart version hardcode
+    retry "installing argocd" \
+      helm install argocd {{ $.Values.companyPrefix }}/argo-cd \
+        -n {{ $.Values.companyPrefix }}-argocd \
+        --create-namespace \
+        --version 9.4.15-5 \
+        -f "$ARGOCD_VALUES_FILE" || exit 1
+
     logger -t "$LOG_TAG" "[INFO] install/upgrade addon-operator..."
     # TODO: delete chart version hardcode
-    cat <<EOF | helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator -n {{ $.Values.companyPrefix }}-addons-operator --create-namespace --version 0.1.4 -f -
+    ADDONS_OPERATOR_VALUES_FILE="${TEMPDIRCLUSTER}/addons-operator-values.yaml"
+    cat <<EOF > "$ADDONS_OPERATOR_VALUES_FILE"
     certManager:
       enable: false
     manager:
@@ -413,6 +497,14 @@
       enable: false
     EOF
 
+    # TODO: delete chart version hardcode
+    retry "installing addons-operator" \
+      helm install addons-operator {{ $.Values.companyPrefix }}/addon-operator \
+        -n {{ $.Values.companyPrefix }}-addons-operator \
+        --create-namespace \
+        --version 0.1.6 \
+        -f "$ADDONS_OPERATOR_VALUES_FILE" || exit 1
+
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/component=application-controller -n {{ $.Values.companyPrefix }}-argocd
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/component=redis -n {{ $.Values.companyPrefix }}-argocd
     kubectl wait --timeout=-1s --for=condition=Ready pod -l app.kubernetes.io/component=repo-server -n {{ $.Values.companyPrefix }}-argocd
@@ -429,12 +521,13 @@
     companyExternalChartRegistry=$(jq -r '.companyExternalChartRegistry' <<< $params)
     companyPrefix=$(jq -r '.companyPrefix' <<< $params)
 
-    helm install bootstrap \
-      {{ $.Values.companyPrefix }}/bootstrap \
-      --version ${addonRevision} \
-      --set companyPrefix=${companyPrefix} \
-      --set companyExternalChartRegistry=${companyExternalChartRegistry} \
-      -n {{ $.Values.companyPrefix }}-system
+    retry "installing bootstrap" \
+      helm install bootstrap \
+        {{ $.Values.companyPrefix }}/bootstrap \
+        --version "${addonRevision}" \
+        --set "companyPrefix=${companyPrefix}" \
+        --set "companyExternalChartRegistry=${companyExternalChartRegistry}" \
+        -n {{ $.Values.companyPrefix }}-system || exit 1
 
     logger -t "$LOG_TAG" "[INFO] applying Addon CR..."
 

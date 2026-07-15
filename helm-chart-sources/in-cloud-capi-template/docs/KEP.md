@@ -256,6 +256,7 @@ capi:
 
 | Параметр | Значение по умолчанию | Описание |
 |----------|----------------------|----------|
+| `clusterIpamMode` | `cluster-pool` | Mетод управления IP-адресами |
 | `clusterPodCidr` | `10.0.0.0/16` | CIDR для подов |
 | `clusterPodCidrMaskSize` | `24` | Размер маски для нод |
 | `clusterServiceSubnet` | Настраивается | CIDR для сервисов |

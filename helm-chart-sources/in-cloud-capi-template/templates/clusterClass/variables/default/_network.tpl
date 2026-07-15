@@ -1,4 +1,11 @@
 {{- define "in-cloud-capi-template.variables.default.networks" -}}
+- name: clusterIpamMode
+  required: false
+  schema:
+    openAPIV3Schema:
+      default: "cluster-pool"
+      type: string
+
 - name: clusterPodCidr
   required: false
   schema:
