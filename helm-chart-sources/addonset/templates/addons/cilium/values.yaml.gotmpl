@@ -3,11 +3,11 @@
 
   {{- /*
   Each item:
-    name     - AddonValue suffix, label value, and default file name
-    enabled  - render this AddonValue
-    file     - append addon-specific values file files/addons/<addon>/values/<file_name>.yaml.gotmpl
-    template - append addon-specific generated values <addon>.values.<name>
-    common   - append common values file files/common/values/<name>.yaml.gotmpl
+    name      - AddonValue suffix and file name
+    enabled   - render this AddonValue
+    file      - append addon-specific values file files/addons/<addon>/values/<name>.yaml.gotmpl
+    template  - append addon-specific generated values <addon>.values.<name>
+    common    - append common values file files/common/values/<name>.yaml.gotmpl
   */ -}}
   {{- range $value := list
     (dict "name" "client"              "enabled" true  "file"  true  "template"  false "common"  false )
@@ -30,7 +30,7 @@ spec:
   values: |
       {{- /* addon-specific values file */ -}}
       {{- if $value.file }}
-        {{- $.Files.Get (printf "files/addons/%s/values/%s.yaml.gotmpl" $addonName (default $value.name $value.file_name)) | nindent 4 | include "common.trimEmptyLines" -}}
+        {{- $.Files.Get (printf "files/addons/%s/values/%s.yaml.gotmpl" $addonName $value.name) | nindent 4 | include "common.trimEmptyLines" -}}
       {{- end -}}
 
       {{- /* optional addon-specific template-generated values */ -}}
