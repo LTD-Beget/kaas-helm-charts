@@ -60,7 +60,7 @@ data:
     # Policy: cluster-ro
     # ------------------------------------------------------------------ #
     echo "Writing ${CLUSTER_NAME}-ro policy..."
-    vault policy write ${CLUSTER_NAME}-ro - <<'EOF'
+    vault policy write ${CLUSTER_NAME}-ro - <<EOF
       path "sys/mounts" { capabilities = ["read"] }
 
       path "secret/data/clusters/${CLUSTER_NAME}/*" {
