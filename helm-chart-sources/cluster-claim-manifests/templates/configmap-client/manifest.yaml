@@ -36,7 +36,7 @@ spec:
       clientServiceCidr: {{`{{ .ClusterClaim.spec.client.network.serviceCidr }}`}}
       podCidr: {{`{{ .ClusterClaim.spec.client.network.podCidr }}`}}
       podCidrMaskSize: "{{`{{ .ClusterClaim.spec.client.network.podCidrMaskSize }}`}}"
-      ipamMode: "{{`{{ .ClusterClaim.spec.client.network.ipamMode }}`}}"
+      ipamMode: {{`{{ dig "spec" "client" "network" "ipamMode" "cluster-pool" .ClusterClaim | quote }}`}}
 
       argocdDestinationName: {{`{{ .ClusterClaim.metadata.name }}`}}-client
       argocdDestinationNamespace: {{ .Values.argocdDestinationNamespace }}
