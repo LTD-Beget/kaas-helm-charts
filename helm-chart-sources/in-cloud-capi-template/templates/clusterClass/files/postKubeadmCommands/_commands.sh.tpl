@@ -102,26 +102,26 @@
 
     if [[ "${CLUSTER_IPAM_MODE}" == "multi-pool" ]]; then
       IPAM_VALUES=$(cat <<'EOF'
-          ipam:
-            mode: multi-pool
-            operator:
-              autoCreateCiliumPodIPPools:
-                default:
-                  ipv4:
-                    cidrs:
-                      - "{{ .Values.podCidr }}"
-                    maskSize: {{ .Values.podCidrMaskSize }}
-          bpf:
-            masquerade: true
+      ipam:
+        mode: multi-pool
+        operator:
+          autoCreateCiliumPodIPPools:
+            default:
+              ipv4:
+                cidrs:
+                  - "{{`{{ .clusterPodCidr }}`}}"
+                maskSize: {{`{{ .clusterPodCidrMaskSize }}`}}
+      bpf:
+        masquerade: true
     EOF
     )
     else
       IPAM_VALUES=$(cat <<'EOF'
-          ipam:
-            operator:
-              clusterPoolIPv4MaskSize: {{ .Values.podCidrMaskSize }}
-              clusterPoolIPv4PodCIDRList:
-                - "{{ .Values.podCidr }}"
+      ipam:
+        operator:
+          clusterPoolIPv4MaskSize: {{`{{ .clusterPodCidrMaskSize }}`}}
+          clusterPoolIPv4PodCIDRList:
+            - "{{`{{ .clusterPodCidr }}`}}"
     EOF
     )
     fi
