@@ -44,6 +44,8 @@ spec:
           jsonPath: .data.companyExternalGitRepository
         - as: companyAdminUser
           jsonPath: .data.companyAdminUser
+        - as: ipamMode
+          jsonPath: .data.ipamMode
   backend:
     finalizer: true
     type: "argocd"
