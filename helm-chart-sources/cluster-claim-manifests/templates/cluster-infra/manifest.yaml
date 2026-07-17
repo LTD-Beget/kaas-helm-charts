@@ -60,7 +60,7 @@ spec:
           - name: clusterPodCidrMaskSize
             value: {{`{{ .ClusterClaim.spec.infra.network.podCidrMaskSize | quote }}`}}
           - name: clusterIpamMode
-            value: {{`{{ .ClusterClaim.spec.infra.network.ipamMode | quote }}`}}
+            value: {{`{{ dig "spec" "infra" "network" "ipamMode" "cluster-pool" .ClusterClaim | quote }}`}}
           - name: {{ .Values.extraArgs.companyPrefix }}ClusterLoadBalancerListenerPorts
             value:
               - from: {{`{{ .ClusterClaim.spec.infra.network.kubeApiserverPort }}`}}

@@ -34,7 +34,7 @@ spec:
       serviceCidr: {{`{{ .ClusterClaim.spec.infra.network.serviceCidr }}`}}
       podCidr: {{`{{ .ClusterClaim.spec.infra.network.podCidr }}`}}
       podCidrMaskSize: "{{`{{ .ClusterClaim.spec.infra.network.podCidrMaskSize }}`}}"
-      ipamMode: "{{`{{ .ClusterClaim.spec.infra.network.ipamMode }}`}}"
+      ipamMode: {{`{{ dig "spec" "infra" "network" "ipamMode" "cluster-pool" .ClusterClaim | quote }}`}}
 
       argocdDestinationName: {{`{{ .ClusterClaim.metadata.name }}`}}-infra
       argocdDestinationNamespace: {{ .Values.argocdDestinationNamespace }}
