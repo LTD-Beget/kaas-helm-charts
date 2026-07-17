@@ -57,14 +57,12 @@ defaults:
   # чтобы освободить ресурсы для подов с высоким приоритетом.
   # BCLOUDTODO
   # defaultPreemptionPolicy: ""
+# runtimeClassName в Kubernetes используется для указания конкретного RuntimeClass, 
+# который должен быть использован для запуска контейнеров пода. 
+# RuntimeClass позволяет использовать различные контейнерные runtime (например, runc, gVisor, Kata Containers и т.д.) 
+# для различных подов в одном кластере.
+# BCLOUDTODO
+# defaultRuntimeClassName: ""
 
-  # runtimeClassName в Kubernetes используется для указания конкретного RuntimeClass, 
-  # который должен быть использован для запуска контейнеров пода. 
-  # RuntimeClass позволяет использовать различные контейнерные runtime (например, runc, gVisor, Kata Containers и т.д.) 
-  # для различных подов в одном кластере.
-  # BCLOUDTODO
-  # defaultRuntimeClassName: ""
 applications: {}
-monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs: []
+monitoring: {}

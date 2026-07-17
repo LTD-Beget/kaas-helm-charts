@@ -18,7 +18,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: vminsert
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs.vminsert }}
+      {{- with .Values.monitoring.vminsert.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}

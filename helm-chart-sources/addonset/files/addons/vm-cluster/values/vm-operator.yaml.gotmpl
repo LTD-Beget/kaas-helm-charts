@@ -1,7 +1,7 @@
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs:
-      vminsert:
+  vminsert:
+    serviceScrapeConfig:
+      metricRelabelConfigs:
         - sourceLabels: [__name__]
           action: keep
           regex: "\
@@ -87,7 +87,9 @@ monitoring:
             vm_tcplistener_read_bytes_total|\
             vm_tcplistener_written_bytes_total\
             "
-      vmselect:
+  vmselect:
+    serviceScrapeConfig:
+      metricRelabelConfigs:
         - sourceLabels: [__name__]
           action: keep
           regex: "\
@@ -164,7 +166,9 @@ monitoring:
             vm_tcplistener_read_bytes_total|\
             vm_tcplistener_written_bytes_total\
             "
-      vmstorage:
+  vmstorage:
+    serviceScrapeConfig:
+      metricRelabelConfigs:
         - sourceLabels: [__name__]
           action: keep
           regex: "\
