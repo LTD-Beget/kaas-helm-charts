@@ -8,7 +8,11 @@ spec:
   chart: "victoria-metrics-k8s-stack"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
+<<<<<<< HEAD
   version: "0.52.0-8"
+=======
+  version: "0.52.0-7"
+>>>>>>> 9b32263b (feature(K8S-237): update charts)
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-vmalert"
   variables:
