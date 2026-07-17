@@ -99,5 +99,9 @@ networkPolicies:
   enabled: false
   systemEnabled: false
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs: []
+  controllerManager:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  controllerManagerClaim:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []

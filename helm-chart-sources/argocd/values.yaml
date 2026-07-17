@@ -6,8 +6,6 @@ istioGwDomain: example.com
 clusterName: example
 argocdOidcClientSecret: super-secret
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -18,6 +16,21 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+  applicationController:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  repoServer:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  server:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  redis:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  applicationSet:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
 istio:
   virtualService:
     enabled: false
