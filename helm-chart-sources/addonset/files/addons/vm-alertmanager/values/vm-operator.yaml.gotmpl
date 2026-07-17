@@ -1,7 +1,7 @@
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs:
-      vmalertmanager:
+  vmalertmanager:
+    serviceScrapeConfig:
+      metricRelabelConfigs:
         - sourceLabels: [__name__]
           action: keep
           regex: "\

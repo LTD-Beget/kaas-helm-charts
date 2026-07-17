@@ -3,8 +3,6 @@ cert-manager:
     priorityClassName: system-cluster-critical
 companyPrefix: example
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -14,6 +12,15 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
+  controller:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  cainjector:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  webhook:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
 issuers: {}
 # selfsignedIssuer:
 #   kind: Issuer

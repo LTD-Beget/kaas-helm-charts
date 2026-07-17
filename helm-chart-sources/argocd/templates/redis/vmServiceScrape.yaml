@@ -18,7 +18,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: {{ template "argo-cd-wrapper.redis.fullname" . }}-metrics
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      {{- with .Values.monitoring.redis.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}

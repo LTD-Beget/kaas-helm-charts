@@ -20,7 +20,7 @@ spec:
     tlsConfig:
       insecureSkipVerify: true
       serverName: localhost
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      {{- with .Values.monitoring.controllerManagerClaim.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -16,7 +16,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         serverName: cert-manager-cainjector
-      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      {{- with .Values.monitoring.cainjector.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -72,12 +72,14 @@ victoria-metrics-k8s-stack:
               - vm-operator
 
 monitoring:
-  serviceScrapeConfig:
-    metricRelabelConfigs:
-      vmagent:
+  vmagent:
+    serviceScrapeConfig:
+      metricRelabelConfigs:
         - sourceLabels: [__name__]
           action: keep
           regex: "\
+            ALERTS|\
+            ALERTS_FOR_STATE|\
             flag|\
             go_gc_cpu_seconds_total|\
             go_gc_duration_seconds_count|\
