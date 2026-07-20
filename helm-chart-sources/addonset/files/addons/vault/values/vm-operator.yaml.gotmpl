@@ -1,24 +1,14 @@
 monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
   serviceScrapeConfig:
     metricRelabelConfigs:
       - sourceLabels: [__name__]
         action: keep
         regex: "\
-          container_cpu_cfs_periods_total|\
-          container_cpu_cfs_throttled_periods_total|\
-          container_cpu_cfs_throttled_seconds_total|\
-          container_cpu_usage_seconds_total|\
-          container_memory_rss|\
-          container_memory_working_set_bytes|\
-          container_network_receive_bytes_total|\
-          container_network_receive_errors_total|\
-          container_network_receive_packets_dropped_total|\
-          container_network_receive_packets_total|\
-          container_network_transmit_bytes_total|\
-          container_network_transmit_errors_total|\
-          container_network_transmit_packets_dropped_total|\
-          container_network_transmit_packets_total|\
-          container_oom_events_total|\
           go_gc_duration_seconds_count|\
           go_gc_duration_seconds_sum|\
           go_goroutines|\
@@ -32,10 +22,6 @@ monitoring:
           go_memstats_other_sys_bytes|\
           go_memstats_stack_inuse_bytes|\
           go_memstats_sys_bytes|\
-          kube_service_info|\
-          namespace_cpu|\
-          namespace_memory|\
-          node_namespace_pod:kube_pod_info:|\
           process_cpu_seconds_total|\
           process_max_fds|\
           process_open_fds|\
@@ -44,20 +30,13 @@ monitoring:
           process_virtual_memory_bytes|\
           scrape_series_added|\
           up|\
-          vault_core_active|\
           vault_core_handle_request_count|\
-          vault_core_in_flight_requests|\
-          vault_core_mount_table_num_entries|\
-          vault_core_mount_table_size|\
-          vault_core_replication_dr_primary|\
           vault_core_unsealed|\
-          vault_expire_num_irrevocable_leases|\
           vault_expire_num_leases|\
           vault_identity_entity_alias_count|\
           vault_identity_num_entities|\
           vault_policy_get_policy_count|\
           vault_policy_set_policy_count|\
-          vault_route_read_secret__sum|\
           vault_runtime_alloc_bytes|\
           vault_runtime_heap_objects|\
           vault_runtime_malloc_count|\
