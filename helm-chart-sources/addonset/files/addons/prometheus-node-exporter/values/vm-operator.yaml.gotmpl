@@ -1,4 +1,3 @@
-
 prometheus-node-exporter:
   service:
     labels:
@@ -19,28 +18,17 @@ prometheus-node-exporter:
         defaultMode: 420
         secretName: prometheus-node-exporter-svc-tls
 
-
 monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
   serviceScrapeConfig:
     metricRelabelConfigs:
       - sourceLabels: [__name__]
         action: keep
         regex: "\
-          container_cpu_cfs_periods_total|\
-          container_cpu_cfs_throttled_periods_total|\
-          container_cpu_cfs_throttled_seconds_total|\
-          container_cpu_usage_seconds_total|\
-          container_memory_rss|\
-          container_memory_working_set_bytes|\
-          container_network_receive_bytes_total|\
-          container_network_receive_errors_total|\
-          container_network_receive_packets_dropped_total|\
-          container_network_receive_packets_total|\
-          container_network_transmit_bytes_total|\
-          container_network_transmit_errors_total|\
-          container_network_transmit_packets_dropped_total|\
-          container_network_transmit_packets_total|\
-          container_oom_events_total|\
           go_gc_duration_seconds_count|\
           go_gc_duration_seconds_sum|\
           go_goroutines|\
@@ -54,10 +42,6 @@ monitoring:
           go_memstats_other_sys_bytes|\
           go_memstats_stack_inuse_bytes|\
           go_memstats_sys_bytes|\
-          instance|\
-          kube_service_info|\
-          namespace_cpu|\
-          namespace_memory|\
           node_boot_time_seconds|\
           node_context_switches_total|\
           node_cpu_seconds_total|\
@@ -88,7 +72,6 @@ monitoring:
           node_memory_Slab_bytes|\
           node_memory_SwapFree_bytes|\
           node_memory_SwapTotal_bytes|\
-          node_namespace_pod:kube_pod_info:|\
           node_netstat_Tcp_CurrEstab|\
           node_network_receive_bytes_total|\
           node_network_receive_drop_total|\

@@ -1,4 +1,5 @@
 monitoring:
+  enabled: true
   vmalert:
     serviceScrapeConfig:
       metricRelabelConfigs:
@@ -21,7 +22,6 @@ monitoring:
             go_memstats_stack_inuse_bytes|\
             go_memstats_sys_bytes|\
             go_sched_latencies_seconds_bucket|\
-            kube_service_info|\
             process_cpu_cores_available|\
             process_cpu_seconds_total|\
             process_io_read_syscalls_total|\
@@ -82,4 +82,3 @@ monitoring:
             vmalert_remotewrite_dropped_rows_total|\
             vmalert_remotewrite_sent_rows_total\
             "
-  enabled: true
