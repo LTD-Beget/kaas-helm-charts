@@ -1,13 +1,5 @@
-managerClaim:
-  enable: true
-manager:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
 monitoring:
-  controllerManagerClaim:
+  controllerManager:
     serviceScrapeConfig:
       metricRelabelConfigs:
         - sourceLabels: [__name__]

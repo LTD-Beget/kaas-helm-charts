@@ -2,26 +2,16 @@ argocdPlugins:
   kustomize: true
 
 monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
   serviceScrapeConfig:
     metricRelabelConfigs:
       - sourceLabels: [__name__]
         action: keep
         regex: "\
-          container_cpu_cfs_periods_total|\
-          container_cpu_cfs_throttled_periods_total|\
-          container_cpu_cfs_throttled_seconds_total|\
-          container_cpu_usage_seconds_total|\
-          container_memory_rss|\
-          container_memory_working_set_bytes|\
-          container_network_receive_bytes_total|\
-          container_network_receive_errors_total|\
-          container_network_receive_packets_dropped_total|\
-          container_network_receive_packets_total|\
-          container_network_transmit_bytes_total|\
-          container_network_transmit_errors_total|\
-          container_network_transmit_packets_dropped_total|\
-          container_network_transmit_packets_total|\
-          container_oom_events_total|\
           go_gc_duration_seconds_count|\
           go_gc_duration_seconds_sum|\
           go_goroutines|\
@@ -35,10 +25,6 @@ monitoring:
           go_memstats_other_sys_bytes|\
           go_memstats_stack_inuse_bytes|\
           go_memstats_sys_bytes|\
-          kube_service_info|\
-          namespace_cpu|\
-          namespace_memory|\
-          node_namespace_pod:kube_pod_info:|\
           process_cpu_seconds_total|\
           process_max_fds|\
           process_open_fds|\
