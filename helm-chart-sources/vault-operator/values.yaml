@@ -3,34 +3,26 @@
 
 companyPrefix: example
 clusterDomain: cluster.local
-
 manager:
   replicas: 1
-
   image:
     repository: prorobotech/vault-operator
     tag: ""
     pullPolicy: IfNotPresent
-
   args:
     - --leader-elect
-
   env: []
-
   imagePullSecrets: []
-
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
-
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
     readOnlyRootFilesystem: true
-
   resources:
     limits:
       cpu: 500m
@@ -38,46 +30,37 @@ manager:
     requests:
       cpu: 10m
       memory: 64Mi
-
   affinity: {}
-
   nodeSelector: {}
-
   tolerations:
     - effect: NoExecute
       operator: Exists
     - effect: NoSchedule
       key: node-role.kubernetes.io/control-plane
-
 rbacHelpers:
   enable: false
-
 crd:
   enable: true
   keep: true
-
 metrics:
   enable: false
-  port: 11043       # kube-rbac-proxy HTTPS port (external)
+  port: 11043 # kube-rbac-proxy HTTPS port (external)
   internalPort: 8080 # manager internal HTTP metrics port
-
 certManager:
   enable: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   secureService:
     enabled: false
     issuer:
       kind: ClusterIssuer
       name: default-issuer-name
-
 prometheus:
   enable: false
-
 networkPolicies:
   enabled: false
-
 vaultConfigs:
   default:
     name: default

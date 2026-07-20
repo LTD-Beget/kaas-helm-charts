@@ -1,9 +1,9 @@
 cert-manager-csi-driver: {}
 # some values for cert-manager-csi-driver
-
 companyPrefix: example
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -13,6 +13,5 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 networkPolicies:
-  enabled: false  
+  enabled: false

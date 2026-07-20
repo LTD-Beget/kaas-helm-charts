@@ -1,41 +1,34 @@
 # Configure the controller manager deployment
 manager:
   replicas: 1
-  
   image:
     repository: controller
     pullPolicy: IfNotPresent
-
   # Arguments
   args:
     - --leader-elect
-
   # Environment variables
   env: []
-
   # Pod-level security settings
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
-        type: RuntimeDefault
-
+      type: RuntimeDefault
   # Container-level security settings
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-        drop:
-            - ALL
+      drop:
+        - ALL
     readOnlyRootFilesystem: true
-
   # Resource limits and requests
   resources:
     limits:
-        cpu: 100m
-        memory: 128Mi
+      cpu: 100m
+      memory: 128Mi
     requests:
-        cpu: 10m
-        memory: 64Mi
-
+      cpu: 10m
+      memory: 64Mi
 # Essential RBAC permissions (required for controller operation)
 # These include ServiceAccount, controller permissions, leader election, and metrics access
 # Note: Essential RBAC is always enabled as it's required for the controller to function
@@ -44,20 +37,17 @@ manager:
 # These provide convenient admin/editor/viewer roles for each CRD type
 # Useful for giving users different levels of access to your custom resources
 rbacHelpers:
-  enable: false  # Install convenience admin/editor/viewer roles for CRDs
-
+  enable: false # Install convenience admin/editor/viewer roles for CRDs
 # Custom Resource Definitions
 crd:
-  enable: true  # Install CRDs with the chart
-  keep: true    # Keep CRDs when uninstalling
-
+  enable: true # Install CRDs with the chart
+  keep: true # Keep CRDs when uninstalling
 # Controller metrics endpoint.
 # Enable to expose /metrics endpoint with RBAC protection via kube-rbac-proxy.
 metrics:
   enable: false
-  port: 11043        # kube-rbac-proxy HTTPS port (external)
+  port: 11043 # kube-rbac-proxy HTTPS port (external)
   internalPort: 8080 # manager internal HTTP metrics port
-
 # Cert-manager integration for TLS certificates.
 # Required for webhook certificates and metrics endpoint certificates.
 # When enabled, kube-rbac-proxy serves metrics with a cert-manager issued
@@ -67,12 +57,12 @@ certManager:
   issuer:
     kind: ClusterIssuer
     name: default-issuer-name
-
 # Prometheus ServiceMonitor for metrics scraping.
 # Requires prometheus-operator to be installed in the cluster.
 prometheus:
   enable: false
-
-
 networkPolicies:
   enabled: false
+monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []

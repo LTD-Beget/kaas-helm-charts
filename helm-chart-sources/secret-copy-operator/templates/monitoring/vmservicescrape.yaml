@@ -32,6 +32,10 @@ spec:
       {{- else }}
       insecureSkipVerify: true
       {{- end }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: secret-copy-operator
   selector:
     matchLabels:

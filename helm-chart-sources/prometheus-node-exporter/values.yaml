@@ -1,7 +1,8 @@
 prometheus-node-exporter: {}
 # some values for coredns
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

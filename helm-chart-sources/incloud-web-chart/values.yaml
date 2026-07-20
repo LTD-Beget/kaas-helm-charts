@@ -1,14 +1,12 @@
 companyPrefix: example
 istioGwDomain: example.com
 incloudWebOidcClientSecret: super-secret
-
 incloud-web-chart: {}
 # some values for incloud-web-chart
 
 networkPolicies:
   enabled: false
   systemEnabled: false
-
 istio:
   virtualService:
     enabled: false
@@ -21,8 +19,9 @@ istio:
       route:
         host: incloud-web-chart-oauth2-proxy
         port: 80
-      
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

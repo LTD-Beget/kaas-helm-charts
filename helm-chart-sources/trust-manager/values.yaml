@@ -1,11 +1,10 @@
 companyPrefix: example
-
 trust-manager: {}
-
 networkPolicies:
   enabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:
@@ -14,16 +13,13 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 bundle:
   enabled: false
   name: "ca.crt"
   # опционально
   labels: {}
   annotations: {}
-
   sources: []
-
   target:
     configMapKey: "ca.crt"
     namespaceSelector:

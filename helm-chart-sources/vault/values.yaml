@@ -3,15 +3,12 @@ vault:
   server:
     service:
       port: 8200
-
 prepareJob:
   enabled: false
-
   image:
     repository: hashicorp/vault
-    tag: ""  # defaults to .Chart.AppVersion
+    tag: "" # defaults to .Chart.AppVersion
     pullPolicy: IfNotPresent
-
   # Name of the secret holding ROOT_TOKEN and UNSEAL_KEYS
   secretName: vault-keys
   rootTokenKey: ROOT_TOKEN
@@ -19,36 +16,31 @@ prepareJob:
 
   # Kubernetes auth mount path (typically the cluster name)
   clusterName: ""
-
   kubernetesAuth:
     enabled: true
-
   clusterReadOnlyRole:
     enabled: true
-
   vaultOperatorRole:
     enabled: true
     serviceAccountName: vault-operator-controller-manager
     namespace: example-vault-operator
-
   vaultSecretOperatorRole:
     enabled: true
     serviceAccountName: vault-secret-operator-controller-manager
     namespace: example-vault-operator
-
   monitoring:
     # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
     # (k8s RBAC), so the vault-side metrics-reader policy/role is not required.
     enabled: false
     serviceAccountName: vmagent-vmagent
     namespace: example-vmagent
-
   # Optional step: enable the KV v2 secrets engine.
   secretEngine:
     enabled: false
     path: secret
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:
@@ -56,9 +48,8 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default-issuer-name
-
 tls:
-  enabled: false   # общий рубильник
+  enabled: false # общий рубильник
   # Общие дефолты (можно переопределять в server/client)
   defaults:
     duration: 8760h
@@ -66,7 +57,6 @@ tls:
     privateKey:
       algorithm: RSA
       size: 2048
-
   server:
     enabled: false
     certificate:
@@ -82,8 +72,7 @@ tls:
         - server auth
     issuer:
       name: default-server-issuer
-      kind: ClusterIssuer     # или Issuer
-
+      kind: ClusterIssuer # или Issuer
   client:
     enabled: false
     certificate:
@@ -97,13 +86,10 @@ tls:
     issuer:
       name: default-client-issuer
       kind: ClusterIssuer
-
 companyPrefix: example
-
 networkPolicies:
   enabled: false
   systemEnabled: false
-
 istioVirtualService:
   enabled: false
   gateways:

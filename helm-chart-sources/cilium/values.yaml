@@ -1,8 +1,6 @@
 cilium: {}
 # some values for cilium
-
 companyPrefix: example
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -13,6 +11,11 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
+  agent:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  operator:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
 networkPolicies:
   enabled: false

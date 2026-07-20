@@ -1,9 +1,9 @@
 coredns: {}
 # some values for coredns
-
 companyPrefix: example
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -13,7 +13,6 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 networkPolicies:
   enabled: false
   systemEnabled: false

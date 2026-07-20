@@ -10,70 +10,58 @@
 ##
 manager:
   replicas: 1
-  
   image:
     repository: controller
     pullPolicy: IfNotPresent
-
   ## Arguments
   ##
   args:
     - --leader-elect
-
   ## Environment variables
   ##
   env:
-  - name: ENABLE_WEBHOOKS
-    value: false
-
+    - name: ENABLE_WEBHOOKS
+      value: false
   ## Image pull secrets
   ##
   imagePullSecrets: []
-
   ## Pod-level security settings
   ##
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
-        type: RuntimeDefault
-
+      type: RuntimeDefault
   ## Container-level security settings
   ##
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-        drop:
-            - ALL
+      drop:
+        - ALL
     readOnlyRootFilesystem: true
-
   ## Resource limits and requests
   ##
   resources:
     limits:
-        cpu: 500m
-        memory: 1024Mi
+      cpu: 500m
+      memory: 1024Mi
     requests:
-        cpu: 10m
-        memory: 64Mi
-
+      cpu: 10m
+      memory: 64Mi
   ## Manager pod's affinity
   ##
   affinity: {}
-
   ## Manager pod's node selector
   ##
   nodeSelector: {}
-
   ## Manager pod's tolerations
   ##
   tolerations: []
-
 ## Helper RBAC roles for managing custom resources
 ##
 rbacHelpers:
   # Install convenience admin/editor/viewer roles for CRDs
   enable: false
-
 ## Custom Resource Definitions
 ##
 crd:
@@ -81,7 +69,6 @@ crd:
   enable: true
   # Keep CRDs when uninstalling
   keep: true
-
 ## Controller metrics endpoint.
 ## Enable to expose /metrics endpoint with RBAC protection via kube-rbac-proxy.
 ##
@@ -91,7 +78,6 @@ metrics:
   port: 11043
   # manager internal HTTP metrics port
   internalPort: 8080
-
 ## Cert-manager integration for TLS certificates.
 ## Required for webhook certificates and metrics endpoint certificates.
 ## When enabled, kube-rbac-proxy serves metrics with a cert-manager issued
@@ -102,15 +88,15 @@ certManager:
   issuer:
     kind: ClusterIssuer
     name: default-issuer-name
-
 ## Prometheus ServiceMonitor for metrics scraping.
 ## Requires prometheus-operator to be installed in the cluster.
 ##
 prometheus:
   enable: false
-
 ## Cilium network policies for the controller manager.
 ##
 networkPolicies:
   enabled: false
-
+monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []

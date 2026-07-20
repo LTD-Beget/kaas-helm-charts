@@ -1,9 +1,10 @@
 companyPrefix: exmaple
-
 prometheus-process-exporter: {}
 # some values for process-exporter
 
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

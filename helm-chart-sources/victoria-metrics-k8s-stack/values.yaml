@@ -1,16 +1,12 @@
 companyPrefix: example
 vmInsertVIP: ""
-
 victoria-metrics-k8s-stack:
   alertmanager:
     enabled: false
-
   vmagent:
     enabled: false
-
   vmalert:
     enabled: false
-
 networkPolicies:
   alertmanager:
     enabled: false
@@ -21,7 +17,6 @@ networkPolicies:
   vmcluster:
     enabled: false
   systemEnabled: false
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -34,11 +29,27 @@ monitoring:
   grafana:
     vmDatasource:
       enabled: false
-
+  vmagent:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  vmalert:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  vmalertmanager:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  vminsert:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  vmselect:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  vmstorage:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
 additionalService:
   vmcluster:
     enabled: false
-
 tls:
   vmInsert:
     enabled: false
@@ -56,7 +67,6 @@ tls:
         - vminsert.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
-
   vmSelect:
     enabled: false
     issuer:
@@ -73,7 +83,6 @@ tls:
         - vmselect.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
-
   alertmanager:
     enabled: false
     issuer:
@@ -90,7 +99,6 @@ tls:
         - alertmanager.default.svc.cluster.local
       ipAddresses:
         - "127.0.0.1"
-
 istioVirtualService:
   vmalert:
     enabled: false
@@ -104,39 +112,35 @@ istioVirtualService:
       route:
         host: vmalert
         port: 8080
-
 alertmanagerConfig:
   enabled: false
   config: {}
-    # global:
-    #   resolve_timeout: 5m
-
-    # route:
-    #   receiver: blackhole
-    #   group_by: ["cluster_full_name", "alertname", "severity"]
-    #   group_wait: 10s
-    #   group_interval: 30s
-    #   repeat_interval: 3h
-
-    #   routes:
-    #     blackhole:
-    #       matchers:
-    #         - alertname="Watchdog"
-    #       receiver: blackhole
-    #     telegram:
-    #       matchers:
-    #         - severity="critical"
-    #       receiver: telegram-critical
-    #       continue: true
-
-    # receivers:
-    #   blackhole: {}
-    #   telegram-critical:
-    #     type: telegram_configs
-    #     configs:
-    #       criticalAlertGroup:
-    #         bot_token: "123456789:AAExampleTokenHere"
-    #         chat_id: -1001234567890
-    #         parse_mode: 'HTML'
-    #         send_resolved: true
-    #         message: '{{ template "tg.message" . }}'
+  # global:
+  #   resolve_timeout: 5m
+# route:
+#   receiver: blackhole
+#   group_by: ["cluster_full_name", "alertname", "severity"]
+#   group_wait: 10s
+#   group_interval: 30s
+#   repeat_interval: 3h
+#   routes:
+#     blackhole:
+#       matchers:
+#         - alertname="Watchdog"
+#       receiver: blackhole
+#     telegram:
+#       matchers:
+#         - severity="critical"
+#       receiver: telegram-critical
+#       continue: true
+# receivers:
+#   blackhole: {}
+#   telegram-critical:
+#     type: telegram_configs
+#     configs:
+#       criticalAlertGroup:
+#         bot_token: "123456789:AAExampleTokenHere"
+#         chat_id: -1001234567890
+#         parse_mode: 'HTML'
+#         send_resolved: true
+#         message: '{{ template "tg.message" . }}'

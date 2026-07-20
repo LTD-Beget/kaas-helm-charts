@@ -12,5 +12,9 @@ spec:
   endpoints:
     - port: konnectivity-server
       path: /metrics
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
   jobLabel: "app.kubernetes.io/name"
 {{- end }}

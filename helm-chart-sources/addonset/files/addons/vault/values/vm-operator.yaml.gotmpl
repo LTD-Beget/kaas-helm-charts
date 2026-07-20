@@ -1,0 +1,53 @@
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          go_gc_duration_seconds_count|\
+          go_gc_duration_seconds_sum|\
+          go_goroutines|\
+          go_memstats_alloc_bytes_total|\
+          go_memstats_gc_sys_bytes|\
+          go_memstats_heap_idle_bytes|\
+          go_memstats_heap_inuse_bytes|\
+          go_memstats_heap_released_bytes|\
+          go_memstats_mcache_sys_bytes|\
+          go_memstats_mspan_sys_bytes|\
+          go_memstats_other_sys_bytes|\
+          go_memstats_stack_inuse_bytes|\
+          go_memstats_sys_bytes|\
+          process_cpu_seconds_total|\
+          process_max_fds|\
+          process_open_fds|\
+          process_resident_memory_bytes|\
+          process_start_time_seconds|\
+          process_virtual_memory_bytes|\
+          scrape_series_added|\
+          up|\
+          vault_core_handle_request_count|\
+          vault_core_unsealed|\
+          vault_expire_num_leases|\
+          vault_identity_entity_alias_count|\
+          vault_identity_num_entities|\
+          vault_policy_get_policy_count|\
+          vault_policy_set_policy_count|\
+          vault_runtime_alloc_bytes|\
+          vault_runtime_heap_objects|\
+          vault_runtime_malloc_count|\
+          vault_runtime_num_goroutines|\
+          vault_secret_kv_count|\
+          vault_token_count|\
+          vault_token_count_by_auth|\
+          vault_token_count_by_policy|\
+          vault_token_count_by_ttl|\
+          vault_token_create_count|\
+          vault_token_creation|\
+          vault_token_lookup_count|\
+          vault_token_store_count\
+          "

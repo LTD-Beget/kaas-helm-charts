@@ -1,13 +1,12 @@
 companyPrefix: example
-
 gateway: {}
-
 networkPolicies:
   enabled: false
   internal:
     enabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -17,7 +16,6 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 tls:
   enabled: false
   issuer:
@@ -34,7 +32,6 @@ tls:
       - gateway.default.svc.cluster.local
     ipAddresses:
       - "127.0.0.1"
-
 extraGateway:
   enabled: false
   name: default
@@ -47,7 +44,6 @@ extraGateway:
         credentialName: default-secret
     - hosts: ["*"]
       port:
-        protocol: HTTP 
-
+        protocol: HTTP
 telemetry:
   enabled: false

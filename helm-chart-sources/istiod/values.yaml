@@ -1,13 +1,13 @@
 companyPrefix: example
-
 istiod: {}
 # some values for istiod
 
 networkPolicies:
   enabled: false
   systemEnabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:

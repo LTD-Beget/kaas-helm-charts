@@ -1,11 +1,10 @@
 companyPrefix: example
-
 victoria-metrics-operator: {}
-
 networkPolicies:
   enabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:

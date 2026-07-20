@@ -28,3 +28,48 @@ coredns:
       secret:
         defaultMode: 420
         secretName: coredns-metrics-svc-tls
+
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          coredns_cache_entries|\
+          coredns_cache_hits_total|\
+          coredns_cache_misses_total|\
+          coredns_dns_request_duration_seconds_bucket|\
+          coredns_dns_request_size_bytes_bucket|\
+          coredns_dns_request_size_bytes_count|\
+          coredns_dns_request_size_bytes_sum|\
+          coredns_dns_requests_total|\
+          coredns_dns_response_size_bytes_bucket|\
+          coredns_dns_responses_total|\
+          coredns_forward_healthcheck_broken_total|\
+          go_gc_duration_seconds_count|\
+          go_gc_duration_seconds_sum|\
+          go_goroutines|\
+          go_memstats_alloc_bytes_total|\
+          go_memstats_gc_sys_bytes|\
+          go_memstats_heap_idle_bytes|\
+          go_memstats_heap_inuse_bytes|\
+          go_memstats_heap_released_bytes|\
+          go_memstats_mcache_sys_bytes|\
+          go_memstats_mspan_sys_bytes|\
+          go_memstats_other_sys_bytes|\
+          go_memstats_stack_inuse_bytes|\
+          go_memstats_sys_bytes|\
+          process_cpu_seconds_total|\
+          process_max_fds|\
+          process_open_fds|\
+          process_resident_memory_bytes|\
+          process_start_time_seconds|\
+          process_virtual_memory_bytes|\
+          scrape_series_added|\
+          up\
+          "

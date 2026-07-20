@@ -1,3 +1,49 @@
 monitoring:
   vmServiceScrape:
     enabled: true
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          controller_runtime_active_workers|\
+          controller_runtime_max_concurrent_reconciles|\
+          controller_runtime_reconcile_errors_total|\
+          controller_runtime_reconcile_panics_total|\
+          controller_runtime_reconcile_time_seconds_bucket|\
+          controller_runtime_reconcile_total|\
+          controller_runtime_terminal_reconcile_errors_total|\
+          go_gc_duration_seconds_count|\
+          go_gc_duration_seconds_sum|\
+          go_goroutines|\
+          go_memstats_alloc_bytes_total|\
+          go_memstats_gc_sys_bytes|\
+          go_memstats_heap_idle_bytes|\
+          go_memstats_heap_inuse_bytes|\
+          go_memstats_heap_released_bytes|\
+          go_memstats_mcache_sys_bytes|\
+          go_memstats_mspan_sys_bytes|\
+          go_memstats_other_sys_bytes|\
+          go_memstats_stack_inuse_bytes|\
+          go_memstats_sys_bytes|\
+          go_sched_latencies_seconds_bucket|\
+          leader_election_master_status|\
+          process_cpu_seconds_total|\
+          process_max_fds|\
+          process_open_fds|\
+          process_resident_memory_bytes|\
+          process_start_time_seconds|\
+          process_virtual_memory_bytes|\
+          rest_client_requests_total|\
+          scrape_series_added|\
+          up|\
+          workqueue_adds_total|\
+          workqueue_depth|\
+          workqueue_longest_running_processor_seconds|\
+          workqueue_queue_duration_seconds_count|\
+          workqueue_queue_duration_seconds_sum|\
+          workqueue_retries_total|\
+          workqueue_unfinished_work_seconds|\
+          workqueue_work_duration_seconds_count|\
+          workqueue_work_duration_seconds_sum\
+          "

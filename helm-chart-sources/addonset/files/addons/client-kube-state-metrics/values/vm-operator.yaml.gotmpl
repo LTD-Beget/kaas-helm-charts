@@ -29,12 +29,18 @@ monitoring:
     issuer:
       name: selfsigned-cluster-issuer
   serviceScrapeConfig:
-    relabelConfigs:
-      - targetLabel: cluster_full_name
-        replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-      - targetLabel: remotewrite_cluster
-        replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-      - targetLabel: client_cluster
-        replacement: {{ .Values.cluster.customer }}-{{ .Values.cluster.name }}
-      - targetLabel: cluster_type
-        replacement: client
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          kube_node_info|\
+          kube_node_labels|\
+          kube_node_role|\
+          kube_node_spec_taint|\
+          kube_node_spec_unschedulable|\
+          kube_node_status_allocatable|\
+          kube_node_status_capacity|\
+          kube_node_status_condition|\
+          scrape_series_added|\
+          up\
+          "
