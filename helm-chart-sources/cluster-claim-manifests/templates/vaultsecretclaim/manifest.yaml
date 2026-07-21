@@ -37,6 +37,34 @@ spec:
             length: 24
             hash: none
 
+        #TODO: Удалить блок etcd-backup после переезда на путь clusters/+/s3
+        - name: etcd-backup-s3-bucket
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: bucket
+          destination:
+            path: etcd-backup
+            key: bucket
+
+        - name: etcd-backup-s3-access-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: access-key
+          destination:
+            path: etcd-backup
+            key: access-key
+
+        - name: etcd-backup-s3-secret-key
+          type: copy
+          source:
+            path: clusters/{{ .Values.extraArgs.systemClusterName }}/etcd-backup
+            key: secret-key
+          destination:
+            path: etcd-backup
+            key: secret-key
+
         - name: incloud-ui-cookie-secret
           type: generate
           destination:

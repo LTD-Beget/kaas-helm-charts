@@ -1,0 +1,12 @@
+vaultConfigs:
+  vault-secret:
+    spec:
+      address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
+      managerAuth:
+        mountPath: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
+      tls:
+        caBundleSecretRef:
+          namespace: {{ .Values.companyPrefix }}-vault
+          name: vault-tls-server
+          key: ca.crt
+        serverName: vault.{{ .Values.companyPrefix }}-vault.svc

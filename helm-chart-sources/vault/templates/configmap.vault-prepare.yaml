@@ -46,11 +46,11 @@ data:
     # ------------------------------------------------------------------ #
     # Kubernetes auth — enable and configure
     # ------------------------------------------------------------------ #
-    echo "Configuring kubernetes auth at path: ${CLUSTER_NAME}..."
-    vault auth enable -path="${CLUSTER_NAME}" kubernetes 2>/dev/null || \
-      echo "  kubernetes auth at ${CLUSTER_NAME} already enabled, skipping."
+    echo "Configuring kubernetes auth at path: {{ $prepare.clusterName }}..."
+    vault auth enable -path="{{ $prepare.clusterName }}" kubernetes 2>/dev/null || \
+      echo "  kubernetes auth at {{ $prepare.clusterName }} already enabled, skipping."
 
-    vault write "auth/${CLUSTER_NAME}/config" \
+    vault write "auth/{{ $prepare.clusterName }}/config" \
       kubernetes_host="https://kubernetes.default.svc" \
       kubernetes_ca_cert="$(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)"
     {{- end }}
@@ -59,27 +59,27 @@ data:
     # ------------------------------------------------------------------ #
     # Policy: cluster-ro
     # ------------------------------------------------------------------ #
-    echo "Writing ${CLUSTER_NAME}-ro policy..."
-    vault policy write ${CLUSTER_NAME}-ro - <<EOF
+    echo "Writing {{ $prepare.clusterName }}-ro policy..."
+    vault policy write {{ $prepare.clusterName }}-ro - <<EOF
       path "sys/mounts" { capabilities = ["read"] }
 
-      path "secret/data/clusters/${CLUSTER_NAME}/*" {
+      path "secret/data/clusters/{{ $prepare.clusterName }}/*" {
         capabilities = ["read", "list"]
       }
 
-      path "secret/metadata/clusters/${CLUSTER_NAME}/*" {
+      path "secret/metadata/clusters/{{ $prepare.clusterName }}/*" {
         capabilities = ["list"]
       }
     EOF
 
     # ------------------------------------------------------------------ #
-    # Role: ${CLUSTER_NAME}-ro
+    # Role: {{ $prepare.clusterName }}-ro
     # ------------------------------------------------------------------ #
-    echo "Writing ${CLUSTER_NAME}-ro role..."
-    vault write "auth/${CLUSTER_NAME}/role/${CLUSTER_NAME}-ro" \
+    echo "Writing {{ $prepare.clusterName }}-ro role..."
+    vault write "auth/{{ $prepare.clusterName }}/role/{{ $prepare.clusterName }}-ro" \
       bound_service_account_names="*" \
       bound_service_account_namespaces="*" \
-      token_policies=${CLUSTER_NAME}-ro \
+      token_policies={{ $prepare.clusterName }}-ro \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}
@@ -141,9 +141,9 @@ data:
     # Role: vault-operator
     # ------------------------------------------------------------------ #
     echo "Writing vault-operator role..."
-    vault write "auth/${CLUSTER_NAME}/role/vault-operator" \
-      bound_service_account_names="${VAULT_OPERATOR_SA}" \
-      bound_service_account_namespaces="${VAULT_OPERATOR_NAMESPACE}" \
+    vault write "auth/{{ $prepare.clusterName }}/role/vault-operator" \
+      bound_service_account_names="{{ $prepare.vaultOperatorRole.serviceAccountName  }}" \
+      bound_service_account_namespaces="{{ $prepare.vaultOperatorRole.namespace }}" \
       token_policies=vault-operator-admin \
       token_ttl=1h \
       token_max_ttl=24h
@@ -156,7 +156,7 @@ data:
     # Kept separate from vault-operator-admin to split responsibilities.
     # ------------------------------------------------------------------ #
     echo "Writing vault-secret-operator policy..."
-    # Unquoted heredoc so ${CLUSTER_NAME} expands into the policy.
+    # Unquoted heredoc so {{ $prepare.clusterName }} expands into the policy.
     vault policy write vault-secret-operator - <<EOF
     # Health check
     path "sys/health" {
@@ -181,10 +181,48 @@ data:
     # Role: vault-secret-operator
     # ------------------------------------------------------------------ #
     echo "Writing vault-secret-operator role..."
-    vault write "auth/${CLUSTER_NAME}/role/vault-secret-operator" \
-      bound_service_account_names="${VAULT_SECRET_OPERATOR_SA}" \
-      bound_service_account_namespaces="${VAULT_SECRET_OPERATOR_NAMESPACE}" \
+    vault write "auth/{{ $prepare.clusterName }}/role/vault-secret-operator" \
+      bound_service_account_names="{{ $prepare.vaultSecretOperatorRole.serviceAccountName }}" \
+      bound_service_account_namespaces="{{ $prepare.vaultSecretOperatorRole.namespace }}" \
       token_policies=vault-secret-operator \
+      token_ttl=1h \
+      token_max_ttl=24h
+    {{- end }}
+
+    {{- if $prepare.s3BucketRole.enabled }}
+    # ------------------------------------------------------------------ #
+    # Policy: s3-bucket-operator
+    # ------------------------------------------------------------------ #
+    echo "Writing s3-bucket-operator policy..."
+    # Unquoted heredoc so {{ $prepare.clusterName }} expands into the policy.
+    vault policy write s3-bucket-operator - <<EOF
+    # Health check
+    path "sys/health" {
+      capabilities = ["read"]
+    }
+
+    # Write/generate secrets into any child cluster (write only, no read-back).
+    path "{{ $prepare.secretEngine.path }}/data/clusters/+/s3" {
+      capabilities = ["read", "list", "create", "update", "delete"]
+    }
+
+    path "{{ $prepare.secretEngine.path }}/metadata/clusters/+/s3" {
+      capabilities = ["list", "delete"]
+    }
+
+    path "sys/mounts" {
+      capabilities = ["read"]
+    }
+    EOF
+
+    # ------------------------------------------------------------------ #
+    # Role: s3-bucket-operator
+    # ------------------------------------------------------------------ #
+    echo "Writing s3-bucket-operator role..."
+    vault write "auth/{{ $prepare.clusterName }}/role/s3-bucket-operator" \
+      bound_service_account_names="{{ $prepare.s3BucketRole.serviceAccountName }}" \
+      bound_service_account_namespaces="{{ $prepare.s3BucketRole.namespace }}" \
+      token_policies=s3-bucket-operator \
       token_ttl=1h \
       token_max_ttl=24h
     {{- end }}
@@ -204,9 +242,9 @@ data:
     # Role: metrics-reader
     # ------------------------------------------------------------------ #
     echo "Writing metrics-reader role..."
-    vault write "auth/${CLUSTER_NAME}/role/metrics-reader" \
-      bound_service_account_names="${MONITORING_SA}" \
-      bound_service_account_namespaces="${MONITORING_NAMESPACE}" \
+    vault write "auth/{{ $prepare.clusterName }}/role/metrics-reader" \
+      bound_service_account_names="{{ $prepare.monitoring.serviceAccountName }}" \
+      bound_service_account_namespaces="{{ $prepare.monitoring.namespace }}" \
       token_policies=metrics-reader \
       token_ttl=1h \
       token_max_ttl=4h

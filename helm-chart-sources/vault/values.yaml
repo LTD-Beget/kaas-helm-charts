@@ -36,6 +36,11 @@ prepareJob:
     serviceAccountName: vault-secret-operator-controller-manager
     namespace: example-vault-operator
 
+  s3BucketRole:
+    enabled: true
+    serviceAccountName: vault-s3-bucket-operator-controller-manager
+    namespace: example-vault-operator
+
   monitoring:
     # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
     # (k8s RBAC), so the vault-side metrics-reader policy/role is not required.
