@@ -22,16 +22,10 @@ coredns:
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
-      - podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-              - coredns
-            - key: app.kubernetes.io/instance
-              operator: In
-              values:
-              - coredns
-          topologyKey: kubernetes.io/hostname
-        weight: 100
+        - podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: coredns
+                app.kubernetes.io/name: coredns
+            topologyKey: kubernetes.io/hostname
+          weight: 100
