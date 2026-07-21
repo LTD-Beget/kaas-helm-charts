@@ -5,9 +5,14 @@ kind: Addon
 metadata:
   name: s3-bucket-operator
 spec:
-  chart: "s3-bucket-operator"
-  repoURL: {{ .Values.companyExternalChartRegistry }}
-  version: "0.1.1"
+  # chart: "s3-bucket-operator"
+  # repoURL: {{ .Values.companyExternalChartRegistry }}
+  # version: "0.1.1"
+
+  path: helm-chart-sources/s3-bucket-operator
+  repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
+  version: feature/K8S-708
+
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-s3-bucket-operator"
