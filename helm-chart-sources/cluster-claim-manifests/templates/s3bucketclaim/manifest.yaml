@@ -1,0 +1,27 @@
+---
+apiVersion: clusterclaim.in-cloud.io/v1alpha1
+kind: ClusterClaimObserveResourceTemplate
+metadata:
+  name: {{ .Release.Name }}-s3bucketclaim
+spec:
+  apiVersion: vault.in-cloud.io/v1alpha1
+  kind: S3BucketClaim
+  value: |
+    metadata:
+      labels:
+        xcluster.in-cloud.io/name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+    spec:
+      vaultConfigRef:
+        name: default
+      clusterRef:
+        name: "{{`{{ .ClusterClaim.metadata.name }}`}}"
+      customerLogin: "{{`{{ .ClusterClaim.metadata.namespace }}`}}"
+      region: ru1
+      bucket:
+        public: false
+        managedBy: SYSTEM
+        configurationId: s3_v1
+      vault:
+        secretsPrefix: "clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}"
+        destinationPath: etcd-backup
+      deletionPolicy: Purge

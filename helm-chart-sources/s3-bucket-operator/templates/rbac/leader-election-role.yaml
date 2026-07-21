@@ -1,0 +1,39 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "leader-election-role" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch

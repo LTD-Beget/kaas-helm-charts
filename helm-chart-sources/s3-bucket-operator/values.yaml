@@ -1,14 +1,14 @@
 # nameOverride: ""
 # fullnameOverride: ""
 
-clusterDomain: cluster.local
 companyPrefix: example
+clusterDomain: cluster.local
 
 manager:
   replicas: 1
 
   image:
-    repository: prorobotech/vault-secret-operator
+    repository: prorobotech/s3-bucket-operator
     tag: ""
     pullPolicy: IfNotPresent
 
@@ -79,13 +79,13 @@ networkPolicies:
   enabled: false
 
 vaultConfigs:
-  vault-secret:
-    name: vault-secret
+  default:
+    name: default
     spec:
       address: http://vault.vault-system.svc:8200
       managerAuth:
         method: kubernetes
         mountPath: system-test
-        role: vault-secret-operator
+        role: s3-bucket-operator
       storage:
         kvMountPath: secret
