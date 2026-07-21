@@ -34,12 +34,12 @@ prepareJob:
   vaultSecretOperatorRole:
     enabled: true
     serviceAccountName: vault-secret-operator-controller-manager
-    namespace: example-vault-operator
+    namespace: example-vault-secret-operator
 
   s3BucketRole:
     enabled: true
-    serviceAccountName: vault-s3-bucket-operator-controller-manager
-    namespace: example-vault-operator
+    serviceAccountName: s3-bucket-operator-controller-manager
+    namespace: example-s3-bucket-operator
 
   monitoring:
     # Disabled by default: metrics are scraped via the kube-rbac-proxy sidecar
