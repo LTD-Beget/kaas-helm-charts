@@ -1,0 +1,158 @@
+{{- if .Values.networkPolicies.enabled }}
+---
+# Allow s3-bucket-operator controller-manager to talk to the Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-s3-bucket-operator-to-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from s3-bucket-operator to the Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
+# Allow s3-bucket-operator controller-manager to external Kubernetes API server.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-s3-bucket-operator-to-external-kube-apiserver-6443
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: '6443'
+        protocol: TCP
+  description: |
+    Allows egress from s3-bucket-operator to external Kubernetes API server on 6443
+    for control-plane interactions.
+
+---
+# Allow vmagent to scrape s3-bucket-operator metrics via the kube-rbac-proxy sidecar.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-vmagent-to-s3-bucket-operator-11043
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vmagent
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: |
+    Allows ingress from vmagent to the s3-bucket-operator kube-rbac-proxy sidecar on 11043
+    for metrics collection.
+
+{{ range $name, $vc := .Values.vaultConfigs }}
+{{- $addr := $vc.spec.address }}
+{{- $isHttps := hasPrefix "https://" $addr }}
+{{- $hostpart := $addr | trimPrefix "https://" | trimPrefix "http://" }}
+{{- $hasPort := contains ":" $hostpart }}
+{{- $host := $hostpart }}
+{{- $port := ternary "443" "80" $isHttps }}
+{{- if $hasPort }}
+{{- $host = index (splitList ":" $hostpart) 0 }}
+{{- $port = index (splitList ":" $hostpart) 1 }}
+{{- end }}
+{{- $hostParts := splitList "." $host }}
+{{- $isK8s := false }}
+{{- if ge (len $hostParts) 3 }}
+{{- if eq (index $hostParts 2) "svc" }}
+{{- $isK8s = true }}
+{{- end }}
+{{- end }}
+{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host -}}
+---
+# Allow s3-bucket-operator controller-manager to reach vault "{{ $name }}".
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-s3-bucket-operator-to-vault-{{ $name }}-{{ $port }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  {{- if $isK8s }}
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ index $hostParts 1 }}
+    toPorts:
+    - ports:
+      - port: '{{ $port }}'
+        protocol: TCP
+  {{- else }}
+  - toFQDNs:
+    - matchName: {{ $host }}
+    toPorts:
+    - ports:
+      - port: '{{ $port }}'
+        protocol: TCP
+  {{- end }}
+  description: |
+    Allows egress from s3-bucket-operator to vault "{{ $name }}" ({{ $addr }}) for management operations.
+
+{{- if not $isIP }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-s3-bucket-operator-to-coredns-53
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+      rules:
+        dns:
+        - matchName: {{ $host }}
+        - matchName: {{ $host }}.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.svc.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}
+  description: |
+    Allows egress from s3-bucket-operator to CoreDNS on 53 for DNS resolution.
+{{- end }}
+{{- end }}
+{{- end }}

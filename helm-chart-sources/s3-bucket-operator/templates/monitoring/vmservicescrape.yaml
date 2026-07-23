@@ -1,0 +1,41 @@
+{{- if and .Values.metrics.enable .Values.monitoring.enabled }}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-scrape" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    path: /metrics
+    port: https-metrics
+    scheme: HTTPS
+    tlsConfig:
+      serverName: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+      {{- if .Values.monitoring.secureService.enabled }}
+      insecureSkipVerify: false
+      ca:
+        secret:
+          name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: ca.crt
+      cert:
+        secret:
+          name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: tls.crt
+      keySecret:
+        name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+        key: tls.key
+      {{- else }}
+      insecureSkipVerify: true
+      {{- end }}
+  jobLabel: s3-bucket-operator
+  selector:
+    matchLabels:
+      monitoring.in-cloud.io/service: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+      app.kubernetes.io/name: {{ include "s3-bucket-operator.name" . }}
+      control-plane: controller-manager
+{{- end }}

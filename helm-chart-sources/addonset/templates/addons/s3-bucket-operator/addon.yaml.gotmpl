@@ -1,63 +1,39 @@
-{{- if .Values.addons.coredns.enabled }}
+{{- if and .Values.addons.s3bucketoperator.enabled .Values.addons.system.enabled }}
 ---
 apiVersion: addons.in-cloud.io/v1alpha1
 kind: Addon
 metadata:
-  name: coredns
+  name: s3-bucket-operator
 spec:
-  # chart: "coredns"
-  # repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  # version: "1.28.0-4"
+  # chart: "s3-bucket-operator"
+  # repoURL: {{ .Values.companyExternalChartRegistry }}
+  # version: "0.1.1"
 
-  path: helm-chart-sources/coredns
+  path: helm-chart-sources/s3-bucket-operator
   repoURL: https://github.com/LTD-Beget/kaas-helm-charts.git
   version: feature/K8S-708
 
   pluginName: helm-with-values
   targetCluster: in-cluster
-  targetNamespace: "{{ .Values.companyPrefix }}-coredns"
+  targetNamespace: "{{ .Values.companyPrefix }}-s3-bucket-operator"
   variables:
     cluster_name: in-cluster
-    dependency: "True"
   valuesSources:
-    - name: parameters-infra
+    - name: parameters
       sourceRef:
         apiVersion: v1
         kind: ConfigMap
         name: parameters-infra
         namespace: {{ .Values.companyPrefix }}-system
       extract:
-        - as: clientServiceCidrCoredns
-          jsonPath: .data.clusterDNS
-        - as: controlPlaneAvailableReplicas
-          jsonPath: .data.controlPlaneAvailableReplicas
-        - as: controlPlaneDesiredReplicas
-          jsonPath: .data.controlPlaneDesiredReplicas
+        - as: clusterClaimName
+          jsonPath: .data.clusterClaimName
+        - as: customer
+          jsonPath: .data.customer
         - as: companyPrefix
           jsonPath: .data.companyPrefix
-        - as: companyDomain
-          jsonPath: .data.companyDomain
         - as: systemEnabled
           jsonPath: .data.systemEnabled
-  initDependencies:
-    - name: addons-operator
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: true
-    - name: addonset
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: true
-    - name: cilium
-      criteria:
-        - jsonPath: $.status.deployed
-          operator: Equal
-          value: true
-          keep: false
   backend:
     finalizer: true
     type: "argocd"
@@ -79,15 +55,15 @@ spec:
       priority: 0
       matchLabels:
         addons.in-cloud.io/values: default
-        addons.in-cloud.io/addon: coredns
+        addons.in-cloud.io/addon: s3-bucket-operator
     - name: custom
       priority: 95
       matchLabels:
         addons.in-cloud.io/values: custom
-        addons.in-cloud.io/addon: coredns
+        addons.in-cloud.io/addon: s3-bucket-operator
     - name: immutable
       priority: 99
       matchLabels:
         addons.in-cloud.io/values: immutable
-        addons.in-cloud.io/addon: coredns
+        addons.in-cloud.io/addon: s3-bucket-operator
 {{- end }}

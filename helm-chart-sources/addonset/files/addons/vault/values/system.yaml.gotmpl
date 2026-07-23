@@ -118,6 +118,9 @@ prepareJob:
   vaultSecretOperatorRole:
     namespace: {{ .Values.companyPrefix }}-vault-secret-operator
 
+  s3BucketRole:
+    namespace: {{ .Values.companyPrefix }}-s3-bucket-operator
+
   secretEngine:
     enabled: true
 

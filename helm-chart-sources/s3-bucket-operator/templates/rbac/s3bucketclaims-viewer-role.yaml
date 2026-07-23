@@ -1,0 +1,23 @@
+{{- if .Values.rbacHelpers.enable }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "s3bucketclaim-viewer-role" "context" $) }}
+rules:
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - s3bucketclaims
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - vault.in-cloud.io
+    resources:
+      - s3bucketclaims/status
+    verbs:
+      - get
+{{- end }}

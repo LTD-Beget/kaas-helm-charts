@@ -37,6 +37,7 @@ spec:
             length: 24
             hash: none
 
+        #TODO: Удалить блок etcd-backup после переезда на путь clusters/+/s3
         - name: etcd-backup-s3-bucket
           type: copy
           source:

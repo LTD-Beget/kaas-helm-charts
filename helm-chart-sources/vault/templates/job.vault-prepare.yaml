@@ -50,26 +50,6 @@ spec:
             # so any 127.0.0.1 value from extraEnvironmentVars must not apply here).
             - name: VAULT_ADDR
               value: {{ $vaultAddr | quote }}
-            - name: CLUSTER_NAME
-              value: {{ $prepare.clusterName | quote }}
-            {{- if $prepare.vaultOperatorRole.enabled }}
-            - name: VAULT_OPERATOR_SA
-              value: {{ $prepare.vaultOperatorRole.serviceAccountName | quote }}
-            - name: VAULT_OPERATOR_NAMESPACE
-              value: {{ $prepare.vaultOperatorRole.namespace | quote }}
-            {{- end }}
-            {{- if $prepare.vaultSecretOperatorRole.enabled }}
-            - name: VAULT_SECRET_OPERATOR_SA
-              value: {{ $prepare.vaultSecretOperatorRole.serviceAccountName | quote }}
-            - name: VAULT_SECRET_OPERATOR_NAMESPACE
-              value: {{ $prepare.vaultSecretOperatorRole.namespace | quote }}
-            {{- end }}
-            {{- if $prepare.monitoring.enabled }}
-            - name: MONITORING_SA
-              value: {{ $prepare.monitoring.serviceAccountName | quote }}
-            - name: MONITORING_NAMESPACE
-              value: {{ $prepare.monitoring.namespace | quote }}
-            {{- end }}
             - name: ROOT_TOKEN
               valueFrom:
                 secretKeyRef:
