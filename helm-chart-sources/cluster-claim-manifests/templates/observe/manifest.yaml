@@ -1,3 +1,4 @@
+{{ if .Values.templates.observe.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -29,3 +30,4 @@ spec:
           selfHeal: true
         syncOptions:
         - CreateNamespace=false
+{{ end }}
