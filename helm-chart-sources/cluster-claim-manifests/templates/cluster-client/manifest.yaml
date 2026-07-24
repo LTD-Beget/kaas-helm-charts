@@ -1,3 +1,4 @@
+{{ if .Values.templates.clusterclient.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -91,3 +92,4 @@ spec:
             value: {{`{{ .ClusterClaim.spec.extraEnvs.`}}{{ .Values.extraArgs.companyPrefix }}{{`ClusterRegion }}`}}
 
         version: {{`{{ .ClusterClaim.spec.client.componentVersions.kubernetes.version }}`}}
+{{ end }}

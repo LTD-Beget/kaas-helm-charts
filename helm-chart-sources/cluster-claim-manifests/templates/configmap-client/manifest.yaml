@@ -1,3 +1,4 @@
+{{ if .Values.templates.configmapclient.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -70,4 +71,5 @@ spec:
       systemVmInsertVIP: {{`{{ .ClusterClaim.spec.extraEnvs.systemVmInsertVIP }}`}}
     {{`{{- else }}`}}
       systemVmInsertVIP: {{ .Values.extraArgs.systemVmInsertVIP }}
-    {{`{{- end }}`}}      
+    {{`{{- end }}`}}
+{{ end }}

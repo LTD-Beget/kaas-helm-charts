@@ -1,3 +1,4 @@
+{{ if .Values.templates.certificatesetinfra.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -30,3 +31,4 @@ spec:
         name: selfsigned-cluster-issuer
     {{`{{- end }}`}}
       kubeconfig: false
+{{ end }}

@@ -1,3 +1,4 @@
+{{ if .Values.templates.vaultsecretclaim.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -201,3 +202,4 @@ spec:
             path: incloud-web
             key: oidc-client-secret
         {{`{{- end }}`}}
+{{ end }}
