@@ -3,6 +3,7 @@
 
 companyPrefix: example
 clusterDomain: cluster.local
+cloudManagerDomain: cloudmanager.example.com
 
 manager:
   replicas: 1
@@ -77,6 +78,11 @@ prometheus:
 
 networkPolicies:
   enabled: false
+  allowedExtraAddresses:
+    cloudManager:
+      domain: cloudmanager.example.com
+      port: 443
+      wildcard: true
 
 vaultConfigs:
   s3-bucket:

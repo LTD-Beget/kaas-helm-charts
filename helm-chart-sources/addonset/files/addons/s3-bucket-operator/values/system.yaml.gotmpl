@@ -10,3 +10,10 @@ vaultConfigs:
           name: vault-tls-server
           key: ca.crt
         serverName: vault.{{ .Values.companyPrefix }}-vault.svc
+
+networkPolicies:
+  allowedExtraAddresses:
+    cloudManager:
+      domain: {{ .Values.cloudManagerDomain }}
+      port: 443
+      wildcard: true

@@ -79,6 +79,8 @@ spec:
       svcHubRabbitVirtualHost: "{{`{{ .ClusterClaim.spec.extraEnvs.svcHubRabbitVirtualHost }}`}}"
       telegramToken: {{`{{ .ClusterClaim.spec.extraEnvs.telegramToken }}`}}
       telegramChatId: {{`{{ .ClusterClaim.spec.extraEnvs.telegramChatId | quote }}`}}
+      cloudManagerDomain: {{ .Values.extraArgs.cloudManagerDomain }}
+      vpsManagerDomain: {{ .Values.extraArgs.vpsManagerDomain }}
     {{`{{- end }}`}}
 
     {{`{{- if (index .ClusterClaim.spec.extraEnvs "systemIstioGwVip") }}`}}

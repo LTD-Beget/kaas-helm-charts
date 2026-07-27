@@ -34,6 +34,8 @@ spec:
           jsonPath: .data.companyPrefix
         - as: systemEnabled
           jsonPath: .data.systemEnabled
+        - as: cloudManagerDomain
+          jsonPath: .data.cloudManagerDomain
   backend:
     finalizer: true
     type: "argocd"

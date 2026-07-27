@@ -89,6 +89,52 @@ spec:
 {{- end }}
 {{- end }}
 {{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $host -}}
+{{- if or (not $isIP) $.Values.networkPolicies.allowedDomains }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-s3-bucket-operator-to-coredns-53
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-coredns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+      rules:
+        dns:
+        {{- if not $isIP }}
+        - matchName: {{ $host }}
+        - matchName: {{ $host }}.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.svc.{{ $.Values.clusterDomain }}
+        - matchName: {{ $host }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}
+        {{- end }}
+        {{- range $_, $addr := $.Values.networkPolicies.allowedExtraAddresses }}
+        - matchName: "{{ $addr.domain }}"
+        - matchName: "{{ $addr.domain }}.{{ .Values.clusterDomain }}"
+        - matchName: "{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
+        - matchName: "{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+        {{- if $addr.wildcard }}
+        - matchPattern: "*.{{ $addr.domain }}"
+        - matchPattern: "*.{{ $addr.domain }}.{{ .Values.clusterDomain }}"
+        - matchPattern: "*.{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
+        - matchPattern: "*.{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+        {{- end }}
+        {{- end }}
+  description: |
+    Allows egress from s3-bucket-operator to CoreDNS on 53 for DNS resolution.
+
 ---
 # Allow s3-bucket-operator controller-manager to reach vault "{{ $name }}".
 apiVersion: cilium.io/v2
@@ -122,12 +168,13 @@ spec:
   description: |
     Allows egress from s3-bucket-operator to vault "{{ $name }}" ({{ $addr }}) for management operations.
 
-{{- if not $isIP }}
+{{- range $addrName, $addr := $.Values.networkPolicies.allowedExtraAddresses }}
 ---
+# Allow s3-bucket-operator controller-manager to reach {{ $addrName | kebabcase }}.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-s3-bucket-operator-to-coredns-53
+  name: allow-egress-s3-bucket-operator-to-{{ $addrName | kebabcase }}-{{ $addr.port }}
   namespace: {{ $.Release.Namespace }}
 spec:
   endpointSelector:
@@ -135,24 +182,24 @@ spec:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
       k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
   egress:
-  - toEndpoints:
-    - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: coredns
-        k8s:io.kubernetes.pod.namespace: {{ $.Values.companyPrefix }}-coredns
+  - toFQDNs:
+    - matchName: "{{ $addr.domain }}"
+    - matchName: "{{ $addr.domain }}.{{ .Values.clusterDomain }}"
+    - matchName: "{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
+    - matchName: "{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+    {{- if $addr.wildcard }}
+    - matchPattern: "*.{{ $addr.domain }}"
+    - matchPattern: "*.{{ $addr.domain }}.{{ .Values.clusterDomain }}"
+    - matchPattern: "*.{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
+    - matchPattern: "*.{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+    {{- end }}
     toPorts:
     - ports:
-      - port: "53"
-        protocol: UDP
-      - port: "53"
+      - port: '{{ $addr.port }}'
         protocol: TCP
-      rules:
-        dns:
-        - matchName: {{ $host }}
-        - matchName: {{ $host }}.{{ $.Values.clusterDomain }}
-        - matchName: {{ $host }}.svc.{{ $.Values.clusterDomain }}
-        - matchName: {{ $host }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}
   description: |
-    Allows egress from s3-bucket-operator to CoreDNS on 53 for DNS resolution.
+    Allows egress from s3-bucket-operator to {{ $addrName | kebabcase }} ({{ $addr.domain }}) for management operations.
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
