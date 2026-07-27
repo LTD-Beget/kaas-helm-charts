@@ -122,14 +122,14 @@ spec:
         {{- end }}
         {{- range $_, $addr := $.Values.networkPolicies.allowedExtraAddresses }}
         - matchName: "{{ $addr.domain }}"
-        - matchName: "{{ $addr.domain }}.{{ .Values.clusterDomain }}"
-        - matchName: "{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
-        - matchName: "{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+        - matchName: "{{ $addr.domain }}.{{ $.Values.clusterDomain }}"
+        - matchName: "{{ $addr.domain }}.svc.{{ $.Values.clusterDomain }}"
+        - matchName: "{{ $addr.domain }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}"
         {{- if $addr.wildcard }}
         - matchPattern: "*.{{ $addr.domain }}"
-        - matchPattern: "*.{{ $addr.domain }}.{{ .Values.clusterDomain }}"
-        - matchPattern: "*.{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
-        - matchPattern: "*.{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+        - matchPattern: "*.{{ $addr.domain }}.{{ $.Values.clusterDomain }}"
+        - matchPattern: "*.{{ $addr.domain }}.svc.{{ $.Values.clusterDomain }}"
+        - matchPattern: "*.{{ $addr.domain }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}"
         {{- end }}
         {{- end }}
   description: |
@@ -184,14 +184,14 @@ spec:
   egress:
   - toFQDNs:
     - matchName: "{{ $addr.domain }}"
-    - matchName: "{{ $addr.domain }}.{{ .Values.clusterDomain }}"
-    - matchName: "{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
-    - matchName: "{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+    - matchName: "{{ $addr.domain }}.{{ $.Values.clusterDomain }}"
+    - matchName: "{{ $addr.domain }}.svc.{{ $.Values.clusterDomain }}"
+    - matchName: "{{ $addr.domain }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}"
     {{- if $addr.wildcard }}
     - matchPattern: "*.{{ $addr.domain }}"
-    - matchPattern: "*.{{ $addr.domain }}.{{ .Values.clusterDomain }}"
-    - matchPattern: "*.{{ $addr.domain }}l.svc.{{ .Values.clusterDomain }}"
-    - matchPattern: "*.{{ $addr.domain }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+    - matchPattern: "*.{{ $addr.domain }}.{{ $.Values.clusterDomain }}"
+    - matchPattern: "*.{{ $addr.domain }}.svc.{{ $.Values.clusterDomain }}"
+    - matchPattern: "*.{{ $addr.domain }}.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}"
     {{- end }}
     toPorts:
     - ports:
