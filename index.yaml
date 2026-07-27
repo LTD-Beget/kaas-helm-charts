@@ -90,6 +90,16 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-07-27T17:24:33.936244+05:00"
+      description: A Helm chart for Kubernetes
+      digest: 56ad51241a52b5292d1cdf8625ab74070d205fad8a93e270e6ff594c6976b280
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.11.tgz
+      version: 1.0.11
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-07-23T17:30:25.060166+05:00"
       description: A Helm chart for Kubernetes
       digest: 9566cb7e674bceb9dc78489ca14c52487c970b65da1ff3c653e99d47dd0e35a7
@@ -396,6 +406,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-1.tgz
       version: 9.4.15-1
   bootstrap:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-07-27T17:24:33.936348+05:00"
+      description: Helm chart for bootstrap addonset
+      digest: 025a266b944769a6abb523eb41cdc5aa4e452ab0baf27916ad73a89ba4858771
+      name: bootstrap
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.11.tgz
+      version: 1.0.11
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-07-17T01:27:24.680572+05:00"
@@ -958,6 +978,16 @@ entries:
   cluster-claim-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-07-27T17:31:36.870633+05:00"
+      description: A Helm chart for Kubernetes
+      digest: 9f7642716b64c43694a39b5dff34ee2b7a4d7053d01f8e3158b8e061ef4478ca
+      name: cluster-claim-manifests
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.6.tgz
+      version: 0.1.6
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-07-24T18:56:46.088805+05:00"
       description: A Helm chart for Kubernetes
       digest: 9d09241b5dce0e1b60ad484b10f4f2cdacef860c8eb805cf11ccfdadcc59d7da
@@ -1017,6 +1047,17 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-manifests-0.1.0.tgz
       version: 0.1.0
   cluster-claim-operator:
+    - apiVersion: v2
+      appVersion: v0.0.7-fa8ac570
+      created: "2026-07-27T17:16:03.198495+05:00"
+      description: A Helm chart to distribute the project cluster-claim-operator
+      digest: 36a8d72c146a8dc47bb96e067458eb76ce6fa67908ad1e0dd80c74fc81cc1033
+      icon: https://example.com/icon.png
+      name: cluster-claim-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/cluster-claim-operator-0.1.6.tgz
+      version: 0.1.6
     - apiVersion: v2
       appVersion: v0.0.6-d8435655
       created: "2026-07-17T01:10:58.367692+05:00"
@@ -1129,13 +1170,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-07-09T01:13:18.452175+07:00"
+      created: "2026-07-27T17:16:03.199277+05:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: b11ef5952b6a3cb55737f5a848bb699b865f41f225847d1f7d295cbd8a0c015d
+      digest: 3fb4cf6d47f19f2383cb249609c5cc4db520db1549c376ef759de51d10688097
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
@@ -2377,6 +2418,36 @@ entries:
   vault:
     - apiVersion: v2
       appVersion: 1.20.1
+      created: "2026-07-27T17:16:03.201471+05:00"
+      dependencies:
+        - name: vault
+          repository: https://helm.releases.hashicorp.com
+          version: 0.30.1
+      description: Official HashiCorp Vault Chart
+      digest: 546507d6cb7df2e5b4a75729d4f86b679870c809e8257664e8f6f54dcea1069f
+      home: https://www.vaultproject.io
+      icon: https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png
+      keywords:
+        - vault
+        - security
+        - encryption
+        - secrets
+        - management
+        - automation
+        - infrastructure
+      kubeVersion: '>= 1.20.0-0'
+      name: vault
+      sources:
+        - https://github.com/hashicorp/vault
+        - https://github.com/hashicorp/vault-helm
+        - https://github.com/hashicorp/vault-k8s
+        - https://github.com/hashicorp/vault-csi-provider
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-0.30.1-5.tgz
+      version: 0.30.1-5
+    - apiVersion: v2
+      appVersion: 1.20.1
       created: "2026-07-16T22:50:26.292556+05:00"
       dependencies:
         - name: vault
@@ -2497,6 +2568,16 @@ entries:
       version: 0.30.1-1
   vault-operator:
     - apiVersion: v2
+      appVersion: v0.0.6-d0db8768
+      created: "2026-07-27T17:16:03.202149+05:00"
+      description: A Helm chart to distribute the project vault-operator
+      digest: 65687d2772b99758711a3b769b850fdedc105a949de21b6e185ad6b8e7b02012
+      name: vault-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
       appVersion: v0.0.5-2570edda
       created: "2026-07-22T14:57:06.707719+05:00"
       description: A Helm chart to distribute the project vault-operator
@@ -2527,6 +2608,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-operator-0.1.0.tgz
       version: 0.1.0
   vault-secret-operator:
+    - apiVersion: v2
+      appVersion: v0.0.6-d0db8768
+      created: "2026-07-27T17:16:03.202499+05:00"
+      description: A Helm chart to distribute the project vault-secret-operator
+      digest: 8c07be4d331b4a2207f13cceb151d0eeaa3856b1cdf5d98458ebbc04571eb8a7
+      name: vault-secret-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/vault-secret-operator-0.1.2.tgz
+      version: 0.1.2
     - apiVersion: v2
       appVersion: v0.0.4-83829d77
       created: "2026-07-09T01:13:18.600616+07:00"
@@ -2890,5 +2981,16 @@ entries:
       type: application
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.1.tgz
+      version: 0.1.1
+  s3-bucket-operator:
+    - apiVersion: v2
+      appVersion: v0.0.6-d0db8768
+      created: "2026-07-27T17:16:03.199591+05:00"
+      description: A Helm chart to distribute the project s3-bucket-operator
+      digest: 12e9b9e9d9f1eddc75dc4b61a6417909ffd6325cf636e74463c710f243616ec8
+      name: s3-bucket-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/s3-bucket-operator-0.1.1.tgz
       version: 0.1.1
 generated: "2026-07-09T01:13:18.260965+07:00"

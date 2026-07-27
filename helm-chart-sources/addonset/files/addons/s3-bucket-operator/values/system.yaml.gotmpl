@@ -1,0 +1,19 @@
+vaultConfigs:
+  s3-bucket:
+    spec:
+      address: https://vault.{{ .Values.companyPrefix }}-vault.svc:8200
+      managerAuth:
+        mountPath: "{{ .Values.customer }}-{{ .Values.clusterClaimName }}"
+      tls:
+        caBundleSecretRef:
+          namespace: {{ .Values.companyPrefix }}-vault
+          name: vault-tls-server
+          key: ca.crt
+        serverName: vault.{{ .Values.companyPrefix }}-vault.svc
+
+networkPolicies:
+  allowedExtraAddresses:
+    cloudManager:
+      domain: {{ .Values.cloudManagerDomain }}
+      port: 443
+      wildcard: true

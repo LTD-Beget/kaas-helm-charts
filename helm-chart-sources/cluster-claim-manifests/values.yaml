@@ -16,6 +16,8 @@ templates:
     enabled: true
   observe:
     enabled: true
+  s3bucketclaim:
+    enabled: true
   vaultclaim:
     enabled: true
   vaultsecretclaim:
@@ -49,6 +51,8 @@ extraArgs:
   companyExternalGitRepository: ""
   companyWikiAlertingUrl: ""
   companyAdminUser: ""
+  cloudManagerDomain: ""
+  vpsManagerDomain: ""
 versions:
   addonRevision: ""
   ccm: ""

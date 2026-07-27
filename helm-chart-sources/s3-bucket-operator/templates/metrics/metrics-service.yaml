@@ -1,0 +1,20 @@
+{{- if .Values.metrics.enable }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+    monitoring.in-cloud.io/service: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: https-metrics
+      port: {{ .Values.metrics.port }}
+      protocol: TCP
+      targetPort: https-metrics
+  selector:
+    app.kubernetes.io/name: {{ include "s3-bucket-operator.name" . }}
+    control-plane: controller-manager
+{{- end }}

@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.manager.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "s3-bucket-operator.name" . }}
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        {{- include "s3-bucket-operator.labels" . | nindent 8 }}
+        control-plane: controller-manager
+    spec:
+      {{- with .Values.manager.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.manager.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.manager.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.manager.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - args:
+            {{- if .Values.metrics.enable }}
+            - --metrics-bind-address=127.0.0.1:{{ .Values.metrics.internalPort }}
+            - --metrics-secure=false
+            {{- end }}
+            - --health-probe-bind-address=:8081
+            {{- range .Values.manager.args }}
+            - {{ . }}
+            {{- end }}
+          command:
+            - /manager
+          {{- if .Values.manager.env }}
+          env:
+            {{- range .Values.manager.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}
+          image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.manager.image.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          name: manager
+          ports: []
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- if .Values.manager.resources }}
+            {{- toYaml .Values.manager.resources | nindent 12 }}
+            {{- else }}
+            {}
+            {{- end }}
+          securityContext:
+            {{- if .Values.manager.securityContext }}
+            {{- toYaml .Values.manager.securityContext | nindent 12 }}
+            {{- else }}
+            {}
+            {{- end }}
+          volumeMounts: []
+        {{- if .Values.metrics.enable }}
+        - name: rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+          args:
+            - --secure-listen-address=0.0.0.0:{{ .Values.metrics.port }}
+            - --upstream=http://127.0.0.1:{{ .Values.metrics.internalPort }}
+            {{- if .Values.monitoring.secureService.enabled }}
+            - --tls-cert-file=/app/config/metrics/tls/tls.crt
+            - --tls-private-key-file=/app/config/metrics/tls/tls.key
+            {{- end }}
+            - --v=2
+          ports:
+            - name: https-metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+          {{- if .Values.monitoring.secureService.enabled }}
+          volumeMounts:
+            - name: rbac-proxy-tls
+              mountPath: /app/config/metrics/tls
+              readOnly: true
+          {{- else }}
+          volumeMounts: []
+          {{- end }}
+        {{- end }}
+      securityContext:
+        {{- if .Values.manager.podSecurityContext }}
+        {{- toYaml .Values.manager.podSecurityContext | nindent 8 }}
+        {{- else }}
+        {}
+        {{- end }}
+      serviceAccountName: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+      terminationGracePeriodSeconds: 10
+      {{- if and .Values.metrics.enable .Values.monitoring.secureService.enabled }}
+      volumes:
+        - name: rbac-proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+      {{- else }}
+      volumes: []
+      {{- end }}

@@ -1,0 +1,38 @@
+{{- if .Values.prometheus.enable }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "s3-bucket-operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
+  name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-monitor" "context" $) }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: https-metrics
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+        {{- if .Values.monitoring.secureService.enabled }}
+        insecureSkipVerify: false
+        ca:
+          secret:
+            name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: ca.crt
+        cert:
+          secret:
+            name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: tls.crt
+        keySecret:
+          name: {{ include "s3-bucket-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          key: tls.key
+        {{- else }}
+        insecureSkipVerify: true
+        {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "s3-bucket-operator.name" . }}
+      control-plane: controller-manager
+{{- end }}

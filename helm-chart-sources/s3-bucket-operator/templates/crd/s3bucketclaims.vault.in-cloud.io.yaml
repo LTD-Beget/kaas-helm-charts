@@ -1,0 +1,233 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.19.0
+  name: s3bucketclaims.vault.in-cloud.io
+spec:
+  group: vault.in-cloud.io
+  names:
+    kind: S3BucketClaim
+    listKind: S3BucketClaimList
+    plural: s3bucketclaims
+    shortNames:
+      - s3bc
+    singular: s3bucketclaim
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - jsonPath: .status.phase
+          name: Phase
+          type: string
+        - jsonPath: .status.bucketName
+          name: Bucket
+          type: string
+        - jsonPath: .spec.clusterRef.name
+          name: Cluster
+          type: string
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: |-
+            S3BucketClaim provisions a per-cluster S3 bucket and writes its credentials
+            into Vault.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              properties:
+                bucket:
+                  description: |-
+                    S3BucketSpec holds the cloud-manager create parameters. The bucket name is
+                    derived by convention and recorded in status.bucketName.
+                  properties:
+                    configurationId:
+                      description: |-
+                        ConfigurationID is the cloud-manager S3 configuration catalog id; empty
+                        falls back to the operator default.
+                      type: string
+                    managedBy:
+                      default: SYSTEM
+                      description: ManagedBy selects the creation strategy; SYSTEM is
+                        not customer-billed.
+                      enum:
+                        - SYSTEM
+                        - CUSTOMER
+                      type: string
+                    public:
+                      default: false
+                      type: boolean
+                  type: object
+                clusterRef:
+                  description: |-
+                    SecretClusterRef references the cluster by name. No kubeconfig is needed —
+                    VaultSecretClaim only talks to Vault.
+                  properties:
+                    name:
+                      minLength: 1
+                      type: string
+                  required:
+                    - name
+                  type: object
+                customerLogin:
+                  description: CustomerLogin is the account the bucket is created under.
+                    Immutable.
+                  minLength: 1
+                  type: string
+                deletionPolicy:
+                  default: Purge
+                  description: Purge removes the bucket and Vault keys on deletion;
+                    Retain leaves them.
+                  enum:
+                    - Retain
+                    - Purge
+                  type: string
+                region:
+                  type: string
+                vault:
+                  properties:
+                    destinationPath:
+                      default: backup/s3
+                      description: DestinationPath is relative to secretsPrefix.
+                      type: string
+                    secretsPrefix:
+                      description: SecretsPrefix must equal VaultClaim.secretsPrefix.
+                        Immutable.
+                      minLength: 1
+                      type: string
+                  required:
+                    - secretsPrefix
+                  type: object
+                vaultConfigRef:
+                  description: VaultConfigRef references a cluster-scoped VaultConfig.
+                  properties:
+                    name:
+                      minLength: 1
+                      type: string
+                  required:
+                  - name
+                  type: object
+              required:
+                - bucket
+                - clusterRef
+                - customerLogin
+                - vault
+                - vaultConfigRef
+              type: object
+              x-kubernetes-validations:
+                - message: spec.clusterRef.name is immutable
+                  rule: self.clusterRef.name == oldSelf.clusterRef.name
+                - message: spec.customerLogin is immutable
+                  rule: self.customerLogin == oldSelf.customerLogin
+                - message: spec.vault.secretsPrefix is immutable
+                  rule: self.vault.secretsPrefix == oldSelf.vault.secretsPrefix
+            status:
+              properties:
+                bucketName:
+                  description: |-
+                    BucketName is the source of truth for idempotency, fixed on first
+                    create or adopt.
+                  type: string
+                bucketStatus:
+                  type: string
+                conditions:
+                  items:
+                    description: Condition contains details for one aspect of the current
+                      state of this API Resource.
+                    properties:
+                      lastTransitionTime:
+                        description: |-
+                          lastTransitionTime is the last time the condition transitioned from one status to another.
+                          This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                        format: date-time
+                        type: string
+                      message:
+                        description: |-
+                          message is a human readable message indicating details about the transition.
+                          This may be an empty string.
+                        maxLength: 32768
+                        type: string
+                      observedGeneration:
+                        description: |-
+                          observedGeneration represents the .metadata.generation that the condition was set based upon.
+                          For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                          with respect to the current state of the instance.
+                        format: int64
+                        minimum: 0
+                        type: integer
+                      reason:
+                        description: |-
+                          reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                          Producers of specific condition types may define expected values and meanings for this field,
+                          and whether the values are considered a guaranteed API.
+                          The value should be a CamelCase string.
+                          This field may not be empty.
+                        maxLength: 1024
+                        minLength: 1
+                        pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                        type: string
+                      status:
+                        description: status of the condition, one of True, False, Unknown.
+                        enum:
+                          - "True"
+                          - "False"
+                          - Unknown
+                        type: string
+                      type:
+                        description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        maxLength: 316
+                        pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                        type: string
+                    required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                    type: object
+                  type: array
+                  x-kubernetes-list-map-keys:
+                    - type
+                  x-kubernetes-list-type: map
+                endpoint:
+                  type: string
+                keysWrittenHash:
+                  description: KeysWrittenHash detects external key rotation.
+                  type: string
+                observedGeneration:
+                  format: int64
+                  type: integer
+                phase:
+                  enum:
+                    - Pending
+                    - Ready
+                    - Failed
+                    - Deleting
+                  type: string
+              type: object
+          required:
+            - spec
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

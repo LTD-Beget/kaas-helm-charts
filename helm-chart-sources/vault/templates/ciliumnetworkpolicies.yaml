@@ -171,6 +171,30 @@ spec:
     Allows ingress to vault server on 8200 from vault-secret-operator
 
 ---
+# Allow access for s3-bucket-operator to reach vault server on 8200.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-ingress-s3-bucket-operator-to-vault-8200
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: vault
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: s3-bucket-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-s3-bucket-operator
+    toPorts:
+    - ports:
+      - port: '8200'
+        protocol: TCP
+  description: |
+    Allows ingress to vault server on 8200 from s3-bucket-operator
+
+---
 # Allow istio gateway to reach vault server on 8200.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
