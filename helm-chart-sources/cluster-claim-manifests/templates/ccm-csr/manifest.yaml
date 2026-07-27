@@ -1,3 +1,4 @@
+{{ if .Values.templates.ccmcsr.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -131,3 +132,4 @@ spec:
                       path: kubeconfig
                     mode: secret
                     secretName: "{{`{{ .ClusterClaim.metadata.name }}`}}-client-kubeconfig"
+{{ end }}

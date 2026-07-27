@@ -1,3 +1,4 @@
+{{ if .Values.templates.configmapinfra.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -109,4 +110,5 @@ spec:
       vmClusterReplicas: {{`{{ .ClusterClaim.spec.extraEnvs.vmClusterReplicas }}`}}
     {{`{{- else }}`}}
       vmClusterReplicas: {{ .Values.extraArgs.vmClusterReplicas }}
-    {{`{{- end }}`}}   
+    {{`{{- end }}`}}
+{{ end }}

@@ -1,4 +1,25 @@
 argocdDestinationNamespace: ""
+templates:
+  ccmcsr:
+    enabled: true
+  certificatesetclient:
+    enabled: true
+  certificatesetinfra:
+    enabled: true
+  clusterclient:
+    enabled: true
+  clusterinfra:
+    enabled: true
+  configmapclient:
+    enabled: true
+  configmapinfra:
+    enabled: true
+  observe:
+    enabled: true
+  vaultclaim:
+    enabled: true
+  vaultsecretclaim:
+    enabled: true
 extraArgs:
   argocdServerAdminPassword: ""
   dexStaticClientsApiserver: ""
