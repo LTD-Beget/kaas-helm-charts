@@ -1,3 +1,4 @@
+{{ if .Values.templates.s3bucketclaim.enabled }}
 ---
 apiVersion: clusterclaim.in-cloud.io/v1alpha1
 kind: ClusterClaimObserveResourceTemplate
@@ -25,3 +26,4 @@ spec:
         secretsPrefix: "clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}"
         destinationPath: s3
       deletionPolicy: Purge
+{{ end }}
