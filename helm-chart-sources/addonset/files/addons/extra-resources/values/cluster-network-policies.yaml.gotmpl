@@ -18,6 +18,12 @@ resources:
             protocol: TCP
           - port: "8132"
             protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
   ccnpMgmtNetToSsh:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
@@ -54,6 +60,63 @@ resources:
         - ports:
           - port: "2379"
             protocol: TCP
+      - fromEntities:
+        - remote-node
+        - host
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+          - port: "2380"
+            protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+          - port: "2380"
+            protocol: TCP
+      egress:
+      - toEntities:
+        - remote-node
+        - host
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+          - port: "2380"
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+          - port: "2380"
+            protocol: TCP
+  ccnpToVxlan:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-vxlan-8472-cidr
+    spec:
+      description: "cidr fallback for VXLAN overlay traffic during identity race"
+      nodeSelector: {}
+      ingress:
+      - fromCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+      egress:
+      - toCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
   ccnpHostDns:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
@@ -304,6 +367,12 @@ resources:
         - ports:
           - port: '4240'
             protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
       egress:
       - toEntities:
         - remote-node
@@ -311,6 +380,12 @@ resources:
         toPorts:
         - ports:
           - port: '4240'
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0 #clusterNodes
+        toPorts:
+        - ports:
+          - port: "4240"
             protocol: TCP
       description: |
         Allows bidirectional Cilium health check traffic between remote nodes
