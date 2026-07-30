@@ -14,7 +14,7 @@ spec:
       path: /metrics
       {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   jobLabel: "app.kubernetes.io/name"
 {{- end }}
