@@ -8,11 +8,7 @@ spec:
   chart: "grafana"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-<<<<<<< HEAD
   version: "0.1.5"
-=======
-  version: "0.1.4"
->>>>>>> 9b32263b (feature(K8S-237): update charts)
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-grafana"
   variables:

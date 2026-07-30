@@ -8,11 +8,7 @@ spec:
   chart: "capi-kubeadm-control-plane"
   pluginName: helm-with-values
   repoURL: {{ .Values.companyExternalChartRegistry }}
-<<<<<<< HEAD
   version: "1.2.4"
-=======
-  version: "1.2.3"
->>>>>>> 9b32263b (feature(K8S-237): update charts)
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-capi"
   variables:

@@ -7,11 +7,7 @@ metadata:
 spec:
   chart: "argo-cd"
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-<<<<<<< HEAD
   version: "9.4.15-7"
-=======
-  version: "9.4.15-6"
->>>>>>> 9b32263b (feature(K8S-237): update charts)
   pluginName: helm-with-values
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-argocd"

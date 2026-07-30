@@ -18,7 +18,7 @@ spec:
         serverName: {{ .Release.Name }}-server
       {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
       metricRelabelConfigs:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   jobLabel: prometheus-server
 {{- end }}
