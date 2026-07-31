@@ -1,0 +1,23 @@
+apiVersion: v2
+name: kyverno
+type: application
+description: Kubernetes Native Policy Management
+home: https://kyverno.io/
+icon: https://github.com/kyverno/kyverno/raw/main/img/logo.png
+keywords:
+  - kubernetes
+  - policy agent
+  - policy
+  - validating webhook
+  - admission controller
+sources:
+- https://github.com/kyverno/kyverno
+
+# It is recommended to use it with quotes.
+version: 3.8.2-1
+appVersion: "v1.18.2"
+
+dependencies:
+  - name: kyverno
+    version: "3.8.2"
+    repository: "https://kyverno.github.io/kyverno/"

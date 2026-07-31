@@ -1,0 +1,42 @@
+kyverno:
+  features:
+    forceFailurePolicyIgnore:
+      enabled: true
+  config:
+    webhooks:
+      namespaceSelector:
+        matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: NotIn
+            values:
+              - kube-system
+              - kube-public
+              - kube-node-lease
+              - {{ .Values.companyPrefix }}-cilium
+              - {{ .Values.companyPrefix }}-coredns
+              - {{ .Values.companyPrefix }}-konnectivity-agent
+
+  admissionController:
+    container:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+
+  backgroundController:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+  cleanupController:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+  reportsController:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
