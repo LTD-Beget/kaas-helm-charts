@@ -67,6 +67,8 @@ certManager:
 
 monitoring:
   enabled: false
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   secureService:
     enabled: false
     issuer:
