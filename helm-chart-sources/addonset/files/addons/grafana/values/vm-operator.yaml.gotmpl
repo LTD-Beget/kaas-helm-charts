@@ -1,4 +1,9 @@
 monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
   serviceScrapeConfig:
     metricRelabelConfigs:
       - sourceLabels: [__name__]
