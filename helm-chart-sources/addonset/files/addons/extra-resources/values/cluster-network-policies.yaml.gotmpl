@@ -1,70 +1,254 @@
 resources:
-  ccnpAllToKubeApi:
+  ccnpVxlanOverlay:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
     metadata:
-      name: allow-host-ingress-all-6443-26443
+      name: allow-host-vxlan-8472
     spec:
-      description: "Allow external traffic to host :6443 :26443 (kube-apiserver) :8132 (konnectivity)"
+      description: "VXLAN overlay (UDP:8472) between cluster nodes"
       nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+      - toCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
       ingress:
       - fromEntities:
-        - all
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+      - fromCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "8472"
+            protocol: UDP
+  ccnpCiliumHealth4240:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-cilium-health-4240
+    spec:
+      description: "cilium-health probes (TCP:4240) node-to-node and node-to-endpoint"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        - health
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+      ingress:
+      - fromEntities:
+        - remote-node
+        - health
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "4240"
+            protocol: TCP
+  ccnpHostIcmpEcho:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-icmp-echo
+    spec:
+      description: "ICMP echo-request for cilium-health node/endpoint checks"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        - health
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+      ingress:
+      - fromEntities:
+        - remote-node
+        - health
+        icmps:
+        - fields:
+          - type: 8
+            family: IPv4
+  ccnpEtcdPeer:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-etcd-peer-2380
+    spec:
+      description: "etcd peer replication (TCP:2380) between control-plane nodes"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+      ingress:
+      - fromEntities:
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "2380"
+            protocol: TCP
+  ccnpEgressEtcdClient2379:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-egress-etcd-client-2379
+    spec:
+      description: "kube-apiserver to etcd members :2379"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+      - toCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+  ccnpEgressKubeApiserver6443:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-egress-kube-apiserver-6443
+    spec:
+      description: "Host components (kubelet, kube-proxy, cilium) to kube-apiserver :6443"
+      nodeSelector: {}
+      egress:
+      - toEntities:
+        - kube-apiserver
         toPorts:
         - ports:
           - port: "6443"
             protocol: TCP
-          - port: "26443"
+      - toCIDR:
+        - 0.0.0.0/0 #kube-apiserver-vips cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "6443"
             protocol: TCP
-          - port: "8132"
+  ccnpIngressKubeApiserver6443:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-ingress-kube-apiserver-6443
+    spec:
+      description: "kube-apiserver :6443 from in-cluster workloads and management networks"
+      nodeSelector: {}
+      ingress:
+      - fromEntities:
+        - cluster
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #host-mgmt-networks
+        toPorts:
+        - ports:
+          - port: "6443"
+            protocol: TCP
+  ccnpIngressKubeletFromKubeApiserver:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-ingress-kubelet-from-kube-apiserver-10250
+    spec:
+      description: "kube-apiserver to kubelet API :10250 (exec/logs/port-forward)"
+      nodeSelector: {}
+      ingress:
+      - fromEntities:
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "10250"
+            protocol: TCP
+  ccnpEgressApiserviceKubelet10250:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-egress-apiservice-kubelet-10250
+    spec:
+      description: "kube-apiserver to kubelet :10250"
+      nodeSelector:
+        matchLabels:
+          node-role.kubernetes.io/control-plane: ""
+      egress:
+      - toEntities:
+        - remote-node
+        - kube-apiserver
+        toPorts:
+        - ports:
+          - port: "10250"
             protocol: TCP
   ccnpMgmtNetToSsh:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
     metadata:
-      name: allow-host-ingress-ssh-from-mgmt
+      name: allow-host-ingress-ssh-22
     spec:
-      description: "Allow SSH to host from management CIDRs only"
+      description: "SSH to host from management networks only"
       nodeSelector: {}
       ingress:
       - fromCIDR:
-        - 0.0.0.0/0
+        - 0.0.0.0/0 #host-mgmt-networks
         toPorts:
         - ports:
           - port: "22"
             protocol: TCP
-  ccnpToEtcd:
+  ccnpHostDnsUpstream:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
     metadata:
-      name: allow-host-ingress-cluster-etcd
+      name: allow-host-egress-dns-upstream
     spec:
-      description: "Allow cluster pods to reach host on etcd (:2379)"
-      nodeSelector: {}
-      ingress:
-      - fromEndpoints:
-        - matchLabels:
-            k8s:app: etcd-backup-snapshot
-            k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-etcd-backup-snapshot
-        - matchLabels:
-            k8s:app.kubernetes.io/name: vault
-            k8s:component: server
-            k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-vault
-        toPorts:
-        - ports:
-          - port: "2379"
-            protocol: TCP
-  ccnpHostDns:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-egress-dns
-    spec:
-      description: "Allow host egress DNS to upstream resolvers from node resolv.conf"
+      description: "Host resolver to upstream DNS servers from node resolv.conf"
       nodeSelector: {}
       egress:
       - toCIDR:
-        - 0.0.0.0/0
+        - 0.0.0.0/0 #external-dns
         toPorts:
         - ports:
           - port: "53"
@@ -77,11 +261,11 @@ resources:
     metadata:
       name: allow-host-egress-ntp
     spec:
-      description: "Allow host egress to NTP (:123/UDP)"
+      description: "Host NTP client (:123/UDP)"
       nodeSelector: {}
       egress:
-      - toCIDR:
-        - 0.0.0.0/0
+      - toEntities:
+        - world
         toPorts:
         - ports:
           - port: "123"
@@ -92,203 +276,15 @@ resources:
     metadata:
       name: allow-host-egress-containerd-pull
     spec:
-      description: "Allow containerd (host) to pull images from any registry (:443/TCP)"
+      description: "containerd image pull to external registries (:443/TCP)"
       nodeSelector: {}
       egress:
-      - toCIDR:
-        - 0.0.0.0/0
+      - toEntities:
+        - world
         toPorts:
         - ports:
           - port: "443"
             protocol: TCP
-  ccnpToKubeApiLb:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-egress-kube-apiserver-lb
-    spec:
-      description: "Allow host egress to kube-apiserver LB (:6443/TCP)"
-      nodeSelector: {}
-      egress:
-      - toEntities:
-        - kube-apiserver
-        toPorts:
-        - ports:
-          - port: "6443"
-            protocol: TCP
-      - toCIDR:
-        - 0.0.0.0/0
-        toPorts:
-        - ports:
-          - port: "6443"
-            protocol: TCP
-  ccnpCiliumHealth:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-egress-cilium-health
-    spec:
-      description: "Allow Cilium health checker ICMP from host to health endpoints"
-      nodeSelector: {}
-      egress:
-      - toEntities:
-        - health
-  ccnpKubeletToPods:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-egress-kubelet-probes
-    spec:
-      description: "Allow kubelet (host) to probe all pods on health/metrics/webhook ports"
-      nodeSelector: {}
-      egress:
-      - toEntities:
-        - cluster
-        - remote-node
-        toPorts:
-        - ports:
-          - port: "53"
-            protocol: UDP
-          - port: "53"
-            protocol: TCP
-          - port: "443"
-            protocol: TCP
-          - port: "4180"
-            protocol: TCP
-          - port: "5000"
-            protocol: TCP
-          - port: "5554"
-            protocol: TCP
-          - port: "5558"
-            protocol: TCP
-          - port: "6060"
-            protocol: TCP
-          - port: "6080"
-            protocol: TCP
-          - port: "8080"
-            protocol: TCP
-          - port: "8081"
-            protocol: TCP
-          - port: "8082"
-            protocol: TCP
-          - port: "8084"
-            protocol: TCP
-          - port: "8134"
-            protocol: TCP
-          - port: "8181"
-            protocol: TCP
-          - port: "8429"
-            protocol: TCP
-          - port: "8482"
-            protocol: TCP
-          - port: "8888"
-            protocol: TCP
-          - port: "9403"
-            protocol: TCP
-          - port: "9443"
-            protocol: TCP
-          - port: "9809"
-            protocol: TCP
-          - port: "10250"
-            protocol: TCP
-          - port: "15017"
-            protocol: TCP
-          - port: "15021"
-            protocol: TCP
-          - port: "20257"
-            protocol: TCP
-          - port: "20259"
-            protocol: TCP
-          - port: "26443"
-            protocol: TCP
-      ingress:
-      - fromEntities:
-        - remote-node
-        - host
-        toPorts:
-        - ports:
-          - port: "443"
-            protocol: TCP
-          - port: "4180"
-            protocol: TCP
-          - port: "5000"
-            protocol: TCP
-          - port: "5554"
-            protocol: TCP
-          - port: "5558"
-            protocol: TCP
-          - port: "6060"
-            protocol: TCP
-          - port: "6080"
-            protocol: TCP
-          - port: "8080"
-            protocol: TCP
-          - port: "8081"
-            protocol: TCP
-          - port: "8082"
-            protocol: TCP
-          - port: "8084"
-            protocol: TCP
-          - port: "8134"
-            protocol: TCP
-          - port: "8181"
-            protocol: TCP
-          - port: "8429"
-            protocol: TCP
-          - port: "8482"
-            protocol: TCP
-          - port: "8888"
-            protocol: TCP
-          - port: "9403"
-            protocol: TCP
-          - port: "9443"
-            protocol: TCP
-          - port: "9809"
-            protocol: TCP
-          - port: "10250"
-            protocol: TCP
-          - port: "15017"
-            protocol: TCP
-          - port: "15021"
-            protocol: TCP
-          - port: "20257"
-            protocol: TCP
-          - port: "20259"
-            protocol: TCP
-          - port: "26443"
-            protocol: TCP
-  ccnpHostIcmp:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-icmp-bidirectional
-    spec:
-      description: "Allow ICMP echo and error messages between host and cluster nodes/pods"
-      nodeSelector: {}
-      egress:
-      - toEntities:
-        - cluster
-        - remote-node
-        icmps:
-        - fields:
-          - type: 8
-            family: IPv4
-          - type: 0
-            family: IPv4
-          - type: 11
-            family: IPv4
-      ingress:
-      - fromEntities:
-        - cluster
-        - remote-node
-        icmps:
-        - fields:
-          - type: 8
-            family: IPv4
-          - type: 0
-            family: IPv4
-          - type: 11
-            family: IPv4
   ciliumclusternetpolicyCiliumHealth:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy

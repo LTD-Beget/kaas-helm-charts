@@ -195,4 +195,41 @@ spec:
         protocol: TCP
   description: Allows egress from all capi controllers to client control-plane API
     servers on 26443.
+
+---
+# host to capi — kubelet probe (9440)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-capi-9440
+spec:
+  description: "Allow kubelet probes (host) to capi on :9440"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9440"
+        protocol: TCP
+---
+# host (kube-apiserver) to capi — webhook (9443)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-webhook-capi-9443
+spec:
+  description: "Allow kube-apiserver (host) to capi webhook on :9443"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: capi
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9443"
+        protocol: TCP
 {{- end }}

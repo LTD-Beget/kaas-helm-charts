@@ -91,4 +91,23 @@ spec:
         protocol: TCP
   description: |
     Allows ingress from alertmanager to signalilo on 8888 for webhook alerts.
+
+---
+# host to signalilo — kubelet probe (8888)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-signalilo-8888
+spec:
+  description: "Allow kubelet probes (host) to signalilo on :8888"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: signalilo
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8888"
+        protocol: TCP
 {{- end }}

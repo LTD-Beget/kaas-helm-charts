@@ -120,4 +120,23 @@ spec:
       - port: '8082'
         protocol: TCP
   description: Allows ingress from svc-k8s-proxy to svc-hub on 8082.
+
+---
+# host to svc-hub — kubelet probe (6379)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-svc-hub-6379
+spec:
+  description: "Allow kubelet probes (host) to svc-hub on :6379"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-hub.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "6379"
+        protocol: TCP
 {{- end }}
