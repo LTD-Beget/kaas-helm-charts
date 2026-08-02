@@ -233,4 +233,23 @@ spec:
   description: |
     Allows egress from alertmanager to signalilo on 8888 for
     webhook alert delivery.
+
+---
+# host to alertmanager — kubelet probe (9093)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-alertmanager-9093
+spec:
+  description: "Allow kubelet probes (host) to alertmanager on :9093"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $alertmanagerSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9093"
+        protocol: TCP
 {{- end }}

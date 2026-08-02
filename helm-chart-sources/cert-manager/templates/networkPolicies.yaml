@@ -218,4 +218,59 @@ spec:
         protocol: TCP
   description: Allows ingress from the Kubernetes API server to cert-manager on 6080
     for webhook or callback traffic.
+
+---
+# host to cert-manager — kubelet probe (9403)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-cert-manager-9403
+spec:
+  description: "Allow kubelet probes (host) to cert-manager on :9403"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9403"
+        protocol: TCP
+---
+# host to cert-manager-webhook — kubelet probe (6080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-cert-manager-webhook-6080
+spec:
+  description: "Allow kubelet probes (host) to cert-manager-webhook on :6080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-webhook
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "6080"
+        protocol: TCP
+---
+# host (kube-apiserver) to cert-manager-webhook — webhook (10250)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-webhook-cert-manager-webhook-10250
+spec:
+  description: "Allow kube-apiserver (host) to cert-manager-webhook webhook on :10250"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: cert-manager-webhook
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "10250"
+        protocol: TCP
 {{- end }}

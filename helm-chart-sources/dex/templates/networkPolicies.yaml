@@ -109,4 +109,43 @@ spec:
         - ports:
             - port: "5554"
               protocol: TCP
+
+---
+# host to dex — kubelet probe (5558)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-dex-5558
+spec:
+  description: "Allow kubelet probes (host) to dex on :5558"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: dex
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "5558"
+        protocol: TCP
+---
+# host (control-plane) to dex — gRPC (5554)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-dex-5554
+spec:
+  description: "host to dex :5554"
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/control-plane: ""
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: dex
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "5554"
+        protocol: TCP
 {{- end }}

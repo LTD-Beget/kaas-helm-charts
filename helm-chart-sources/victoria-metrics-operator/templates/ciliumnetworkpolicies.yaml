@@ -64,4 +64,23 @@ spec:
         protocol: TCP
   description: |
     Allows ingress from vmagent to vm-operator on 11043 for metrics collection.
+
+---
+# host to vm-operator — kubelet probe (8081)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vm-operator-8081
+spec:
+  description: "Allow kubelet probes (host) to vm-operator on :8081"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vm-operator
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
 {{- end }}

@@ -234,4 +234,23 @@ spec:
 
   description: |
     Allows egress from argocd-server to Dex/Gateway endpoint on 443.
+
+---
+# host to argocd-server — kubelet probe (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-argocd-server-8080
+spec:
+  description: "Allow kubelet probes (host) to argocd-server on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.server.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ include "argo-cd-wrapper.namespace" . }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
 {{- end }}

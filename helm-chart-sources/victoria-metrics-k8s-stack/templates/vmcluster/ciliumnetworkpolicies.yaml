@@ -514,4 +514,59 @@ spec:
         protocol: TCP
       - port: '11043'
         protocol: TCP 
+
+---
+# host to vminsert — kubelet probe (8480)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vminsert-8480
+spec:
+  description: "Allow kubelet probes (host) to vminsert on :8480"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8480"
+        protocol: TCP
+---
+# host to vmselect — kubelet probe (8481)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vmselect-8481
+spec:
+  description: "Allow kubelet probes (host) to vmselect on :8481"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8481"
+        protocol: TCP
+---
+# host to vmstorage — kubelet probe (8482)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vmstorage-8482
+spec:
+  description: "Allow kubelet probes (host) to vmstorage on :8482"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmclusterSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8482"
+        protocol: TCP
 {{- end }}

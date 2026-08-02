@@ -63,4 +63,23 @@ spec:
       - port: '11043'
         protocol: TCP
   description: Allows ingress from vmagent to certificate-set on 11043 for metrics collection.
+
+---
+# host to certs-controller-manager — kubelet probe (8081)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-certificate-set-8081
+spec:
+  description: "Allow kubelet probes (host) to certs-controller-manager on :8081"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: certs-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
 {{- end }}
