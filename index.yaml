@@ -3,9 +3,9 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-03T19:15:52.494752+03:00"
+      created: "2026-08-03T19:25:32.287664+03:00"
       description: A Helm chart for Kubernetes
-      digest: 9b3bda5177fcece9725673d9c81ea81403df92a0b8300672be983f1d1f80e236
+      digest: a3aabd6c1d97c3442f4962bcf8a3b01860319924c730d954b2bbb951db6e3ca1
       name: addon-manifests
       type: application
       urls:
@@ -100,9 +100,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-03T19:15:52.498051+03:00"
+      created: "2026-08-03T17:44:10.046392+03:00"
       description: A Helm chart for Kubernetes
-      digest: 5d4df4e10cbe36abd92f6a9c89a647ee51421295f72838aadeae624f6b54b3b2
+      digest: 7289ca6f3eb10b1ff68e15f34052204d39d417adfa181cdbc081727a65853f32
       name: addonset
       type: application
       urls:
@@ -3016,13 +3016,13 @@ entries:
   kyverno:
     - apiVersion: v2
       appVersion: v1.18.2
-      created: "2026-08-03T19:15:52.529573+03:00"
+      created: "2026-08-03T17:44:10.071178+03:00"
       dependencies:
         - name: kyverno
           repository: https://kyverno.github.io/kyverno/
           version: 3.8.2
       description: Kubernetes Native Policy Management
-      digest: 39ec1f25e3365517b9769c14aff45581e7391cd47b5fb2b8cd7b143c7d8829a9
+      digest: ba2b2f51903b9e221cd885d2dd250f32969e50b51470dd756b075c721d61aadc
       home: https://kyverno.io/
       icon: https://github.com/kyverno/kyverno/raw/main/img/logo.png
       keywords:
