@@ -400,5 +400,60 @@ spec:
   description: |
     Allows ingress from vault-prepare job to vault server on 8200
     for initial configuration (auth methods, policies, roles).
+
+---
+# vault to host — etcd client (2379)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-etcd-2379-from-vault
+spec:
+  description: "vault server to host etcd :2379"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "2379"
+        protocol: TCP
+---
+# host to vault-agent-injector — kubelet probe (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vault-agent-injector-8080
+spec:
+  description: "Allow kubelet probes (host) to vault-agent-injector on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-agent-injector
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+# host (kube-apiserver) to vault-agent-injector — webhook (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-webhook-vault-agent-injector-8080
+spec:
+  description: "Allow kube-apiserver (host) to vault-agent-injector webhook on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-agent-injector
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
 {{- end }}
 {{- end }}

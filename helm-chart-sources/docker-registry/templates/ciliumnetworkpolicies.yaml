@@ -295,4 +295,71 @@ spec:
     Allows ingress from istio-gw to {{ $registryName }} on 5000.
 {{- end }}
 {{- end }}
+
+{{- $registrySAs := list -}}
+{{- range $proxyName, $proxyValue := .Values.proxies }}
+{{- if $proxyValue.enabled }}
+{{- $proxyMergedValues  := (mergeOverwrite (deepCopy $.Values.default) $proxyValue) -}}
+{{- $proxyParsedName    := (include "docker-registry.registryname" $proxyName) -}}
+{{- $registryName       := printf "%s-%s" (include "docker-registry.fullname" $) $proxyParsedName -}}
+{{- $serviceAccountName := "default" -}}
+{{- if $proxyMergedValues.serviceAccount.create }}
+{{- $serviceAccountName = $registryName -}}
+{{- if $proxyMergedValues.serviceAccount.name }}
+{{- $serviceAccountName = $proxyMergedValues.serviceAccount.name -}}
+{{- end }}
+{{- end }}
+{{- $registrySAs = append $registrySAs $serviceAccountName -}}
+{{- end }}
+{{- end }}
+{{- if $registrySAs }}
+---
+# host to docker-registry caches — kubelet probe (5000)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-docker-registry-5000
+spec:
+  description: "Allow kubelet probes (host) to docker-registry pull-through caches on :5000"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchExpressions:
+      - key: k8s:io.cilium.k8s.policy.serviceaccount
+        operator: In
+        values:
+{{- range $registrySAs | uniq | sortAlpha }}
+        - {{ . }}
+{{- end }}
+      matchLabels:
+        k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "5000"
+        protocol: TCP
+---
+# host (containerd) to docker-registry caches — image pull (5000)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-containerd-registry-cache-5000
+spec:
+  description: "containerd image pull from in-cluster pull-through cache (:5000/TCP)"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchExpressions:
+      - key: k8s:io.cilium.k8s.policy.serviceaccount
+        operator: In
+        values:
+{{- range $registrySAs | uniq | sortAlpha }}
+        - {{ . }}
+{{- end }}
+      matchLabels:
+        k8s:io.kubernetes.pod.namespace: {{ $.Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "5000"
+        protocol: TCP
+{{- end }}
 {{- end }}

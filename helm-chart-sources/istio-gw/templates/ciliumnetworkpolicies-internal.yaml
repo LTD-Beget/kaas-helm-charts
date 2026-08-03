@@ -335,4 +335,23 @@ spec:
       - port: "80"
         protocol: TCP
   description: Allows egress from istio-gw-internal to instance metadata service on 169.254.169.254:80.
+
+---
+# host to istio-gw-internal — kubelet probe (15021)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-istio-gw-internal-15021
+spec:
+  description: "Allow kubelet probes (host) to istio-gw-internal on :15021"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw-internal
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "15021"
+        protocol: TCP
 {{- end }}

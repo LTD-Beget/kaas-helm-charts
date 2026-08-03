@@ -78,4 +78,23 @@ spec:
       - port: '443'
         protocol: TCP
   description: Allows egress to {{ .Values.companyPrefix }} S3 on 443 for snapshot upload traffic.
+
+---
+# etcd-backup-snapshot to host — etcd client (2379)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-etcd-2379-from-etcd-backup
+spec:
+  description: "etcd-backup-snapshot to host etcd :2379"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:app: etcd-backup-snapshot
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "2379"
+        protocol: TCP
 {{- end }}

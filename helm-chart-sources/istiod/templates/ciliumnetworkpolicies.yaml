@@ -109,4 +109,41 @@ spec:
     - ports:
       - port: '15017'
         protocol: TCP
+
+---
+# host to istiod — kubelet probe (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-istiod-8080
+spec:
+  description: "Allow kubelet probes (host) to istiod on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istiod
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+# host (kube-apiserver) to istiod — webhook (15017)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-webhook-istiod-15017
+spec:
+  description: "Allow kube-apiserver (host) to istiod webhook on :15017"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istiod
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "15017"
+        protocol: TCP
 {{- end }}

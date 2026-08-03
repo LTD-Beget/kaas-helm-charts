@@ -217,4 +217,23 @@ spec:
         protocol: TCP
   description: Allows ingress from vmagent to argocd-repo-server on 11043 for
     metrics collection.
+
+---
+# host to argocd-repo-server — kubelet probe (8084)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-argocd-repo-server-8084
+spec:
+  description: "Allow kubelet probes (host) to argocd-repo-server on :8084"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: argocd-repo-server
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8084"
+        protocol: TCP
 {{- end }}

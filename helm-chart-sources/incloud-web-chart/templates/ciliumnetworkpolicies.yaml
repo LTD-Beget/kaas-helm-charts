@@ -303,4 +303,77 @@ spec:
 
   description: |
     Allows egress from oauth2-proxy to incloud-web-chart on 8081.
+
+---
+# host to incloud-web-chart — kubelet probe (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-incloud-web-8080-8080
+spec:
+  description: "Allow kubelet probes (host) to incloud-web-chart on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+# host to incloud-web-chart — kubelet probe (8081)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-incloud-web-8081-8081
+spec:
+  description: "Allow kubelet probes (host) to incloud-web-chart on :8081"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+---
+# host to incloud-web-chart — kubelet probe (8082)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-incloud-web-8082-8082
+spec:
+  description: "Allow kubelet probes (host) to incloud-web-chart on :8082"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-incloud-web-chart
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8082"
+        protocol: TCP
+---
+# host to oauth2-proxy — kubelet probe (4180)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-oauth2-proxy-4180
+spec:
+  description: "Allow kubelet probes (host) to oauth2-proxy on :4180"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: incloud-web-chart-oauth2-proxy
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "4180"
+        protocol: TCP
 {{- end }}

@@ -24,40 +24,6 @@ spec:
 {{- end }}
 
 ---
-apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
-metadata:
-  name: allow-host-ingress-vmagent-metrics
-spec:
-  description: "Allow vmagent to scrape host-level metrics: node_exporter, kubelet, etcd-metrics, envoy stats"
-  nodeSelector: {}
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-        k8s:io.cilium.k8s.policy.serviceaccount: vmagent-vmagent
-    toPorts:
-    - ports:
-      - port: "9100"
-        protocol: TCP
-      - port: "10250"
-        protocol: TCP
-      - port: "2381"
-        protocol: TCP
-      - port: "11038"
-        protocol: TCP
-      - port: "11039"
-        protocol: TCP
-      - port: "11043"
-        protocol: TCP
-      - port: "11044"
-        protocol: TCP
-      - port: "11045"
-        protocol: TCP
-      - port: "11046"
-        protocol: TCP
-
----
 # host to vmagent-vmagent — HTTP API (8429)
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -628,4 +594,167 @@ spec:
         protocol: UDP
   description: |
     Allows egress for vmagent to coredns on port 53 for DNS resolution.
+
+---
+# host to vmagent — kubelet probe (8429)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vmagent-8429
+spec:
+  description: "Allow kubelet probes (host) to vmagent on :8429"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8429"
+        protocol: TCP
+---
+# vmagent to host — scrape node-exporter (kube-rbac-proxy) (9100)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-9100
+spec:
+  description: "vmagent scrapes node-exporter (kube-rbac-proxy) on host :9100"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9100"
+        protocol: TCP
+---
+# vmagent to host — scrape kubelet (10250)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-10250
+spec:
+  description: "vmagent scrapes kubelet on host :10250"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "10250"
+        protocol: TCP
+---
+# vmagent to host — scrape etcd metrics (2381)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-2381
+spec:
+  description: "vmagent scrapes etcd metrics on host :2381"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "2381"
+        protocol: TCP
+---
+# vmagent to host — scrape cilium-operator (kube-rbac-proxy) (11039)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-11039
+spec:
+  description: "vmagent scrapes cilium-operator (kube-rbac-proxy) on host :11039"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "11039"
+        protocol: TCP
+---
+# vmagent to host — scrape cilium-agent (kube-rbac-proxy) (11043)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-11043
+spec:
+  description: "vmagent scrapes cilium-agent (kube-rbac-proxy) on host :11043"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "11043"
+        protocol: TCP
+---
+# vmagent to host — scrape kube-controller-manager (kube-rbac-proxy) (11044)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-11044
+spec:
+  description: "vmagent scrapes kube-controller-manager (kube-rbac-proxy) on host :11044"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "11044"
+        protocol: TCP
+---
+# vmagent to host — scrape kube-scheduler (kube-rbac-proxy) (11045)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-11045
+spec:
+  description: "vmagent scrapes kube-scheduler (kube-rbac-proxy) on host :11045"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "11045"
+        protocol: TCP
+---
+# vmagent to host — scrape process-exporter (kube-rbac-proxy) (11046)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-ingress-vmagent-scrape-11046
+spec:
+  description: "vmagent scrapes process-exporter (kube-rbac-proxy) on host :11046"
+  nodeSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "11046"
+        protocol: TCP
 {{- end }}

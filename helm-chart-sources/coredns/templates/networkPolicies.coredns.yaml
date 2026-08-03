@@ -446,4 +446,61 @@ spec:
 
   description: |
     Allows ingress to CoreDNS from oauth2-proxy on 53 for DNS resolution.
+
+---
+# host to coredns (health) — kubelet probe (8080)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-coredns-health-8080
+spec:
+  description: "Allow kubelet probes (host) to coredns (health) on :8080"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+# host to coredns (ready) — kubelet probe (8181)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-coredns-ready-8181
+spec:
+  description: "Allow kubelet probes (host) to coredns (ready) on :8181"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8181"
+        protocol: TCP
+---
+# host resolver to coredns — cluster DNS (53)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-dns-coredns
+spec:
+  description: "Host resolver to in-cluster CoreDNS :53"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: coredns
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
 {{- end }}
