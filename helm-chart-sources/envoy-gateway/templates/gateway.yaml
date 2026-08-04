@@ -1,0 +1,19 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  gatewayClassName: {{ .Values.gatewayClass.name }}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: {{ .Values.gateway.http.port }}
+      allowedRoutes:
+        namespaces:
+          from: {{ .Values.gateway.allowedRoutesFrom }}
+{{- end }}

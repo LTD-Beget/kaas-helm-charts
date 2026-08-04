@@ -1,0 +1,23 @@
+apiVersion: v2
+name: envoy-gateway
+type: application
+description: Envoy Gateway — Kubernetes Gateway API control plane based on Envoy Proxy
+home: https://gateway.envoyproxy.io/
+icon: https://raw.githubusercontent.com/envoyproxy/gateway/main/site/assets/icons/logo.svg
+keywords:
+  - kubernetes
+  - gateway-api
+  - envoyproxy
+  - envoy-gateway
+  - eg
+sources:
+- https://github.com/envoyproxy/gateway
+
+# It is recommended to use it with quotes.
+version: 1.8.3-1
+appVersion: "v1.8.3"
+
+dependencies:
+  - name: gateway-helm
+    version: "1.8.3"
+    repository: "oci://registry-1.docker.io/envoyproxy"

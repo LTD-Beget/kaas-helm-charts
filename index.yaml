@@ -3,9 +3,9 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-04T19:46:29.502935+03:00"
+      created: "2026-08-04T20:51:47.696048+03:00"
       description: A Helm chart for Kubernetes
-      digest: aa4873fb5f210fd7d46d1811f6e2551bf9cdb9909ad993eb73c3741b8bcdf4d5
+      digest: 086ff244eda3bb8d31e2fc02116eeeb599110c0379efe48a99daecb56769a44c
       name: addon-manifests
       type: application
       urls:
@@ -121,6 +121,16 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-08-04T20:51:47.699165+03:00"
+      description: A Helm chart for Kubernetes
+      digest: 184a253ab004d10cc659a0f0db0da6fc9e75de3b65cd6ce68b9adcad06db3a2b
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.13.tgz
+      version: 1.0.13
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-08-04T19:18:18.899063+03:00"
       description: A Helm chart for Kubernetes
       digest: 8199e57d1afe4bd228946a2c23bc69283a31901bd19bb9d170da0614997218f9
@@ -129,16 +139,6 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.13-envoy-debug.tgz
       version: 1.0.13-envoy-debug
-    - apiVersion: v2
-      appVersion: 0.1.0
-      created: "2026-08-04T19:08:57.913912+03:00"
-      description: A Helm chart for Kubernetes
-      digest: bed25d618bbddc4c9bf29a23d2c0476d746e62f826e3c950d92be5a56a931833
-      name: addonset
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.13.tgz
-      version: 1.0.13
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-08-03T17:44:10.046392+03:00"
@@ -3704,13 +3704,13 @@ entries:
   envoy-gateway:
     - apiVersion: v2
       appVersion: v1.8.3
-      created: "2026-08-04T20:43:00.225711+03:00"
+      created: "2026-08-04T20:51:47.713547+03:00"
       dependencies:
         - name: gateway-helm
           repository: oci://registry-1.docker.io/envoyproxy
           version: 1.8.3
       description: Envoy Gateway — Kubernetes Gateway API control plane based on Envoy Proxy
-      digest: 5579a43ad9ad01ed2e4cb2eb7ada02c5dce66752c93e2f835425a73b652fb7be
+      digest: e5dd966c325acac07cf3853bcbccb8fba7226e72b58710464c5fccdcd0575a6e
       home: https://gateway.envoyproxy.io/
       icon: https://raw.githubusercontent.com/envoyproxy/gateway/main/site/assets/icons/logo.svg
       keywords:
