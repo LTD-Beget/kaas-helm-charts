@@ -3,9 +3,9 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-04T19:46:29.502935+03:00"
+      created: "2026-08-04T19:18:18.890301+03:00"
       description: A Helm chart for Kubernetes
-      digest: aa4873fb5f210fd7d46d1811f6e2551bf9cdb9909ad993eb73c3741b8bcdf4d5
+      digest: a718e009916616da120ff3aad2f18e97be072ee6baa6d4f6f38d21e3a37df310
       name: addon-manifests
       type: application
       urls:
@@ -3704,13 +3704,13 @@ entries:
   envoy-gateway:
     - apiVersion: v2
       appVersion: v1.8.3
-      created: "2026-08-04T19:18:18.952553+03:00"
+      created: "2026-08-04T20:24:57.215545+03:00"
       dependencies:
         - name: gateway-helm
           repository: oci://registry-1.docker.io/envoyproxy
           version: 1.8.3
       description: Envoy Gateway — Kubernetes Gateway API control plane based on Envoy Proxy
-      digest: 5e09a881157d71c8a6bd2a1f9e28503eac706ae52856edb43a9d3c8112cc010b
+      digest: 9729cc7ebb609eb1e204447bb46076511969c55a77b40ebfecb951f05a3155a9
       home: https://gateway.envoyproxy.io/
       icon: https://raw.githubusercontent.com/envoyproxy/gateway/main/site/assets/icons/logo.svg
       keywords:
