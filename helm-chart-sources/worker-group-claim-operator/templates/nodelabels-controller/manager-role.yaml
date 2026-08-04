@@ -27,4 +27,13 @@ rules:
         - get
         - patch
         - update
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machines
+        - machinesets
+      verbs:
+        - get
+        - list
+        - watch
 {{- end }}
