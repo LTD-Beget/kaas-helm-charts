@@ -57,6 +57,3 @@ rules:
         - update
         - watch
 {{- end }}
-
-
-2026-08-04T18:29:50Z	ERROR	controller-runtime.cache.UnhandledError	Failed to watch	{"reflector": "pkg/mod/k8s.io/client-go@v0.34.3/tools/cache/reflector.go:290", "type": "*v1.Secret", "error": "failed to list *v1.Secret: secrets is forbidden: User \"system:serviceaccount:beget-worker-group-claim-operator:worker-group-claim-operator-node-labels-controller-manager\" cannot list resource \"secrets\" in API group \"\" at the cluster scope"}
