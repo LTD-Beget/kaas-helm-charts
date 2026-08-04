@@ -6,6 +6,8 @@
 cilium:
   k8sServiceHost: "{{$O}} $.Values.cluster.host {{$C}}"
   k8sServicePort: "{{$O}} $.Values.cluster.port {{$C}}"
+  bpf:
+    masquerade: true
 {{- if eq $ipamMode "multi-pool" }}
   ipam:
     mode: multi-pool
@@ -16,8 +18,6 @@ cilium:
             cidrs:
               - "{{$O}} $.Values.podCidr {{$C}}"
             maskSize: {{$O}} $.Values.podCidrMaskSize {{$C}}
-  bpf:
-    masquerade: true
 {{- else }}
   ipam:
     operator:

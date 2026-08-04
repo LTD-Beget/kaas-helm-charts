@@ -159,6 +159,24 @@ resources:
         - ports:
           - port: "50051"
             protocol: TCP
+  s3BucketOperatorToWorldGrpc50051:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-egress-s3-bucket-operator-to-world-grpc-50051
+    spec:
+      description: "Allows egress from s3-bucket-operator to cloud manager on 50051."
+      endpointSelector:
+        matchLabels:
+          k8s:io.cilium.k8s.policy.serviceaccount: s3-bucket-operator-controller-manager
+          k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-s3-bucket-operator
+      egress:
+      - toCIDR:
+        - 192.168.9.6/32
+        toPorts:
+        - ports:
+          - port: "50051"
+            protocol: TCP
   customerCsrcClientToExternal26443:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
@@ -270,117 +288,6 @@ resources:
           - port: "53"
             protocol: UDP
           - port: "53"
-            protocol: TCP
-  ccnpHostProbeClientControlPlane8134:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-probe-client-control-plane-8134
-    spec:
-      description: "kubelet probe to client-cp-control-plane :8134 (health)"
-      nodeSelector: {}
-      egress:
-      - toEndpoints:
-        - matchLabels:
-            k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-        toPorts:
-        - ports:
-          - port: "8134"
-            protocol: TCP
-  ccnpHostProbeClientControlPlane20257:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-probe-client-control-plane-20257
-    spec:
-      description: "kubelet probe to client-cp-control-plane :20257 (nested kube-controller-manager metrics)"
-      nodeSelector: {}
-      egress:
-      - toEndpoints:
-        - matchLabels:
-            k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-        toPorts:
-        - ports:
-          - port: "20257"
-            protocol: TCP
-  ccnpHostProbeClientControlPlane20259:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-probe-client-control-plane-20259
-    spec:
-      description: "kubelet probe to client-cp-control-plane :20259 (nested kube-scheduler metrics)"
-      nodeSelector: {}
-      egress:
-      - toEndpoints:
-        - matchLabels:
-            k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-        toPorts:
-        - ports:
-          - port: "20259"
-            protocol: TCP
-  ccnpHostProbeClientControlPlane26443:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-probe-client-control-plane-26443
-    spec:
-      description: "kubelet probe to client-cp-control-plane :26443 (nested kube-apiserver)"
-      nodeSelector: {}
-      egress:
-      - toEndpoints:
-        - matchLabels:
-            k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-        toPorts:
-        - ports:
-          - port: "26443"
-            protocol: TCP
-  ccnpHostIngressEtcdFromClientControlPlane:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-ingress-etcd-2379-from-client-control-plane
-    spec:
-      description: "client-cp-control-plane to host etcd :2379"
-      nodeSelector: {}
-      ingress:
-      - fromEndpoints:
-        - matchLabels:
-            k8s:io.cilium.k8s.policy.serviceaccount: client-cp-control-plane-control-plane
-        toPorts:
-        - ports:
-          - port: "2379"
-            protocol: TCP
-  ccnpHostIngressClientControlPlane26443:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-ingress-client-control-plane-26443
-    spec:
-      description: "Nested (customer) kube-apiserver :26443 exposed on the node"
-      nodeSelector: {}
-      ingress:
-      - fromEntities:
-        - world
-        - cluster
-        toPorts:
-        - ports:
-          - port: "26443"
-            protocol: TCP
-  ccnpHostIngressKonnectivity8132:
-    apiVersion: cilium.io/v2
-    kind: CiliumClusterwideNetworkPolicy
-    metadata:
-      name: allow-host-ingress-konnectivity-8132
-    spec:
-      description: "konnectivity server :8132 for customer cluster agents"
-      nodeSelector: {}
-      ingress:
-      - fromEntities:
-        - world
-        toPorts:
-        - ports:
-          - port: "8132"
             protocol: TCP
   ccnpHostIngressCcmInfra6443:
     apiVersion: cilium.io/v2

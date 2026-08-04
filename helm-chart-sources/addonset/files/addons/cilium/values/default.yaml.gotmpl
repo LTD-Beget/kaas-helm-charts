@@ -1,4 +1,7 @@
 cilium:
+  bpf:
+    policyMapMax: 65536
+  endpointLockdownOnMapOverflow: true
   ciliumEndpointSlice:
     enabled: true
   image:

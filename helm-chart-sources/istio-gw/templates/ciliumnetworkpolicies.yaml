@@ -373,4 +373,23 @@ spec:
     - ports:
       - port: "15021"
         protocol: TCP
+
+---
+# host to istio-gw — HTTPS listener (443), только на системном кластере
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-istio-gw-443
+spec:
+  description: "Allow host egress to istio-gw on :443"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
 {{- end }}
