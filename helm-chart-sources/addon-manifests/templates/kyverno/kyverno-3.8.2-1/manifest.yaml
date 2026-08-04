@@ -1,0 +1,5 @@
+{{- if .Values.addonTemplates.kyverno.enabled }}
+
+{{- tpl (.Files.Get "files/kyverno/kyverno-3.8.2-1/manifest.yaml") . }}
+
+{{- end }}
