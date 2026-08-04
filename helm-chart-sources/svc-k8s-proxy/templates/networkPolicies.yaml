@@ -110,4 +110,23 @@ spec:
       - port: '8082'
         protocol: TCP
   description: Allows egress from svc-k8s-proxy to svc-hub on 8082.
+
+---
+# host to svc-k8s-proxy — kubelet probe (50051)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-svc-k8s-proxy-50051
+spec:
+  description: "Allow kubelet probes (host) to svc-k8s-proxy on :50051"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "svc-k8s-proxy.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "50051"
+        protocol: TCP
 {{- end }}

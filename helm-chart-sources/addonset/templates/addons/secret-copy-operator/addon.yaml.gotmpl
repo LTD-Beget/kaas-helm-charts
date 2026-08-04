@@ -8,7 +8,7 @@ spec:
   chart: "secret-copy-operator"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.4"
+  version: "0.1.5"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-secret-copy-operator"
   variables:

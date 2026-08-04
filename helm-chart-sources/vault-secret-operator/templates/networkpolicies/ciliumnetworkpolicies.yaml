@@ -155,4 +155,23 @@ spec:
     Allows egress from vault-secret-operator to CoreDNS on 53 for DNS resolution.
 {{- end }}
 {{- end }}
+
+---
+# host to vault-secret-operator — kubelet probe (8081)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-vault-secret-operator-8081
+spec:
+  description: "Allow kubelet probes (host) to vault-secret-operator on :8081"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: vault-secret-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
 {{- end }}

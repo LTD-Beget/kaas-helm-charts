@@ -88,4 +88,41 @@ spec:
         protocol: TCP
   description: Allows ingress to addons-operator from vmagent on 8443 for metrics collection.
 
+
+---
+# host to addons-operator — kubelet probe (8081)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-addons-operator-8081
+spec:
+  description: "Allow kubelet probes (host) to addons-operator on :8081"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: addons-operator-addon-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8081"
+        protocol: TCP
+---
+# host (kube-apiserver) to addons-operator — webhook (9443)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-egress-webhook-addons-operator-9443
+spec:
+  description: "Allow kube-apiserver (host) to addons-operator webhook on :9443"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: addons-operator-addon-operator-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "9443"
+        protocol: TCP
 {{- end }}
