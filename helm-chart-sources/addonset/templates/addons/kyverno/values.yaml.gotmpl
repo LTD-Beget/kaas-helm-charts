@@ -1,4 +1,4 @@
-{{- if .Values.addons.kyverno.enabled }}
+{{- if and .Values.addons.kyverno.enabled (not .Values.addons.system.enabled) }}
   {{- $addonName := "kyverno" -}}
 
   {{- /*
