@@ -3,6 +3,16 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-08-04T19:18:18.890301+03:00"
+      description: A Helm chart for Kubernetes
+      digest: a718e009916616da120ff3aad2f18e97be072ee6baa6d4f6f38d21e3a37df310
+      name: addon-manifests
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-manifests-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-08-04T14:12:00.132864+03:00"
       description: A Helm chart for Kubernetes
       digest: 67b29bc08a31e9862afb1b519f442f8e3f6dae928b8297cd5868c61f86164070
@@ -109,6 +119,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addon-operator-0.1.2.tgz
       version: 0.1.2
   addonset:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-08-04T19:18:18.899063+03:00"
+      description: A Helm chart for Kubernetes
+      digest: 8199e57d1afe4bd228946a2c23bc69283a31901bd19bb9d170da0614997218f9
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.13-envoy-debug.tgz
+      version: 1.0.13-envoy-debug
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-08-04T19:08:57.913912+03:00"
@@ -3681,4 +3701,29 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kyverno-3.8.2-1.tgz
       version: 3.8.2-1
+  envoy-gateway:
+    - apiVersion: v2
+      appVersion: v1.8.3
+      created: "2026-08-04T19:18:18.952553+03:00"
+      dependencies:
+        - name: gateway-helm
+          repository: oci://registry-1.docker.io/envoyproxy
+          version: 1.8.3
+      description: Envoy Gateway — Kubernetes Gateway API control plane based on Envoy Proxy
+      digest: 5e09a881157d71c8a6bd2a1f9e28503eac706ae52856edb43a9d3c8112cc010b
+      home: https://gateway.envoyproxy.io/
+      icon: https://raw.githubusercontent.com/envoyproxy/gateway/main/site/assets/icons/logo.svg
+      keywords:
+        - kubernetes
+        - gateway-api
+        - envoyproxy
+        - envoy-gateway
+        - eg
+      name: envoy-gateway
+      sources:
+        - https://github.com/envoyproxy/gateway
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/envoy-gateway-1.8.3-1.tgz
+      version: 1.8.3-1
 generated: "2026-07-09T01:13:18.260965+07:00"
