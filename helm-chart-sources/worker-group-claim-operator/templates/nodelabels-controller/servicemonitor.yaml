@@ -1,14 +1,15 @@
-{{- if .Values.prometheus.enable }}
+{{- if and .Values.prometheus.enable .Values.nodelabelsController.enable }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+    app.kubernetes.io/component: node-labels-controller
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     control-plane: controller-manager
-  name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-monitor" "context" $) }}
+  name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-metrics-monitor" "context" $) }}
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
@@ -18,7 +19,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         {{- if .Values.certManager.enable }}
-        serverName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+        serverName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
         # Apply secure TLS configuration with cert-manager
         insecureSkipVerify: false
         ca:
@@ -39,5 +40,6 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+      app.kubernetes.io/component: node-labels-controller
       control-plane: controller-manager
 {{- end }}

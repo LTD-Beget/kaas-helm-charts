@@ -1,0 +1,134 @@
+{{- if .Values.workergroupsController.enable }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+        app.kubernetes.io/component: workergroups-controller
+        helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        control-plane: controller-manager
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "workergroups-controller-manager" "context" $) }}
+    namespace: {{ .Release.Namespace }}
+spec:
+    replicas: {{ .Values.workergroupsController.replicas }}
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+            app.kubernetes.io/component: workergroups-controller
+            control-plane: controller-manager
+    template:
+        metadata:
+            annotations:
+                kubectl.kubernetes.io/default-container: manager
+            labels:
+                app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+                app.kubernetes.io/component: workergroups-controller
+                helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+                app.kubernetes.io/instance: {{ .Release.Name }}
+                app.kubernetes.io/managed-by: {{ .Release.Service }}
+                control-plane: controller-manager
+        spec:
+            {{- with .Values.workergroupsController.tolerations }}
+            tolerations: {{ toYaml . | nindent 16 }}
+            {{- end }}
+            {{- with .Values.workergroupsController.affinity }}
+            affinity: {{ toYaml . | nindent 16 }}
+            {{- end }}
+            {{- with .Values.workergroupsController.nodeSelector }}
+            nodeSelector: {{ toYaml . | nindent 16 }}
+            {{- end }}
+            containers:
+                - args:
+                    {{- if .Values.metrics.enable }}
+                    - --metrics-bind-address=127.0.0.1:{{ .Values.metrics.internalPort }}
+                    - --metrics-secure=false
+                    {{- else }}
+                    # Bind to :0 to disable the controller-runtime managed metrics server
+                    - --metrics-bind-address=0
+                    {{- end }}
+                    - --health-probe-bind-address=:8081
+                    {{- range .Values.workergroupsController.args }}
+                    - {{ . }}
+                    {{- end }}
+                  command:
+                    - /manager
+                  image: "{{ .Values.workergroupsController.image.repository }}:{{ .Values.workergroupsController.image.tag | default .Chart.AppVersion }}"
+                  imagePullPolicy: {{ .Values.workergroupsController.image.pullPolicy }}
+                  livenessProbe:
+                    httpGet:
+                        path: /healthz
+                        port: 8081
+                    initialDelaySeconds: 15
+                    periodSeconds: 20
+                  name: manager
+                  ports: []
+                  readinessProbe:
+                    httpGet:
+                        path: /readyz
+                        port: 8081
+                    initialDelaySeconds: 5
+                    periodSeconds: 10
+                  resources:
+                    {{- if .Values.workergroupsController.resources }}
+                    {{- toYaml .Values.workergroupsController.resources | nindent 20 }}
+                    {{- else }}
+                    {}
+                    {{- end }}
+                  securityContext:
+                    {{- if .Values.workergroupsController.securityContext }}
+                    {{- toYaml .Values.workergroupsController.securityContext | nindent 20 }}
+                    {{- else }}
+                    {}
+                    {{- end }}
+                  volumeMounts: []
+                {{- if .Values.metrics.enable }}
+                - name: rbac-proxy
+                  image: quay.io/brancz/kube-rbac-proxy:v0.21.0
+                  args:
+                    - --secure-listen-address=0.0.0.0:{{ .Values.metrics.port }}
+                    - --upstream=http://127.0.0.1:{{ .Values.metrics.internalPort }}
+                    {{- if .Values.monitoring.secureService.enabled }}
+                    - --tls-cert-file=/app/config/metrics/tls/tls.crt
+                    - --tls-private-key-file=/app/config/metrics/tls/tls.key
+                    {{- end }}
+                    - --v=2
+                  ports:
+                    - name: https-metrics
+                      containerPort: {{ .Values.metrics.port }}
+                      protocol: TCP
+                  resources:
+                    requests:
+                      memory: "32Mi"
+                      cpu: "10m"
+                    limits:
+                      memory: "64Mi"
+                      cpu: "50m"
+                  {{- if .Values.monitoring.secureService.enabled }}
+                  volumeMounts:
+                    - name: rbac-proxy-tls
+                      mountPath: /app/config/metrics/tls
+                      readOnly: true
+                  {{- else }}
+                  volumeMounts: []
+                  {{- end }}
+                {{- end }}
+            securityContext:
+              {{- if .Values.workergroupsController.podSecurityContext }}
+              {{- toYaml .Values.workergroupsController.podSecurityContext | nindent 14 }}
+              {{- else }}
+              {}
+              {{- end }}
+            serviceAccountName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "workergroups-controller-manager" "context" $) }}
+            terminationGracePeriodSeconds: 10
+            {{- if and .Values.metrics.enable .Values.monitoring.secureService.enabled }}
+            volumes:
+              - name: rbac-proxy-tls
+                secret:
+                  defaultMode: 420
+                  secretName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "workergroups-controller-svc-tls" "context" $) }}
+            {{- else }}
+            volumes: []
+            {{- end }}
+{{- end }}

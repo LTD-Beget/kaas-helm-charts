@@ -8,13 +8,22 @@
 
 companyPrefix: example
 
-## Configure the controller manager deployment
+## Configure the controller manager deployments.
+## The operator runs two independent controllers, each deployed separately
+## and independently enabled/disabled. Each controller has its own
+## ServiceAccount and RBAC, scoped to only what it needs (see
+## templates/nodelabels-controller/ and templates/workergroups-controller/).
 ##
-manager:
+
+## Labels controller (NodeLabelPolicy reconciler)
+##
+nodelabelsController:
+  enable: true
+
   replicas: 1
-  
+
   image:
-    repository: controller
+    repository: prorobotech/nodelabels-operator
     pullPolicy: IfNotPresent
 
   ## Arguments
@@ -56,15 +65,77 @@ manager:
       cpu: 10m
       memory: 64Mi
 
-  ## Manager pod's affinity
+  ## Pod's affinity
   ##
   affinity: {}
 
-  ## Manager pod's node selector
+  ## Pod's node selector
   ##
   nodeSelector: {}
 
-  ## Manager pod's tolerations
+  ## Pod's tolerations
+  ##
+  tolerations: []
+
+## Worker groups controller (WorkerGroupClaim reconciler)
+##
+workergroupsController:
+  enable: true
+
+  replicas: 1
+
+  image:
+    repository: prorobotech/worker-group-claim-operator
+    pullPolicy: IfNotPresent
+
+  ## Arguments
+  ##
+  args:
+    - --leader-elect
+
+  ## Environment variables
+  ##
+  env: []
+
+  ## Image pull secrets
+  ##
+  imagePullSecrets: []
+
+  ## Pod-level security settings
+  ##
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+        type: RuntimeDefault
+
+  ## Container-level security settings
+  ##
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+        drop:
+            - ALL
+    readOnlyRootFilesystem: true
+
+  ## Resource limits and requests
+  ##
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+  ## Pod's affinity
+  ##
+  affinity: {}
+
+  ## Pod's node selector
+  ##
+  nodeSelector: {}
+
+  ## Pod's tolerations
   ##
   tolerations: []
 

@@ -1,19 +1,22 @@
+{{- if .Values.nodelabelsController.enable }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+        app.kubernetes.io/component: node-labels-controller
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         control-plane: controller-manager
-    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-manager" "context" $) }}
     namespace: {{ .Release.Namespace }}
 spec:
-    replicas: 1
+    replicas: {{ .Values.nodelabelsController.replicas }}
     selector:
         matchLabels:
             app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+            app.kubernetes.io/component: node-labels-controller
             control-plane: controller-manager
     template:
         metadata:
@@ -21,18 +24,19 @@ spec:
                 kubectl.kubernetes.io/default-container: manager
             labels:
                 app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+                app.kubernetes.io/component: node-labels-controller
                 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
                 app.kubernetes.io/instance: {{ .Release.Name }}
                 app.kubernetes.io/managed-by: {{ .Release.Service }}
                 control-plane: controller-manager
         spec:
-            {{- with .Values.manager.tolerations }}
+            {{- with .Values.nodelabelsController.tolerations }}
             tolerations: {{ toYaml . | nindent 16 }}
             {{- end }}
-            {{- with .Values.manager.affinity }}
+            {{- with .Values.nodelabelsController.affinity }}
             affinity: {{ toYaml . | nindent 16 }}
             {{- end }}
-            {{- with .Values.manager.nodeSelector }}
+            {{- with .Values.nodelabelsController.nodeSelector }}
             nodeSelector: {{ toYaml . | nindent 16 }}
             {{- end }}
             containers:
@@ -45,13 +49,13 @@ spec:
                     - --metrics-bind-address=0
                     {{- end }}
                     - --health-probe-bind-address=:8081
-                    {{- range .Values.manager.args }}
+                    {{- range .Values.nodelabelsController.args }}
                     - {{ . }}
                     {{- end }}
                   command:
                     - /manager
-                  image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag | default .Chart.AppVersion }}"
-                  imagePullPolicy: {{ .Values.manager.image.pullPolicy }}
+                  image: "{{ .Values.nodelabelsController.image.repository }}:{{ .Values.nodelabelsController.image.tag | default .Chart.AppVersion }}"
+                  imagePullPolicy: {{ .Values.nodelabelsController.image.pullPolicy }}
                   livenessProbe:
                     httpGet:
                         path: /healthz
@@ -67,14 +71,14 @@ spec:
                     initialDelaySeconds: 5
                     periodSeconds: 10
                   resources:
-                    {{- if .Values.manager.resources }}
-                    {{- toYaml .Values.manager.resources | nindent 20 }}
+                    {{- if .Values.nodelabelsController.resources }}
+                    {{- toYaml .Values.nodelabelsController.resources | nindent 20 }}
                     {{- else }}
                     {}
                     {{- end }}
                   securityContext:
-                    {{- if .Values.manager.securityContext }}
-                    {{- toYaml .Values.manager.securityContext | nindent 20 }}
+                    {{- if .Values.nodelabelsController.securityContext }}
+                    {{- toYaml .Values.nodelabelsController.securityContext | nindent 20 }}
                     {{- else }}
                     {}
                     {{- end }}
@@ -111,19 +115,20 @@ spec:
                   {{- end }}
                 {{- end }}
             securityContext:
-              {{- if .Values.manager.podSecurityContext }}
-              {{- toYaml .Values.manager.podSecurityContext | nindent 14 }}
+              {{- if .Values.nodelabelsController.podSecurityContext }}
+              {{- toYaml .Values.nodelabelsController.podSecurityContext | nindent 14 }}
               {{- else }}
               {}
               {{- end }}
-            serviceAccountName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager" "context" $) }}
+            serviceAccountName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-manager" "context" $) }}
             terminationGracePeriodSeconds: 10
             {{- if and .Values.metrics.enable .Values.monitoring.secureService.enabled }}
             volumes:
               - name: rbac-proxy-tls
                 secret:
                   defaultMode: 420
-                  secretName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+                  secretName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-svc-tls" "context" $) }}
             {{- else }}
             volumes: []
             {{- end }}
+{{- end }}

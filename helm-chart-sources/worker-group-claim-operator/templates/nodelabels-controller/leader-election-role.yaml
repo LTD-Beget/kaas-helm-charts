@@ -1,12 +1,14 @@
+{{- if .Values.nodelabelsController.enable }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+        app.kubernetes.io/component: node-labels-controller
         helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "leader-election-role" "context" $) }}
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-leader-election-role" "context" $) }}
     namespace: {{ .Release.Namespace }}
 rules:
     - apiGroups:
@@ -40,3 +42,4 @@ rules:
       verbs:
         - create
         - patch
+{{- end }}

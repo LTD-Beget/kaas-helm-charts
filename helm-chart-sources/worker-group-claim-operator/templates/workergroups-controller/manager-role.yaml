@@ -1,7 +1,8 @@
+{{- if .Values.workergroupsController.enable }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "manager-role" "context" $) }}
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "workergroups-controller-manager-role" "context" $) }}
 rules:
     - apiGroups:
         - ""
@@ -10,6 +11,14 @@ rules:
       verbs:
         - create
         - patch
+    - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get
+        - list
+        - watch
     - apiGroups:
         - bootstrap.cluster.x-k8s.io
       resources:
@@ -36,6 +45,7 @@ rules:
     - apiGroups:
         - cluster.x-k8s.io
       resources:
+        - machines
         - machinesets
       verbs:
         - get
@@ -44,7 +54,7 @@ rules:
     - apiGroups:
         - infrastructure.cluster.x-k8s.io
       resources:
-        - {{ $.Values.companyPrefix }}machinetemplates
+        - begetmachinetemplates
       verbs:
         - create
         - delete
@@ -54,12 +64,22 @@ rules:
     - apiGroups:
         - workergroup.in-cloud.io
       resources:
+        - nodelabelpolicies
         - wgbootstraptemplates
         - wgmachinetemplates
       verbs:
         - get
         - list
         - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - nodelabelpolicies/status
+        - workergroupclaims/status
+      verbs:
+        - get
+        - patch
+        - update
     - apiGroups:
         - workergroup.in-cloud.io
       resources:
@@ -78,11 +98,4 @@ rules:
         - workergroupclaims/finalizers
       verbs:
         - update
-    - apiGroups:
-        - workergroup.in-cloud.io
-      resources:
-        - workergroupclaims/status
-      verbs:
-        - get
-        - patch
-        - update
+{{- end }}

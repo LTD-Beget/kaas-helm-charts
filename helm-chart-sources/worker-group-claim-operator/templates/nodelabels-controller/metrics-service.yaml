@@ -1,0 +1,25 @@
+{{- if and .Values.metrics.enable .Values.nodelabelsController.enable }}
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+        app.kubernetes.io/component: node-labels-controller
+        helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        control-plane: controller-manager
+        monitoring.in-cloud.io/service: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-metrics-service" "context" $) }}
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-metrics-service" "context" $) }}
+    namespace: {{ .Release.Namespace }}
+spec:
+    ports:
+        - name: https-metrics
+          port: {{ .Values.metrics.port }}
+          protocol: TCP
+          targetPort: https-metrics
+    selector:
+        app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
+        app.kubernetes.io/component: node-labels-controller
+        control-plane: controller-manager
+{{- end }}
