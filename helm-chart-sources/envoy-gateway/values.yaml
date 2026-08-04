@@ -22,7 +22,7 @@ envoyProxy:
 # LoadBalancer Service that CCM watches). HTTP-only by default — an HTTPS
 # listener would need a TLS secret (cert-manager) and is intentionally left out.
 gateway:
-  enabled: true
+  enabled: false
   name: envoy-gateway
   # Which namespaces may attach *Routes to this Gateway: All | Same | Selector
   allowedRoutesFrom: All
