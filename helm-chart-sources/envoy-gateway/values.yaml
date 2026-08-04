@@ -17,6 +17,18 @@ envoyProxy:
     # passed from addonset default values). Empty by default.
     annotations: {}
 
+# Default Gateway shipped with the addon. Creating a Gateway is what makes
+# Envoy Gateway actually provision the managed Envoy fleet (Deployment + the
+# LoadBalancer Service that CCM watches). HTTP-only by default — an HTTPS
+# listener would need a TLS secret (cert-manager) and is intentionally left out.
+gateway:
+  enabled: true
+  name: envoy-gateway
+  # Which namespaces may attach *Routes to this Gateway: All | Same | Selector
+  allowedRoutesFrom: All
+  http:
+    port: 80
+
 monitoring:
   enabled: false
   type: VictoriaMetrics
