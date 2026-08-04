@@ -1,0 +1,7 @@
+envoyProxy:
+  service:
+    annotations:
+      lb.{{ .Values.companyDomain }}/algorithm: round_robin
+      lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
+      lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
+      lb.{{ .Values.companyDomain }}/type: external

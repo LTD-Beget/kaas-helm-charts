@@ -1,0 +1,28 @@
+companyPrefix: example
+
+gateway-helm: {}
+
+# GatewayClass + default EnvoyProxy provisioned by this addon.
+# Enabled by default: the addon ships a ready-to-use GatewayClass whose managed
+# data-plane Envoy Service (the one CCM watches) is a LoadBalancer.
+gatewayClass:
+  enabled: true
+  name: envoy-gateway
+
+envoyProxy:
+  service:
+    # One of: ClusterIP | LoadBalancer | NodePort
+    type: LoadBalancer
+    # Stub: annotations are rendered only when provided (e.g. lb.<companyDomain>/*
+    # passed from addonset default values). Empty by default.
+    annotations: {}
+
+monitoring:
+  enabled: false
+  type: VictoriaMetrics
+  secureService:
+    enabled: false
+    # Create a secret containing both 'tls.crt' and 'tls.key' fields
+    issuer:
+      kind: ClusterIssuer
+      name: default
