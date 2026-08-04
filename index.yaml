@@ -121,9 +121,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-04T20:51:47.699165+03:00"
+      created: "2026-08-05T02:41:44.042123+07:00"
       description: A Helm chart for Kubernetes
-      digest: 184a253ab004d10cc659a0f0db0da6fc9e75de3b65cd6ce68b9adcad06db3a2b
+      digest: fbfc9be8147a8d371f0b74d0560c76c953aa1dadce15aa576543148af8aa6142
       name: addonset
       type: application
       urls:
@@ -1355,27 +1355,13 @@ entries:
   control-plane:
     - apiVersion: v2
       appVersion: v0.1.0
-      created: "2026-08-03T03:44:10.028307+07:00"
+      created: "2026-08-05T02:41:44.045612+07:00"
       dependencies:
         - name: appSpec
           repository: file://charts/appspec
           version: 0.1.5
       description: A Helm chart for Kubernetes
-      digest: 27f3c309099cc211408b39a72beedb053cc5e327eb57c5e8acd07fe2856aa269
-      name: control-plane
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/control-plane-0.1.10.tgz
-      version: 0.1.10
-    - apiVersion: v2
-      appVersion: v0.1.0
-      created: "2026-07-10T00:48:10.881122+07:00"
-      dependencies:
-        - name: appSpec
-          repository: file://charts/appspec
-          version: 0.1.5
-      description: A Helm chart for Kubernetes
-      digest: 6331c3be04a4d1b3d7562aa4e6e9907cd1fb19c71f4d01862988391426366221
+      digest: f231b6083c96ce1bbcc331569519d0d1eb4330f32843c4ebdd763ac311e7c845
       name: control-plane
       type: application
       urls:
@@ -1769,13 +1755,13 @@ entries:
   gateway:
     - apiVersion: v2
       appVersion: 1.26.0
-      created: "2026-08-03T03:44:10.032638+07:00"
+      created: "2026-08-05T02:14:45.44429+07:00"
       dependencies:
         - name: gateway
           repository: https://istio-release.storage.googleapis.com/charts
           version: 1.26.0
       description: Helm chart for deploying Istio gateways
-      digest: 49608d351c07c344b31049323b6aba1d40a08d7ea387f138f354a9149f775a40
+      digest: c02ad1a24d43e4be3e7e9770db84191041f20cdfff448a96ce66f8ad66c812b5
       icon: https://istio.io/latest/favicons/android-192x192.png
       keywords:
         - istio
@@ -2315,14 +2301,14 @@ entries:
   kube-state-metrics:
     - apiVersion: v2
       appVersion: v2.16.0
-      created: "2026-08-03T03:44:10.051276+07:00"
+      created: "2026-08-05T02:20:28.402229+07:00"
       dependencies:
         - condition: kube-state-metrics.enabled
           name: kube-state-metrics
           repository: https://prometheus-community.github.io/helm-charts
           version: 6.1.0
       description: Install kube-state-metrics to generate and expose cluster-level metrics
-      digest: 023181b560b900d1befd44a28a5a1d3f7ebe9b23b4eae62702063a0bac9eb575
+      digest: 9f1a5fdb870d293e81a28e973a767ebb30d87f66a34ee0cdd19fbc3b7f4d2d8a
       home: https://github.com/kubernetes/kube-state-metrics/
       keywords:
         - metric

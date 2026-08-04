@@ -1,6 +1,25 @@
 {{- if .Values.networkPolicies.clientKubeStateMetrics.enabled }}
 
 ---
+# host to client-kube-state-metrics — kubelet probe (8888)
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-host-probe-client-kube-state-metrics-8888
+spec:
+  description: "Allow kubelet probes (host) to client-kube-state-metrics on :8888"
+  nodeSelector: {}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: {{ include "wrapper-kube-state-metrics.serviceAccountName" . }}
+        k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+    toPorts:
+    - ports:
+      - port: "8888"
+        protocol: TCP
+
+---
 # host to client-kube-state-metrics — metrics (8888)
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
