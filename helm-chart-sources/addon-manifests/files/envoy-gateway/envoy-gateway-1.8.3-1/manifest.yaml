@@ -31,12 +31,6 @@ spec:
       backend:
         finalizer: true
         type: "argocd"
-        ignoreDifferences:
-          - group: apiextensions.k8s.io
-            kind: CustomResourceDefinition
-            jsonPointers:
-              - /metadata/annotations
-              - /metadata/labels
         namespace: "{{ .Values.companyPrefix }}-argocd"
         project: "default"
         syncPolicy:
@@ -50,7 +44,6 @@ spec:
           syncOptions:
             - ApplyOutOfSyncOnly=true
             - CreateNamespace=true
-            - ServerSideApply=true
       valuesSelectors:
         - name: default
           priority: 0
