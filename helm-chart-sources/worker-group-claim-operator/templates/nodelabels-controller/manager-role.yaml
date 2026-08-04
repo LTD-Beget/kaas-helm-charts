@@ -36,4 +36,16 @@ rules:
         - get
         - list
         - watch
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machinedeployments
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
 {{- end }}
