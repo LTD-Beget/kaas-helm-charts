@@ -111,9 +111,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-04T15:29:34.928586+03:00"
+      created: "2026-08-04T19:08:57.913912+03:00"
       description: A Helm chart for Kubernetes
-      digest: a688565623dc2a64f0e55b616da50fa5e5d1fc415f391f8af9967f799cc149c8
+      digest: bed25d618bbddc4c9bf29a23d2c0476d746e62f826e3c950d92be5a56a931833
       name: addonset
       type: application
       urls:
@@ -480,6 +480,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-1.tgz
       version: 9.4.15-1
   bootstrap:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-08-04T19:12:15.159511+03:00"
+      description: Helm chart for bootstrap addonset
+      digest: 2227430056102404383568eb10d7efdb836450f0360287efb0e90d5235aee6e6
+      name: bootstrap
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.13.tgz
+      version: 1.0.13
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-07-27T17:24:33.936348+05:00"
