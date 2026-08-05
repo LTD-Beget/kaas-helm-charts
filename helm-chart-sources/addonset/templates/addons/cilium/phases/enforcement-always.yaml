@@ -1,4 +1,50 @@
 {{- define "cilium.phase.rules.enforcement-always" -}}
+{{- $system := .Values.addons.system.enabled -}}
+{{- $policyPhases := list
+      (dict "phase" "addons-operator"             "rule" "network-policies"        "when" .Values.addons.addonsoperator.enabled)
+      (dict "phase" "argocd"                      "rule" "network-policies"        "when" .Values.addons.argocd.enabled)
+      (dict "phase" "capi"                        "rule" "network-policies"        "when" (and .Values.addons.capi.enabled $system))
+      (dict "phase" "capi-kubeadm-bootstrap"      "rule" "network-policies"        "when" (and .Values.addons.capikubeadmbootstrap.enabled $system))
+      (dict "phase" "capi-kubeadm-control-plane"  "rule" "network-policies"        "when" (and .Values.addons.capikubeadmcontrolplane.enabled $system))
+      (dict "phase" "ccm-csrc-controller"         "rule" "network-policies"        "when" (and .Values.addons.ccmcsrccontroller.enabled $system))
+      (dict "phase" "cert-manager"                "rule" "network-policies"        "when" .Values.addons.certmanager.enabled)
+      (dict "phase" "cert-manager-csi-driver"     "rule" "network-policies"        "when" .Values.addons.certmanagercsidriver.enabled)
+      (dict "phase" "certificate-set"             "rule" "network-policies"        "when" .Values.addons.certificateset.enabled)
+      (dict "phase" "cilium"                      "rule" "network-policies"        "when" .Values.addons.cilium.enabled)
+      (dict "phase" "client-cp-control-plane"     "rule" "network-policies"        "when" .Values.addons.controlplane.enabled)
+      (dict "phase" "client-kube-state-metrics"   "rule" "network-policies"        "when" (and .Values.addons.clientkubestatemetrics.enabled .Values.clientClusterEnabled))
+      (dict "phase" "cluster-claim-operator"      "rule" "network-policies"        "when" (and .Values.addons.clusterclaimoperator.enabled $system))
+      (dict "phase" "cm-provider"                 "rule" "network-policies"        "when" (and .Values.addons.cmprovider.enabled $system))
+      (dict "phase" "coredns"                     "rule" "network-policies"        "when" .Values.addons.coredns.enabled)
+      (dict "phase" "dex"                         "rule" "network-policies"        "when" (and .Values.addons.dex.enabled $system))
+      (dict "phase" "docker-registry"             "rule" "network-policies"        "when" (and .Values.addons.dockerregistry.enabled $system))
+      (dict "phase" "etcd-backup-snapshot"        "rule" "infra"                   "when" .Values.addons.etcdbackupsnapshot.enabled)
+      (dict "phase" "extra-resources"             "rule" "network-policies-argocd" "when" .Values.addons.extraresources.enabled)
+      (dict "phase" "grafana"                     "rule" "network-policies"        "when" (and .Values.addons.grafana.enabled $system))
+      (dict "phase" "grafana-operator"            "rule" "network-policies"        "when" (and .Values.addons.grafanaoperator.enabled $system))
+      (dict "phase" "incloud-web-chart"           "rule" "network-policies"        "when" .Values.addons.incloudwebchart.enabled)
+      (dict "phase" "istio-gw"                    "rule" "network-policies"        "when" .Values.addons.istiogw.enabled)
+      (dict "phase" "istio-gw-internal"           "rule" "network-policies"        "when" (and .Values.addons.istiogw.enabled $system))
+      (dict "phase" "istiod"                      "rule" "network-policies"        "when" .Values.addons.istiod.enabled)
+      (dict "phase" "kube-state-metrics"          "rule" "infra"                   "when" .Values.addons.kubestatemetrics.enabled)
+      (dict "phase" "metrics-server"              "rule" "network-policies"        "when" .Values.addons.metricsserver.enabled)
+      (dict "phase" "s3-bucket-operator"          "rule" "network-policies"        "when" (and .Values.addons.s3bucketoperator.enabled $system))
+      (dict "phase" "secret-copy-operator"        "rule" "network-policies"        "when" (and .Values.addons.secretcopyoperator.enabled $system))
+      (dict "phase" "signalilo"                   "rule" "network-policies"        "when" (and .Values.addons.signalilo.enabled $system))
+      (dict "phase" "svc-hub"                     "rule" "network-policies"        "when" (and .Values.addons.svchub.enabled $system))
+      (dict "phase" "svc-k8s-proxy"               "rule" "network-policies"        "when" (and .Values.addons.svchub.enabled $system))
+      (dict "phase" "trivy-operator"              "rule" "network-policies"        "when" (and .Values.addons.trivyoperator.enabled $system))
+      (dict "phase" "trust-manager"               "rule" "network-policies"        "when" .Values.addons.trustmanager.enabled)
+      (dict "phase" "vault"                       "rule" "network-policies"        "when" (and .Values.addons.vault.enabled $system))
+      (dict "phase" "vault-operator"              "rule" "network-policies"        "when" (and .Values.addons.vaultoperator.enabled $system))
+      (dict "phase" "vault-secret-operator"       "rule" "network-policies"        "when" (and .Values.addons.vaultsecretoperator.enabled $system))
+      (dict "phase" "vm-agent"                    "rule" "network-policies"        "when" .Values.addons.vmagent.enabled)
+      (dict "phase" "vm-alert"                    "rule" "network-policies"        "when" (and .Values.addons.vmalert.enabled $system))
+      (dict "phase" "vm-alertmanager"             "rule" "network-policies"        "when" (and .Values.addons.vmalertmanager.enabled $system))
+      (dict "phase" "vm-cluster"                  "rule" "network-policies"        "when" (and .Values.addons.vmcluster.enabled $system))
+      (dict "phase" "vm-operator"                 "rule" "network-policies"        "when" .Values.addons.vmoperator.enabled)
+      (dict "phase" "worker-group-claim-operator" "rule" "network-policies"        "when" (and .Values.addons.workergroupclaimoperator.enabled $system))
+-}}
 - name: enforcement-always
   criteria:
     - source:
@@ -9,34 +55,17 @@
       jsonPath: $.data.environment
       operator: Equal
       value: "infra"
+    {{- range $p := $policyPhases }}
+    {{- if $p.when }}
     - source:
         apiVersion: addons.in-cloud.io/v1alpha1
         kind: AddonPhase
-        name: coredns
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
+        name: {{ $p.phase }}
+      jsonPath: $.status.ruleStatuses[?(@.name=='{{ $p.rule }}')].deployed
       operator: Equal
       value: true
-    - source:
-        apiVersion: addons.in-cloud.io/v1alpha1
-        kind: AddonPhase
-        name: argocd
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
-      operator: Equal
-      value: true
-    - source:
-        apiVersion: addons.in-cloud.io/v1alpha1
-        kind: AddonPhase
-        name: addons-operator
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
-      operator: Equal
-      value: true
-    - source:
-        apiVersion: addons.in-cloud.io/v1alpha1
-        kind: AddonPhase
-        name: cilium
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
-      operator: Equal
-      value: true
+    {{- end }}
+    {{- end }}
   selector:
     name: enforcement-always
     priority: 80
