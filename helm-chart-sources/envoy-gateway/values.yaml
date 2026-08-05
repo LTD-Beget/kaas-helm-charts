@@ -16,6 +16,14 @@ envoyProxy:
     # Stub: annotations are rendered only when provided (e.g. lb.<companyDomain>/*
     # passed from addonset default values). Empty by default.
     annotations: {}
+  # Pod-level overrides for the managed data-plane Envoy fleet — the pods Envoy
+  # Gateway provisions for every Gateway that uses this GatewayClass. Rendered
+  # into the EnvoyProxy CR (spec.provider.kubernetes.envoyDeployment.pod).
+  # Empty by default; client clusters pass tolerations + an ignore label from
+  # addonset so the fleet schedules onto tainted client nodes.
+  pod:
+    labels: {}
+    tolerations: []
 
 # Default Gateway shipped with the addon. Creating a Gateway is what makes
 # Envoy Gateway actually provision the managed Envoy fleet (Deployment + the

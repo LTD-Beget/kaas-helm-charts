@@ -121,6 +121,16 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-08-05T14:43:24.793069+03:00"
+      description: A Helm chart for Kubernetes
+      digest: c525a1ff3c05ca4d9107f79ad8ad0c5c80f083e141cabc3993400f2c1ccf4c1e
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.14.tgz
+      version: 1.0.14
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-08-05T02:41:44.042123+07:00"
       description: A Helm chart for Kubernetes
       digest: fbfc9be8147a8d371f0b74d0560c76c953aa1dadce15aa576543148af8aa6142
@@ -3690,13 +3700,13 @@ entries:
   envoy-gateway:
     - apiVersion: v2
       appVersion: v1.8.3
-      created: "2026-08-04T20:51:47.713547+03:00"
+      created: "2026-08-05T14:43:24.810978+03:00"
       dependencies:
         - name: gateway-helm
           repository: oci://registry-1.docker.io/envoyproxy
           version: 1.8.3
       description: Envoy Gateway — Kubernetes Gateway API control plane based on Envoy Proxy
-      digest: e5dd966c325acac07cf3853bcbccb8fba7226e72b58710464c5fccdcd0575a6e
+      digest: 8ee15e8a53e3998d64ffe8623f73931c1c35892d48133ff863773d650f2f0561
       home: https://gateway.envoyproxy.io/
       icon: https://raw.githubusercontent.com/envoyproxy/gateway/main/site/assets/icons/logo.svg
       keywords:

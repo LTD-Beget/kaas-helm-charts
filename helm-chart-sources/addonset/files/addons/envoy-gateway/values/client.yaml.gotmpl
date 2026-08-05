@@ -1,0 +1,20 @@
+gateway-helm:
+  deployment:
+    pod:
+      labels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+  certgen:
+    job:
+      pod:
+        labels:
+          toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
+envoyProxy:
+  pod:
+    labels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
