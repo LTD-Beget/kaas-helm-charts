@@ -19,6 +19,18 @@ spec:
         annotations:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+      {{- if or .Values.envoyProxy.pod.labels .Values.envoyProxy.pod.tolerations }}
+      envoyDeployment:
+        pod:
+          {{- with .Values.envoyProxy.pod.labels }}
+          labels:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envoyProxy.pod.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
