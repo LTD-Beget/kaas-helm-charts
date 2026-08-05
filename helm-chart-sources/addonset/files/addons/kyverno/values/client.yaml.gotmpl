@@ -1,0 +1,32 @@
+kyverno:
+  admissionController:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  backgroundController:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  cleanupController:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  reportsController:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  webhooksCleanup:
+    podLabels:
+      toleration.{{ .Values.companyDomain }}/ignore: "true"
+    tolerations:
+      - operator: "Exists"
+  crds:
+    migration:
+      podLabels:
+        toleration.{{ .Values.companyDomain }}/ignore: "true"
+      tolerations:
+        - operator: "Exists"
