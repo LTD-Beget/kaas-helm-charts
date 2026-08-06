@@ -1,8 +1,8 @@
 cilium:
   commonLabels:
-    enable-policy.cilium.beget.com/value: "always"
-    enable-host-firewall.cilium.beget.com/value: "true"
-    policy-audit-mode.cilium.beget.com/value: "false"
+    enable-policy.cilium.{{ .Values.companyPrefix }}.com/value: "always"
+    enable-host-firewall.cilium.{{ .Values.companyPrefix }}.com/value: "true"
+    policy-audit-mode.cilium.{{ .Values.companyPrefix }}.com/value: "false"
   policyAuditMode: false
   policyEnforcementMode: always
   hostFirewall:
