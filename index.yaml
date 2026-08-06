@@ -2341,6 +2341,29 @@ entries:
   kube-state-metrics:
     - apiVersion: v2
       appVersion: v2.16.0
+      created: "2026-08-06T20:06:13.330266+07:00"
+      dependencies:
+        - condition: kube-state-metrics.enabled
+          name: kube-state-metrics
+          repository: https://prometheus-community.github.io/helm-charts
+          version: 6.1.0
+      description: Install kube-state-metrics to generate and expose cluster-level metrics
+      digest: 4b460d056f433b1a0018f0bfb90e874f5eb570b6f4249b70d96c0e9be0094484
+      home: https://github.com/kubernetes/kube-state-metrics/
+      keywords:
+        - metric
+        - monitoring
+        - prometheus
+        - kubernetes
+      name: kube-state-metrics
+      sources:
+        - https://github.com/kubernetes/kube-state-metrics/
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-6.tgz
+      version: 6.1.0-6
+    - apiVersion: v2
+      appVersion: v2.16.0
       created: "2026-08-05T02:20:28.402229+07:00"
       dependencies:
         - condition: kube-state-metrics.enabled
@@ -2362,29 +2385,6 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-7.tgz
       version: 6.1.0-7
-    - apiVersion: v2
-      appVersion: v2.16.0
-      created: "2026-07-09T01:13:18.56033+07:00"
-      dependencies:
-        - condition: kube-state-metrics.enabled
-          name: kube-state-metrics
-          repository: https://prometheus-community.github.io/helm-charts
-          version: 6.1.0
-      description: Install kube-state-metrics to generate and expose cluster-level metrics
-      digest: 06240466c5bf0e5a5a2f752feeb2ebc4a20bd6a4006f150128498b9a2b5f2781
-      home: https://github.com/kubernetes/kube-state-metrics/
-      keywords:
-        - metric
-        - monitoring
-        - prometheus
-        - kubernetes
-      name: kube-state-metrics
-      sources:
-        - https://github.com/kubernetes/kube-state-metrics/
-      type: application
-      urls:
-        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/kube-state-metrics-6.1.0-6.tgz
-      version: 6.1.0-6
     - apiVersion: v2
       appVersion: v2.16.0
       created: "2026-07-09T01:13:18.558884+07:00"
