@@ -136,6 +136,10 @@ config:
       group: addons.in-cloud.io
       version: v1alpha1
       resource: addonclaims
+    node_label_policies:
+      group: workergroup.in-cloud.io
+      version: v1alpha1
+      resource: nodelabelpolicies
 
 kubeconfig:
   server: "https://kubernetes.default.svc"
