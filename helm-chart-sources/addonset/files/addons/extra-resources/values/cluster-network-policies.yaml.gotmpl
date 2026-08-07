@@ -148,6 +148,27 @@ resources:
         - ports:
           - port: "2379"
             protocol: TCP
+  ccnpIngressEtcdClient2379:
+    apiVersion: cilium.io/v2
+    kind: CiliumClusterwideNetworkPolicy
+    metadata:
+      name: allow-host-ingress-etcd-client-2379
+    spec:
+      description: "kubeadm to etcd members :2379"
+      nodeSelector: {}
+      ingress:
+      - fromEntities:
+        - remote-node
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
+      - fromCIDR:
+        - 0.0.0.0/0 #cluster-node-cidrs
+        toPorts:
+        - ports:
+          - port: "2379"
+            protocol: TCP
   ccnpEgressKubeApiserver6443:
     apiVersion: cilium.io/v2
     kind: CiliumClusterwideNetworkPolicy
