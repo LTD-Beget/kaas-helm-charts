@@ -1,17 +1,16 @@
 clusterDomain: cluster.local
 globalVolumeCertificate: &globalVolumeCertificate "/etc/provider-wrapper-controller-manager/tls"
-
 certificates:
   enabled: true
   useExternalIssuer: false
   externalIssuer:
     kind: ClusterIssuer
     name: ""
-
 monitoring:
   vmServiceScrape:
     enabled: false
-
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
 appSpec:
   applications:
     providerControllerManager:
@@ -23,10 +22,8 @@ appSpec:
       #extraAnnotations:
       #  kubectl.kubernetes.io/default-container: manager
       imagePullSecrets: []
-
       service:
         enabled: true
-
       volumes:
         certificate:
           volume:
@@ -36,7 +33,6 @@ appSpec:
           volume:
             mode: secret
             name: webhook-server-cert
-
       containers:
         manager:
           livenessProbeEnabled: false
@@ -46,16 +42,13 @@ appSpec:
             repository: registry.example.ru/cloud/k8s/controllers/capi-provider-wrapper
             tag: v2.1.9
             pullPolicy: IfNotPresent
-
           extraArgs:
-           metrics-bind-address: :8443
-           metrics-secure: true
-           metrics-cert-path: *globalVolumeCertificate
-           webhook-cert-path: /tmp/k8s-webhook-server/serving-certs
-
+            metrics-bind-address: :8443
+            metrics-secure: true
+            metrics-cert-path: *globalVolumeCertificate
+            webhook-cert-path: /tmp/k8s-webhook-server/serving-certs
           extraCommand:
-          - /manager
-
+            - /manager
           extraPorts:
             metrics:
               containerPort: 8443
@@ -63,7 +56,6 @@ appSpec:
             webhook-server:
               containerPort: 9443
               protocol: TCP
-
           extraLivenessProbe:
             httpGet:
               path: /healthz
@@ -76,7 +68,6 @@ appSpec:
               port: 8081
             initialDelaySeconds: 5
             periodSeconds: 10
-
           extraResources:
             limits:
               cpu: 500m
@@ -84,12 +75,10 @@ appSpec:
             requests:
               cpu: 10m
               memory: 64Mi
-
           extraSecurityContext:
             readOnlyRootFilesystem: false
             seccompProfile:
               type: RuntimeDefault
-
           extraVolumeMounts:
             certificate:
               volumeMount:
@@ -97,8 +86,6 @@ appSpec:
             webhook:
               volumeMount:
                 path: /tmp/k8s-webhook-server/serving-certs
-
 companyPrefix: example
-
 networkPolicies:
   enabled: false

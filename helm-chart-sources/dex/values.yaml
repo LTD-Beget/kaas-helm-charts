@@ -1,12 +1,10 @@
 dex: {}
-
 companyPrefix: example
-
 networkPolicies:
   enabled: false
-
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   secureService:
@@ -15,7 +13,6 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 tls:
   enabled: false
   issuer:
@@ -30,14 +27,12 @@ tls:
     dnsNames:
       - dex.default.svc
       - dex.default.svc.cluster.local
-
 rbac:
   enabled: false
   clusterRoleBinding:
     subjects:
       kind: User
       name: default-user
-
 istio:
   virtualService:
     enabled: false

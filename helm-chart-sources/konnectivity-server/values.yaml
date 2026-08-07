@@ -1,36 +1,29 @@
 nameOverride: ""
 fullnameOverride: ""
-
 image:
   repository: gcr.io/k8s-staging-kas-network-proxy/proxy-server
   tag: master
   pullPolicy: IfNotPresent
-
 labels: {}
 annotations: {}
-
 podLabels: {}
 podAnnotations: {}
-
 hostNetwork: true
 dnsPolicy: ClusterFirst
 priorityClassName: system-cluster-critical
-
 tolerations:
   - key: node-role.kubernetes.io/control-plane
     operator: Exists
     effect: NoSchedule
 nodeSelector: {}
 affinity: {}
-
 container:
   name: server
   securityContext:
     privileged: true
     runAsUser: 0
     runAsGroup: 0
-  resources: {}  # requests/limits при необходимости
-
+  resources: {} # requests/limits при необходимости
 server:
   extraArgs:
     logtostderr: true
@@ -63,7 +56,6 @@ server:
       containerPort: 8134
       hostPort: 8134
       protocol: TCP
-
   livenessProbe:
     httpGet:
       host: 127.0.0.1
@@ -75,7 +67,6 @@ server:
     timeoutSeconds: 60
     successThreshold: 1
     failureThreshold: 3
-
 # volumeMounts (минимум: tls, kubeconfig). Можно добавлять extraMounts/extraVolumes
 volumeMounts:
   - name: tls
@@ -93,8 +84,8 @@ volumeMounts:
     mountPath: /etc/kubernetes/pki/konnectivity-client.key
     subPath: tls.key
     readOnly: true
-  # - name: konn-uds
-  #   mountPath: /etc/kubernetes/konnectivity-server
+# - name: konn-uds
+#   mountPath: /etc/kubernetes/konnectivity-server
 
 volumes:
   tls:
@@ -113,62 +104,54 @@ volumes:
   #   hostPath:
   #     path: /etc/kubernetes/konnectivity-server
   #     type: DirectoryOrCreate
-
 extraVolumes: []
 extraVolumeMounts: []
-
-
 certificate:
   enabled: true
   name: konnectivity-cluster-server
   secretName: konnectivity-cluster-server
-  usages: ["digital signature","key encipherment","server auth"]
+  usages: ["digital signature", "key encipherment", "server auth"]
   duration: 8760h
   renewBefore: 1460h
   commonName: ""
   dnsNames: {}
-  ipAddresses:  {}
+  ipAddresses: {}
   issuerRef:
     name: kubernetes-ca
     kind: ClusterIssuer
-    group: cert-manager.io  # опционально
-
+    group: cert-manager.io # опционально
 clientCertificate:
   enabled: true
   name: konnectivity-client
   secretName: konnectivity-client
   commonName: konnectivity-client
-  organizations: []          # напр. ["system:masters"] если хотим кластер-админа (осторожно!)
-  organizationalUnits: []    # OU по желанию
+  organizations: [] # напр. ["system:masters"] если хотим кластер-админа (осторожно!)
+  organizationalUnits: [] # OU по желанию
   issuerRef:
     name: kubernetes-ca
     kind: ClusterIssuer
     group: cert-manager.io
-  usages: ["client auth","key encipherment","digital signature"]
+  usages: ["client auth", "key encipherment", "digital signature"]
   duration: 8760h
   renewBefore: 1460h
   privateKey:
     algorithm: RSA
     size: 2048
-
 kubeconfig:
   enabled: true
   name: konnectivity-server-kubeconfig
   fileName: konnectivity-server.conf
-
   clusterName: my-cluster
   userName: my-user
   contextName: my-context
-
   # адрес, по которому konnectivity-server коннектится к целевому API
   server: https://127.0.0.1:443
-
   certificateAuthorityPath: /etc/kubernetes/pki/ca.crt
   clientCertificatePath: /etc/kubernetes/pki/konnectivity-client.crt
   clientKeyPath: /etc/kubernetes/pki/konnectivity-client.key
-
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
   namespace: default
+  serviceScrapeConfig:
+    metricRelabelConfigs: []

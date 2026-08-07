@@ -30,3 +30,9 @@ cilium:
       secret:
         defaultMode: 420
         secretName: cilium-agent-svc-tls
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer

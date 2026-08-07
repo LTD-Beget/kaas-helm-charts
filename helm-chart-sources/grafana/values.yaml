@@ -1,10 +1,8 @@
 clusterDomain: cluster.local
 companyPrefix: example
 systemIstioGwDomain: ""
-
 networkPolicies:
   enabled: false
-
 grafana:
   name: grafana
   labels:
@@ -40,7 +38,6 @@ grafana:
                   limits:
                     cpu: 1
                     memory: 2Gi
-
 grafanaDataSources:
   victoriametrics:
     enabled: false
@@ -58,8 +55,9 @@ grafanaDataSources:
         matchLabels:
           dashboards: grafana
       resyncPeriod: 10m0s
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default
@@ -69,7 +67,6 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
 istio:
   virtualService:
     enabled: false

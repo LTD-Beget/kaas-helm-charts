@@ -1,2 +1,17 @@
 argocdPlugins:
   kustomize: true
+
+monitoring:
+  enabled: true
+  secureService:
+    enabled: true
+    issuer:
+      name: selfsigned-cluster-issuer
+  serviceScrapeConfig:
+    metricRelabelConfigs:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: "\
+          scrape_series_added|\
+          up\
+          "

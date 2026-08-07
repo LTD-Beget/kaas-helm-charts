@@ -1,13 +1,5 @@
-managerClaim:
-  enable: true
-manager:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
 monitoring:
-  addonClaimOperator:
+  addonOperator:
     serviceScrapeConfig:
       metricRelabelConfigs:
         - sourceLabels: [__name__]

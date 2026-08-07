@@ -1,12 +1,5 @@
-argocdPlugins:
-  kustomize: true
-
 monitoring:
   enabled: true
-  secureService:
-    enabled: true
-    issuer:
-      name: selfsigned-cluster-issuer
   serviceScrapeConfig:
     metricRelabelConfigs:
       - sourceLabels: [__name__]
@@ -25,8 +18,6 @@ monitoring:
           go_memstats_other_sys_bytes|\
           go_memstats_stack_inuse_bytes|\
           go_memstats_sys_bytes|\
-          grpc_server_handled_total|\
-          grpc_server_started_total|\
           process_cpu_seconds_total|\
           process_max_fds|\
           process_open_fds|\
