@@ -11,7 +11,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "workergroups-controller-manager" "context" $) }}
       k8s:io.kubernetes.pod.namespace: {{ include "worker-group-claim-operator.namespaceName" . }}
-      k8s:app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
   egress:
   - toEntities:
     - kube-apiserver

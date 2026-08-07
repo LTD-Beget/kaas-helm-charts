@@ -11,7 +11,6 @@ spec:
     matchLabels:
       k8s:io.cilium.k8s.policy.serviceaccount: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-manager" "context" $) }}
       k8s:io.kubernetes.pod.namespace: {{ include "worker-group-claim-operator.namespaceName" . }}
-      k8s:app.kubernetes.io/name: {{ include "worker-group-claim-operator.name" . }}
   egress:
   - toEntities:
     - kube-apiserver
@@ -22,6 +21,26 @@ spec:
         protocol: TCP
   description: Allows egress from worker-group-claim-operator-node-labels-controller-manager to
     the Kubernetes API server on 6443 for control-plane interactions.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  annotations:
+  name: allow-egress-node-labels-controller-to-kube-apiserver-26443
+  namespace: beget-worker-group-claim-operator
+spec:
+  description: Allows egress from worker-group-claim-operator-node-labels-controller-manager
+    to the Kubernetes API server on 26443 for control-plane interactions.
+  egress:
+  - toPorts:
+    - ports:
+      - port: "26443"
+        protocol: TCP
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: worker-group-claim-operator-node-labels-controller-manager
+      k8s:io.kubernetes.pod.namespace: beget-worker-group-claim-operator
 
 ---
 # Allow vmagent to scrape `worker-group-claim-operator` node-labels-controller metrics via the kube-rbac-proxy sidecar.
