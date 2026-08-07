@@ -131,6 +131,16 @@ entries:
       version: 1.0.14-2
     - apiVersion: v2
       appVersion: 0.1.0
+      created: "2026-08-07T20:03:08.997423+05:00"
+      description: A Helm chart for Kubernetes
+      digest: cc25851bf9e5e69cdd54a6fa15a690aec15fb4feab1219efd889145a2e5396e1
+      name: addonset
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/addonset-1.0.15.tgz
+      version: 1.0.15
+    - apiVersion: v2
+      appVersion: 0.1.0
       created: "2026-08-07T03:09:52.185102+07:00"
       description: A Helm chart for Kubernetes
       digest: 4e6b7fd423b3fd037ec36d73b5d29cde11e4803c4ff1e08a947b6286961df527
@@ -540,6 +550,16 @@ entries:
       urls:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.14-2.tgz
       version: 1.0.14-2
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-08-07T20:03:08.997622+05:00"
+      description: Helm chart for bootstrap addonset
+      digest: f3e1e4d88c7e708888818ff25eba894212163d30cd58f167a474bfe739c9b163
+      name: bootstrap
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.15.tgz
+      version: 1.0.15
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-08-06T18:25:53.940037+07:00"
@@ -3667,6 +3687,17 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/victoria-metrics-operator-0.52.0-2.tgz
       version: 0.52.0-2
   worker-group-claim-operator:
+    - apiVersion: v2
+      appVersion: v0.0.3-df6d8627
+      created: "2026-08-07T18:00:53.668639+05:00"
+      description: A Helm chart to distribute the project worker-group-claim-operator
+      digest: 49120d1241c3eb39f2b5e188f1c4e18dae0babeea3b7933ac0276db967d13f55
+      icon: https://example.com/icon.png
+      name: worker-group-claim-operator
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/worker-group-claim-operator-0.1.5.tgz
+      version: 0.1.5
     - apiVersion: v2
       appVersion: v0.0.2-dec3570e
       created: "2026-08-03T03:44:10.093683+07:00"

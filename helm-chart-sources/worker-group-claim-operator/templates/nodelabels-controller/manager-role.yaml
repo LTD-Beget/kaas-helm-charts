@@ -1,0 +1,59 @@
+{{- if .Values.nodelabelsController.enable }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-manager-role" "context" $) }}
+rules:
+    - apiGroups:
+        - ""
+      resources:
+        - events
+      verbs:
+        - create
+        - patch
+    - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - nodelabelpolicies
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - workergroup.in-cloud.io
+      resources:
+        - nodelabelpolicies/status
+      verbs:
+        - get
+        - patch
+        - update
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machines
+        - machinesets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - cluster.x-k8s.io
+      resources:
+        - machinedeployments
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+{{- end }}
