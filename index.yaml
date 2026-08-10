@@ -3,9 +3,9 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-10T17:56:49.657692+03:00"
+      created: "2026-08-10T18:01:29.175995+03:00"
       description: A Helm chart for Kubernetes
-      digest: fc48d632dd9ed4d09465e88ce8dca5d5a9ecb657676ed1c9dc6cc5e3554b585d
+      digest: b5e27cac7c311a96b0b57674cf4e709b114b4124bf98951441876660e01b121d
       name: addon-manifests
       type: application
       urls:
@@ -131,9 +131,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-10T17:56:49.66666+03:00"
+      created: "2026-08-10T18:01:29.184987+03:00"
       description: A Helm chart for Kubernetes
-      digest: 74a15c5d4995e1edc0dd5a9fa5093d802c209587701637939282e27a96fc0378
+      digest: 9cbbc9286eb442af6dbcd31df4b2c6f67430e1f6e2500ae139fab5aac884f2ce
       name: addonset
       type: application
       urls:
@@ -560,6 +560,16 @@ entries:
         - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/argo-cd-9.4.15-1.tgz
       version: 9.4.15-1
   bootstrap:
+    - apiVersion: v2
+      appVersion: 0.1.0
+      created: "2026-08-10T18:01:29.185521+03:00"
+      description: Helm chart for bootstrap addonset
+      digest: 70b0614e225b9fc525b974dc65655dd233b8844719365db94197d9784a1731e2
+      name: bootstrap
+      type: application
+      urls:
+        - https://blog.beget.com/kaas-helm-charts/helm-chart-revisions/bootstrap-1.0.16.tgz
+      version: 1.0.16
     - apiVersion: v2
       appVersion: 0.1.0
       created: "2026-08-07T21:24:14.906704+07:00"
@@ -1295,9 +1305,9 @@ entries:
   cluster-claim-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-10T17:56:49.667457+03:00"
+      created: "2026-08-10T18:01:29.185884+03:00"
       description: A Helm chart for Kubernetes
-      digest: 2bdbb2f4ee70ddc67d439fe0f4fd755cbd4662a6f8b95052bd1dfcf23b8907cc
+      digest: 4b2589ab2232eb96b89617054e026bfe9d5833d55cad7970b3e9c37965a13606
       name: cluster-claim-manifests
       type: application
       urls:
@@ -1814,9 +1824,9 @@ entries:
   etcd-backup-snapshot:
     - apiVersion: v2
       appVersion: 0.36.3
-      created: "2026-08-10T17:56:49.667764+03:00"
+      created: "2026-08-10T18:01:29.186165+03:00"
       description: Helm chart for the etcd-backup-snapshot
-      digest: 3de7fb7c54d74e3a76eb837d9d7462599aedab4dca9bf5035c57b1da203df6d1
+      digest: 48c37d43922dbc6548561c1f467aafa0ba9a622f4b794fa5c8d543b0a0516014
       name: etcd-backup-snapshot
       type: application
       urls:
