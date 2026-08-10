@@ -3,9 +3,9 @@ argocdPlugins:
 secret:
   s3:
     region: us-east-1
-    accessKeyID: {{ .Values.etcdbackupS3AccessKey }}
-    secretAccessKey: {{ .Values.etcdbackupS3SecretAccessKey }}
-    endpoint: {{ .Values.etcdbackupS3SecretEndpoint}}
+    accessKeyID: {{ .Values.etcdBackupS3AccessKey }}
+    secretAccessKey: {{ .Values.etcdBackupS3SecretKey }}
+    endpoint: {{ .Values.etcdBackupS3Endpoint}}
     s3ForcePathStyle: "true"
 app:
   args:
@@ -13,7 +13,7 @@ app:
     - --schedule=0 */4 * * *  
     - --delta-snapshot-period=1h
     - --storage-provider=S3
-    - --store-container={{ .Values.etcdbackupAppArgsStorecontainer }}
+    - --store-container={{ .Values.etcdBackupS3Bucket }}
     - --store-prefix=etcd-{{ .Values.cluster.name }}
     - --garbage-collection-period=30m
     - --max-backups=6

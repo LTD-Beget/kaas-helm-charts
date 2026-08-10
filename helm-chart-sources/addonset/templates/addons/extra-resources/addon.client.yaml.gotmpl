@@ -34,14 +34,14 @@ spec:
           jsonPath: .metadata.creationTimestamp
         - as: environment
           jsonPath: .data.environment
-        - as: etcdbackupAppArgsStorecontainer
-          jsonPath: .data.etcdbackupAppArgsStorecontainer
-        - as: etcdbackupS3AccessKey
-          jsonPath: .data.etcdbackupS3AccessKey
-        - as: etcdbackupS3SecretAccessKey
-          jsonPath: .data.etcdbackupS3SecretAccessKey
-        - as: etcdbackupS3SecretEndpoint
-          jsonPath: .data.etcdbackupS3SecretEndpoint
+        - as: etcdBackupS3Bucket
+          jsonPath: .data.etcdBackupS3Bucket
+        - as: etcdBackupS3AccessKey
+          jsonPath: .data.etcdBackupS3AccessKey
+        - as: etcdBackupS3SecretKey
+          jsonPath: .data.etcdBackupS3SecretKey
+        - as: etcdBackupS3Endpoint
+          jsonPath: .data.etcdBackupS3Endpoint
         - as: systemIstioGwDomain
           jsonPath: .data.systemIstioGwDomain
         - as: istioGwVip
