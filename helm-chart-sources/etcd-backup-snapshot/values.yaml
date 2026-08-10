@@ -25,6 +25,18 @@ secret:
     endpoint: my-endpoint
     s3ForcePathStyle: "true"
 
+# Dedicated ServiceAccount for the DaemonSet — gives the component its own
+# identity (audit trail, least privilege, an attach point for future RBAC/PSA)
+# instead of running under the namespace 'default' SA.
+serviceAccount:
+  create: true
+  # Defaults to app.name when empty.
+  name: etcd-backup-snapshot
+  annotations: {}
+  # The component talks to etcd directly, not the kube-apiserver, so it does not
+  # need an API token mounted (the DaemonSet also disables it at pod level).
+  automountServiceAccountToken: false
+
 app:
   name: etcd-backup-snapshot
   labels:
