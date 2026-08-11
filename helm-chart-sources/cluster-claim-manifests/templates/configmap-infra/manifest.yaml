@@ -44,10 +44,18 @@ spec:
 
       systemEnabled: "{{`{{ hasPrefix "system" .ClusterClaim.spec.infra.role }}`}}"
       argocdServerAdminPassword: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/argocd#admin.passwordBcrypt>"
+
+      # legacy etcdbackup args, will be removed in future releases
       etcdbackupAppArgsStorecontainer: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#bucket>"
       etcdbackupS3AccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#access-key>"
       etcdbackupS3SecretAccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/etcd-backup#secret-key>"
       etcdbackupS3SecretEndpoint: {{ .Values.extraArgs.etcdbackupS3SecretEndpoint }}
+
+      etcdBackupS3AccessKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/s3#accessKey>"
+      etcdBackupS3SecretKey: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/s3#secretKey>"
+      etcdBackupS3Bucket: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/s3#bucketName>"
+      etcdBackupS3Endpoint: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/s3#endpoint>"
+
       incloudUICookieSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/incloud-web#cookie-secret>"
       argocdOidcClientSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/argocd#oidc-client-secret>"
       incloudWebOidcClientSecret: "<path:secret/data/clusters/{{`{{ .ClusterClaim.metadata.namespace }}`}}-{{`{{ .ClusterClaim.metadata.name }}`}}/incloud-web#oidc-client-secret>"

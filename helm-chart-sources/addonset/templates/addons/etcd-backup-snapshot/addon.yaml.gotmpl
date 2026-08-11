@@ -8,7 +8,7 @@ spec:
   chart: "etcd-backup-snapshot"
   pluginName: helm-with-values
   repoURL: "{{ .Values.companyExternalChartRegistry }}"
-  version: "0.1.4"
+  version: "0.1.5"
   targetCluster: in-cluster
   targetNamespace: "{{ .Values.companyPrefix }}-etcd-backup-snapshot"
   variables:
@@ -24,12 +24,12 @@ spec:
       extract:
         - as: cluster.name
           jsonPath: .data.clusterName
-        - as: etcdbackupAppArgsStorecontainer
-          jsonPath: .data.etcdbackupAppArgsStorecontainer
-        - as: etcdbackupS3AccessKey
-          jsonPath: .data.etcdbackupS3AccessKey
-        - as: etcdbackupS3SecretAccessKey
-          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdBackupS3Bucket
+          jsonPath: .data.etcdBackupS3Bucket
+        - as: etcdBackupS3AccessKey
+          jsonPath: .data.etcdBackupS3AccessKey
+        - as: etcdBackupS3SecretKey
+          jsonPath: .data.etcdBackupS3SecretKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
         - as: companyPrefix

@@ -33,12 +33,12 @@ spec:
           jsonPath: .data.controlPlaneDesiredReplicas
         - as: dataCreationTimestamp
           jsonPath: .metadata.creationTimestamp
-        - as: etcdbackupAppArgsStorecontainer
-          jsonPath: .data.etcdbackupAppArgsStorecontainer
-        - as: etcdbackupS3AccessKey
-          jsonPath: .data.etcdbackupS3AccessKey
-        - as: etcdbackupS3SecretAccessKey
-          jsonPath: .data.etcdbackupS3SecretAccessKey
+        - as: etcdBackupS3Bucket
+          jsonPath: .data.etcdBackupS3Bucket
+        - as: etcdBackupS3AccessKey
+          jsonPath: .data.etcdBackupS3AccessKey
+        - as: etcdBackupS3SecretKey
+          jsonPath: .data.etcdBackupS3SecretKey
         - as: etcdbackupS3SecretEndpoint
           jsonPath: .data.etcdbackupS3SecretEndpoint
         - as: systemIstioGwDomain
