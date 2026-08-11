@@ -31,8 +31,8 @@ spec:
               jsonPath: .data.etcdBackupS3AccessKey
             - as: etcdBackupS3SecretKey
               jsonPath: .data.etcdBackupS3SecretKey
-            - as: etcdBackupS3Endpoint
-              jsonPath: .data.etcdBackupS3Endpoint
+            - as: etcdbackupS3SecretEndpoint
+              jsonPath: .data.etcdbackupS3SecretEndpoint
             - as: companyPrefix
               jsonPath: .data.companyPrefix
             - as: companyDomain

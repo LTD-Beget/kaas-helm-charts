@@ -1,5 +1,5 @@
 {{- if .Values.networkPolicies.enabled }}
-{{- $s3StorageDomain := (.Values.etcdBackupS3Endpoint | trimPrefix "https://" | trimPrefix "http://") }}
+{{- $s3StorageDomain := (.Values.etcdbackupS3SecretEndpoint | trimPrefix "https://" | trimPrefix "http://") }}
 
 ---
 # Allow the etcd backup job to reach the local etcd endpoint.

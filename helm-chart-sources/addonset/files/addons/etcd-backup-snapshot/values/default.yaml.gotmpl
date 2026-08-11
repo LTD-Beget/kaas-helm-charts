@@ -5,7 +5,7 @@ secret:
     region: us-east-1
     accessKeyID: {{ .Values.etcdBackupS3AccessKey }}
     secretAccessKey: {{ .Values.etcdBackupS3SecretKey }}
-    endpoint: {{ .Values.etcdBackupS3Endpoint}}
+    endpoint: {{ .Values.etcdbackupS3SecretEndpoint}}
     s3ForcePathStyle: "true"
 app:
   args:
