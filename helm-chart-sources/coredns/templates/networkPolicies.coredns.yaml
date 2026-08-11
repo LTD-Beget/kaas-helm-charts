@@ -335,7 +335,7 @@ spec:
   ingress:
   - fromEndpoints:
     - matchLabels:
-        k8s:io.cilium.k8s.policy.serviceaccount: default
+        k8s:io.cilium.k8s.policy.serviceaccount: etcd-backup-snapshot
         k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-etcd-backup-snapshot
     toPorts:
     - ports:
