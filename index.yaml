@@ -3,9 +3,9 @@ entries:
   addon-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-11T16:37:44.707982+03:00"
+      created: "2026-08-11T19:48:08.268812+03:00"
       description: A Helm chart for Kubernetes
-      digest: 1f6ee2d5a2781652cce9706dc84d0115be56bfdcb8d30f2ba4a6a1195fb2154d
+      digest: de0c1f4fdb6fcd6ba938eed5036b5a69a4da142f567ac78efe39ccdac1cc8a16
       name: addon-manifests
       type: application
       urls:
@@ -131,9 +131,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-11T17:00:47.840234+03:00"
+      created: "2026-08-11T19:48:08.27234+03:00"
       description: A Helm chart for Kubernetes
-      digest: 45b7b40526e397719a91cd221d81f718e8227722326e68c536b8a6a7ac286f7c
+      digest: 401556590ff21e4a837369bb93601e578b35933b3d84c37109b0e2f86103ad64
       name: addonset
       type: application
       urls:
@@ -562,9 +562,9 @@ entries:
   bootstrap:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-10T18:01:29.185521+03:00"
+      created: "2026-08-11T19:48:48.288254+03:00"
       description: Helm chart for bootstrap addonset
-      digest: 70b0614e225b9fc525b974dc65655dd233b8844719365db94197d9784a1731e2
+      digest: 7a4c170f6d041c798b23b569325ebfb3e88244f0eff2ea0785d8826548029d3e
       name: bootstrap
       type: application
       urls:
@@ -1305,9 +1305,9 @@ entries:
   cluster-claim-manifests:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-10T18:01:29.185884+03:00"
+      created: "2026-08-11T19:48:08.272715+03:00"
       description: A Helm chart for Kubernetes
-      digest: 4b2589ab2232eb96b89617054e026bfe9d5833d55cad7970b3e9c37965a13606
+      digest: 45e53b3f9758ee4a2972ce74f19a14dfb5e7ed86e05b63ec2839cb5e7353117c
       name: cluster-claim-manifests
       type: application
       urls:
@@ -1518,13 +1518,13 @@ entries:
   coredns:
     - apiVersion: v2
       appVersion: 1.11.1
-      created: "2026-08-11T17:00:47.841493+03:00"
+      created: "2026-08-11T19:48:08.274151+03:00"
       dependencies:
         - name: coredns
           repository: https://coredns.github.io/helm
           version: 1.28.0
       description: CoreDNS is a DNS server that chains plugins and provides Kubernetes DNS Services
-      digest: 04dab9f0a0bf5599f72b5e7bdc3db9e906b84dd5c0e9eb55892d2b93ce760874
+      digest: fdd98c278ea5a6dcd5c0e4000132ba44943d9a64eedd21c4c70b89e50db11bdb
       home: https://coredns.io
       icon: https://coredns.io/images/CoreDNS_Colour_Horizontal.png
       keywords:
@@ -1851,9 +1851,9 @@ entries:
   etcd-backup-snapshot:
     - apiVersion: v2
       appVersion: 0.36.3
-      created: "2026-08-11T16:37:44.711296+03:00"
+      created: "2026-08-11T19:48:08.274443+03:00"
       description: Helm chart for the etcd-backup-snapshot
-      digest: b42402664bc25c27bded3c32de31e1d5af1ac1d6a989ed8bd471793ca57e7359
+      digest: ac7e76b2f1e28f9da372f813d37dd2f5ffce3adef0f3f39487ce1a52696d9ded
       name: etcd-backup-snapshot
       type: application
       urls:

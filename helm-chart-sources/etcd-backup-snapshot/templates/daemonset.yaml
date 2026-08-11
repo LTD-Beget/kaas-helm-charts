@@ -23,9 +23,7 @@ spec:
       labels:
         app: {{ .Values.app.labels.app | default "etcd-backup-snapshot" }}
     spec:
-      {{- with .Values.app.serviceAccountName }}
-      serviceAccountName: {{ . }}
-      {{- end }}
+      serviceAccountName: {{ .Values.app.serviceAccountName | default .Values.serviceAccount.name | default (.Values.app.name | default "etcd-backup-snapshot") }}
       automountServiceAccountToken: {{ .Values.app.automountServiceAccountToken | default false }}
       hostNetwork: {{ .Values.app.hostNetwork | default false }}
       dnsPolicy: {{ .Values.app.dnsPolicy | default "ClusterFirstWithHostNet" }}
