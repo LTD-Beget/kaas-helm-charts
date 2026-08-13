@@ -44,7 +44,7 @@ appSpec:
           name: manager
           image:
             repository: registry.example.ru/cloud/k8s/controllers/capi-provider-wrapper
-            tag: v2.1.9
+            tag: v2.1.10
             pullPolicy: IfNotPresent
 
           extraArgs:
