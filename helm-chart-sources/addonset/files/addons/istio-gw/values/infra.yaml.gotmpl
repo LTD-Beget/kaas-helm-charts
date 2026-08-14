@@ -1,4 +1,7 @@
 gateway:
+  # HPA не нужен на инфра-кластерах — фиксированное число реплик
+  autoscaling:
+    enabled: false
   labels:
     monitoring.in-cloud.io/service: istio-gw
   service:
