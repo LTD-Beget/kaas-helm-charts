@@ -1,4 +1,6 @@
 hostNetwork: true
+nodeSelector:
+  kubernetes.io/os: linux
 agent:
   extraArgs:
     proxy-server-host: {{ .Values.cluster.host }}
