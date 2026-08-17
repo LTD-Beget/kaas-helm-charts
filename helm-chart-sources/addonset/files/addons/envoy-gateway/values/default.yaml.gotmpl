@@ -1,3 +1,16 @@
+gateway-helm:
+  # Upstream ships hpa disabled with replicas: 1 — scale the controller on CPU.
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 80
 envoyProxy:
   service:
     annotations:
@@ -5,3 +18,9 @@ envoyProxy:
       lb.{{ .Values.companyDomain }}/healthcheck-interval-seconds: "60"
       lb.{{ .Values.companyDomain }}/healthcheck-timeout-seconds: "5"
       lb.{{ .Values.companyDomain }}/type: external
+  # Wrapper default is disabled — scale the managed Envoy fleet on CPU.
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
