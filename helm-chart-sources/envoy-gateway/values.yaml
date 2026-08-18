@@ -24,6 +24,19 @@ envoyProxy:
   pod:
     labels: {}
     tolerations: []
+  # HPA for the same managed data-plane Envoy fleet. Rendered into the EnvoyProxy
+  # CR (spec.provider.kubernetes.envoyHpa), so the HorizontalPodAutoscaler is
+  # created by Envoy Gateway per Gateway, not by this chart. Disabled by default:
+  # without it the fleet keeps a fixed replica count. maxReplicas is required by
+  # the CRD as soon as the block is present.
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+    # Scaling behaviors (scaleUp/scaleDown policies), passed through as-is
+    behavior: {}
 
 # Default Gateway shipped with the addon. Creating a Gateway is what makes
 # Envoy Gateway actually provision the managed Envoy fleet (Deployment + the
