@@ -31,6 +31,38 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- end }}
+      {{- with .Values.envoyProxy.autoscaling }}
+      {{- if .enabled }}
+      envoyHpa:
+        {{- with .minReplicas }}
+        minReplicas: {{ . }}
+        {{- end }}
+        maxReplicas: {{ required "envoyProxy.autoscaling.maxReplicas is required when envoyProxy.autoscaling.enabled is true" .maxReplicas }}
+        {{- with .behavior }}
+        behavior:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if or .targetCPUUtilizationPercentage .targetMemoryUtilizationPercentage }}
+        metrics:
+          {{- with .targetCPUUtilizationPercentage }}
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: {{ . }}
+          {{- end }}
+          {{- with .targetMemoryUtilizationPercentage }}
+          - type: Resource
+            resource:
+              name: memory
+              target:
+                type: Utilization
+                averageUtilization: {{ . }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
