@@ -1,6 +1,6 @@
 companyPrefix: example
 clusterDomain: cluster.local
-etcdbackupS3SecretEndpoint: https://s3.example.com
+etcdBackupS3Endpoint: s3.example.com
 configmap:
   name: etcd-config
   etcdConfig: |
