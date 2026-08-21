@@ -1,3 +1,5 @@
+argocdPlugins:
+  vault: true
 expose:
   resourceType: istio
   istio:
@@ -33,7 +35,7 @@ default:
         secretkey: {{ .Values.dockerRegistryS3SecretKey }}
         encrypt: false
         region: us-east-1
-        regionendpoint: {{ .Values.etcdbackupS3SecretEndpoint }}
+        regionendpoint: "https://{{ .Values.etcdBackupS3Endpoint }}"
         bucket: {{ .Values.dockerRegistryS3Bucket }}
         loglevel: info
     log:
