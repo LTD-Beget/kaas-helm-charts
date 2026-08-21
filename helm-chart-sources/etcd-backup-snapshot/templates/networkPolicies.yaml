@@ -1,6 +1,5 @@
 {{- if .Values.networkPolicies.enabled }}
-{{- /* Приходит из Vault уже без схемы: trimPrefix здесь не сработал бы — на рендере
-       значение ещё является местозаполнителем <path:...>, а не адресом. */}}
+
 {{- $s3StorageDomain := .Values.etcdBackupS3Endpoint }}
 {{- $sa := .Values.app.serviceAccountName | default .Values.serviceAccount.name | default (.Values.app.name | default "etcd-backup-snapshot") }}
 
