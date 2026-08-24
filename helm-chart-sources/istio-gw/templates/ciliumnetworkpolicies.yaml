@@ -392,4 +392,27 @@ spec:
     - ports:
       - port: "443"
         protocol: TCP
+---
+# Allow `istio-gw` to reach dex on 5554 (OIDC).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-istio-gw-to-dex-5554
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: istio-gw
+      k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: dex
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-dex
+    toPorts:
+    - ports:
+      - port: '5554'
+        protocol: TCP
+  description: Allows egress from istio-gw to dex on 5554 for OIDC.
+
 {{- end }}

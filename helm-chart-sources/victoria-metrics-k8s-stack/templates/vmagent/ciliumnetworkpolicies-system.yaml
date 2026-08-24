@@ -742,4 +742,48 @@ spec:
       - port: '11043'
         protocol: TCP
   description: Allows egress from vmagent to worker-group-claim-operator on 11043 for metrics collection.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-node-labels-controller-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: worker-group-claim-operator-node-labels-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-worker-group-claim-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to node-labels-controller on 11043 for metrics collection.
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-vmagent-to-wg-controller-11043
+  namespace: {{ $ns }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ $vmagentSA }}
+      k8s:io.kubernetes.pod.namespace: {{ $ns }}
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.policy.serviceaccount: worker-group-claim-operator-workergroups-controller-manager
+        k8s:io.kubernetes.pod.namespace: {{ .Values.companyPrefix }}-worker-group-claim-operator
+    toPorts:
+    - ports:
+      - port: '11043'
+        protocol: TCP
+  description: Allows egress from vmagent to workergroups-controller on 11043 for metrics collection.
+
 {{- end }}

@@ -38,6 +38,11 @@ istio:
         insecureSkipVerify: true
 
 networkPolicies:
+  # FQDN хранилища, куда registry-зеркало 307-редиректит blob-запросы.
+  # Записи передаются в toFQDNs как есть: matchName либо matchPattern.
+  registryMirrorS3FQDNs:
+    - matchName: s3.ru1.storage.example.com
+    - matchPattern: '*.storage.example.com'
   systemEnabled: false
   controller:
     enabled: false
