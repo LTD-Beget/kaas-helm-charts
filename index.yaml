@@ -151,9 +151,9 @@ entries:
   addonset:
     - apiVersion: v2
       appVersion: 0.1.0
-      created: "2026-08-26T00:05:44.095105+07:00"
+      created: "2026-08-26T00:26:21.347126+07:00"
       description: A Helm chart for Kubernetes
-      digest: 9744393cca857cabc259838bd865043ca27b07b7aeaad71abcecbb5d8316f5a8
+      digest: bd685c82e47733ada1b4fcc519147d9df7d579f1077eb94a38645d461d653b93
       name: addonset
       type: application
       urls:
@@ -420,13 +420,13 @@ entries:
           url: https://argoproj.github.io/argo-helm/pgp_keys.asc
       apiVersion: v2
       appVersion: v3.3.4
-      created: "2026-08-26T00:18:24.456771+07:00"
+      created: "2026-08-26T00:26:21.357121+07:00"
       dependencies:
         - name: argo-cd
           repository: https://argoproj.github.io/argo-helm
           version: 9.4.15
       description: A Helm chart for Argo CD, a declarative, GitOps continuous delivery tool for Kubernetes.
-      digest: a80687c6ca4629c4b20ad90972ba54bf806ba9f6fe3a4a273277a1a466e8665c
+      digest: ab36ee0c2d7edabeb31fb7cf3d27eed3fdabef3f121a94e4fa02beadad5a1929
       home: https://github.com/argoproj/argo-helm
       icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
       keywords:
@@ -1808,13 +1808,13 @@ entries:
   dex:
     - apiVersion: v2
       appVersion: 2.42.0
-      created: "2026-08-24T20:00:50.570666+07:00"
+      created: "2026-08-26T00:26:21.358256+07:00"
       dependencies:
         - name: dex
           repository: https://charts.dexidp.io
           version: 0.23.0
       description: OpenID Connect (OIDC) identity and OAuth 2.0 provider with pluggable connectors.
-      digest: aebdd321d8027e8e7c2b2fd82f1baca6d959426831d6ef7fd2ea70d0cdde8daf
+      digest: 84599013b245609dabd1fdff7073284bf750f28cc35983c01e05d109ef7a04cf
       home: https://dexidp.io/
       icon: https://dexidp.io/favicons/favicon.png
       keywords:
@@ -2074,13 +2074,13 @@ entries:
   gateway:
     - apiVersion: v2
       appVersion: 1.26.0
-      created: "2026-08-24T20:00:50.571769+07:00"
+      created: "2026-08-26T00:26:21.35935+07:00"
       dependencies:
         - name: gateway
           repository: https://istio-release.storage.googleapis.com/charts
           version: 1.26.0
       description: Helm chart for deploying Istio gateways
-      digest: eadabbf1d0a20856185c333c9c3af84e1396d2d5b2b44203d8250de4be3ae96b
+      digest: 89936d155c892b3e0552fb4e95f2a3d99469a7f654310abc12217a3d5f3e1c2c
       icon: https://istio.io/latest/favicons/android-192x192.png
       keywords:
         - istio
@@ -2215,9 +2215,9 @@ entries:
   grafana:
     - apiVersion: v2
       appVersion: 11.3.0
-      created: "2026-08-24T20:00:50.57241+07:00"
+      created: "2026-08-26T00:26:21.359662+07:00"
       description: Helm chart for the Grafana
-      digest: 084a635aa8bc530c77bdf8808cafe4aa15dc601fc8d689fc27ca98e04b4c85a3
+      digest: 8aacb701614f913f9c786cea6cef91fa42e2d4cd7f7380d0c9c6d0df7e11e59d
       name: grafana
       type: application
       urls:
