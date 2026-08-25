@@ -265,13 +265,15 @@ spec:
       - port: "3000"
         protocol: TCP
 ---
-# Allow `grafana` to reach the istio gateway on 443.
+# Allow `grafana` to reach the istio gateway by its EXTERNAL address on 443.
+# Соседняя allow-egress-grafana-to-istio-gw-443 пускает к эндпойнтам
+# шлюза внутри кластера; эта — к тому же шлюзу снаружи, по FQDN/CIDR.
 {{- $istioGwDomain := .Values.istioGwDomain }}
 {{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-egress-grafana-to-istio-gw-443
+  name: allow-egress-grafana-to-istio-gw-external-443
   namespace: {{ .Release.Namespace }}
 spec:
   endpointSelector:
