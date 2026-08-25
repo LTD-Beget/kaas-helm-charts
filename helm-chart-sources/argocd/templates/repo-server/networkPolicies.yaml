@@ -1,6 +1,7 @@
 {{- if .Values.networkPolicies.repoServer.enabled }}
 {{- $istioGwDomain := .Values.istioGwDomain }}
 {{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
+{{- $s3 := .Values.networkPolicies.registryMirrorS3Endpoint }}
 
 ---
 # host to argocd-repo-server — metrics readiness (8084)
@@ -236,4 +237,31 @@ spec:
     - ports:
       - port: "8084"
         protocol: TCP
+
+---
+# argocd-repo-server -> S3-бэкенд registry-зеркала.
+# Зеркало отдаёт манифесты само, но blob-запросы 307-редиректит на S3.
+# Без egress к нему манифест резолвится, а скачивание слоя виснет и
+# упирается в 60s deadline ArgoCD.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-egress-argocd-repo-server-to-registry-mirror-s3-443
+  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
+      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
+  egress:
+  - toFQDNs:
+    - matchName: {{ $s3 }}
+    - matchName: {{ $s3 }}.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3 }}.svc.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3 }}.{{ include "argo-cd-wrapper.namespace" . }}.svc.{{ .Values.clusterDomain }}
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
+  description: Allows egress from argocd-repo-server to the registry mirror S3 backend on 443 for blob downloads.
 {{- end }}
