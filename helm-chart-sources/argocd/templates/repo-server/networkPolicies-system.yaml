@@ -18,28 +18,4 @@ spec:
       - port: "443"
         protocol: TCP
   description: Allows egress for argocd-repo-server to specific external FQDNs 443 for external repositories.
----
-# argocd-repo-server -> S3-бэкенд registry-зеркала.
-# Зеркало отдаёт манифесты само, но blob-запросы 307-редиректит на S3.
-# Без egress к нему манифест резолвится, а скачивание слоя виснет и
-# упирается в 60s deadline ArgoCD.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: allow-egress-argocd-repo-server-to-registry-mirror-s3-443
-  namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:io.cilium.k8s.policy.serviceaccount: {{ include "argo-cd-wrapper.repoServer.serviceAccountName" . }}
-      k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
-  egress:
-  - toFQDNs:
-    {{- toYaml .Values.networkPolicies.registryMirrorS3FQDNs | nindent 4 }}
-    toPorts:
-    - ports:
-      - port: "443"
-        protocol: TCP
-  description: Allows egress from argocd-repo-server to the registry mirror S3 backend on 443 for blob downloads.
-
 {{- end }}
