@@ -19,6 +19,14 @@ rules:
         - list
         - watch
     - apiGroups:
+        - addons.in-cloud.io
+      resources:
+        - addonclaims
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
         - argoproj.io
       resources:
         - applications
