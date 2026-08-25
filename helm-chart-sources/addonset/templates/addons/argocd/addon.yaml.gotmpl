@@ -50,6 +50,8 @@ spec:
           jsonPath: .data.companyAdminUser
         - as: systemEnabled
           jsonPath: .data.systemEnabled
+        - as: etcdBackupS3Endpoint
+          jsonPath: .data.etcdBackupS3Endpoint
   initDependencies:
     - name: addons-operator
       criteria:

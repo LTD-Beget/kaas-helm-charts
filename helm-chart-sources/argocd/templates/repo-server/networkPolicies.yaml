@@ -1,6 +1,7 @@
 {{- if .Values.networkPolicies.repoServer.enabled }}
 {{- $istioGwDomain := .Values.istioGwDomain }}
 {{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
+{{- $s3 := .Values.networkPolicies.registryMirrorS3Endpoint }}
 
 ---
 # host to argocd-repo-server — metrics readiness (8084)
@@ -254,7 +255,10 @@ spec:
       k8s:io.kubernetes.pod.namespace: {{ include  "argo-cd-wrapper.namespace" . }}
   egress:
   - toFQDNs:
-    {{- toYaml .Values.networkPolicies.registryMirrorS3FQDNs | nindent 4 }}
+    - matchName: {{ $s3 }}
+    - matchName: {{ $s3 }}.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3 }}.svc.{{ .Values.clusterDomain }}
+    - matchName: {{ $s3 }}.{{ include "argo-cd-wrapper.namespace" . }}.svc.{{ .Values.clusterDomain }}
     toPorts:
     - ports:
       - port: "443"
