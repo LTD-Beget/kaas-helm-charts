@@ -38,6 +38,10 @@ istio:
         insecureSkipVerify: true
 
 networkPolicies:
+  # Хранилище, куда registry-зеркало 307-редиректит blob-запросы.
+  # Имена с суффиксами search-домена шаблон добавляет сам: DNS-прокси
+  # Cilium видит ровно те запросы, которые делает resolver пода.
+  registryMirrorS3Endpoint: s3.example.com
   systemEnabled: false
   controller:
     enabled: false
