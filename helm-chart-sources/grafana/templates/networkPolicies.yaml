@@ -268,8 +268,8 @@ spec:
 # Allow `grafana` to reach the istio gateway by its EXTERNAL address on 443.
 # Соседняя allow-egress-grafana-to-istio-gw-443 пускает к эндпойнтам
 # шлюза внутри кластера; эта — к тому же шлюзу снаружи, по FQDN/CIDR.
-{{- $istioGwDomain := .Values.istioGwDomain }}
-{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $istioGwDomain }}
+{{- $systemIstioGwDomain := .Values.systemIstioGwDomain }}
+{{- $isIP := regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $systemIstioGwDomain }}
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -283,19 +283,19 @@ spec:
   egress:
   {{- if $isIP }}
   - toCIDR:
-    - {{ $istioGwDomain }}/32
+    - {{ $systemIstioGwDomain }}/32
     toPorts:
     - ports:
       - port: '443'
         protocol: TCP
   {{- else }}
   - toFQDNs:
-    - matchName: {{ $istioGwDomain }}
+    - matchName: {{ $systemIstioGwDomain }}
     toPorts:
     - ports:
       - port: '443'
         protocol: TCP
   {{- end }}
-  description: Allows egress from grafana to the istio gateway ({{ $istioGwDomain }}) on 443.
+  description: Allows egress from grafana to the istio gateway ({{ $systemIstioGwDomain }}) on 443.
 
 {{- end }}

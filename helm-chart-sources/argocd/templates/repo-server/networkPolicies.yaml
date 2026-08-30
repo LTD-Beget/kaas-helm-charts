@@ -156,6 +156,8 @@ spec:
   - toFQDNs:
     - matchName: github.com
     - matchName: blog.{{ .Values.companyPrefix }}.com
+    - matchName: registry.{{ .Values.companyPrefix }}.ru
+    - matchName: gitlab.{{ .Values.companyPrefix }}.ru
     - matchName: istio-release.storage.googleapis.com
     toPorts:
     - ports:

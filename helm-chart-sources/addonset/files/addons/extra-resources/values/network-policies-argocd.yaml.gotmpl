@@ -31,6 +31,8 @@ resources:
             - matchName: github.com
             - matchName: blog.{{ .Values.companyPrefix }}.com
             - matchName: istio-release.storage.googleapis.com
+            - matchName: registry.{{ .Values.companyPrefix }}.ru
+            - matchName: gitlab.{{ .Values.companyPrefix }}.ru
           toPorts:
             - ports:
                 - port: "443"
