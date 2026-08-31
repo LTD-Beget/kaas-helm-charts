@@ -17,14 +17,6 @@
       operator: Equal
       value: true
     - source:
-        apiVersion: addons.in-cloud.io/v1alpha1
-        kind: AddonPhase
-        name: argocd
-        namespace: {{ .Values.companyPrefix }}-argocd
-      jsonPath: $.status.ruleStatuses[?(@.name=='network-policies')].deployed
-      operator: Equal
-      value: true
-    - source:
         apiVersion: v1
         kind: Secret
         name: avp-config
