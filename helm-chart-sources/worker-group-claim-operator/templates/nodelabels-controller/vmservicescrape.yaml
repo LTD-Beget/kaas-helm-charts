@@ -19,19 +19,19 @@ spec:
       port: https-metrics
       scheme: HTTPS
       tlsConfig:
-        serverName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+        serverName: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
         {{- if .Values.monitoring.secureService.enabled }}
         insecureSkipVerify: false
         ca:
           secret:
-            name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-svc-tls" "context" $) }}
             key: ca.crt
         cert:
           secret:
-            name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-svc-tls" "context" $) }}
             key: tls.crt
         keySecret:
-          name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+          name: {{ include "worker-group-claim-operator.resourceName" (dict "suffix" "node-labels-controller-svc-tls" "context" $) }}
           key: tls.key
         {{- else }}
         insecureSkipVerify: true

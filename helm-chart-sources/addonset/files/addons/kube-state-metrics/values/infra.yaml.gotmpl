@@ -35,6 +35,7 @@ monitoring:
           kube_horizontalpodautoscaler_spec_min_replicas|\
           kube_horizontalpodautoscaler_status_current_replicas|\
           kube_horizontalpodautoscaler_status_desired_replicas|\
+          kube_job_failed|\
           kube_job_status_active|\
           kube_job_status_start_time|\
           kube_namespace_created|\
@@ -46,6 +47,9 @@ monitoring:
           kube_node_status_allocatable|\
           kube_node_status_capacity|\
           kube_node_status_condition|\
+          kube_persistentvolume_status_phase|\
+          kube_persistentvolumeclaim_access_mode|\
+          kube_persistentvolumeclaim_labels|\
           kube_pod_container_info|\
           kube_pod_container_resource_limits|\
           kube_pod_container_resource_requests|\
@@ -64,8 +68,13 @@ monitoring:
           kube_pod_status_reason|\
           kube_poddisruptionbudget_status_current_healthy|\
           kube_poddisruptionbudget_status_desired_healthy|\
+          kube_resourcequota|\
           kube_secret_info|\
           kube_service_info|\
+          kube_state_metrics_list_total|\
+          kube_state_metrics_shard_ordinal|\
+          kube_state_metrics_total_shards|\
+          kube_state_metrics_watch_total|\
           kube_statefulset_metadata_generation|\
           kube_statefulset_replicas|\
           kube_statefulset_status_current_revision|\
