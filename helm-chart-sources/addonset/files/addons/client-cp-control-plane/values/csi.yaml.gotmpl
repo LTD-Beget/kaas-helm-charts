@@ -61,7 +61,7 @@ appSpec:
               csi.cert-manager.io/duration: 8760h
               csi.cert-manager.io/renew-before: 1460h
               csi.cert-manager.io/ip-sans: "127.0.0.1,{{ .Variables.serviceCidrApi }},{{ .Variables.argocdApplicationControlPlaneValueArgsHost }}"
-              csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local"
+              csi.cert-manager.io/dns-names: "{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }},{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc,{{ .Variables.argocdApplicationControlPlaneReleaseName }}-control-plane.{{ .Variables.argocdApplicationControlPlaneDestinationNamespace }}.svc.cluster.local,kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
               csi.cert-manager.io/key-usages: "server auth,data encipherment,key encipherment,digital signature"
         apiserver-kubelet-client-csi:
           volume:
