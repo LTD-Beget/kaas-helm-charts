@@ -129,10 +129,12 @@ victoria-metrics-k8s-stack:
                     workqueue_adds_total|\
                     workqueue_depth|\
                     workqueue_longest_running_processor_seconds|\
+                    workqueue_queue_duration_seconds_bucket|\
                     workqueue_queue_duration_seconds_count|\
                     workqueue_queue_duration_seconds_sum|\
                     workqueue_retries_total|\
                     workqueue_unfinished_work_seconds|\
+                    workqueue_work_duration_seconds_bucket|\
                     workqueue_work_duration_seconds_count|\
                     workqueue_work_duration_seconds_sum\
                     "
@@ -195,10 +197,12 @@ victoria-metrics-k8s-stack:
                     workqueue_adds_total|\
                     workqueue_depth|\
                     workqueue_longest_running_processor_seconds|\
+                    workqueue_queue_duration_seconds_bucket|\
                     workqueue_queue_duration_seconds_count|\
                     workqueue_queue_duration_seconds_sum|\
                     workqueue_retries_total|\
                     workqueue_unfinished_work_seconds|\
+                    workqueue_work_duration_seconds_bucket|\
                     workqueue_work_duration_seconds_count|\
                     workqueue_work_duration_seconds_sum\
                     "
@@ -255,10 +259,12 @@ victoria-metrics-k8s-stack:
                     workqueue_adds_total|\
                     workqueue_depth|\
                     workqueue_longest_running_processor_seconds|\
+                    workqueue_queue_duration_seconds_bucket|\
                     workqueue_queue_duration_seconds_count|\
                     workqueue_queue_duration_seconds_sum|\
                     workqueue_retries_total|\
                     workqueue_unfinished_work_seconds|\
+                    workqueue_work_duration_seconds_bucket|\
                     workqueue_work_duration_seconds_count|\
                     workqueue_work_duration_seconds_sum\
                     "
@@ -351,6 +357,7 @@ monitoring:
         - sourceLabels: [__name__]
           action: keep
           regex: "\
+            flag|\
             go_gc_cpu_seconds_total|\
             go_gc_duration_seconds_count|\
             go_gc_duration_seconds_sum|\
