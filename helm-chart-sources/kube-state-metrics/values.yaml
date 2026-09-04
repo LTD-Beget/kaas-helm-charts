@@ -1,9 +1,7 @@
 kube-state-metrics:
   enabled: true
   # some values for kube-state-metrics
-
 companyPrefix: example
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -17,7 +15,6 @@ monitoring:
   serviceScrapeConfig:
     relabelConfigs: []
     metricRelabelConfigs: []
-
 networkPolicies:
   kubeStateMetrics:
     enabled: false

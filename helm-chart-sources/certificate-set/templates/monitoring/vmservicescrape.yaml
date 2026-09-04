@@ -10,27 +10,31 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    path: /metrics
-    port: https-metrics
-    scheme: HTTPS
-    tlsConfig:
-      serverName: certs-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
-      {{- if .Values.certManager.enable }}
-      insecureSkipVerify: false
-      ca:
-        secret:
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      path: /metrics
+      port: https-metrics
+      scheme: HTTPS
+      tlsConfig:
+        serverName: certs-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
+        {{- if .Values.certManager.enable }}
+        insecureSkipVerify: false
+        ca:
+          secret:
+            name: metrics-server-cert
+            key: ca.crt
+        cert:
+          secret:
+            name: metrics-server-cert
+            key: tls.crt
+        keySecret:
           name: metrics-server-cert
-          key: ca.crt
-      cert:
-        secret:
-          name: metrics-server-cert
-          key: tls.crt
-      keySecret:
-        name: metrics-server-cert
-        key: tls.key
-      {{- else }}
-      insecureSkipVerify: true
+          key: tls.key
+        {{- else }}
+        insecureSkipVerify: true
+        {{- end }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   jobLabel: certs
   selector:

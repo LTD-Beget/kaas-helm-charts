@@ -1,12 +1,12 @@
 companyPrefix: example
-
 metrics-server: {}
 # some values for metrics-server
 
 networkPolicies:
   enabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

@@ -1,9 +1,7 @@
 cert-manager:
   global:
     priorityClassName: system-cluster-critical
-
 companyPrefix: example
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -14,38 +12,45 @@ monitoring:
     issuer:
       kind: ClusterIssuer
       name: default
-
+  controller:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  cainjector:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
+  webhook:
+    serviceScrapeConfig:
+      metricRelabelConfigs: []
 issuers: {}
-  # selfsignedIssuer:
-  #   kind: Issuer
-  #   name: selfsigned-issuer
-  #   spec:
-  #     selfSigned: {}
+# selfsignedIssuer:
+#   kind: Issuer
+#   name: selfsigned-issuer
+#   spec:
+#     selfSigned: {}
 
-  # selfsignedClusterIssuer:
-  #   kind: ClusterIssuer
-  #   name: selfsigned-cluster-issuer
-  #   spec:
-  #     ca:
-  #       secretName: selfsigned-cluster-ca.crt
-
+# selfsignedClusterIssuer:
+#   kind: ClusterIssuer
+#   name: selfsigned-cluster-issuer
+#   spec:
+#     ca:
+#       secretName: selfsigned-cluster-ca.crt
 certificates: {}
-  # mainCA:
-  #   name: selfsigned-cluster-ca
-  #   spec:
-  #     issuerRef:
-  #       group: cert-manager.io
-  #       kind: Issuer
-  #       name: selfsigned-issuer
-  #     privateKey:
-  #       algorithm: RSA
-  #       encoding: PKCS1
-  #       size: 4096
-  #     duration: 175200h
-  #     renewBefore: 720h
-  #     isCA: true
-  #     commonName: root-ca
-  #     secretName: selfsigned-cluster-ca.crt
+# mainCA:
+#   name: selfsigned-cluster-ca
+#   spec:
+#     issuerRef:
+#       group: cert-manager.io
+#       kind: Issuer
+#       name: selfsigned-issuer
+#     privateKey:
+#       algorithm: RSA
+#       encoding: PKCS1
+#       size: 4096
+#     duration: 175200h
+#     renewBefore: 720h
+#     isCA: true
+#     commonName: root-ca
+#     secretName: selfsigned-cluster-ca.crt
 
 networkPolicies:
   enabled: false

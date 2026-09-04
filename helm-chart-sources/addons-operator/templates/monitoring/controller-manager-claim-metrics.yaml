@@ -13,13 +13,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    path: /metrics
-    port: https
-    scheme: HTTPS
-    tlsConfig:
-      insecureSkipVerify: true
-      serverName: localhost
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      path: /metrics
+      port: https
+      scheme: HTTPS
+      tlsConfig:
+        insecureSkipVerify: true
+        serverName: localhost
+      {{- with .Values.monitoring.addonClaimOperator.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: addons-operator-claim
   selector:
     matchLabels:

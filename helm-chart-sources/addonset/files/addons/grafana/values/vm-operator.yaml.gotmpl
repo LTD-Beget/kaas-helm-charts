@@ -1,6 +1,3 @@
-argocdPlugins:
-  kustomize: true
-
 monitoring:
   enabled: true
   secureService:
@@ -25,8 +22,7 @@ monitoring:
           go_memstats_other_sys_bytes|\
           go_memstats_stack_inuse_bytes|\
           go_memstats_sys_bytes|\
-          grpc_server_handled_total|\
-          grpc_server_started_total|\
+          go_sched_latencies_seconds_bucket|\
           process_cpu_seconds_total|\
           process_max_fds|\
           process_open_fds|\

@@ -1,13 +1,5 @@
-managerClaim:
-  enable: true
-manager:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
 monitoring:
-  addonClaimOperator:
+  addonOperator:
     serviceScrapeConfig:
       metricRelabelConfigs:
         - sourceLabels: [__name__]
@@ -55,7 +47,7 @@ monitoring:
             workqueue_work_duration_seconds_count|\
             workqueue_work_duration_seconds_sum\
             "
-  addonOperator:
+  addonClaimOperator:
     serviceScrapeConfig:
       metricRelabelConfigs:
         - sourceLabels: [__name__]

@@ -7,15 +7,19 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
-  - path: /metrics
-    port: manager-metrics
-    scheme: HTTPS
-    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    tlsConfig:
-      serverName: {{ $.Release.Name }}-provider-{{ $.Values.companyPrefix }}-controller-manager
-  {{- if not .Values.certificates.useExternalIssuer }}
-      insecureSkipVerify: true
-  {{- end }}
+    - path: /metrics
+      port: manager-metrics
+      scheme: HTTPS
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: {{ $.Release.Name }}-provider-{{ $.Values.companyPrefix }}-controller-manager
+        {{- if not .Values.certificates.useExternalIssuer }}
+        insecureSkipVerify: true
+        {{- end }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   jobLabel: {{ $.Release.Name }}
   selector:
     matchLabels:

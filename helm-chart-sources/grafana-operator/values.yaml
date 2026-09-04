@@ -1,12 +1,11 @@
 grafana-operator: {}
 # some values for coredns
-
 companyPrefix: example
-
 networkPolicies:
   enabled: false
-
 monitoring:
+  serviceScrapeConfig:
+    metricRelabelConfigs: []
   enabled: false
   type: VictoriaMetrics
   namespace: default

@@ -1,6 +1,5 @@
 prometheus: {}
 # some values for prometheus
-
 monitoring:
   enabled: false
   type: VictoriaMetrics
@@ -22,4 +21,5 @@ monitoring:
       jsonData:
         tlsSkipVerify: true
         timeInterval: 5s
-
+  serviceScrapeConfig:
+    metricRelabelConfigs: []

@@ -10,27 +10,31 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    path: /metrics
-    port: https-metrics
-    scheme: HTTPS
-    tlsConfig:
-      serverName: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
-      {{- if .Values.monitoring.secureService.enabled }}
-      insecureSkipVerify: false
-      ca:
-        secret:
+    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      path: /metrics
+      port: https-metrics
+      scheme: HTTPS
+      tlsConfig:
+        serverName: {{ include "vault-secret-operator.resourceName" (dict "suffix" "controller-manager-metrics-service" "context" $) }}.{{ .Release.Namespace }}.svc
+        {{- if .Values.monitoring.secureService.enabled }}
+        insecureSkipVerify: false
+        ca:
+          secret:
+            name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: ca.crt
+        cert:
+          secret:
+            name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
+            key: tls.crt
+        keySecret:
           name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
-          key: ca.crt
-      cert:
-        secret:
-          name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
-          key: tls.crt
-      keySecret:
-        name: {{ include "vault-secret-operator.resourceName" (dict "suffix" "svc-tls" "context" $) }}
-        key: tls.key
-      {{- else }}
-      insecureSkipVerify: true
+          key: tls.key
+        {{- else }}
+        insecureSkipVerify: true
+        {{- end }}
+      {{- with .Values.monitoring.serviceScrapeConfig.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   jobLabel: vault-secret-operator
   selector:
